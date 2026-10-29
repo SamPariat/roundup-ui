@@ -53,11 +53,13 @@ const knownLatteExceptions = new Set([
   'warning/bg-raised',
 ])
 
+const byName = (a: string, b: string): number => a.localeCompare(b)
+
 const themeNames: ThemeName[] = ['mocha', 'latte']
 
 describe('roles', () => {
   it.each(themeNames)('defines every role in %s', (theme) => {
-    expect(Object.keys(themes[theme]).toSorted()).toEqual(roleNames.toSorted())
+    expect(Object.keys(themes[theme]).toSorted(byName)).toEqual(roleNames.toSorted(byName))
   })
 
   it('only holds colour values', () => {
@@ -88,6 +90,7 @@ describe('contrast', () => {
     '$foreground on $background reaches $floor:1 in $theme',
     ({ theme, foreground, background, floor }) => {
       const roles = themes[theme]
+
       expect(contrastRatio(roles[foreground], roles[background])).toBeGreaterThanOrEqual(floor)
     },
   )
@@ -128,7 +131,7 @@ describe('layout tokens', () => {
 
   it('has a sheet and a toast shadow in both themes', () => {
     for (const theme of themeNames) {
-      expect(Object.keys(shadows[theme]).toSorted()).toEqual(['shadow-sheet', 'shadow-toast'])
+      expect(Object.keys(shadows[theme]).toSorted(byName)).toEqual(['shadow-sheet', 'shadow-toast'])
     }
   })
 })

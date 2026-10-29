@@ -12,6 +12,7 @@ describe('PageHeader', () => {
 
   it('offers a back button named by its text', async () => {
     const onBack = jest.fn()
+
     await renderWithTheme(<PageHeader back="Squads" onBack={onBack} title="Friday crew" />)
 
     await fireEvent.press(screen.getByRole('button', { name: 'Squads' }))

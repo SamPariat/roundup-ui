@@ -24,6 +24,7 @@ export const readServerEnv = (
 ): ServerEnv => {
   const portText = raw['PORT']
   const port = portText === undefined || portText === '' ? DEFAULT_PORT : Number(portText)
+
   if (!Number.isInteger(port) || port < 1 || port > MAX_PORT) {
     throw new ServerEnvError(
       `PORT must be a whole number from 1 to ${String(MAX_PORT)}, got "${String(portText)}"`,
@@ -31,6 +32,7 @@ export const readServerEnv = (
   }
 
   const apiOrigin = raw['API_ORIGIN']
+
   if (apiOrigin !== undefined && apiOrigin !== '') {
     try {
       new URL(apiOrigin)

@@ -18,6 +18,7 @@ describe('SquadCard', () => {
 
   it('calls onPress', async () => {
     const onPress = jest.fn()
+
     await renderWithTheme(<SquadCard memberCount={5} name="Friday crew" onPress={onPress} />)
 
     await fireEvent.press(screen.getByRole('button'))

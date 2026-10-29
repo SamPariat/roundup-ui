@@ -51,6 +51,7 @@ const LogoMark = ({
 const wordClass = (pixels: number): string => {
   if (pixels <= 24) return 'type-heading'
   if (pixels <= 32) return 'type-title'
+
   return 'type-display'
 }
 

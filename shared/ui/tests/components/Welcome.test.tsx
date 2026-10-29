@@ -20,6 +20,7 @@ describe('Welcome', () => {
 
   it('starts sign-in from its button', async () => {
     const onStart = jest.fn()
+
     await renderWithTheme(<Welcome onStart={onStart} />)
 
     await fireEvent.press(screen.getByRole('button', { name: 'Continue with phone' }))

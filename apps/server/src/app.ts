@@ -27,15 +27,18 @@ const ONE_YEAR_SECONDS = 31_536_000
 
 const cacheControlFor = (root: string, file: string): string => {
   const relative = path.relative(root, file).split(path.sep).join('/')
+
   // Files under _expo/static carry a content hash in their name, so they can never change.
   if (relative.startsWith('_expo/static/'))
     return `public, max-age=${String(ONE_YEAR_SECONDS)}, immutable`
   if (file.endsWith('.html')) return 'no-cache'
+
   return 'public, max-age=3600'
 }
 
 const send = (file: string, status: 200 | 404, cacheControl: string): Response => {
   const body = Readable.toWeb(createReadStream(file)) as ReadableStream<Uint8Array>
+
   return new Response(body, {
     status,
     headers: {
@@ -75,9 +78,11 @@ export const createApp = ({
 
   app.get('*', async (context) => {
     const file = await resolveFile(distDir, context.req.path)
+
     if (file !== undefined) return send(file, 200, cacheControlFor(distDir, file))
 
     const page = await resolveFile(distDir, '/+not-found')
+
     return page === undefined ? context.text('Not found', 404) : send(page, 404, 'no-cache')
   })
 

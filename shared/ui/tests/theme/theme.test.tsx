@@ -55,6 +55,7 @@ describe('ThemeProvider', () => {
     })
 
     expect(result.current.name).toBe('latte')
+
     await waitFor(async () => {
       expect(await AsyncStorage.getItem(THEME_STORAGE_KEY)).toBe('light')
     })

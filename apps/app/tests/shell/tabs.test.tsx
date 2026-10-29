@@ -12,10 +12,12 @@ jest.mock('expo-router/native-tabs', () => {
   const Trigger = Object.assign(
     function NativeTrigger({ name }: { name: string }) {
       mockTriggers.push(`native:${name}`)
+
       return null
     },
     { Icon: () => null, Label: () => null },
   )
+
   return {
     NativeTabs: Object.assign(
       function NativeTabs({ children }: { children: ReactNode }) {
@@ -38,11 +40,13 @@ jest.mock('expo-router/ui', () => ({
   },
   TabTrigger: function TabTrigger({ name }: { name: string }) {
     mockTriggers.push(`headless:${name}`)
+
     return null
   },
 }))
 
 jest.mock('expo-router', () => ({ usePathname: () => '/explore' }))
+
 jest.mock('../../src/shell/AppShell.tsx', () => ({
   AppShell: function AppShell({ children }: { children: ReactNode }) {
     return children

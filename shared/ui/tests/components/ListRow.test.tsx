@@ -19,6 +19,7 @@ describe('ListRow', () => {
 
   it('calls onPress', async () => {
     const onPress = jest.fn()
+
     await renderWithTheme(<ListRow chevron onPress={onPress} title="Leave squad" />)
 
     await fireEvent.press(screen.getByRole('button', { name: 'Leave squad' }))

@@ -61,6 +61,7 @@ describe('web server', () => {
 
     expect(response.headers.get('X-Content-Type-Options')).toBe('nosniff')
     expect(response.headers.get('Referrer-Policy')).toBe('strict-origin-when-cross-origin')
+
     expect(response.headers.get('Content-Security-Policy')).toContain(
       "connect-src 'self' https://api.roundup.example",
     )

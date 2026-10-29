@@ -18,6 +18,7 @@ describe('Toast', () => {
 
   it('offers its action as a button', async () => {
     const onAction = jest.fn()
+
     await renderWithTheme(
       <Toast action="Undo" onAction={onAction}>
         Removed Meera

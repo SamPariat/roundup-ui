@@ -1,10 +1,10 @@
 import type { ReactElement } from 'react'
 
-import { useState } from 'react'
 import { TextInput } from 'react-native'
 
 import type { IconName } from '../lib/icons.ts'
 
+import { useFocus } from '../lib/use-focus.ts'
 import { useTheme } from '../theme/theme.tsx'
 import { FieldFrame } from './Field.tsx'
 import { Icon } from './Icon.tsx'
@@ -41,7 +41,7 @@ export const TextField = ({
   type = 'text',
   value,
 }: TextFieldProps): ReactElement => {
-  const [focused, setFocused] = useState(false)
+  const { focused, onBlur, onFocus } = useFocus()
   const { roles } = useTheme()
 
   return (
@@ -60,13 +60,9 @@ export const TextField = ({
         aria-invalid={error !== undefined}
         className="min-w-0 flex-1 p-0 type-body text-fg"
         editable={!disabled}
-        onBlur={() => {
-          setFocused(false)
-        }}
+        onBlur={onBlur}
         onChangeText={onChangeText}
-        onFocus={() => {
-          setFocused(true)
-        }}
+        onFocus={onFocus}
         placeholder={placeholder}
         placeholderTextColor={roles['fg-subtle']}
         value={value}

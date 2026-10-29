@@ -9,7 +9,10 @@ const allowlist = new Set(
     .filter((line) => line !== '' && !line.startsWith('#')),
 )
 
+// git is resolved from PATH on purpose: this runs on developer machines and CI runners, where its
+// location differs, and the arguments are fixed.
 const tracked = execFileSync(
+  // eslint-disable-next-line sonarjs/no-os-command-from-path -- see the comment above
   'git',
   ['ls-files', '--cached', '--others', '--exclude-standard', '*.js', '*.jsx', '*.mjs', '*.cjs'],
   {
@@ -25,7 +28,9 @@ if (offenders.length > 0) {
   console.error(
     'JavaScript files are not allowed. Write TypeScript, or list a one-line shim in .js-allowlist:',
   )
+
   for (const file of offenders) console.error(`  ${file}`)
   process.exitCode = 1
 }
+
 console.log('no-js: ok')

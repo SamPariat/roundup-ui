@@ -49,6 +49,7 @@ export const ListRow = ({
       ) : null}
     </>
   )
+
   const layout = 'min-h-[64px] w-full flex-row items-center gap-3 px-4 py-2'
 
   if (onPress === undefined) return <View className={layout}>{content}</View>

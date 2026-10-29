@@ -24,6 +24,7 @@ describe('Chip', () => {
 
   it('calls onPress', async () => {
     const onPress = jest.fn()
+
     await renderWithTheme(<Chip onPress={onPress}>Bars</Chip>)
 
     await fireEvent.press(screen.getByRole('button', { name: 'Bars' }))

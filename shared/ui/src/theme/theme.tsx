@@ -36,6 +36,7 @@ export const themeNameFor = (
 ): ThemeName => {
   if (preference === 'light') return 'latte'
   if (preference === 'dark') return 'mocha'
+
   return device === 'light' ? 'latte' : 'mocha'
 }
 
@@ -52,6 +53,7 @@ export const ThemeProvider = ({ children }: { children: ReactNode }): ReactEleme
 
   useEffect(() => {
     let active = true
+
     AsyncStorage.getItem(THEME_STORAGE_KEY)
       .then((stored) => {
         if (active && isPreference(stored)) setPreference(stored)
@@ -59,6 +61,7 @@ export const ThemeProvider = ({ children }: { children: ReactNode }): ReactEleme
       .catch(() => {
         // Storage can be unavailable (private windows); the device default still works.
       })
+
     return () => {
       active = false
     }
@@ -66,6 +69,7 @@ export const ThemeProvider = ({ children }: { children: ReactNode }): ReactEleme
 
   useEffect(() => {
     const override = preference === 'system' ? 'unspecified' : preference
+
     // react-native-web has no Appearance.setColorScheme; the browser takes color-scheme from the document.
     if (Platform.OS === 'web')
       document.documentElement.style.colorScheme = override === 'unspecified' ? '' : override
@@ -74,6 +78,7 @@ export const ThemeProvider = ({ children }: { children: ReactNode }): ReactEleme
 
   const choosePreference = useCallback((next: ThemePreference) => {
     setPreference(next)
+
     AsyncStorage.setItem(THEME_STORAGE_KEY, next).catch(() => {
       // The choice still applies for this session.
     })
@@ -82,6 +87,7 @@ export const ThemeProvider = ({ children }: { children: ReactNode }): ReactEleme
   // The static HTML is rendered as Mocha; the device's real scheme is applied one pass later.
   const hydrated = useHydrated()
   const name = themeNameFor(preference, hydrated ? device : null)
+
   const value = useMemo<Theme>(
     () => ({
       name,
@@ -92,6 +98,7 @@ export const ThemeProvider = ({ children }: { children: ReactNode }): ReactEleme
     }),
     [name, preference, choosePreference],
   )
+
   // On the web, following the device is left to the stylesheet's prefers-color-scheme rule, so the
   // static HTML already matches a dark or light browser. Everything else sets the variables here.
   const variables = useMemo(
@@ -108,6 +115,8 @@ export const ThemeProvider = ({ children }: { children: ReactNode }): ReactEleme
 
 export const useTheme = (): Theme => {
   const theme = use(ThemeContext)
+
   if (theme === null) throw new Error('useTheme must be used inside <ThemeProvider>')
+
   return theme
 }

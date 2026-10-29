@@ -12,6 +12,7 @@ describe('PhoneInput', () => {
 
   it('reports what the person types', async () => {
     const onChangeText = jest.fn()
+
     await renderWithTheme(<PhoneInput label="Phone number" onChangeText={onChangeText} />)
 
     await fireEvent.changeText(screen.getByLabelText('Phone number'), '9876543210')

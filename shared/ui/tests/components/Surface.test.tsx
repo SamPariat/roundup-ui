@@ -9,6 +9,7 @@ import { renderWithTheme } from '../helpers/render.tsx'
 
 jest.mock('expo-glass-effect', () => {
   const { View } = jest.requireActual<{ View: ComponentType }>('react-native')
+
   return {
     GlassView: View,
     isLiquidGlassAvailable: jest.fn(() => true),

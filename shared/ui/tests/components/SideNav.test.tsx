@@ -14,6 +14,7 @@ describe('SideNav', () => {
 
   it('reports which destination was picked', async () => {
     const onChange = jest.fn()
+
     await renderWithTheme(<SideNav onChange={onChange} />)
 
     await fireEvent.press(screen.getByRole('tab', { name: 'Explore' }))

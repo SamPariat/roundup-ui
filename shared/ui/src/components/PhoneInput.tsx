@@ -1,8 +1,8 @@
 import type { ReactElement } from 'react'
 
-import { useState } from 'react'
 import { TextInput, View } from 'react-native'
 
+import { useFocus } from '../lib/use-focus.ts'
 import { useTheme } from '../theme/theme.tsx'
 import { FieldFrame } from './Field.tsx'
 import { Text } from './Text.tsx'
@@ -25,7 +25,7 @@ export const PhoneInput = ({
   onChangeText,
   value,
 }: PhoneInputProps): ReactElement => {
-  const [focused, setFocused] = useState(false)
+  const { focused, onBlur, onFocus } = useFocus()
   const { roles } = useTheme()
 
   return (
@@ -49,13 +49,9 @@ export const PhoneInput = ({
         editable={!disabled}
         inputMode="numeric"
         keyboardType="phone-pad"
-        onBlur={() => {
-          setFocused(false)
-        }}
+        onBlur={onBlur}
         onChangeText={onChangeText}
-        onFocus={() => {
-          setFocused(true)
-        }}
+        onFocus={onFocus}
         placeholder="98765 43210"
         placeholderTextColor={roles['fg-subtle']}
         textContentType="telephoneNumber"

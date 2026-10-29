@@ -1,7 +1,7 @@
 import type { ReactElement } from 'react'
 import type { LayoutChangeEvent } from 'react-native'
 
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import { Text as NativeText, View } from 'react-native'
 import Svg, { Circle, G, Rect } from 'react-native-svg'
 
@@ -39,6 +39,7 @@ const DOT_COLUMNS = [0, 1] as const
 // The mark at large size with a cluster of dots: the squad gathering round.
 const WelcomeArt = (): ReactElement => {
   const { roles } = useTheme()
+
   return (
     <Svg aria-hidden height="100%" viewBox="0 0 44 32" width="100%">
       <Rect fill={roles['logo-stem']} height={28} rx={5.5} width={11} x={2} y={2} />
@@ -70,13 +71,15 @@ export const Welcome = ({
   const [width, setWidth] = useState(0)
   const wide = width >= breakpoints['bp-tablet']
 
+  const handleLayout = useCallback((event: LayoutChangeEvent) => {
+    setWidth(event.nativeEvent.layout.width)
+  }, [])
+
   return (
     <View
       accessibilityLabel="Welcome to Roundup"
       className="min-h-full w-full flex-1 bg-bg"
-      onLayout={(event: LayoutChangeEvent) => {
-        setWidth(event.nativeEvent.layout.width)
-      }}
+      onLayout={handleLayout}
     >
       <View
         className={cn(

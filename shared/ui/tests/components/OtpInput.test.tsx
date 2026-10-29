@@ -23,6 +23,7 @@ describe('OtpInput', () => {
 
   it('reports the digits typed', async () => {
     const onChangeText = jest.fn()
+
     await renderWithTheme(<OtpInput label="6-digit code" onChangeText={onChangeText} />)
 
     await fireEvent.changeText(screen.getByLabelText('6-digit code'), '482917')
@@ -39,6 +40,7 @@ describe('OtpInput', () => {
 
   it('offers Resend code once the countdown ends', async () => {
     const onResend = jest.fn()
+
     await renderWithTheme(<OtpInput label="6-digit code" onResend={onResend} resendIn={0} />)
 
     await fireEvent.press(screen.getByRole('link', { name: 'Resend code' }))

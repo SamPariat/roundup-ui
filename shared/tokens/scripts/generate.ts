@@ -33,6 +33,7 @@ const here = (relative: string): URL => new URL(relative, import.meta.url)
 const tokens = JSON.parse(readFileSync(here('../tokens.json'), 'utf8')) as TokenFile
 
 const PRIMITIVE_PREFIXES = ['ctp-', 'dawn-']
+
 const isPrimitive = (name: string): boolean =>
   PRIMITIVE_PREFIXES.some((prefix) => name.startsWith(prefix))
 
@@ -40,9 +41,12 @@ const byName = new Map(tokens.color.tokens.map((token) => [token.name, token.val
 
 const resolve = (value: string, theme: ThemeId): string => {
   const reference = /^\{(.+)\}$/.exec(value)?.[1]
+
   if (reference === undefined) return value
   const target = byName.get(reference)
+
   if (target === undefined) throw new Error(`Unknown token reference {${reference}}`)
+
   return resolve(typeof target === 'string' ? target : target[theme], theme)
 }
 
@@ -60,6 +64,7 @@ const px = (value: string): number => Number.parseFloat(value)
 const letterSpacingPoints = (style: TextStyle): number => {
   if (style.letterSpacing === undefined) return 0
   const points = Math.round(Number.parseFloat(style.letterSpacing) * px(style.fontSize) * 100) / 100
+
   return points === 0 ? 0 : points
 }
 
@@ -69,13 +74,16 @@ const FONT_FAMILIES: Record<number, string> = {
   600: 'Onest_600SemiBold',
   700: 'Onest_700Bold',
 }
+
 const TABULAR_STYLES = new Set(['otp', 'numeric'])
 
 const textStyles = tokens.type.groups.flatMap((group) => group.styles)
 
 const fontFamily = (weight: number): string => {
   const family = FONT_FAMILIES[weight]
+
   if (family === undefined) throw new Error(`No Onest family for weight ${String(weight)}`)
+
   return family
 }
 
@@ -94,9 +102,11 @@ const buildTs = (): string => {
   const roleNames = roleTokens.map((token) => token.name)
   const sizes = tokens.size.tokens.filter((token) => !token.name.startsWith('bp-'))
   const breakpoints = tokens.size.tokens.filter((token) => token.name.startsWith('bp-'))
+
   const styles = textStyles
     .map((style) => {
       const tabular = TABULAR_STYLES.has(style.name) ? `,\n    fontVariant: ['tabular-nums']` : ''
+
       return `  ${quote(style.name)}: {
     fontFamily: ${quote(fontFamily(style.fontWeight))},
     fontSize: ${px(style.fontSize)},
@@ -150,24 +160,30 @@ const buildCss = (): string => {
   const spaces = tokens.spacing.tokens
     .map((t) => `  --spacing-${stripPrefix(t.name, 'space-')}: ${t.value};`)
     .join('\n')
+
   const radii = tokens.radius.tokens
     .map((t) => `  --radius-${stripPrefix(t.name, 'radius-')}: ${t.value};`)
     .join('\n')
+
   const fixedSizes = tokens.size.tokens
     .filter((t) => t.name.startsWith('size-') && !['size-content', 'size-reading'].includes(t.name))
     .map((t) => `  --spacing-${stripPrefix(t.name, 'size-')}: ${t.value};`)
     .join('\n')
+
   const containers = tokens.size.tokens
     .filter((t) => ['size-content', 'size-reading'].includes(t.name))
     .map((t) => `  --container-${stripPrefix(t.name, 'size-')}: ${t.value};`)
     .join('\n')
+
   const breakpoints = tokens.size.tokens
     .filter((t) => t.name.startsWith('bp-'))
     .map((t) => `  --breakpoint-${stripPrefix(t.name, 'bp-')}: ${t.value};`)
     .join('\n')
+
   const types = textStyles
     .map((style) => {
       const tabular = TABULAR_STYLES.has(style.name) ? '\n  font-variant: tabular-nums;' : ''
+
       return `@utility type-${style.name} {
   font-family: ${fontFamily(style.fontWeight)};
   font-size: ${style.fontSize};
@@ -253,11 +269,14 @@ if (process.argv.includes('--check')) {
   const drifted = outputs.filter(
     ({ file }) => readOrEmpty(file) !== outputs.find((o) => o.file === file)?.content,
   )
+
   for (const { file } of drifted) console.error(`drift: ${fileURLToPath(file)}`)
+
   if (drifted.length > 0) {
     console.error('Generated tokens are out of date. Run: make tokens')
     process.exitCode = 1
   }
+
   console.log('tokens: up to date')
 } else {
   for (const { file, content } of outputs) writeFileSync(file, content)

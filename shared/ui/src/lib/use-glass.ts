@@ -18,10 +18,13 @@ export const useGlass = (): GlassState => {
   useEffect(() => {
     if (Platform.OS !== 'ios') return
     let active = true
+
     void AccessibilityInfo.isReduceTransparencyEnabled().then((enabled) => {
       if (active) setReduced(enabled)
     })
+
     const subscription = AccessibilityInfo.addEventListener('reduceTransparencyChanged', setReduced)
+
     return () => {
       active = false
       subscription.remove()

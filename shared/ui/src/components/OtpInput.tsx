@@ -22,6 +22,7 @@ export interface OtpInputProps {
 export const formatCountdown = (seconds: number): string => {
   const minutes = Math.floor(seconds / 60)
   const rest = seconds % 60
+
   return `${String(minutes)}:${rest < 10 ? '0' : ''}${String(rest)}`
 }
 

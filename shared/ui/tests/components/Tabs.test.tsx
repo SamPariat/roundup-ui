@@ -18,6 +18,7 @@ describe('Tabs', () => {
 
   it('reports the tab that was picked', async () => {
     const onChange = jest.fn()
+
     await renderWithTheme(<Tabs items={items} onChange={onChange} value="history" />)
 
     await fireEvent.press(screen.getByRole('tab', { name: 'Members, 12' }))

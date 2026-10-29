@@ -12,6 +12,7 @@ export interface SkeletonProps {
 
 const Block = ({ className }: { className: string }): ReactElement => {
   const reduced = useReducedMotion()
+
   return (
     <View
       className={cn(

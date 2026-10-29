@@ -46,6 +46,7 @@ export default function RootLayout(): null | ReactElement {
     Onest_600SemiBold,
     Onest_700Bold,
   })
+
   const ready = loaded || error !== null
 
   useEffect(() => {

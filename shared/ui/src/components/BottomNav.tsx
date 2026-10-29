@@ -7,7 +7,7 @@ import type { NavItemData } from '../lib/nav-items.ts'
 import { cn } from '../lib/cn.ts'
 import { DEFAULT_NAV_ITEMS } from '../lib/nav-items.ts'
 import { Icon } from './Icon.tsx'
-import { NavPressable } from './NavPressable.tsx'
+import { NavTab } from './NavTab.tsx'
 import { SafeArea } from './SafeArea.tsx'
 import { Text } from './Text.tsx'
 
@@ -28,15 +28,14 @@ export const BottomNav = ({
     <View accessibilityLabel="Main" className="h-nav flex-row" role="tablist">
       {items.map((item) => {
         const active = item.id === value
+
         return (
-          <NavPressable
-            accessibilityLabel={item.label}
-            accessibilityRole="tab"
-            aria-selected={active}
+          <NavTab
+            active={active}
             className="min-h-tap flex-1 items-center justify-center gap-1 focus:outline-2 focus:outline-offset-[-2px] focus:outline-focus-ring"
-            href={item.href}
+            item={item}
             key={item.id}
-            onPress={() => onChange?.(item.id)}
+            onChange={onChange}
           >
             <View
               className={cn(
@@ -50,7 +49,7 @@ export const BottomNav = ({
             <Text maxFontSizeMultiplier={1.3} tone={active ? 'fg' : 'muted'} variant="caption">
               {item.label}
             </Text>
-          </NavPressable>
+          </NavTab>
         )
       })}
     </View>

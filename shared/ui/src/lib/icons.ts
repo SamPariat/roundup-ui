@@ -6,11 +6,13 @@ export interface IconShape {
 }
 
 const path = (d: string, filled = false): IconShape => ({ tag: 'path', attributes: { d }, filled })
+
 const circle = (cx: number, cy: number, r: number, filled = false): IconShape => ({
   tag: 'circle',
   attributes: { cx, cy, r },
   filled,
 })
+
 const rect = (x: number, y: number, width: number, height: number, rx: number): IconShape => ({
   tag: 'rect',
   attributes: { x, y, width, height, rx },

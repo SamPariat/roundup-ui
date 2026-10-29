@@ -16,6 +16,21 @@ export interface ChipProps {
   children: string
 }
 
+// A selected chip always shows a check; otherwise it shows its own icon, if it has one.
+const ChipIcon = ({
+  icon,
+  selected,
+}: {
+  icon?: IconName | undefined
+  selected: boolean
+}): null | ReactElement => {
+  if (selected) return <Icon decorative name="check" size={16} tone="accent" />
+
+  if (icon === undefined) return null
+
+  return <Icon decorative name={icon} size={16} />
+}
+
 export const Chip = ({ children, icon, onPress, selected = false }: ChipProps): ReactElement => (
   <Pressable
     accessibilityRole="button"
@@ -27,11 +42,7 @@ export const Chip = ({ children, icon, onPress, selected = false }: ChipProps): 
     hitSlop={6}
     onPress={onPress}
   >
-    {selected ? (
-      <Icon decorative name="check" size={16} tone="accent" />
-    ) : icon === undefined ? null : (
-      <Icon decorative name={icon} size={16} />
-    )}
+    <ChipIcon icon={icon} selected={selected} />
     <Text variant="label">{children}</Text>
   </Pressable>
 )

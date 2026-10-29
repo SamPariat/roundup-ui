@@ -16,10 +16,13 @@ const FILES: Readonly<Record<string, string>> = {
 /** Writes a small Expo-shaped export to a temp folder; call the returned function to remove it. */
 export const makeDist = async (): Promise<{ cleanup: () => Promise<void>; dir: string }> => {
   const dir = await mkdtemp(path.join(tmpdir(), 'roundup-dist-'))
+
   for (const [name, content] of Object.entries(FILES)) {
     const file = path.join(dir, name)
+
     await mkdir(path.dirname(file), { recursive: true })
     await writeFile(file, content)
   }
+
   return { dir, cleanup: () => rm(dir, { recursive: true, force: true }) }
 }

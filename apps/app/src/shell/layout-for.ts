@@ -13,5 +13,6 @@ export const layoutFor = (width: number): ShellLayout => {
   const nav = width >= breakpoints['bp-desktop'] ? 'side' : 'bottom'
   const gutter = width >= breakpoints['bp-tablet'] ? spacing['space-8'] : spacing['space-4']
   const available = width - (nav === 'side' ? sizes['size-sidenav'] : 0)
+
   return { nav, gutter, contentWidth: Math.min(available - gutter * 2, sizes['size-content']) }
 }

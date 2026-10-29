@@ -12,6 +12,7 @@ describe('Button', () => {
 
   it('calls onPress when pressed', async () => {
     const onPress = jest.fn()
+
     await renderWithTheme(<Button onPress={onPress}>Add member</Button>)
 
     await fireEvent.press(screen.getByRole('button', { name: 'Add member' }))
@@ -27,6 +28,7 @@ describe('Button', () => {
 
   it('does not fire when disabled', async () => {
     const onPress = jest.fn()
+
     await renderWithTheme(
       <Button disabled onPress={onPress}>
         Leave
@@ -41,6 +43,7 @@ describe('Button', () => {
 
   it('is busy, disabled and announces its loading label while loading', async () => {
     const onPress = jest.fn()
+
     await renderWithTheme(
       <Button loading loadingLabel="Sending code…" onPress={onPress}>
         Send code
@@ -48,6 +51,7 @@ describe('Button', () => {
     )
 
     const button = screen.getByRole('button', { name: 'Send code' })
+
     await fireEvent.press(button)
 
     expect(button).toBeBusy()

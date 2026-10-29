@@ -57,12 +57,15 @@ export const Icon = ({
         {ICONS[name].map((shape, index) => {
           const fill = shape.filled === true ? color : 'none'
           const key = `${name}-${String(index)}`
+
           if (shape.tag === 'circle') {
             return <Circle fill={fill} key={key} {...shape.attributes} />
           }
+
           if (shape.tag === 'rect') {
             return <Rect key={key} {...shape.attributes} />
           }
+
           return <Path d={String(shape.attributes['d'])} fill={fill} key={key} />
         })}
       </Svg>

@@ -25,6 +25,7 @@ describe('BottomNav', () => {
 
   it('reports which destination was picked', async () => {
     const onChange = jest.fn()
+
     await renderWithTheme(<BottomNav onChange={onChange} />)
 
     await fireEvent.press(screen.getByRole('tab', { name: 'Profile' }))

@@ -1,5 +1,6 @@
 import type { ReactElement } from 'react'
 
+import { useCallback } from 'react'
 import { Pressable, View } from 'react-native'
 
 import type { IconName } from '../lib/icons.ts'
@@ -23,6 +24,38 @@ export interface ThemeSwitchProps {
   label?: string
 }
 
+const ThemeOption = ({
+  checked,
+  onChange,
+  option,
+}: {
+  checked: boolean
+  onChange?: ((id: ThemeChoice) => void) | undefined
+  option: (typeof OPTIONS)[number]
+}): ReactElement => {
+  const press = useCallback(() => {
+    onChange?.(option.id)
+  }, [onChange, option.id])
+
+  return (
+    <Pressable
+      accessibilityLabel={option.label}
+      accessibilityRole="radio"
+      aria-checked={checked}
+      className={cn(
+        'min-h-tap flex-1 flex-row items-center justify-center gap-2 rounded-sm focus:outline-2 focus:outline-offset-2 focus:outline-focus-ring',
+        checked ? 'border border-border bg-bg-raised' : 'hover:bg-bg-hover',
+      )}
+      onPress={press}
+    >
+      <Icon decorative name={option.icon} size={18} tone={checked ? 'accent' : 'fg-muted'} />
+      <Text tone={checked ? 'fg' : 'muted'} variant="label">
+        {option.label}
+      </Text>
+    </Pressable>
+  )
+}
+
 // Three radios in one group: exactly one is checked, and the group is named.
 export const ThemeSwitch = ({
   label = 'Theme',
@@ -34,26 +67,13 @@ export const ThemeSwitch = ({
     className="flex-row gap-1 rounded-md bg-bg-sunken p-1"
     role="radiogroup"
   >
-    {OPTIONS.map((option) => {
-      const checked = option.id === value
-      return (
-        <Pressable
-          accessibilityLabel={option.label}
-          accessibilityRole="radio"
-          aria-checked={checked}
-          className={cn(
-            'min-h-tap flex-1 flex-row items-center justify-center gap-2 rounded-sm focus:outline-2 focus:outline-offset-2 focus:outline-focus-ring',
-            checked ? 'border border-border bg-bg-raised' : 'hover:bg-bg-hover',
-          )}
-          key={option.id}
-          onPress={() => onChange?.(option.id)}
-        >
-          <Icon decorative name={option.icon} size={18} tone={checked ? 'accent' : 'fg-muted'} />
-          <Text tone={checked ? 'fg' : 'muted'} variant="label">
-            {option.label}
-          </Text>
-        </Pressable>
-      )
-    })}
+    {OPTIONS.map((option) => (
+      <ThemeOption
+        checked={option.id === value}
+        key={option.id}
+        onChange={onChange}
+        option={option}
+      />
+    ))}
   </View>
 )

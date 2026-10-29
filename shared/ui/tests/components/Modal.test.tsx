@@ -10,6 +10,7 @@ const modalHost = () => {
   let node = screen.getByLabelText('Add member')
 
   while (node.props['onRequestClose'] === undefined && node.parent !== null) node = node.parent
+
   return node
 }
 
@@ -27,6 +28,7 @@ describe('Modal', () => {
 
   it('closes when the system asks it to (Esc or the Android back button)', async () => {
     const onClose = jest.fn()
+
     await renderWithTheme(
       <Modal onClose={onClose} title="Add member">
         <Text>Body</Text>
@@ -40,6 +42,7 @@ describe('Modal', () => {
 
   it('closes from its Close button', async () => {
     const onClose = jest.fn()
+
     await renderWithTheme(
       <Modal onClose={onClose} title="Add member">
         <Text>Body</Text>
@@ -115,6 +118,7 @@ describe('Modal', () => {
 
     it('ignores the back button', async () => {
       const onClose = jest.fn()
+
       await renderWithTheme(
         <Modal busy onClose={onClose} title="Add member">
           <Text>Body</Text>

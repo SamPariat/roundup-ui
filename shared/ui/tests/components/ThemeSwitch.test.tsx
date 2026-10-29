@@ -26,6 +26,7 @@ describe('ThemeSwitch', () => {
 
   it('reports the new choice', async () => {
     const onChange = jest.fn()
+
     await renderWithTheme(<ThemeSwitch onChange={onChange} />)
 
     await fireEvent.press(screen.getByRole('radio', { name: 'Dark' }))

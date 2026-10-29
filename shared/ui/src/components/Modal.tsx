@@ -1,6 +1,6 @@
-import type { ComponentRef, ReactElement, ReactNode } from 'react'
+import type { ComponentRef, ReactElement, ReactNode, RefObject } from 'react'
 
-import { useMemo, useRef } from 'react'
+import { useCallback, useMemo, useRef } from 'react'
 import {
   AccessibilityInfo,
   Modal as NativeModal,
@@ -45,11 +45,79 @@ type TitleElement = ComponentRef<typeof View>
 
 const moveFocusTo = (title: null | TitleElement): void => {
   if (title === null) return
+
   if (Platform.OS === 'web') {
     ;(title as unknown as { focus?: () => void }).focus?.()
+
     return
   }
+
   AccessibilityInfo.sendAccessibilityEvent(title, 'focus')
+}
+
+interface HeaderProps {
+  leading?: ReactNode
+  onClose?: (() => void) | undefined
+  subtitle?: string | undefined
+  title: string
+  showClose: boolean
+  titleRef: RefObject<null | TitleElement>
+}
+
+const ModalHeader = ({
+  leading,
+  onClose,
+  showClose,
+  subtitle,
+  title,
+  titleRef,
+}: HeaderProps): ReactElement => (
+  <View className="flex-row items-center gap-3">
+    {leading}
+    <View className="min-w-0 flex-1 gap-1">
+      <View accessible focusable={false} ref={titleRef}>
+        <Text heading={2} variant="heading">
+          {title}
+        </Text>
+      </View>
+      {subtitle === undefined ? null : (
+        <Text tone="muted" variant="body-sm">
+          {subtitle}
+        </Text>
+      )}
+    </View>
+    {showClose ? (
+      <Button icon="close" label="Close" onPress={onClose} size="sm" variant="ghost" />
+    ) : null}
+  </View>
+)
+
+const ModalContent = ({
+  body,
+  busy,
+  children,
+}: {
+  body?: string | undefined
+  busy: boolean
+  children?: ReactNode
+}): null | ReactElement => {
+  if (body === undefined && children === undefined) return null
+
+  // Dimming goes on the content, never on the Surface: glass does not render below opacity 1.
+  return (
+    <ScrollView
+      className={cn('mt-4 shrink', busy && 'opacity-60')}
+      contentContainerClassName="gap-3"
+      pointerEvents={busy ? 'none' : 'auto'}
+    >
+      {body === undefined ? null : (
+        <Text tone="muted" variant="body-sm">
+          {body}
+        </Text>
+      )}
+      {children}
+    </ScrollView>
+  )
 }
 
 /**
@@ -80,15 +148,19 @@ export const Modal = ({
   // While a request is in flight only the loading Button stays active; Buttons read this context.
   const actionContext = useMemo(() => ({ busy, block: sheet }), [busy, sheet])
 
+  const requestClose = useCallback(() => {
+    if (!busy) onClose?.()
+  }, [busy, onClose])
+
+  const focusTitle = useCallback(() => {
+    moveFocusTo(titleRef.current)
+  }, [])
+
   return (
     <NativeModal
       animationType={sheet ? 'slide' : 'fade'}
-      onRequestClose={() => {
-        if (!busy) onClose?.()
-      }}
-      onShow={() => {
-        moveFocusTo(titleRef.current)
-      }}
+      onRequestClose={requestClose}
+      onShow={focusTitle}
       statusBarTranslucent
       transparent
       visible={visible}
@@ -114,39 +186,17 @@ export const Modal = ({
               className="absolute top-2 left-1/2 -ml-4 h-1 w-8 rounded-full bg-border-strong"
             />
           ) : null}
-          <View className="flex-row items-center gap-3">
-            {leading}
-            <View className="min-w-0 flex-1 gap-1">
-              <View accessible focusable={false} ref={titleRef}>
-                <Text heading={2} variant="heading">
-                  {title}
-                </Text>
-              </View>
-              {subtitle === undefined ? null : (
-                <Text tone="muted" variant="body-sm">
-                  {subtitle}
-                </Text>
-              )}
-            </View>
-            {showClose ? (
-              <Button icon="close" label="Close" onPress={onClose} size="sm" variant="ghost" />
-            ) : null}
-          </View>
-          {body !== undefined || children !== undefined ? (
-            // Dimming goes on the content, never on the Surface: glass does not render below opacity 1.
-            <ScrollView
-              className={cn('mt-4 shrink', busy && 'opacity-60')}
-              contentContainerClassName="gap-3"
-              pointerEvents={busy ? 'none' : 'auto'}
-            >
-              {body === undefined ? null : (
-                <Text tone="muted" variant="body-sm">
-                  {body}
-                </Text>
-              )}
-              {children}
-            </ScrollView>
-          ) : null}
+          <ModalHeader
+            leading={leading}
+            onClose={onClose}
+            showClose={showClose}
+            subtitle={subtitle}
+            title={title}
+            titleRef={titleRef}
+          />
+          <ModalContent body={body} busy={busy}>
+            {children}
+          </ModalContent>
           {actions !== undefined && actions.length > 0 ? (
             <ActionContext value={actionContext}>
               <View className={cn('mt-6 gap-2', !sheet && 'flex-row-reverse justify-start')}>

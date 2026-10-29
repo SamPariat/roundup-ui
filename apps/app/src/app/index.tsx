@@ -1,6 +1,7 @@
 import type { ReactElement } from 'react'
 
 import { useRouter } from 'expo-router'
+import { useCallback } from 'react'
 
 import { Welcome } from '@roundup/ui'
 
@@ -8,11 +9,9 @@ import { Welcome } from '@roundup/ui'
 export default function WelcomeScreen(): ReactElement {
   const router = useRouter()
 
-  return (
-    <Welcome
-      onStart={() => {
-        router.push('/squads')
-      }}
-    />
-  )
+  const start = useCallback(() => {
+    router.push('/squads')
+  }, [router])
+
+  return <Welcome onStart={start} />
 }

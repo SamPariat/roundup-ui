@@ -6,6 +6,8 @@ import { use, useEffect } from 'react'
 import { AccessibilityInfo, Pressable, View } from 'react-native'
 
 import type { IconName } from '../lib/icons.ts'
+import type { IconProps } from './Icon.tsx'
+import type { TextProps } from './Text.tsx'
 
 import { ActionContext } from '../lib/action-context.ts'
 import { cn } from '../lib/cn.ts'
@@ -78,6 +80,69 @@ export type ButtonProps = ButtonBase &
     | { children?: never; icon: IconName; label: string }
   )
 
+type Size = NonNullable<ButtonProps['size']>
+
+const RestingContent = ({
+  children,
+  icon,
+  iconTone,
+  size,
+  textTone,
+}: {
+  children?: ReactNode
+  icon?: IconName | undefined
+  iconTone: NonNullable<IconProps['tone']>
+  size: Size
+  textTone: NonNullable<TextProps['tone']>
+}): ReactElement => (
+  <>
+    {icon === undefined ? null : (
+      <Icon decorative name={icon} size={size === 'sm' ? 18 : 20} tone={iconTone} />
+    )}
+    {typeof children === 'string' ? (
+      <Text tone={textTone} variant={size === 'sm' ? 'label' : 'body-strong'}>
+        {children}
+      </Text>
+    ) : (
+      children
+    )}
+  </>
+)
+
+const LoadingContent = ({
+  children,
+  loadingLabel,
+  size,
+}: {
+  children: ReactNode
+  loadingLabel?: string | undefined
+  size: Size
+}): ReactElement => (
+  <>
+    {/* The resting content stays in layout, hidden, so the button keeps its width. */}
+    <View
+      aria-hidden
+      className="flex-row items-center justify-center gap-2 opacity-0"
+      importantForAccessibility="no-hide-descendants"
+    >
+      {children}
+    </View>
+    <View className="absolute inset-0 flex-row items-center justify-center gap-2">
+      <Spinner tone="fg-subtle" />
+      {loadingLabel === undefined ? null : (
+        <Text
+          accessibilityLiveRegion="polite"
+          aria-live="polite"
+          tone="subtle"
+          variant={size === 'sm' ? 'label' : 'body-strong'}
+        >
+          {loadingLabel}
+        </Text>
+      )}
+    </View>
+  </>
+)
+
 export const Button = ({
   block: blockProp,
   children,
@@ -107,21 +172,6 @@ export const Button = ({
     if (status !== undefined) AccessibilityInfo.announceForAccessibility(status)
   }, [status])
 
-  const content = (
-    <>
-      {icon === undefined ? null : (
-        <Icon decorative name={icon} size={size === 'sm' ? 18 : 20} tone={iconTone} />
-      )}
-      {typeof children === 'string' ? (
-        <Text tone={textTone} variant={size === 'sm' ? 'label' : 'body-strong'}>
-          {children}
-        </Text>
-      ) : (
-        children
-      )}
-    </>
-  )
-
   return (
     <Pressable
       accessibilityLabel={name}
@@ -134,31 +184,15 @@ export const Button = ({
       onPress={onPress}
     >
       {loading ? (
-        <>
-          {/* The resting content stays in layout, hidden, so the button keeps its width. */}
-          <View
-            aria-hidden
-            className="flex-row items-center justify-center gap-2 opacity-0"
-            importantForAccessibility="no-hide-descendants"
-          >
-            {content}
-          </View>
-          <View className="absolute inset-0 flex-row items-center justify-center gap-2">
-            <Spinner tone="fg-subtle" />
-            {loadingLabel === undefined ? null : (
-              <Text
-                accessibilityLiveRegion="polite"
-                aria-live="polite"
-                tone="subtle"
-                variant={size === 'sm' ? 'label' : 'body-strong'}
-              >
-                {loadingLabel}
-              </Text>
-            )}
-          </View>
-        </>
+        <LoadingContent loadingLabel={loadingLabel} size={size}>
+          <RestingContent icon={icon} iconTone={iconTone} size={size} textTone={textTone}>
+            {children}
+          </RestingContent>
+        </LoadingContent>
       ) : (
-        content
+        <RestingContent icon={icon} iconTone={iconTone} size={size} textTone={textTone}>
+          {children}
+        </RestingContent>
       )}
     </Pressable>
   )

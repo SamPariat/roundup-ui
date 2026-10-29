@@ -31,6 +31,7 @@ const renderShellAt = (
   edgeInsets: Insets = NO_INSETS,
 ) => {
   mockWindow.width = width
+
   const Page = (): ReactElement => (
     <SafeAreaProvider
       initialMetrics={{ insets: edgeInsets, frame: { x: 0, y: 0, width, height: 800 } }}
@@ -42,6 +43,7 @@ const renderShellAt = (
       </ThemeProvider>
     </SafeAreaProvider>
   )
+
   return renderRouter({ index: Page }, { initialUrl: '/' })
 }
 
@@ -64,6 +66,7 @@ describe('AppShell', () => {
 
   it('offers the same three destinations on every width', async () => {
     await renderShellAt(360)
+
     const phoneTabs = screen
       .getAllByRole('tab')
       .map((tab) => String(tab.props['accessibilityLabel']))

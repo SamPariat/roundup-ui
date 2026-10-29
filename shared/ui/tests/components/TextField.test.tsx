@@ -12,6 +12,7 @@ describe('TextField', () => {
 
   it('reports what the person types', async () => {
     const onChangeText = jest.fn()
+
     await renderWithTheme(<TextField label="Squad name" onChangeText={onChangeText} />)
 
     await fireEvent.changeText(screen.getByLabelText('Squad name'), 'Friday crew')

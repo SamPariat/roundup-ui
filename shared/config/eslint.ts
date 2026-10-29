@@ -6,6 +6,7 @@ import eslintReact from '@eslint-react/eslint-plugin'
 // Every block says why it is there, in the style of roundup-monorepo/.golangci.yml.
 import { fixupPluginRules } from '@eslint/compat'
 import js from '@eslint/js'
+import stylistic from '@stylistic/eslint-plugin'
 import expoFlat from 'eslint-config-expo/flat.js'
 import prettier from 'eslint-config-prettier'
 import betterTailwind from 'eslint-plugin-better-tailwindcss'
@@ -13,15 +14,20 @@ import boundaries from 'eslint-plugin-boundaries'
 import { importX } from 'eslint-plugin-import-x'
 import jest from 'eslint-plugin-jest'
 import perfectionist from 'eslint-plugin-perfectionist'
+import react from 'eslint-plugin-react'
 import reactHooks from 'eslint-plugin-react-hooks'
 import reactNative from 'eslint-plugin-react-native'
 import reactNativeA11y from 'eslint-plugin-react-native-a11y'
+import sonarjs from 'eslint-plugin-sonarjs'
 import testingLibrary from 'eslint-plugin-testing-library'
 import unicorn from 'eslint-plugin-unicorn'
 import globals from 'globals'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import tseslint from 'typescript-eslint'
+
+// sonarjs types its configs loosely (a union with legacy and array shapes); recommended is a flat config object.
+const sonarRecommended = sonarjs.configs?.['recommended'] as unknown as Linter.Config
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..')
 
@@ -31,6 +37,7 @@ const TESTS = ['**/tests/**/*.{ts,tsx}']
 const TEST_FILES = ['**/tests/**/*.test.{ts,tsx}']
 const COMPONENTS = ['shared/ui/src/**/*.tsx', 'apps/app/src/**/*.tsx']
 const ROUTES = ['apps/app/src/app/**/*.tsx']
+
 const TOOL_CONFIGS = [
   '*.config.ts',
   'apps/*/*.config.ts',
@@ -43,20 +50,29 @@ const TOOL_CONFIGS = [
 
 // eslint-config-expo and the type-checked presets mix warnings and errors. With
 // --max-warnings=0 a warning is a failure anyway, so say so in the config.
+const isWarn = (level: unknown): boolean => level === 'warn' || level === 1
+
+const raiseSeverity = (value: Linter.RuleEntry | undefined): Linter.RuleEntry | undefined => {
+  let raised = value
+
+  if (isWarn(value)) {
+    raised = 'error'
+  } else if (Array.isArray(value) && isWarn(value[0])) {
+    const options: unknown[] = value.slice(1)
+
+    raised = ['error', ...options] as Linter.RuleEntry
+  }
+
+  return raised
+}
+
 const warningsToErrors = (configs: Linter.Config[]): Linter.Config[] =>
   configs.map((config) => ({
     ...config,
     ...(config.rules
       ? {
           rules: Object.fromEntries(
-            Object.entries(config.rules).map(([name, value]) => [
-              name,
-              value === 'warn' || value === 1
-                ? 'error'
-                : Array.isArray(value) && (value[0] === 'warn' || value[0] === 1)
-                  ? ['error', ...value.slice(1)]
-                  : value,
-            ]),
+            Object.entries(config.rules).map(([name, value]) => [name, raiseSeverity(value)]),
           ),
         }
       : {}),
@@ -66,10 +82,12 @@ const STYLE_OBJECT_BAN = {
   selector: "JSXAttribute[name.name='style'] > JSXExpressionContainer > ObjectExpression",
   message: 'No inline style objects. Use className; raw values come from useTheme().',
 }
+
 const INACTIVE_BAN = {
   selector: "Literal[value='inactive']",
   message: "Do not branch on AppState 'inactive': Split View sends it. Pause on 'background' only.",
 }
+
 const INSET_MATH_BAN = {
   selector:
     "CallExpression[callee.object.name='Math'][callee.property.name=/^(max|min)$/] MemberExpression[property.name=/^(top|bottom|left|right)$/]",
@@ -215,6 +233,26 @@ const config = blocks(
     ...reactHooks.configs.flat['recommended-latest'],
   },
   {
+    // JSX props never receive an inline arrow, function or bind result: a fresh function per render
+    // defeats memoisation and hides handlers from review. Use a module-level function, useCallback,
+    // or a handler that reads its data from props. Refs, DOM components and props are all checked.
+    // The plugin is already registered by the Expo preset, so only the rule is switched on.
+    files: SOURCE,
+    plugins: { react },
+    rules: {
+      'react/jsx-no-bind': [
+        'error',
+        {
+          allowArrowFunctions: false,
+          allowBind: false,
+          allowFunctions: false,
+          ignoreDOMComponents: false,
+          ignoreRefs: false,
+        },
+      ],
+    },
+  },
+  {
     // react-native: text must sit inside <Text>, and styles must not use raw colours.
     // The plugin predates flat config, so fixupPluginRules adapts it.
     files: SOURCE,
@@ -305,6 +343,20 @@ const config = blocks(
     rules: { '@typescript-eslint/no-deprecated': 'off' },
   },
 
+  // ── Code quality ────────────────────────────────────────────
+  {
+    // SonarQube's rules, so the SonarCloud gate has nothing left to report. The recommended set
+    // ships some rules at warn; with --max-warnings=0 that is an error anyway, so it is spelled out.
+    files: SOURCE,
+    plugins: sonarRecommended.plugins,
+    rules: Object.fromEntries(
+      Object.entries(sonarRecommended.rules ?? {}).map(([name, value]) => [
+        name,
+        value === 'off' || value === 0 ? 'off' : 'error',
+      ]),
+    ),
+  },
+
   // ── Architecture ────────────────────────────────────────────
   {
     // app -> ui -> tokens, one direction only. config is for tooling. shared/* never imports apps/*.
@@ -385,6 +437,10 @@ const config = blocks(
     ...unicorn.configs.recommended,
     rules: {
       ...unicorn.configs.recommended.rules,
+      // A nested ternary hides which branch wins. Use an early return, a lookup object or an if
+      // block. The core rule bans every nesting; unicorn's own version allows a parenthesised one.
+      'no-nested-ternary': 'error',
+      'unicorn/no-nested-ternary': 'off',
       // props, ref and env are RN and Expo vocabulary; renaming them would fight the framework.
       'unicorn/prevent-abbreviations': 'off',
       'unicorn/filename-case': ['error', { cases: { kebabCase: true } }],
@@ -529,6 +585,66 @@ const config = blocks(
   // ── Formatting ──────────────────────────────────────────────
   // Prettier owns formatting; turning off the clashing ESLint rules must come last.
   prettier,
+  {
+    // Blank lines between statements are not Prettier's business (it only collapses runs of them),
+    // and neither rule is in eslint-config-prettier's disable list, so they sit after it and win.
+    files: SOURCE,
+    plugins: { '@stylistic': stylistic },
+    rules: {
+      '@stylistic/lines-between-class-members': [
+        'error',
+        'always',
+        { exceptAfterSingleLine: true },
+      ],
+      '@stylistic/padding-line-between-statements': [
+        'error',
+        // A declaration group ends with a blank line, but single-line declarations may stack.
+        { blankLine: 'always', prev: ['const', 'let', 'var'], next: '*' },
+        {
+          blankLine: 'any',
+          prev: ['singleline-const', 'singleline-let', 'singleline-var'],
+          next: ['singleline-const', 'singleline-let', 'singleline-var'],
+        },
+        {
+          blankLine: 'always',
+          prev: ['multiline-const', 'multiline-let', 'multiline-var'],
+          next: '*',
+        },
+        {
+          blankLine: 'always',
+          prev: '*',
+          next: ['multiline-const', 'multiline-let', 'multiline-var'],
+        },
+        // Control flow exits stand apart so the reader sees where a block ends.
+        { blankLine: 'always', prev: '*', next: ['return', 'throw', 'break', 'continue'] },
+        // Blocks and multi-line expressions get air on both sides.
+        {
+          blankLine: 'always',
+          prev: '*',
+          next: ['block-like', 'multiline-block-like', 'multiline-expression'],
+        },
+        {
+          blankLine: 'always',
+          prev: ['block-like', 'multiline-block-like', 'multiline-expression'],
+          next: '*',
+        },
+        { blankLine: 'always', prev: 'directive', next: '*' },
+        { blankLine: 'any', prev: 'directive', next: 'directive' },
+        // Exports are the module's surface; consecutive ones (barrels) may stack.
+        { blankLine: 'always', prev: '*', next: 'export' },
+        { blankLine: 'always', prev: 'export', next: '*' },
+        { blankLine: 'any', prev: 'export', next: 'export' },
+        // Imports are ordered and grouped by perfectionist/sort-imports instead.
+        { blankLine: 'any', prev: 'import', next: 'import' },
+      ],
+    },
+  },
+  {
+    // Jest: blank lines around describe, test, hook and expect groups, so each test reads in blocks.
+    files: TEST_FILES,
+    plugins: { jest },
+    rules: { 'jest/padding-around-all': 'error' },
+  },
 )
 
 export default config

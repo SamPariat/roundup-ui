@@ -9,7 +9,7 @@ import { DEFAULT_NAV_ITEMS } from '../lib/nav-items.ts'
 import { Avatar } from './Avatar.tsx'
 import { Icon } from './Icon.tsx'
 import { Logo } from './Logo.tsx'
-import { NavPressable } from './NavPressable.tsx'
+import { NavTab } from './NavTab.tsx'
 import { Text } from './Text.tsx'
 
 export interface SideNavProps {
@@ -20,6 +20,27 @@ export interface SideNavProps {
   /** The signed-in person, pinned to the bottom. */
   user?: { id?: string; name: string; phone?: string; src?: string }
 }
+
+const SideNavUser = ({ user }: { user: NonNullable<SideNavProps['user']> }): ReactElement => (
+  <View className="flex-row items-center gap-3 border-t border-border px-3 pt-3">
+    <Avatar
+      name={user.name}
+      size={32}
+      {...(user.id === undefined ? {} : { id: user.id })}
+      {...(user.src === undefined ? {} : { src: user.src })}
+    />
+    <View className="min-w-0 flex-1">
+      <Text numberOfLines={1} variant="label">
+        {user.name}
+      </Text>
+      {user.phone === undefined ? null : (
+        <Text tone="muted" variant="caption">
+          {user.phone}
+        </Text>
+      )}
+    </View>
+  </View>
+)
 
 /** Vertical navigation from 1024 wide up. */
 export const SideNav = ({
@@ -38,47 +59,27 @@ export const SideNav = ({
     <View accessibilityLabel="Sidebar" className="gap-1" role="tablist">
       {items.map((item) => {
         const active = item.id === value
+
         return (
-          <NavPressable
-            accessibilityLabel={item.label}
-            accessibilityRole="tab"
-            aria-selected={active}
+          <NavTab
+            active={active}
             className={cn(
               'h-[44px] w-full flex-row items-center gap-3 rounded-md px-3 hover:bg-bg-hover focus:outline-2 focus:outline-offset-2 focus:outline-focus-ring',
               active && 'bg-accent-soft',
             )}
-            href={item.href}
+            item={item}
             key={item.id}
-            onPress={() => onChange?.(item.id)}
+            onChange={onChange}
           >
             <Icon decorative name={item.icon} tone={active ? 'accent' : 'fg-muted'} />
             <Text tone={active ? 'fg' : 'muted'} variant="label">
               {item.label}
             </Text>
-          </NavPressable>
+          </NavTab>
         )
       })}
     </View>
     <View className="flex-1" />
-    {user === undefined ? null : (
-      <View className="flex-row items-center gap-3 border-t border-border px-3 pt-3">
-        <Avatar
-          name={user.name}
-          size={32}
-          {...(user.id === undefined ? {} : { id: user.id })}
-          {...(user.src === undefined ? {} : { src: user.src })}
-        />
-        <View className="min-w-0 flex-1">
-          <Text numberOfLines={1} variant="label">
-            {user.name}
-          </Text>
-          {user.phone === undefined ? null : (
-            <Text tone="muted" variant="caption">
-              {user.phone}
-            </Text>
-          )}
-        </View>
-      </View>
-    )}
+    {user === undefined ? null : <SideNavUser user={user} />}
   </View>
 )

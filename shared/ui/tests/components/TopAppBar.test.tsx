@@ -12,6 +12,7 @@ describe('TopAppBar', () => {
 
   it('has a Back button that reports the press', async () => {
     const onBack = jest.fn()
+
     await renderWithTheme(<TopAppBar onBack={onBack} title="Friday crew" />)
 
     await fireEvent.press(screen.getByRole('button', { name: 'Back' }))

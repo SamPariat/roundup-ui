@@ -14,15 +14,19 @@ export class EnvError extends Error {
 const requireUrl = (name: string, value: string | undefined): string => {
   if (value === undefined || value === '') throw new EnvError(`${name} is not set`)
   let parsed: URL
+
   try {
     parsed = new URL(value)
   } catch {
     throw new EnvError(`${name} is not a valid URL: "${value}"`)
   }
+
   if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') {
     throw new EnvError(`${name} must start with http:// or https://, got "${value}"`)
   }
+
   if (value.endsWith('/')) throw new EnvError(`${name} must not end with a slash: "${value}"`)
+
   return value
 }
 

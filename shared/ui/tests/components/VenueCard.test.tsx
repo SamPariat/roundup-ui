@@ -18,6 +18,7 @@ describe('VenueCard', () => {
 
   it('offers saving with a name that reflects the state', async () => {
     const onSave = jest.fn()
+
     await renderWithTheme(<VenueCard name="Toit" onSave={onSave} saved={false} />)
 
     await fireEvent.press(screen.getByRole('button', { name: 'Save to squad' }))
