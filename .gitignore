@@ -1,0 +1,47 @@
+# ── Node / pnpm ──────────────────────────────────────────────
+**/node_modules/
+**/.pnpm-debug.log
+**/*.tsbuildinfo
+
+# ── Build output ─────────────────────────────────────────────
+**/dist/
+**/build/
+**/coverage/
+
+# ── Expo / React Native ──────────────────────────────────────
+**/.expo/
+**/.expo-shared/
+**/expo-env.d.ts
+**/ios/
+**/android/
+**/*.orig.*
+**/web-build/
+**/*.p8
+**/*.p12
+**/*.key
+**/*.mobileprovision
+
+# ── Environment files ────────────────────────────────────────
+# Real env files (.env.beta, .env.prod) hold secrets and stay local.
+# Only the *.example templates are committed.
+**/.env
+**/.env.*
+!**/.env.*.example
+
+# ── Docker local override ────────────────────────────────────
+docker-compose.override.yml
+
+# ── OS ───────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+
+# ── IDE ──────────────────────────────────────────────────────
+# .vscode/ is committed on purpose: it holds the shared ESLint and Prettier setup.
+.idea/
+*.iml
+
+# ── Logs ─────────────────────────────────────────────────────
+**/*.log
+**/logs/
