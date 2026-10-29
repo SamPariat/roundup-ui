@@ -1,7 +1,6 @@
 import type { ReactElement } from 'react'
 
 import { View } from 'react-native'
-import Svg, { Circle, Path, Rect } from 'react-native-svg'
 
 import type { RoleName } from '@roundup/tokens'
 
@@ -24,8 +23,6 @@ interface IconBase {
 export type IconProps = IconBase &
   ({ decorative: true; label?: never } | { decorative?: never; label: string })
 
-const NO_FILL = 'none'
-
 export const Icon = ({
   className,
   decorative,
@@ -35,7 +32,7 @@ export const Icon = ({
   tone = 'fg',
 }: IconProps): ReactElement => {
   const { roles } = useTheme()
-  const color = roles[tone]
+  const Glyph = ICONS[name]
 
   return (
     <View
@@ -46,31 +43,7 @@ export const Icon = ({
       className={cn('shrink-0', className)}
       importantForAccessibility={decorative === true ? 'no-hide-descendants' : 'auto'}
     >
-      <Svg
-        fill="none"
-        height={size}
-        stroke={color}
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth={2}
-        viewBox="0 0 24 24"
-        width={size}
-      >
-        {ICONS[name].map((shape, index) => {
-          const fill = shape.filled === true ? color : NO_FILL
-          const key = `${name}-${String(index)}`
-
-          if (shape.tag === 'circle') {
-            return <Circle fill={fill} key={key} {...shape.attributes} />
-          }
-
-          if (shape.tag === 'rect') {
-            return <Rect key={key} {...shape.attributes} />
-          }
-
-          return <Path d={String(shape.attributes['d'])} fill={fill} key={key} />
-        })}
-      </Svg>
+      <Glyph aria-hidden color={roles[tone]} height={size} width={size} />
     </View>
   )
 }

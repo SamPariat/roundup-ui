@@ -1,6 +1,6 @@
-# Lockfile is written by pnpm; brand assets are copied from roundup-monorepo as-is.
+# Lockfile is written by pnpm; SVG artwork is copied from roundup-monorepo as-is.
 pnpm-lock.yaml
-assets/brand/
+assets/svg/
 **/dist/
 **/.expo/
 **/coverage/

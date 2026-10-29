@@ -9,4 +9,6 @@ export const jestPreset = {
   coverageReporters: ['text', 'json-summary', 'lcov'],
   // Fail on a test that logs an error, so a bad render never passes quietly.
   errorOnDeprecated: true,
+  // SVG imports become the same components Metro builds, so tests render the real artwork.
+  transform: { '\\.svg$': '@roundup/config/jest-svg-transform' },
 } satisfies Config

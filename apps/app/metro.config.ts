@@ -5,7 +5,32 @@ import { roleNames } from '@roundup/tokens'
 
 // Metro loads this file as CommonJS, where __dirname is the only way to name the project root.
 // eslint-disable-next-line unicorn/prefer-module -- see the comment above
-const config = getDefaultConfig(__dirname)
+const defaults = getDefaultConfig(__dirname)
+
+// SVG files in assets/svg become components. react-native-svg-transformer/expo is the Expo entry
+// of the transformer (it wraps Expo's own Babel transformer). It sets babelTransformerPath, which
+// NativeWind's withNativewind below leaves alone: NativeWind replaces transformerPath, the worker
+// that calls the Babel transformer, and spreads config.transformer through. svg moves from the
+// asset extensions to the source extensions so Metro compiles it instead of copying it. Expo's
+// Metro types do not resolve from this package, so the two fields touched are typed here.
+const { resolver, transformer } = defaults as unknown as {
+  resolver: { assetExts: string[]; sourceExts: string[] }
+  transformer: object
+}
+
+const config = {
+  ...defaults,
+  transformer: {
+    ...transformer,
+    // eslint-disable-next-line unicorn/prefer-module -- Metro loads this file as CommonJS
+    babelTransformerPath: require.resolve('react-native-svg-transformer/expo'),
+  },
+  resolver: {
+    ...resolver,
+    assetExts: resolver.assetExts.filter((extension) => extension !== 'svg'),
+    sourceExts: [...resolver.sourceExts, 'svg'],
+  },
+}
 
 // The theme provider overrides every role variable at runtime, so none may be inlined at build time.
 export default withNativewind(config, {

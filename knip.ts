@@ -21,7 +21,6 @@ const config: KnipConfig = {
         // (pnpm does not hoist them from shared/ui), even though only shared/ui imports them.
         'expo-glass-effect',
         'expo-localization',
-        'react-native-svg',
         // Named in app.config.ts plugins or loaded by Expo itself, never imported.
         'babel-preset-expo',
         'babel-plugin-react-compiler',
@@ -30,7 +29,6 @@ const config: KnipConfig = {
       ],
     },
     'apps/server': {
-      entry: ['src/main.ts'],
       project: ['src/**/*.ts', 'tests/**/*.ts', '*.ts'],
     },
     'shared/i18n': {
@@ -45,9 +43,10 @@ const config: KnipConfig = {
     'shared/config': {
       entry: ['*.ts'],
       project: ['*.ts'],
-      // jest-expo is named as a Jest preset string, and the Tailwind Prettier plugin is
-      // resolved by path with import.meta.resolve, so neither is a visible import.
-      ignoreDependencies: ['jest-expo', 'prettier-plugin-tailwindcss'],
+      // jest-expo is named as a Jest preset string, babel-preset-expo as a Babel preset string, and
+      // the Tailwind Prettier plugin is resolved by path with import.meta.resolve, so none is a
+      // visible import.
+      ignoreDependencies: ['babel-preset-expo', 'jest-expo', 'prettier-plugin-tailwindcss'],
     },
   },
 }

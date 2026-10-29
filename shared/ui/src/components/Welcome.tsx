@@ -3,13 +3,14 @@ import type { LayoutChangeEvent } from 'react-native'
 
 import { useCallback, useState } from 'react'
 import { Text as NativeText, View } from 'react-native'
-import Svg, { Circle, G, Rect } from 'react-native-svg'
 
 import { useT } from '@roundup/i18n'
 import { breakpoints } from '@roundup/tokens'
 
 import type { IconName } from '../lib/icons.ts'
 
+import ArtDark from '../../../../assets/svg/illustrations/welcome-dark.svg'
+import ArtLight from '../../../../assets/svg/illustrations/welcome-light.svg'
 import { cn } from '../lib/cn.ts'
 import { useTheme } from '../theme/theme.tsx'
 import { Button } from './Button.tsx'
@@ -30,32 +31,13 @@ const POINTS = [
   { icon: 'history', id: 'history' },
 ] as const satisfies readonly { icon: IconName; id: 'explore' | 'history' | 'squads' }[]
 
-const DOT_ROWS = [0, 1, 2, 3] as const
-const DOT_COLUMNS = [0, 1] as const
-
-// The mark at large size with a cluster of dots: the squad gathering round.
+// The mark at large size with a cluster of dots: the squad gathering round. The artwork is an SVG
+// file per theme, in the logo-* token colours.
 const WelcomeArt = (): ReactElement => {
-  const { roles } = useTheme()
+  const { name } = useTheme()
+  const Art = name === 'mocha' ? ArtDark : ArtLight
 
-  return (
-    <Svg aria-hidden height="100%" viewBox="0 0 44 32" width="100%">
-      <Rect fill={roles['logo-stem']} height={28} rx={5.5} width={11} x={2} y={2} />
-      <Circle cx={21} cy={10} fill={roles['logo-bowl']} r={8} />
-      <Circle cx={24} cy={25} fill={roles['logo-leg']} r={5} />
-      <G fill={roles['logo-bowl']}>
-        {DOT_ROWS.flatMap((row) =>
-          DOT_COLUMNS.map((column) => (
-            <Circle
-              cx={37 + column * 4}
-              cy={4 + row * 4}
-              key={`${String(row)}-${String(column)}`}
-              r={1.2}
-            />
-          )),
-        )}
-      </G>
-    </Svg>
-  )
+  return <Art aria-hidden height="100%" width="100%" />
 }
 
 /** Full-page intro for signed-out visitors. Lays itself out from its own width, not the window's. */

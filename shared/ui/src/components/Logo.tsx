@@ -1,13 +1,23 @@
-import type { ReactElement } from 'react'
+import type { FC, ReactElement } from 'react'
+import type { SvgProps } from 'react-native-svg'
 
 import { View } from 'react-native'
-import Svg, { Circle, Rect } from 'react-native-svg'
 
 import { useT } from '@roundup/i18n'
 
+import type { Theme } from '../theme/theme.tsx'
+
+import LockupDark from '../../../../assets/svg/logo/lockup-dark.svg'
+import LockupLight from '../../../../assets/svg/logo/lockup-light.svg'
+import LockupMono from '../../../../assets/svg/logo/lockup-mono.svg'
+import MarkDark from '../../../../assets/svg/logo/mark-dark.svg'
+import MarkLight from '../../../../assets/svg/logo/mark-light.svg'
+import MarkMono from '../../../../assets/svg/logo/mark-mono.svg'
+import WordmarkDark from '../../../../assets/svg/logo/wordmark-dark.svg'
+import WordmarkLight from '../../../../assets/svg/logo/wordmark-light.svg'
+import WordmarkMono from '../../../../assets/svg/logo/wordmark-mono.svg'
 import { cn } from '../lib/cn.ts'
 import { useTheme } from '../theme/theme.tsx'
-import { Text } from './Text.tsx'
 
 const SIZES = { sm: 24, md: 32, lg: 48, xl: 96 } as const
 
@@ -16,47 +26,50 @@ export interface LogoProps {
   type?: 'lockup' | 'mark' | 'wordmark'
   /** sm 24 · md 32 · lg 48 · xl 96, or a pixel size for the mark. */
   size?: keyof typeof SIZES | number
-  /** brand uses the logo-* tokens; mono draws everything in the text colour. */
+  /** brand uses the logo-* token colours of the current theme; mono draws everything in the text colour. */
   tone?: 'brand' | 'mono'
   label?: string
   className?: string
 }
 
-// The mark: three rounded shapes gathered into an R (stem, bowl, leg) on a 32-unit grid.
-const LogoMark = ({
-  size,
-  tone = 'brand',
-}: {
-  size: number
-  tone?: 'brand' | 'mono'
-}): ReactElement => {
-  const { roles } = useTheme()
-  const mono = tone === 'mono'
+type Variant = 'dark' | 'light' | 'mono'
 
-  return (
-    <Svg aria-hidden height={size} viewBox="0 0 32 32" width={size}>
-      <Rect
-        fill={mono ? roles.fg : roles['logo-stem']}
-        height={28}
-        rx={5.5}
-        width={11}
-        x={2}
-        y={2}
-      />
-      <Circle cx={21} cy={10} fill={mono ? roles.fg : roles['logo-bowl']} r={8} />
-      <Circle cx={24} cy={25} fill={mono ? roles.fg : roles['logo-leg']} r={5} />
-    </Svg>
-  )
+interface Artwork {
+  files: Record<Variant, FC<SvgProps>>
+  /** Width over height of the file's viewBox. */
+  aspect: number
+  /** Height as a share of the mark size the caller asked for. */
+  height: number
 }
 
-// Wordmark text is sized from the mark: three fixed steps cover every pixel size we use.
-const wordClass = (pixels: number): string => {
-  if (pixels <= 24) return 'type-heading'
-  if (pixels <= 32) return 'type-title'
-
-  return 'type-display'
+// The viewBox sizes below are those of the files in assets/svg/logo; Logo.test.tsx checks them.
+// A lockup is as tall as the mark. The wordmark file is cropped to its glyphs, so it is drawn at
+// the height that keeps its letters the size they have inside the lockup (65.16 of 96 units).
+const ARTWORK: Record<NonNullable<LogoProps['type']>, Artwork> = {
+  lockup: {
+    files: { dark: LockupDark, light: LockupLight, mono: LockupMono },
+    aspect: 417.26 / 96,
+    height: 1,
+  },
+  mark: { files: { dark: MarkDark, light: MarkLight, mono: MarkMono }, aspect: 1, height: 1 },
+  wordmark: {
+    files: { dark: WordmarkDark, light: WordmarkLight, mono: WordmarkMono },
+    aspect: 288.86 / 65.16,
+    height: 65.16 / 96,
+  },
 }
 
+// Mocha is the dark theme and Latte the light one; the files carry that theme's logo-* colours.
+const variantFor = (tone: NonNullable<LogoProps['tone']>, themeName: Theme['name']): Variant => {
+  if (tone === 'mono') return 'mono'
+
+  return themeName === 'mocha' ? 'dark' : 'light'
+}
+
+/**
+ * The Roundup logo, drawn from the SVG files in assets/svg/logo (outlined paths, no font). It is
+ * one image to assistive tech, named by `label` or the app name; the artwork itself is hidden.
+ */
 export const Logo = ({
   className,
   label,
@@ -65,21 +78,20 @@ export const Logo = ({
   type = 'lockup',
 }: LogoProps): ReactElement => {
   const { t } = useT()
-  const pixels = typeof size === 'number' ? size : SIZES[size]
+  const { name, roles } = useTheme()
+  const mark = typeof size === 'number' ? size : SIZES[size]
+  const { aspect, files, height: share } = ARTWORK[type]
+  const Artwork = files[variantFor(tone, name)]
+  const height = mark * share
 
   return (
     <View
       accessibilityLabel={label ?? t('common.appName')}
       accessible
-      className={cn('shrink-0 flex-row items-center gap-2', className)}
+      className={cn('shrink-0 flex-row items-center', className)}
       role="img"
     >
-      {type === 'wordmark' ? null : <LogoMark size={pixels} tone={tone} />}
-      {type === 'mark' ? null : (
-        <Text aria-hidden className={wordClass(pixels)} maxFontSizeMultiplier={1.2}>
-          {t('common.appName')}
-        </Text>
-      )}
+      <Artwork aria-hidden color={roles.fg} height={height} width={height * aspect} />
     </View>
   )
 }

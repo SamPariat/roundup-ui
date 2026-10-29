@@ -45,3 +45,6 @@ Thumbs.db
 # ── Logs ─────────────────────────────────────────────────────
 **/*.log
 **/logs/
+
+# Generated from assets/svg/logo/mark-dark.svg by scripts/copy-favicon.ts
+apps/app/public/favicon.svg

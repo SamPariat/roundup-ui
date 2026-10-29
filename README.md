@@ -1,7 +1,7 @@
 <p align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="assets/brand/banner-dark.svg">
-    <img alt="Roundup: round up the squad, pick the place, split the bill" src="assets/brand/banner-light.svg" width="100%">
+    <source media="(prefers-color-scheme: dark)" srcset="assets/svg/brand/banner-dark.svg">
+    <img alt="Roundup: round up the squad, pick the place, split the bill" src="assets/svg/brand/banner-light.svg" width="100%">
   </picture>
 </p>
 
@@ -25,7 +25,7 @@
   <a href="#-docker">🐳 Docker</a>
 </p>
 
-<p align="center"><img src="assets/brand/divider.svg" width="100%" alt=""></p>
+<p align="center"><img src="assets/svg/brand/divider.svg" width="100%" alt=""></p>
 
 ## ✨ What is here
 
@@ -38,7 +38,7 @@ This is the foundation: the workspace, the strictest lint and type setup, genera
 
 > **Language policy:** TypeScript only. No `.js`, `.jsx`, `.mjs` or `.cjs` files, except the one-line shims listed in `.js-allowlist` (there are none today).
 
-<p align="center"><img src="assets/brand/divider.svg" width="100%" alt=""></p>
+<p align="center"><img src="assets/svg/brand/divider.svg" width="100%" alt=""></p>
 
 ## 🚀 Getting started
 
@@ -61,7 +61,7 @@ To use the backend, start the Go services from [roundup-monorepo](https://github
 
 `make ios` and `make android` need Xcode and Android Studio. Liquid Glass (the tab bar, the top bar, toasts and sheets) needs an iOS 26+ simulator; turn on **Reduce Transparency** and the surfaces go solid.
 
-<p align="center"><img src="assets/brand/divider.svg" width="100%" alt=""></p>
+<p align="center"><img src="assets/svg/brand/divider.svg" width="100%" alt=""></p>
 
 ## 🧰 Commands
 
@@ -84,7 +84,7 @@ Every `make` target calls a root pnpm script.
 
 After any dependency change run `make doctor` and fix what it reports with `npx expo install --fix`, not by pinning versions by hand.
 
-<p align="center"><img src="assets/brand/divider.svg" width="100%" alt=""></p>
+<p align="center"><img src="assets/svg/brand/divider.svg" width="100%" alt=""></p>
 
 ## 📁 Repository structure
 
@@ -97,7 +97,7 @@ roundup-ui/
 │   ├── config/         # @roundup/config: ESLint, Prettier, TypeScript and Jest settings
 │   ├── tokens/         # @roundup/tokens: tokens.json and the generator for tokens.ts and theme.css
 │   └── ui/             # @roundup/ui: the design-system components, ThemeProvider and useTheme
-├── assets/brand/       # logo, banner and mark files (from roundup-monorepo)
+├── assets/svg/         # every SVG: brand/, logo/, illustrations/ and icons/ (assets/brand keeps the font licence)
 ├── .githooks/          # pre-commit (lint-staged, tsc, expo-doctor) and commit-msg (commitlint)
 ├── .github/            # CI workflow and the pull request template
 ├── Dockerfile          # deps → web export → Node runtime
@@ -107,7 +107,7 @@ roundup-ui/
 
 Imports run one way: `app → ui → tokens`. `shared/*` never imports from `apps/*`; ESLint enforces it.
 
-<p align="center"><img src="assets/brand/divider.svg" width="100%" alt=""></p>
+<p align="center"><img src="assets/svg/brand/divider.svg" width="100%" alt=""></p>
 
 ## 📏 Rules the tooling enforces
 
@@ -123,7 +123,7 @@ Each rule in `shared/config/eslint.ts` carries a comment saying why it is on.
 
 The git hooks check, never rewrite: if one fails, run `make fmt` and stage again.
 
-<p align="center"><img src="assets/brand/divider.svg" width="100%" alt=""></p>
+<p align="center"><img src="assets/svg/brand/divider.svg" width="100%" alt=""></p>
 
 ## 🐳 Docker
 
@@ -136,7 +136,7 @@ The image is built in three steps: install from the lockfile, `expo export --pla
 
 `EXPO_PUBLIC_API_URL` is baked into the JavaScript at build time, so it is a build argument: rebuild after changing it.
 
-<p align="center"><img src="assets/brand/divider.svg" width="100%" alt=""></p>
+<p align="center"><img src="assets/svg/brand/divider.svg" width="100%" alt=""></p>
 
 ## 🗺️ Not here yet
 

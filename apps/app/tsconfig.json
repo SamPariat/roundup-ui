@@ -9,6 +9,7 @@
     "tests",
     "*.ts",
     "*.tsx",
+    "../../shared/ui/src/svg.d.ts",
     ".expo/types/**/*.ts",
     "expo-env.d.ts",
     "nativewind-env.d.ts"

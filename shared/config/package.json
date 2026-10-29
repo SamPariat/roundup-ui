@@ -7,6 +7,7 @@
     "./eslint": "./eslint.ts",
     "./prettier": "./prettier.ts",
     "./jest-preset": "./jest-preset.ts",
+    "./jest-svg-transform": "./jest-svg-transform.ts",
     "./tsconfig.base.json": "./tsconfig.base.json"
   },
   "dependencies": {
@@ -15,6 +16,10 @@
     "@eslint/compat": "catalog:",
     "@eslint/js": "catalog:",
     "@stylistic/eslint-plugin": "catalog:",
+    "@svgr/core": "catalog:",
+    "@svgr/plugin-jsx": "catalog:",
+    "babel-jest": "catalog:",
+    "babel-preset-expo": "catalog:",
     "eslint": "catalog:",
     "eslint-config-expo": "catalog:",
     "eslint-config-prettier": "catalog:",

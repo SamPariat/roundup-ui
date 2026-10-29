@@ -462,6 +462,17 @@ const config = blocks(
     },
   },
   {
+    // SVG artwork lives in the repo-root assets/ folder, which npm sees as the root package, so
+    // no-relative-packages would rewrite these paths into a package name that resolves nowhere.
+    // There is no package to import the files from; a relative path is the only form that works.
+    files: [
+      'shared/ui/src/lib/icons.ts',
+      'shared/ui/src/components/Logo.tsx',
+      'shared/ui/src/components/Welcome.tsx',
+    ],
+    rules: { 'import-x/no-relative-packages': 'off' },
+  },
+  {
     // One stable order for imports, exports, props and unions, so diffs show real changes only.
     files: SOURCE,
     plugins: { perfectionist },
@@ -638,8 +649,9 @@ const config = blocks(
   },
 
   {
-    // Tool configs must default-export; everything else uses named exports. Expo Router routes are the other exception.
-    files: [...TOOL_CONFIGS, ...ROUTES, 'apps/app/src/app/**/*.ts'],
+    // Tool configs must default-export; everything else uses named exports. Expo Router routes and the
+    // ambient *.svg module declaration (a module's default export is its component) are the exceptions.
+    files: [...TOOL_CONFIGS, ...ROUTES, 'apps/app/src/app/**/*.ts', 'shared/ui/src/svg.d.ts'],
     rules: { 'import-x/no-default-export': 'off' },
   },
   // ── Formatting ──────────────────────────────────────────────
