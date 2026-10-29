@@ -2,21 +2,23 @@ import type { ReactElement } from 'react'
 
 import { View } from 'react-native'
 
+import { useT } from '@roundup/i18n'
 import { EmptyState, Text, ThemeSwitch, useTheme } from '@roundup/ui'
 
 export default function ProfileScreen(): ReactElement {
   const { preference, setPreference } = useTheme()
+  const { t } = useT()
 
   return (
     <View className="flex-1 gap-6 py-6">
       <View className="max-w-reading gap-2">
-        <Text variant="heading">Theme</Text>
+        <Text variant="heading">{t('screens.profile.themeHeading')}</Text>
         <ThemeSwitch onChange={setPreference} value={preference} />
       </View>
       <EmptyState
         art="favorites"
-        body="Your name and photo show up here once you sign in."
-        title="Your profile is empty"
+        body={t('screens.profile.emptyBody')}
+        title={t('screens.profile.emptyTitle')}
       />
     </View>
   )

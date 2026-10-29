@@ -1,5 +1,7 @@
 import type { Href } from 'expo-router'
 
+import { useT } from '@roundup/i18n'
+
 import type { IconName } from './icons.ts'
 
 export interface NavItemData {
@@ -10,8 +12,15 @@ export interface NavItemData {
   href?: Href
 }
 
-export const DEFAULT_NAV_ITEMS: readonly NavItemData[] = [
-  { id: 'squads', label: 'Squads', icon: 'squads' },
-  { id: 'explore', label: 'Explore', icon: 'explore' },
-  { id: 'profile', label: 'Profile', icon: 'profile' },
-]
+const DEFAULT_TABS = [
+  { id: 'squads', icon: 'squads' },
+  { id: 'explore', icon: 'explore' },
+  { id: 'profile', icon: 'profile' },
+] as const satisfies readonly { icon: IconName; id: 'explore' | 'profile' | 'squads' }[]
+
+/** The three main destinations with their translated labels, for navs that were given no items. */
+export const useDefaultNavItems = (): readonly NavItemData[] => {
+  const { t } = useT()
+
+  return DEFAULT_TABS.map(({ icon, id }) => ({ icon, id, label: t(`nav.tabs.${id}`) }))
+}

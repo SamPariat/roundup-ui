@@ -2,6 +2,8 @@ import type { ReactElement } from 'react'
 
 import { View } from 'react-native'
 
+import { useT } from '@roundup/i18n'
+
 import type { AvatarSize } from './Avatar.tsx'
 
 import { Avatar } from './Avatar.tsx'
@@ -21,13 +23,14 @@ export const AvatarGroup = ({
   size = 32,
   total,
 }: AvatarGroupProps): ReactElement => {
+  const { t } = useT()
   const shown = people.slice(0, max)
   const count = total ?? people.length
   const rest = count - shown.length
 
   return (
     <View
-      accessibilityLabel={`${String(count)} members`}
+      accessibilityLabel={t('common.members', { count })}
       accessible
       className="flex-row items-center"
       role="img"

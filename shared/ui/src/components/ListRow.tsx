@@ -2,6 +2,8 @@ import type { ReactElement, ReactNode } from 'react'
 
 import { Pressable, View } from 'react-native'
 
+import { useT } from '@roundup/i18n'
+
 import { cn } from '../lib/cn.ts'
 import { Icon } from './Icon.tsx'
 import { Text } from './Text.tsx'
@@ -28,6 +30,8 @@ export const ListRow = ({
   title,
   trailing,
 }: ListRowProps): ReactElement => {
+  const { t } = useT()
+
   const content = (
     <>
       {leading === undefined ? null : <View className="shrink-0">{leading}</View>}
@@ -56,7 +60,7 @@ export const ListRow = ({
 
   return (
     <Pressable
-      accessibilityLabel={subtitle === undefined ? title : `${title}, ${subtitle}`}
+      accessibilityLabel={subtitle === undefined ? title : t('listRow.spoken', { subtitle, title })}
       accessibilityRole="button"
       aria-busy={busy}
       className={cn(

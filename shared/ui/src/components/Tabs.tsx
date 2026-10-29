@@ -3,6 +3,8 @@ import type { ReactElement } from 'react'
 import { useCallback } from 'react'
 import { Pressable, View } from 'react-native'
 
+import { useT } from '@roundup/i18n'
+
 import { cn } from '../lib/cn.ts'
 import { Text } from './Text.tsx'
 
@@ -23,6 +25,8 @@ const TabButton = ({
   item: TabItem
   onChange?: ((id: string) => void) | undefined
 }): ReactElement => {
+  const { t } = useT()
+
   const press = useCallback(() => {
     onChange?.(item.id)
   }, [item.id, onChange])
@@ -30,7 +34,9 @@ const TabButton = ({
   return (
     <Pressable
       accessibilityLabel={
-        item.count === undefined ? item.label : `${item.label}, ${String(item.count)}`
+        item.count === undefined
+          ? item.label
+          : t('tabs.withCount', { label: item.label, total: item.count })
       }
       accessibilityRole="tab"
       aria-selected={active}

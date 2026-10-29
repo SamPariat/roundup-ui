@@ -1,0 +1,5 @@
+{
+  "extends": "@roundup/config/tsconfig.base.json",
+  "compilerOptions": { "types": ["jest"] },
+  "include": ["src", "tests", "*.ts"]
+}

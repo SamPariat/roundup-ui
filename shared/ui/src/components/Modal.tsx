@@ -10,6 +10,7 @@ import {
   View,
 } from 'react-native'
 
+import { useT } from '@roundup/i18n'
 import { breakpoints } from '@roundup/tokens'
 
 import { ActionContext } from '../lib/action-context.ts'
@@ -71,26 +72,36 @@ const ModalHeader = ({
   subtitle,
   title,
   titleRef,
-}: HeaderProps): ReactElement => (
-  <View className="flex-row items-center gap-3">
-    {leading}
-    <View className="min-w-0 flex-1 gap-1">
-      <View accessible focusable={false} ref={titleRef}>
-        <Text heading={2} variant="heading">
-          {title}
-        </Text>
+}: HeaderProps): ReactElement => {
+  const { t } = useT()
+
+  return (
+    <View className="flex-row items-center gap-3">
+      {leading}
+      <View className="min-w-0 flex-1 gap-1">
+        <View accessible focusable={false} ref={titleRef}>
+          <Text heading={2} variant="heading">
+            {title}
+          </Text>
+        </View>
+        {subtitle === undefined ? null : (
+          <Text tone="muted" variant="body-sm">
+            {subtitle}
+          </Text>
+        )}
       </View>
-      {subtitle === undefined ? null : (
-        <Text tone="muted" variant="body-sm">
-          {subtitle}
-        </Text>
-      )}
+      {showClose ? (
+        <Button
+          icon="close"
+          label={t('common.close')}
+          onPress={onClose}
+          size="sm"
+          variant="ghost"
+        />
+      ) : null}
     </View>
-    {showClose ? (
-      <Button icon="close" label="Close" onPress={onClose} size="sm" variant="ghost" />
-    ) : null}
-  </View>
-)
+  )
+}
 
 const ModalContent = ({
   body,

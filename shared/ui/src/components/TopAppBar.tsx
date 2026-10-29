@@ -2,6 +2,8 @@ import type { ReactElement, ReactNode } from 'react'
 
 import { View } from 'react-native'
 
+import { useT } from '@roundup/i18n'
+
 import { Button } from './Button.tsx'
 import { Logo } from './Logo.tsx'
 import { SafeArea } from './SafeArea.tsx'
@@ -26,12 +28,14 @@ export const TopAppBar = ({
   onBack,
   title,
 }: TopAppBarProps): ReactElement => {
+  const { t } = useT()
+
   const leading = (
     <>
       {back || onBack !== undefined ? (
-        <Button icon="back" label="Back" onPress={onBack} variant="ghost" />
+        <Button icon="back" label={t('common.back')} onPress={onBack} variant="ghost" />
       ) : null}
-      {logo ? <Logo className="mx-3" label="Roundup" size={28} type="mark" /> : null}
+      {logo ? <Logo className="mx-3" label={t('common.appName')} size={28} type="mark" /> : null}
     </>
   )
 

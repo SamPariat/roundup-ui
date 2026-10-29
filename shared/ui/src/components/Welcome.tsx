@@ -5,6 +5,7 @@ import { useCallback, useState } from 'react'
 import { Text as NativeText, View } from 'react-native'
 import Svg, { Circle, G, Rect } from 'react-native-svg'
 
+import { useT } from '@roundup/i18n'
 import { breakpoints } from '@roundup/tokens'
 
 import type { IconName } from '../lib/icons.ts'
@@ -24,14 +25,10 @@ export interface WelcomeProps {
 }
 
 const POINTS = [
-  {
-    icon: 'squads',
-    title: 'Squads',
-    text: 'Add friends by phone number. Admins keep the list tidy.',
-  },
-  { icon: 'explore', title: 'Explore', text: 'Find bars, cafes and restaurants near you.' },
-  { icon: 'history', title: 'History', text: 'See where the squad has been, and how often.' },
-] as const satisfies readonly { icon: IconName; text: string; title: string }[]
+  { icon: 'squads', id: 'squads' },
+  { icon: 'explore', id: 'explore' },
+  { icon: 'history', id: 'history' },
+] as const satisfies readonly { icon: IconName; id: 'explore' | 'history' | 'squads' }[]
 
 const DOT_ROWS = [0, 1, 2, 3] as const
 const DOT_COLUMNS = [0, 1] as const
@@ -62,12 +59,8 @@ const WelcomeArt = (): ReactElement => {
 }
 
 /** Full-page intro for signed-out visitors. Lays itself out from its own width, not the window's. */
-export const Welcome = ({
-  body = 'Make a squad, find a place nearby, and keep a record of every night out.',
-  onStart,
-  startLabel = 'Continue with phone',
-  title = 'Weekend plans for the whole squad.',
-}: WelcomeProps): ReactElement => {
+export const Welcome = ({ body, onStart, startLabel, title }: WelcomeProps): ReactElement => {
+  const { t } = useT()
   const [width, setWidth] = useState(0)
   const wide = width >= breakpoints['bp-tablet']
 
@@ -77,7 +70,7 @@ export const Welcome = ({
 
   return (
     <View
-      accessibilityLabel="Welcome to Roundup"
+      accessibilityLabel={t('welcome.label')}
       className="min-h-full w-full flex-1 bg-bg"
       onLayout={handleLayout}
     >
@@ -105,17 +98,17 @@ export const Welcome = ({
                   : 'text-[36px] leading-[40px] tracking-[-1.26px]',
               )}
             >
-              {title}
+              {title ?? t('welcome.title')}
             </NativeText>
             <Text className="max-w-[520px]" tone="muted" variant="body">
-              {body}
+              {body ?? t('welcome.body')}
             </Text>
             <View className={cn('mt-2 gap-2', wide && 'flex-row items-center gap-4')}>
               <Button block={!wide} onPress={onStart} size="lg">
-                {startLabel}
+                {startLabel ?? t('welcome.start')}
               </Button>
               <Text tone="muted" variant="caption">
-                New here? The same code creates your account.
+                {t('welcome.newHere')}
               </Text>
             </View>
           </View>
@@ -129,14 +122,14 @@ export const Welcome = ({
         </View>
         <View className={cn('gap-4', wide && 'flex-row gap-6 border-t border-border pt-8')}>
           {POINTS.map((point) => (
-            <View className={cn('flex-row items-start gap-3', wide && 'flex-1')} key={point.title}>
+            <View className={cn('flex-row items-start gap-3', wide && 'flex-1')} key={point.id}>
               <View className="size-[40px] items-center justify-center rounded-md bg-accent-soft">
                 <Icon decorative name={point.icon} tone="accent" />
               </View>
               <View className="min-w-0 flex-1">
-                <Text variant="body-strong">{point.title}</Text>
+                <Text variant="body-strong">{t(`welcome.points.${point.id}.title`)}</Text>
                 <Text tone="muted" variant="body-sm">
-                  {point.text}
+                  {t(`welcome.points.${point.id}.text`)}
                 </Text>
               </View>
             </View>

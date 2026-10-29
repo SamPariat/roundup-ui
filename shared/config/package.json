@@ -20,6 +20,7 @@
     "eslint-config-prettier": "catalog:",
     "eslint-plugin-better-tailwindcss": "catalog:",
     "eslint-plugin-boundaries": "catalog:",
+    "eslint-plugin-i18next": "catalog:",
     "eslint-plugin-import-x": "catalog:",
     "eslint-plugin-jest": "catalog:",
     "eslint-plugin-perfectionist": "catalog:",

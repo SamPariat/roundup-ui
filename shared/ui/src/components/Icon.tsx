@@ -24,6 +24,8 @@ interface IconBase {
 export type IconProps = IconBase &
   ({ decorative: true; label?: never } | { decorative?: never; label: string })
 
+const NO_FILL = 'none'
+
 export const Icon = ({
   className,
   decorative,
@@ -55,7 +57,7 @@ export const Icon = ({
         width={size}
       >
         {ICONS[name].map((shape, index) => {
-          const fill = shape.filled === true ? color : 'none'
+          const fill = shape.filled === true ? color : NO_FILL
           const key = `${name}-${String(index)}`
 
           if (shape.tag === 'circle') {

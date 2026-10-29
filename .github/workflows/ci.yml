@@ -86,7 +86,7 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
 
-      # shared/ui and shared/tokens fail below 80% line coverage (set in their jest.config.ts).
+      # shared/ui, shared/i18n and shared/tokens fail below 80% line coverage (set in their jest.config.ts).
       - name: jest
         run: pnpm test:coverage
 

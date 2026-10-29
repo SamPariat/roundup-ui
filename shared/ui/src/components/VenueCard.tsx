@@ -3,6 +3,8 @@ import type { ReactElement } from 'react'
 import { Image, View } from 'react-native'
 import Svg, { Rect } from 'react-native-svg'
 
+import { useT } from '@roundup/i18n'
+
 import { useTheme } from '../theme/theme.tsx'
 import { Badge } from './Badge.tsx'
 import { Button } from './Button.tsx'
@@ -58,6 +60,7 @@ const VenueMedia = ({
 }: Loose<Pick<VenueCardProps, 'onSave' | 'photo' | 'saved'>>): ReactElement => {
   const showSave = onSave !== undefined || saved !== undefined
   const isSaved = saved === true
+  const { t } = useT()
 
   return (
     <View className="aspect-video items-center justify-center overflow-hidden bg-bg-sunken">
@@ -75,7 +78,7 @@ const VenueMedia = ({
         <View className="absolute top-2 right-2">
           <Button
             icon={isSaved ? 'bookmarkFilled' : 'bookmark'}
-            label={isSaved ? 'Saved to squad' : 'Save to squad'}
+            label={isSaved ? t('venueCard.saved') : t('venueCard.save')}
             onPress={onSave}
             size="sm"
             variant={isSaved ? 'primary' : 'secondary'}
@@ -86,15 +89,12 @@ const VenueMedia = ({
   )
 }
 
-const OPEN_BADGE = {
-  closed: { label: 'Closed', tone: 'danger' },
-  open: { label: 'Open', tone: 'success' },
-} as const
-
 const OpenBadge = ({ isOpen }: { isOpen: boolean }): ReactElement => {
-  const { label, tone } = OPEN_BADGE[isOpen ? 'open' : 'closed']
+  const { t } = useT()
 
-  return <Badge tone={tone}>{label}</Badge>
+  if (isOpen) return <Badge tone="success">{t('venueCard.open')}</Badge>
+
+  return <Badge tone="danger">{t('venueCard.closed')}</Badge>
 }
 
 // Rating, price and opening status in one wrapping row; nothing renders when none is known.

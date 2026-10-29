@@ -3,6 +3,8 @@ import type { ReactElement } from 'react'
 import { View } from 'react-native'
 import Svg, { Circle, Rect } from 'react-native-svg'
 
+import { useT } from '@roundup/i18n'
+
 import { cn } from '../lib/cn.ts'
 import { useTheme } from '../theme/theme.tsx'
 import { Text } from './Text.tsx'
@@ -57,16 +59,17 @@ const wordClass = (pixels: number): string => {
 
 export const Logo = ({
   className,
-  label = 'Roundup',
+  label,
   size = 'md',
   tone = 'brand',
   type = 'lockup',
 }: LogoProps): ReactElement => {
+  const { t } = useT()
   const pixels = typeof size === 'number' ? size : SIZES[size]
 
   return (
     <View
-      accessibilityLabel={label}
+      accessibilityLabel={label ?? t('common.appName')}
       accessible
       className={cn('shrink-0 flex-row items-center gap-2', className)}
       role="img"
@@ -74,7 +77,7 @@ export const Logo = ({
       {type === 'wordmark' ? null : <LogoMark size={pixels} tone={tone} />}
       {type === 'mark' ? null : (
         <Text aria-hidden className={wordClass(pixels)} maxFontSizeMultiplier={1.2}>
-          Roundup
+          {t('common.appName')}
         </Text>
       )}
     </View>

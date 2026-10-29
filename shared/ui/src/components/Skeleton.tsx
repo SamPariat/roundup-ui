@@ -2,6 +2,8 @@ import type { ReactElement } from 'react'
 
 import { View } from 'react-native'
 
+import { useT } from '@roundup/i18n'
+
 import { cn } from '../lib/cn.ts'
 import { useReducedMotion } from '../lib/use-reduced-motion.ts'
 
@@ -26,10 +28,12 @@ const Block = ({ className }: { className: string }): ReactElement => {
 
 // Loading is shape-first. The group is one busy region named "Loading"; the shapes are decoration.
 export const Skeleton = ({ count = 1, variant = 'row' }: SkeletonProps): ReactElement => {
+  const { t } = useT()
+
   if (variant === 'card') {
     return (
       <View
-        accessibilityLabel="Loading"
+        accessibilityLabel={t('common.loading')}
         accessible
         aria-busy
         className="overflow-hidden rounded-lg border border-border bg-bg-raised"
@@ -45,7 +49,7 @@ export const Skeleton = ({ count = 1, variant = 'row' }: SkeletonProps): ReactEl
   }
 
   return (
-    <View accessibilityLabel="Loading" accessible aria-busy>
+    <View accessibilityLabel={t('common.loading')} accessible aria-busy>
       {Array.from({ length: count }, (_, index) => (
         <View className="flex-row items-center gap-3 px-4 py-3" key={index}>
           <Block className="size-[40px] rounded-full" />

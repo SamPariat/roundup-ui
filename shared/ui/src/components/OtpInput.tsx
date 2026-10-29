@@ -2,6 +2,8 @@ import type { ReactElement } from 'react'
 
 import { Pressable, TextInput, View } from 'react-native'
 
+import { useT } from '@roundup/i18n'
+
 import { cn } from '../lib/cn.ts'
 import { Icon } from './Icon.tsx'
 import { Text } from './Text.tsx'
@@ -37,6 +39,7 @@ export const OtpInput = ({
   resendIn = 0,
   value = '',
 }: OtpInputProps): ReactElement => {
+  const { t } = useT()
   const digits = value.slice(0, length)
   const complete = digits.length === length
   const boxes = Array.from({ length }, (_, position) => position)
@@ -79,14 +82,14 @@ export const OtpInput = ({
           {resendIn > 0 ? (
             <>
               <Text tone="muted" variant="body-sm">
-                Resend code in
+                {t('otpInput.resendIn')}
               </Text>
               <Text variant="numeric">{formatCountdown(resendIn)}</Text>
             </>
           ) : (
             <>
               <Text tone="muted" variant="body-sm">
-                Didn&apos;t get it?
+                {t('otpInput.didntGetIt')}
               </Text>
               <Pressable
                 accessibilityRole="link"
@@ -95,7 +98,7 @@ export const OtpInput = ({
                 onPress={onResend}
               >
                 <Text tone="accent" variant="label">
-                  Resend code
+                  {t('otpInput.resend')}
                 </Text>
               </Pressable>
             </>

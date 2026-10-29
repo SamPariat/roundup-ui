@@ -2,6 +2,7 @@ import type { ReactElement, ReactNode } from 'react'
 
 import { View } from 'react-native'
 
+import { useT } from '@roundup/i18n'
 import { BottomNav, cn, PageHeader, SideNav, TopAppBar, useBreakpoint } from '@roundup/ui'
 
 import type { TabItem } from './tabs.ts'
@@ -17,11 +18,17 @@ export interface AppShellProps {
 // SideNav and PageHeader from 1024 wide up; TopAppBar and BottomNav below. The items are the
 // same everywhere, only the chrome changes.
 export const AppShell = ({ children, current }: AppShellProps): ReactElement => {
+  const { t } = useT()
   const { width } = useBreakpoint()
   const { gutter, nav } = layoutFor(width)
-  const item = TAB_ITEMS.find((candidate) => candidate.id === current) ?? TAB_ITEMS[0]
-  const title = item?.title ?? 'Roundup'
-  const navItems = TAB_ITEMS.map(({ href, icon, id, label }) => ({ href, icon, id, label }))
+  const title = t(`nav.tabs.${current}`)
+
+  const navItems = TAB_ITEMS.map(({ href, icon, id }) => ({
+    href,
+    icon,
+    id,
+    label: t(`nav.tabs.${id}`),
+  }))
 
   return (
     <View className={cn('flex-1 bg-bg', nav === 'side' && 'flex-row')}>

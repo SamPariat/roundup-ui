@@ -20,6 +20,7 @@ const config: KnipConfig = {
         // Native modules must be direct dependencies of the app so Expo autolinking finds them
         // (pnpm does not hoist them from shared/ui), even though only shared/ui imports them.
         'expo-glass-effect',
+        'expo-localization',
         'react-native-svg',
         // Named in app.config.ts plugins or loaded by Expo itself, never imported.
         'babel-preset-expo',
@@ -30,6 +31,9 @@ const config: KnipConfig = {
     },
     'apps/server': {
       entry: ['src/main.ts'],
+      project: ['src/**/*.ts', 'tests/**/*.ts', '*.ts'],
+    },
+    'shared/i18n': {
       project: ['src/**/*.ts', 'tests/**/*.ts', '*.ts'],
     },
     'shared/tokens': {

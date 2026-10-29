@@ -48,6 +48,7 @@ const createConfig = ({ config, projectRoot }: ConfigContext): ExpoConfig => {
     plugins: [
       ['expo-router', { root: './src/app' }],
       'expo-font',
+      'expo-localization',
       'expo-splash-screen',
       'expo-system-ui',
     ],

@@ -2,10 +2,12 @@ import type { ReactElement } from 'react'
 
 import { View } from 'react-native'
 
+import { useT } from '@roundup/i18n'
+
 import type { NavItemData } from '../lib/nav-items.ts'
 
 import { cn } from '../lib/cn.ts'
-import { DEFAULT_NAV_ITEMS } from '../lib/nav-items.ts'
+import { useDefaultNavItems } from '../lib/nav-items.ts'
 import { Avatar } from './Avatar.tsx'
 import { Icon } from './Icon.tsx'
 import { Logo } from './Logo.tsx'
@@ -44,42 +46,48 @@ const SideNavUser = ({ user }: { user: NonNullable<SideNavProps['user']> }): Rea
 
 /** Vertical navigation from 1024 wide up. */
 export const SideNav = ({
-  items = DEFAULT_NAV_ITEMS,
+  items,
   onChange,
   user,
   value = 'squads',
-}: SideNavProps): ReactElement => (
-  <View
-    className="w-sidenav gap-1 border-r border-border bg-bg-sunken px-3 pt-6 pb-4"
-    role="navigation"
-  >
-    <View className="px-3 pb-6">
-      <Logo size={28} />
-    </View>
-    <View accessibilityLabel="Sidebar" className="gap-1" role="tablist">
-      {items.map((item) => {
-        const active = item.id === value
+}: SideNavProps): ReactElement => {
+  const { t } = useT()
+  const defaults = useDefaultNavItems()
+  const shown = items ?? defaults
 
-        return (
-          <NavTab
-            active={active}
-            className={cn(
-              'h-[44px] w-full flex-row items-center gap-3 rounded-md px-3 hover:bg-bg-hover focus:outline-2 focus:outline-offset-2 focus:outline-focus-ring',
-              active && 'bg-accent-soft',
-            )}
-            item={item}
-            key={item.id}
-            onChange={onChange}
-          >
-            <Icon decorative name={item.icon} tone={active ? 'accent' : 'fg-muted'} />
-            <Text tone={active ? 'fg' : 'muted'} variant="label">
-              {item.label}
-            </Text>
-          </NavTab>
-        )
-      })}
+  return (
+    <View
+      className="w-sidenav gap-1 border-r border-border bg-bg-sunken px-3 pt-6 pb-4"
+      role="navigation"
+    >
+      <View className="px-3 pb-6">
+        <Logo size={28} />
+      </View>
+      <View accessibilityLabel={t('nav.sidebar')} className="gap-1" role="tablist">
+        {shown.map((item) => {
+          const active = item.id === value
+
+          return (
+            <NavTab
+              active={active}
+              className={cn(
+                'h-[44px] w-full flex-row items-center gap-3 rounded-md px-3 hover:bg-bg-hover focus:outline-2 focus:outline-offset-2 focus:outline-focus-ring',
+                active && 'bg-accent-soft',
+              )}
+              item={item}
+              key={item.id}
+              onChange={onChange}
+            >
+              <Icon decorative name={item.icon} tone={active ? 'accent' : 'fg-muted'} />
+              <Text tone={active ? 'fg' : 'muted'} variant="label">
+                {item.label}
+              </Text>
+            </NavTab>
+          )
+        })}
+      </View>
+      <View className="flex-1" />
+      {user === undefined ? null : <SideNavUser user={user} />}
     </View>
-    <View className="flex-1" />
-    {user === undefined ? null : <SideNavUser user={user} />}
-  </View>
-)
+  )
+}

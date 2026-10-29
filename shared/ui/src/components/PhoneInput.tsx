@@ -2,6 +2,8 @@ import type { ReactElement } from 'react'
 
 import { TextInput, View } from 'react-native'
 
+import { useT } from '@roundup/i18n'
+
 import { useFocus } from '../lib/use-focus.ts'
 import { useTheme } from '../theme/theme.tsx'
 import { FieldFrame } from './Field.tsx'
@@ -27,6 +29,7 @@ export const PhoneInput = ({
 }: PhoneInputProps): ReactElement => {
   const { focused, onBlur, onFocus } = useFocus()
   const { roles } = useTheme()
+  const { t } = useT()
 
   return (
     <FieldFrame
@@ -37,7 +40,7 @@ export const PhoneInput = ({
       {...(helper === undefined ? {} : { helper })}
     >
       <View aria-hidden className="h-6 flex-row items-center gap-2 border-r border-border pr-3">
-        <Text variant="label">IN +91</Text>
+        <Text variant="label">{t('phoneInput.countryCode')}</Text>
       </View>
       <TextInput
         accessibilityHint={error ?? helper}
@@ -52,7 +55,7 @@ export const PhoneInput = ({
         onBlur={onBlur}
         onChangeText={onChangeText}
         onFocus={onFocus}
-        placeholder="98765 43210"
+        placeholder={t('phoneInput.placeholder')}
         placeholderTextColor={roles['fg-subtle']}
         textContentType="telephoneNumber"
         value={value}

@@ -11,6 +11,7 @@ import expoFlat from 'eslint-config-expo/flat.js'
 import prettier from 'eslint-config-prettier'
 import betterTailwind from 'eslint-plugin-better-tailwindcss'
 import boundaries from 'eslint-plugin-boundaries'
+import i18next from 'eslint-plugin-i18next'
 import { importX } from 'eslint-plugin-import-x'
 import jest from 'eslint-plugin-jest'
 import perfectionist from 'eslint-plugin-perfectionist'
@@ -37,6 +38,9 @@ const TESTS = ['**/tests/**/*.{ts,tsx}']
 const TEST_FILES = ['**/tests/**/*.test.{ts,tsx}']
 const COMPONENTS = ['shared/ui/src/**/*.tsx', 'apps/app/src/**/*.tsx']
 const ROUTES = ['apps/app/src/app/**/*.tsx']
+
+const NOT_USER_FACING_ATTRIBUTE =
+  /^(?!(?:accessibilityLabel|accessibilityHint|aria-label|alt|label|loadingLabel|startLabel|placeholder|title|subtitle|body|helper|error|text|name)$).*$/
 
 const TOOL_CONFIGS = [
   '*.config.ts',
@@ -357,21 +361,77 @@ const config = blocks(
     ),
   },
 
+  // ── i18n ────────────────────────────────────────────────────
+  {
+    // Every user-visible string comes from @roundup/i18n. jsx-only flags literal text and literal
+    // attribute values in JSX (labels, hints, placeholders), which is where copy hides; strings in
+    // plain TypeScript are covered by review and by the i18n package's key tests.
+    files: ['apps/app/src/**/*.tsx', 'shared/ui/src/**/*.tsx'],
+    plugins: { i18next },
+    rules: {
+      'i18next/no-literal-string': [
+        'error',
+        {
+          mode: 'jsx-only',
+          // The plugin's attribute option only excludes, so the list is inverted: every attribute
+          // is skipped except the ones a person reads or hears (labels, hints, copy props).
+          'jsx-attributes': { exclude: [NOT_USER_FACING_ATTRIBUTE] },
+        },
+      ],
+    },
+  },
+
   // ── Architecture ────────────────────────────────────────────
   {
-    // app -> ui -> tokens, one direction only. config is for tooling. shared/* never imports apps/*.
+    // app -> ui -> i18n and tokens, one direction only. i18n and tokens import nothing internal
+    // (config is the tooling every package may reach for its Jest preset and tsconfig). The server
+    // is a separate service. shared/* never imports apps/*.
     files: SOURCE,
     plugins: { boundaries },
     settings: {
       'boundaries/elements': [
-        { type: 'app', pattern: 'apps/app/**', mode: 'full' },
-        { type: 'server', pattern: 'apps/server/**', mode: 'full' },
-        { type: 'ui', pattern: 'shared/ui/**', mode: 'full' },
-        { type: 'tokens', pattern: 'shared/tokens/**', mode: 'full' },
-        { type: 'config', pattern: 'shared/config/**', mode: 'full' },
+        { type: 'app', pattern: 'apps/app/**', partialMatch: false },
+        { type: 'server', pattern: 'apps/server/**', partialMatch: false },
+        { type: 'ui', pattern: 'shared/ui/**', partialMatch: false },
+        { type: 'i18n', pattern: 'shared/i18n/**', partialMatch: false },
+        { type: 'tokens', pattern: 'shared/tokens/**', partialMatch: false },
+        { type: 'config', pattern: 'shared/config/**', partialMatch: false },
       ],
     },
-    rules: {},
+    rules: {
+      'boundaries/dependencies': [
+        'error',
+        {
+          default: 'disallow',
+          policies: [
+            {
+              from: { element: { type: 'app' } },
+              allow: { to: { element: { type: ['app', 'ui', 'i18n', 'tokens', 'config'] } } },
+            },
+            {
+              from: { element: { type: 'server' } },
+              allow: { to: { element: { type: ['server', 'config'] } } },
+            },
+            {
+              from: { element: { type: 'ui' } },
+              allow: { to: { element: { type: ['ui', 'i18n', 'tokens', 'config'] } } },
+            },
+            {
+              from: { element: { type: 'i18n' } },
+              allow: { to: { element: { type: ['i18n', 'config'] } } },
+            },
+            {
+              from: { element: { type: 'tokens' } },
+              allow: { to: { element: { type: ['tokens', 'config'] } } },
+            },
+            {
+              from: { element: { type: 'config' } },
+              allow: { to: { element: { type: ['config'] } } },
+            },
+          ],
+        },
+      ],
+    },
   },
 
   // ── Imports ─────────────────────────────────────────────────

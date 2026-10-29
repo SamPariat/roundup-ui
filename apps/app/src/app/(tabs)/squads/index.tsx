@@ -2,12 +2,19 @@ import type { ReactElement } from 'react'
 
 import { View } from 'react-native'
 
+import { useT } from '@roundup/i18n'
 import { EmptyState } from '@roundup/ui'
 
 export default function SquadsScreen(): ReactElement {
+  const { t } = useT()
+
   return (
     <View className="flex-1 justify-center">
-      <EmptyState art="squads" body="Make one and add your friends." title="No squads yet" />
+      <EmptyState
+        art="squads"
+        body={t('screens.squads.emptyBody')}
+        title={t('screens.squads.emptyTitle')}
+      />
     </View>
   )
 }

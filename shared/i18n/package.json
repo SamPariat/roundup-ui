@@ -1,0 +1,28 @@
+{
+  "name": "@roundup/i18n",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "jest",
+    "test:coverage": "jest --coverage"
+  },
+  "dependencies": {
+    "expo-localization": "catalog:",
+    "i18next": "catalog:",
+    "react": "catalog:",
+    "react-i18next": "catalog:"
+  },
+  "devDependencies": {
+    "@roundup/config": "workspace:*",
+    "@types/jest": "catalog:",
+    "@types/react": "catalog:",
+    "jest": "catalog:",
+    "jest-expo": "catalog:",
+    "typescript": "catalog:"
+  }
+}

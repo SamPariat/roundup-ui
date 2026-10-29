@@ -2,6 +2,8 @@ import type { ReactElement } from 'react'
 
 import { Pressable, View } from 'react-native'
 
+import { useT } from '@roundup/i18n'
+
 import { Avatar } from './Avatar.tsx'
 import { AvatarGroup } from './AvatarGroup.tsx'
 import { Badge } from './Badge.tsx'
@@ -30,9 +32,15 @@ export const SquadCard = ({
   onPress,
   role,
 }: SquadCardProps): ReactElement => {
+  const { t } = useT()
   const count = memberCount ?? members.length
-  const countText = `${String(count)} ${count === 1 ? 'member' : 'members'}`
-  const spoken = `${name}, ${countText}${role === 'ADMIN' ? ', Admin' : ''}`
+  const countText = t('common.members', { count })
+  const admin = t('squadCard.admin')
+
+  const spoken =
+    role === 'ADMIN'
+      ? t('squadCard.spokenAdmin', { admin, members: countText, name })
+      : t('squadCard.spoken', { members: countText, name })
 
   return (
     <Pressable
@@ -59,7 +67,7 @@ export const SquadCard = ({
           <Text tone="muted" variant="caption">
             {countText}
           </Text>
-          {role === 'ADMIN' ? <Badge tone="highlight">Admin</Badge> : null}
+          {role === 'ADMIN' ? <Badge tone="highlight">{admin}</Badge> : null}
         </View>
       </View>
     </Pressable>
