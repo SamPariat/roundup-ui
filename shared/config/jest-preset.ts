@@ -3,9 +3,10 @@ import type { Config } from 'jest'
 
 export const jestPreset = {
   preset: 'jest-expo',
-  testMatch: ['<rootDir>/src/**/*.test.{ts,tsx}'],
-  collectCoverageFrom: ['src/**/*.{ts,tsx}', '!src/**/*.test.{ts,tsx}', '!src/**/index.ts'],
-  coverageReporters: ['text', 'json-summary'],
+  // Every package keeps its tests in tests/, mirroring the paths under src/.
+  testMatch: ['<rootDir>/tests/**/*.test.{ts,tsx}'],
+  collectCoverageFrom: ['src/**/*.{ts,tsx}', '!src/**/index.ts'],
+  coverageReporters: ['text', 'json-summary', 'lcov'],
   // Fail on a test that logs an error, so a bad render never passes quietly.
   errorOnDeprecated: true,
 } satisfies Config

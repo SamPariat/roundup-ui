@@ -30,13 +30,13 @@ const config: KnipConfig = {
     },
     'apps/server': {
       entry: ['src/main.ts'],
-      project: ['src/**/*.ts', '*.ts'],
+      project: ['src/**/*.ts', 'tests/**/*.ts', '*.ts'],
     },
     'shared/tokens': {
-      project: ['src/**/*.ts', 'scripts/**/*.ts', '*.ts'],
+      project: ['src/**/*.ts', 'tests/**/*.ts', 'scripts/**/*.ts', '*.ts'],
     },
     'shared/ui': {
-      project: ['src/**/*.{ts,tsx}', '*.ts'],
+      project: ['src/**/*.{ts,tsx}', 'tests/**/*.{ts,tsx}', '*.ts'],
     },
     'shared/config': {
       entry: ['*.ts'],

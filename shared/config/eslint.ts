@@ -26,7 +26,9 @@ import tseslint from 'typescript-eslint'
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..')
 
 const SOURCE = ['**/*.{ts,tsx}']
-const TESTS = ['**/*.test.{ts,tsx}']
+// Every package keeps tests, fixtures and helpers in tests/; TEST_FILES is the subset Jest runs.
+const TESTS = ['**/tests/**/*.{ts,tsx}']
+const TEST_FILES = ['**/tests/**/*.test.{ts,tsx}']
 const COMPONENTS = ['shared/ui/src/**/*.tsx', 'apps/app/src/**/*.tsx']
 const ROUTES = ['apps/app/src/app/**/*.tsx']
 const TOOL_CONFIGS = [
@@ -289,17 +291,17 @@ const config = blocks(
   {
     // The few files that need a raw style object (boxShadow on floating surfaces, per-edge safe-area padding, the glass layer) say so here and nowhere else.
     files: [
-      'shared/ui/src/Modal/Modal.tsx',
-      'shared/ui/src/SafeArea/SafeArea.tsx',
-      'shared/ui/src/Surface/Surface.tsx',
-      'shared/ui/src/Toast/Toast.tsx',
+      'shared/ui/src/components/Modal.tsx',
+      'shared/ui/src/components/SafeArea.tsx',
+      'shared/ui/src/components/Surface.tsx',
+      'shared/ui/src/components/Toast.tsx',
     ],
     rules: { 'no-restricted-syntax': ['error', INACTIVE_BAN, INSET_MATH_BAN] },
   },
 
   {
     // react-native-svg types mark the x/y geometry of <Rect> as deprecated, but there is no other way to place one.
-    files: ['shared/ui/src/{EmptyState,Icon,Logo,VenueCard,Welcome}/*.tsx'],
+    files: ['shared/ui/src/components/{EmptyState,Icon,Logo,VenueCard,Welcome}.tsx'],
     rules: { '@typescript-eslint/no-deprecated': 'off' },
   },
 
@@ -331,8 +333,7 @@ const config = blocks(
         'error',
         {
           devDependencies: [
-            '**/*.test.{ts,tsx}',
-            '**/test/**',
+            '**/tests/**',
             '**/*.config.ts',
             '**/jest.setup*.ts',
             'knip.ts',
@@ -400,8 +401,13 @@ const config = blocks(
     },
   },
   {
-    // Component folders are PascalCase by design (Button/Button.tsx).
-    files: ['shared/ui/src/**/*.{ts,tsx}', 'apps/app/src/shell/*.{ts,tsx}'],
+    // Component files are PascalCase by design (components/Button.tsx); helpers in lib/ stay kebab-case.
+    files: [
+      'shared/ui/src/components/*.tsx',
+      'shared/ui/tests/components/*.tsx',
+      'apps/app/src/shell/*.tsx',
+      'apps/app/tests/shell/*.tsx',
+    ],
     rules: {
       'unicorn/filename-case': ['error', { cases: { pascalCase: true, kebabCase: true } }],
     },
@@ -463,7 +469,7 @@ const config = blocks(
   // ── Tests ───────────────────────────────────────────────────
   {
     // Jest rules for test files.
-    files: TESTS,
+    files: TEST_FILES,
     ...jest.configs['flat/recommended'],
     rules: {
       ...jest.configs['flat/recommended'].rules,
@@ -475,7 +481,7 @@ const config = blocks(
   },
   {
     // Testing Library: query by role and label like a user does. getByTestId is banned.
-    files: TESTS,
+    files: TEST_FILES,
     ...testingLibrary.configs['flat/react'],
     rules: {
       ...testingLibrary.configs['flat/react'].rules,

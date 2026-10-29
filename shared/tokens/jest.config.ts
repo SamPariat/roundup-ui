@@ -4,7 +4,7 @@ import { jestPreset } from '@roundup/config/jest-preset'
 
 const config: Config = {
   ...jestPreset,
-  collectCoverageFrom: ['src/**/*.ts', '!src/**/*.test.ts', '!src/index.ts'],
+  collectCoverageFrom: ['src/**/*.ts', '!src/index.ts'],
   coverageThreshold: { global: { lines: 80 } },
 }
 

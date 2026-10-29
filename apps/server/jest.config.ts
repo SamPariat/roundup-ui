@@ -4,7 +4,7 @@ import type { Config } from 'jest'
 // Babel strips the types; the tests run in Node's own environment with the real Request/Response.
 const config: Config = {
   testEnvironment: 'node',
-  testMatch: ['<rootDir>/src/**/*.test.ts'],
+  testMatch: ['<rootDir>/tests/**/*.test.ts'],
   transform: {
     '^.+\\.ts$': [
       'babel-jest',
@@ -18,8 +18,8 @@ const config: Config = {
       },
     ],
   },
-  collectCoverageFrom: ['src/**/*.ts', '!src/**/*.test.ts', '!src/main.ts', '!src/test/**'],
-  coverageReporters: ['text', 'json-summary'],
+  collectCoverageFrom: ['src/**/*.ts', '!src/main.ts'],
+  coverageReporters: ['text', 'json-summary', 'lcov'],
 }
 
 export default config
