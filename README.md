@@ -32,6 +32,7 @@
 This is the foundation: the workspace, the strictest lint and type setup, generated design tokens, the NativeWind theme, every design-system component rebuilt in React Native, and an empty routed shell. There is no API client and there are no screens wired to the backend yet; sign-in comes next.
 
 - 🎨 **Design tokens** from the Roundup design system, generated into TypeScript and a Tailwind theme. Mocha is the dark theme, Latte the light one.
+- 🌍 **One place for every string**: `@roundup/i18n` holds the English copy as typed resources; components and screens never contain user-facing text.
 - 🧩 **27 components** with the design system's prop names (`Button`, `TextField`, `Modal`, `SquadCard`…), each with accessibility built into its types and tests.
 - 🧭 **A routed shell**: `/` is Welcome, `/squads`, `/explore` and `/profile` sit behind a side nav on wide screens and a bottom nav on narrow ones. iOS uses the system tab bar with Liquid Glass.
 - 🌐 **Web first**: a static export served by a tiny Node server, in Docker.
@@ -94,10 +95,14 @@ roundup-ui/
 │   ├── app/            # @roundup/app: Expo SDK 58, Expo Router (routes in src/app = web URLs)
 │   └── server/         # @roundup/server: Hono on Node, serves the web export
 ├── shared/
-│   ├── config/         # @roundup/config: ESLint, Prettier, TypeScript and Jest settings
+│   ├── config/         # @roundup/config: ESLint, Prettier, TypeScript and Jest settings, the SVG Jest transform
+│   ├── i18n/           # @roundup/i18n: i18next + react-i18next, typed English resources, useT
 │   ├── tokens/         # @roundup/tokens: tokens.json and the generator for tokens.ts and theme.css
 │   └── ui/             # @roundup/ui: the design-system components, ThemeProvider and useTheme
-├── assets/svg/         # every SVG: brand/, logo/, illustrations/ and icons/ (assets/brand keeps the font licence)
+├── assets/
+│   ├── svg/            # every SVG: brand/ (README banner, divider), logo/, illustrations/, icons/
+│   └── brand/          # the Onest font licence and notes on the logo files
+├── sonar-project.properties  # SonarCloud settings, for when a project is connected
 ├── .githooks/          # pre-commit (lint-staged, tsc, expo-doctor) and commit-msg (commitlint)
 ├── .github/            # CI workflow and the pull request template
 ├── Dockerfile          # deps → web export → Node runtime
@@ -105,7 +110,21 @@ roundup-ui/
 └── Makefile            # the front door
 ```
 
-Imports run one way: `app → ui → tokens`. `shared/*` never imports from `apps/*`; ESLint enforces it.
+Every package has the same shape: `src/` for code and `tests/` beside it, mirroring `src/`'s paths (`shared/ui/src/components/Button.tsx` is tested by `shared/ui/tests/components/Button.test.tsx`). Test helpers and fixtures live in `tests/helpers` and `tests/fixtures`. In `shared/ui`, each component is one flat file in `src/components`; helpers go in `src/lib` and the theme in `src/theme`.
+
+Imports run one way: `app → ui → i18n` and `tokens`. `i18n` and `tokens` import nothing internal, and `shared/*` never imports from `apps/*`; ESLint's boundaries rule enforces it.
+
+### 🌍 Strings and i18n
+
+Every user-visible string, including accessibility labels and hints, is a key in `shared/i18n/src/locales/en.ts` (nested by feature, `as const`). `t('nav.tabs.squads')` is type-checked against that file, so a misspelt key fails `tsc`. Components stay prop-driven; where a prop is omitted, its default copy comes from `useT()`. i18next starts synchronously with the bundled resources and picks the device language through `expo-localization`; English is the only language so far, and a new one is another file with the same shape. `eslint-plugin-i18next` fails the build on a literal string in JSX (text, `accessibilityLabel`, `placeholder`, `title` and the like), and the package's own tests check that every key the code uses exists and that none is empty. Jest setup imports the package, so tests query by the real English text.
+
+### 🖼️ SVG assets
+
+SVG files live in `assets/svg` and are imported as components: `import MarkDark from '…/assets/svg/logo/mark-dark.svg'`. Metro compiles them with `react-native-svg-transformer` (configured in `apps/app/metro.config.ts`), Jest with a matching SVGR transform (`shared/config/jest-svg-transform.ts`), and `shared/ui/src/svg.d.ts` types the import. Icons and the `mono` logo files use `currentColor`, so the component's `color` (a role from the active theme) tints them. The `dark` and `light` logo files carry the `logo-*` role colours as literals, and `Logo.test.tsx` fails if they drift from the tokens. The logo is a mark, a wordmark of outlined paths (no font), or a lockup of both. `apps/app/public/favicon.svg` is generated from `logo/mark-dark.svg` by `scripts/copy-favicon.ts` before every dev, web and export run; it is git-ignored.
+
+### 🎨 Tailwind classes
+
+Components use Tailwind's default scale: `h-12`, `size-10`, `w-3/5`, `rounded-xl`, `md:flex`. The generated `theme.css` replaces only the colour palette with the role colours, adds the `type-*` text styles and the 1200px `max-w-content`, and resets nothing else. Token values line up with default steps (a test pins them): the 4px spacing steps, `size-tap` 48 = `h-12`, radius 8/12/16/24 = `rounded-lg/xl/2xl/3xl`, breakpoints 768/1024 = `md`/`lg`. An arbitrary value (`text-[15px]`) is allowed only where no default step exists; `better-tailwindcss/enforce-canonical-classes` rewrites the rest. Tailwind sizes in rem, so `apps/app/metro.config.ts` sets `inlineRem: 16` and a class is the same size on native as on web.
 
 <p align="center"><img src="assets/svg/brand/divider.svg" width="100%" alt=""></p>
 
@@ -118,8 +137,14 @@ Each rule in `shared/config/eslint.ts` carries a comment saying why it is on.
 - **`Pressable` only**: `Touchable*` and React Native's `Button` are banned.
 - **No `StyleSheet` and no inline style objects**: style with `className` and `cva`. Colours are roles (`bg-accent`), never primitives (`bg-ctp-mauve`) or `bg-[#fff]`.
 - **Accessibility**: the a11y lint rules, role-and-label test queries (`getByTestId` is banned), types that force a `label` on icon-only buttons and inputs.
-- **Conventional commits with a scope**: `feat(ui): add Toast`. Scopes: `app`, `ui`, `tokens`, `config`, `infra`, `deps`.
+- **Conventional commits with a scope**: `feat(ui): add toast`, subject in lower case. Scopes: `app`, `ui`, `i18n`, `tokens`, `config`, `infra`, `deps`.
 - **Named exports**, PascalCase component files, kebab-case everything else. Default exports only for Expo Router routes and tool configs.
+- **No nested ternaries** (`no-nested-ternary` and SonarJS): use an early return, a lookup object or a small named helper.
+- **No inline functions in JSX props** (`react/jsx-no-bind`, refs and DOM components included): pass a module-level function, a `useCallback`, or a handler that reads its data from props.
+- **Blank lines in a fixed pattern** (`@stylistic/padding-line-between-statements`): before `return`/`throw`/`break`/`continue`, after a declaration group (single-line declarations may stack), around blocks, multi-line expressions and exports, and after directives. Test files add `jest/padding-around-all`. Neither rule is in `eslint-config-prettier`'s disable list, so no ordering trick is needed.
+- **SonarQube rules** through `eslint-plugin-sonarjs`, every rule of its recommended set at error. A disabled rule needs a documented reason. `sonar-project.properties` is ready for a SonarCloud project; no service is connected.
+- **JSDoc on everything** (`eslint-plugin-jsdoc`): functions, arrow functions, interfaces, type aliases, properties, enums and exported variables, with a description, `@param` and `@returns` descriptions, hyphens before them, and no types in the comment. Callbacks passed as arguments (`describe`, `it`, `.map`, `useEffect`) are exempt. Props are documented once, on their interface.
+- **Every string in `@roundup/i18n`** and **default Tailwind classes** (see above).
 
 The git hooks check, never rewrite: if one fails, run `make fmt` and stage again.
 
