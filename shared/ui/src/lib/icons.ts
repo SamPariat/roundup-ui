@@ -29,8 +29,10 @@ import Star from '../../../../assets/svg/icons/star.svg'
 import Sun from '../../../../assets/svg/icons/sun.svg'
 import Trash from '../../../../assets/svg/icons/trash.svg'
 
-// Each icon is an SVG file in assets/svg/icons (24-unit grid, 2px round strokes, currentColor),
-// turned into a component by react-native-svg-transformer. Set `color` to tint it.
+/**
+ * Each icon is an SVG file in assets/svg/icons (24-unit grid, 2px round strokes, currentColor),
+ * turned into a component by react-native-svg-transformer. Set `color` to tint it.
+ */
 export const ICONS = {
   alert: Alert,
   back: Back,
@@ -61,4 +63,5 @@ export const ICONS = {
   trash: Trash,
 } as const satisfies Record<string, FC<SvgProps>>
 
+/** The name of every icon in assets/svg/icons. */
 export type IconName = keyof typeof ICONS

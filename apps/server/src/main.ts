@@ -9,7 +9,10 @@ const server = serve({ fetch: createApp(env).fetch, port: env.port }, (info) => 
   console.log(`roundup web listening on :${String(info.port)}, serving ${env.distDir}`)
 })
 
-// Cloud Run and Docker send SIGTERM on shutdown: stop accepting connections, let requests finish.
+/**
+ * Cloud Run and Docker send SIGTERM on shutdown: stop accepting connections, let requests finish.
+ * @param signal - Name of the signal that asked for shutdown.
+ */
 const shutdown = (signal: string): void => {
   console.log(`${signal} received, shutting down`)
 

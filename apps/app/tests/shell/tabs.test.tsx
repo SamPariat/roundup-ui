@@ -8,51 +8,85 @@ import { TAB_ITEMS, tabIdForPath } from '../../src/shell/tabs.ts'
 
 const mockTriggers: string[] = []
 
-jest.mock('expo-router/native-tabs', () => {
-  const Trigger = Object.assign(
-    function NativeTrigger({ name }: { name: string }) {
-      mockTriggers.push(`native:${name}`)
+/** Props of the stand-ins for navigator containers. */
+interface ChildrenProps {
+  /** What the container wraps. */
+  children: ReactNode
+}
 
-      return null
-    },
-    { Icon: () => null, Label: () => null },
-  )
+/** Props of the stand-ins for tab triggers. */
+interface NameProps {
+  /** The route the trigger is for. */
+  name: string
+}
 
-  return {
-    NativeTabs: Object.assign(
-      function NativeTabs({ children }: { children: ReactNode }) {
-        return children
-      },
-      { Trigger },
-    ),
-  }
-})
+/**
+ * Stand-in for a navigator container: renders what it wraps. A function declaration so jest.mock
+ * factories can use it before this file's constants are initialised.
+ * @returns The children, unchanged.
+ */
+function mockContainer({ children }: ChildrenProps): ReactNode {
+  return children
+}
+
+/**
+ * Stand-in for a leaf component that draws nothing.
+ * @returns Nothing.
+ */
+function mockEmpty(): null {
+  return null
+}
+
+/**
+ * Records a system tab bar trigger so the test can compare routes and order.
+ * @returns Nothing.
+ */
+function mockNativeTrigger({ name }: NameProps): null {
+  mockTriggers.push(`native:${name}`)
+
+  return null
+}
+
+/**
+ * Records a headless tab trigger so the test can compare routes and order.
+ * @returns Nothing.
+ */
+function mockHeadlessTrigger({ name }: NameProps): null {
+  mockTriggers.push(`headless:${name}`)
+
+  return null
+}
+
+/**
+ * Stand-in for usePathname.
+ * @returns A path under the Explore tab.
+ */
+function mockPathname(): string {
+  return '/explore'
+}
+
+jest.mock('expo-router/native-tabs', () => ({
+  NativeTabs: Object.assign(mockContainer, {
+    Trigger: Object.assign(mockNativeTrigger, { Icon: mockEmpty, Label: mockEmpty }),
+  }),
+}))
 
 jest.mock('expo-router/ui', () => ({
-  Tabs: function Tabs({ children }: { children: ReactNode }) {
-    return children
-  },
-  TabList: function TabList({ children }: { children: ReactNode }) {
-    return children
-  },
-  TabSlot: function TabSlot() {
-    return null
-  },
-  TabTrigger: function TabTrigger({ name }: { name: string }) {
-    mockTriggers.push(`headless:${name}`)
-
-    return null
-  },
+  Tabs: mockContainer,
+  TabList: mockContainer,
+  TabSlot: mockEmpty,
+  TabTrigger: mockHeadlessTrigger,
 }))
 
-jest.mock('expo-router', () => ({ usePathname: () => '/explore' }))
+jest.mock('expo-router', () => ({ usePathname: mockPathname }))
 
-jest.mock('../../src/shell/AppShell.tsx', () => ({
-  AppShell: function AppShell({ children }: { children: ReactNode }) {
-    return children
-  },
-}))
+jest.mock('../../src/shell/AppShell.tsx', () => ({ AppShell: mockContainer }))
 
+/**
+ * Lists the trigger routes recorded under a prefix, in render order.
+ * @param prefix - Which tab bar recorded them, such as "native:".
+ * @returns The route names without the prefix.
+ */
 const triggersWith = (prefix: string): string[] =>
   mockTriggers
     .filter((entry) => entry.startsWith(prefix))

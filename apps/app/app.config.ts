@@ -3,10 +3,16 @@ import type { ConfigContext, ExpoConfig } from 'expo/config'
 import { existsSync } from 'node:fs'
 import path from 'node:path'
 
+/** The two deployment environments, named like the backend's. */
 export type AppEnv = 'beta' | 'prod'
 
 const APP_ENVS: readonly AppEnv[] = ['beta', 'prod']
 
+/**
+ * Validates the APP_ENV value, so a typo fails the build with the fix in the message instead of shipping the wrong app.
+ * @param value - The raw APP_ENV text, if any.
+ * @returns The environment.
+ */
 export const parseAppEnv = (value: string | undefined): AppEnv => {
   const match = APP_ENVS.find((env) => env === value)
 
@@ -19,7 +25,13 @@ export const parseAppEnv = (value: string | undefined): AppEnv => {
   return match
 }
 
-const createConfig = ({ config, projectRoot }: ConfigContext): ExpoConfig => {
+/**
+ * Builds the Expo config for the chosen environment: loads the matching .env file, names the app and its bundle IDs, and turns on typed routes and the React Compiler.
+ * @param context - Expo's config context: the base config and the project root.
+ * @returns The Expo config.
+ */
+const createConfig = (context: ConfigContext): ExpoConfig => {
+  const { config, projectRoot } = context
   const appEnv = parseAppEnv(process.env.APP_ENV)
 
   // Expo only reads .env, .env.local and .env.<mode>. Roundup's backend names its files

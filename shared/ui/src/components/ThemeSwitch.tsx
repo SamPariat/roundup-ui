@@ -11,30 +11,48 @@ import { cn } from '../lib/cn.ts'
 import { Icon } from './Icon.tsx'
 import { Text } from './Text.tsx'
 
+/** Shape of one theme option. */
+interface OptionShape {
+  /** Icon drawn before the label. */
+  icon: IconName
+  /** The preference this option sets. */
+  id: string
+}
+
 const OPTIONS = [
   { id: 'system', icon: 'device' },
   { id: 'light', icon: 'sun' },
   { id: 'dark', icon: 'moon' },
-] as const satisfies readonly { icon: IconName; id: string }[]
+] as const satisfies readonly OptionShape[]
 
+/** The three theme preferences a person can pick. */
 export type ThemeChoice = (typeof OPTIONS)[number]['id']
 
+/** Props for ThemeSwitch. */
 export interface ThemeSwitchProps {
   /** system follows the device; light is Latte, dark is Mocha. */
   value?: ThemeChoice
+  /** Called with the preference that was chosen. */
   onChange?: (value: ThemeChoice) => void
+  /** Accessible name of the group. Defaults to "Theme". */
   label?: string
 }
 
-const ThemeOption = ({
-  checked,
-  onChange,
-  option,
-}: {
+/** Props for one theme radio. */
+interface ThemeOptionProps {
+  /** Whether this is the chosen preference. */
   checked: boolean
+  /** Called with this option's id when pressed. */
   onChange?: ((id: ThemeChoice) => void) | undefined
+  /** The option to draw. */
   option: (typeof OPTIONS)[number]
-}): ReactElement => {
+}
+
+/**
+ * One radio of the theme switch: icon, translated label, checked state.
+ * @returns The pressable radio.
+ */
+const ThemeOption = ({ checked, onChange, option }: ThemeOptionProps): ReactElement => {
   const { t } = useT()
   const label = t(`themeSwitch.${option.id}`)
 
@@ -61,7 +79,10 @@ const ThemeOption = ({
   )
 }
 
-// Three radios in one group: exactly one is checked, and the group is named.
+/**
+ * Three radios in one group: exactly one is checked, and the group is named.
+ * @returns The radio group.
+ */
 export const ThemeSwitch = ({
   label,
   onChange,

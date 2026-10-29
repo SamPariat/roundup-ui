@@ -5,17 +5,26 @@ import { View } from 'react-native'
 import { Button } from './Button.tsx'
 import { Text } from './Text.tsx'
 
+/** Props for PageHeader. */
 export interface PageHeaderProps {
+  /** The page title, the one level-1 heading of the page. */
   title: string
+  /** A muted line under the title. */
   subtitle?: string
   /** Text of a back link above the title, e.g. "Squads". */
   back?: string
+  /** Called when the back button is pressed. */
   onBack?: () => void
+  /** Content before the title, such as an Avatar. */
   leading?: ReactNode
+  /** Buttons on the right of the header. */
   actions?: ReactNode
 }
 
-/** The title block at the top of a page from 1024 wide up. */
+/**
+ * The title block at the top of a page from 1024 wide up.
+ * @returns The header block.
+ */
 export const PageHeader = ({
   actions,
   back,

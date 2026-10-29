@@ -16,20 +16,32 @@ const INPUT_TYPES = {
   number: { keyboardType: 'number-pad', secureTextEntry: false, autoCapitalize: 'none' },
 } as const
 
+/** Props for TextField. */
 export interface TextFieldProps {
   /** Required: a field with no visible name has no accessible name either. */
   label: string
+  /** The current text. */
   value?: string
+  /** Hint shown while the field is empty. Not a substitute for the label. */
   placeholder?: string
+  /** Hint shown under the field until there is an error. */
   helper?: string
   /** Replaces the helper text and turns the field red. */
   error?: string
+  /** Makes the field read-only and greyed out. */
   disabled?: boolean
+  /** Icon drawn at the start of the field. */
   icon?: IconName
+  /** Keyboard and masking preset. Defaults to text. */
   type?: keyof typeof INPUT_TYPES
+  /** Called with the text as it changes. */
   onChangeText?: (text: string) => void
 }
 
+/**
+ * A labelled single-line input with helper and error text, a focus ring, and presets for text, email, password and number.
+ * @returns The labelled field.
+ */
 export const TextField = ({
   disabled = false,
   error,

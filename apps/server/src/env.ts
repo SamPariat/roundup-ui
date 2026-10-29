@@ -1,6 +1,8 @@
 import path from 'node:path'
 
+/** The validated server configuration. */
 export interface ServerEnv {
+  /** The port to listen on. */
   readonly port: number
   /** Folder with the Expo web export. */
   readonly distDir: string
@@ -8,7 +10,12 @@ export interface ServerEnv {
   readonly apiOrigin: string | undefined
 }
 
+/** A configuration mistake, worded with the fix. */
 export class ServerEnvError extends Error {
+  /**
+   * Names the error so logs show what it is.
+   * @param message - What is wrong with the configuration.
+   */
   constructor(message: string) {
     super(message)
     this.name = 'ServerEnvError'
@@ -18,6 +25,12 @@ export class ServerEnvError extends Error {
 const DEFAULT_PORT = 3000
 const MAX_PORT = 65_535
 
+/**
+ * Validates PORT, DIST_DIR and API_ORIGIN and applies defaults, so a bad value stops the container at startup.
+ * @param raw - The process environment.
+ * @param cwd - Folder that a relative DIST_DIR resolves from.
+ * @returns The validated configuration.
+ */
 export const readServerEnv = (
   raw: Readonly<Record<string, string | undefined>>,
   cwd: string,

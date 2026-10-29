@@ -11,23 +11,38 @@ import { Icon } from './Icon.tsx'
 import { Surface } from './Surface.tsx'
 import { Text } from './Text.tsx'
 
+/** How one toast tone looks. */
+interface ToneStyle {
+  /** Role colour for the icon. */
+  color: 'danger' | 'info' | 'success'
+  /** Soft background class. */
+  fill: string
+  /** Icon that backs the colour with a shape. */
+  icon: IconName
+}
+
 const TONES = {
   success: { icon: 'check', fill: 'bg-success-soft', color: 'success' },
   error: { icon: 'alert', fill: 'bg-danger-soft', color: 'danger' },
   info: { icon: 'info', fill: 'bg-info-soft', color: 'info' },
-} as const satisfies Record<
-  string,
-  { color: 'danger' | 'info' | 'success'; fill: string; icon: IconName }
->
+} as const satisfies Record<string, ToneStyle>
 
+/** Props for Toast. */
 export interface ToastProps {
+  /** success, error or info. Errors interrupt screen readers; the others wait. Defaults to info. */
   tone?: keyof typeof TONES
+  /** Label of an action button, such as Undo. */
   action?: string
+  /** Called when the action button is pressed. */
   onAction?: () => void
+  /** The message. */
   children?: ReactNode
 }
 
-// A toast is a live region: errors interrupt, the rest wait for a pause.
+/**
+ * A toast is a live region: errors interrupt, the rest wait for a pause.
+ * @returns The message strip.
+ */
 export const Toast = ({ action, children, onAction, tone = 'info' }: ToastProps): ReactElement => {
   const { shadow } = useTheme()
   const { color, fill, icon } = TONES[tone]

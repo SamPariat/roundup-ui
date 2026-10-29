@@ -5,7 +5,10 @@ import { Modal } from '../../src/components/Modal.tsx'
 import { Text } from '../../src/components/Text.tsx'
 import { renderWithTheme } from '../helpers/render.tsx'
 
-// onRequestClose lives on the native Modal, the ancestor of the dialog Surface; fireEvent wants that element.
+/**
+ * onRequestClose lives on the native Modal, the ancestor of the dialog Surface; fireEvent wants that element.
+ * @returns The native modal's host element.
+ */
 const modalHost = () => {
   let node = screen.getByLabelText('Add member')
 

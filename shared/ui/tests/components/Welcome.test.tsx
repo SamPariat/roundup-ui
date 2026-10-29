@@ -3,6 +3,10 @@ import { fireEvent, screen } from '@testing-library/react-native'
 import { Welcome } from '../../src/components/Welcome.tsx'
 import { renderWithTheme } from '../helpers/render.tsx'
 
+/**
+ * Tells the Welcome page it was laid out at a width, as React Native does after the first layout.
+ * @param width - The width to report in points.
+ */
 const layoutAt = async (width: number): Promise<void> => {
   await fireEvent(screen.getByLabelText('Welcome to Roundup'), 'layout', {
     nativeEvent: { layout: { width, height: 800, x: 0, y: 0 } },

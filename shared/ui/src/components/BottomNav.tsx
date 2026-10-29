@@ -13,14 +13,21 @@ import { NavTab } from './NavTab.tsx'
 import { SafeArea } from './SafeArea.tsx'
 import { Text } from './Text.tsx'
 
+/** Props for BottomNav. */
 export interface BottomNavProps {
+  /** The destinations to show. Defaults to Squads, Explore and Profile. */
   items?: readonly NavItemData[]
   /** Defaults to 'squads'. */
   value?: string
+  /** Called with the id of the tab that was pressed. */
   onChange?: (id: string) => void
 }
 
-// Height is size-nav (72) plus the gesture inset, which SafeArea reads from the bottom edge only.
+/**
+ * The tab bar shown below the tablet breakpoint: one tab per destination, a pill behind the active icon, and the bottom safe area underneath.
+ * Height is size-nav (72) plus the gesture inset, which SafeArea reads from the bottom edge only.
+ * @returns The tab bar, a navigation tablist.
+ */
 export const BottomNav = ({ items, onChange, value = 'squads' }: BottomNavProps): ReactElement => {
   const { t } = useT()
   const defaults = useDefaultNavItems()

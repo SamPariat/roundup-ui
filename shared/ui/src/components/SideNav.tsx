@@ -5,6 +5,7 @@ import { View } from 'react-native'
 import { useT } from '@roundup/i18n'
 
 import type { NavItemData } from '../lib/nav-items.ts'
+import type { Person } from '../lib/person.ts'
 
 import { cn } from '../lib/cn.ts'
 import { useDefaultNavItems } from '../lib/nav-items.ts'
@@ -14,16 +15,36 @@ import { Logo } from './Logo.tsx'
 import { NavTab } from './NavTab.tsx'
 import { Text } from './Text.tsx'
 
+/** Props for SideNav. */
+/** The person shown at the bottom of the rail. */
+export interface NavUser extends Person {
+  /** Phone number shown under the name. */
+  phone?: string
+}
+
+/** Props for the user block. */
+interface SideNavUserProps {
+  /** The person to show. */
+  user: NavUser
+}
+
+/** Props for SideNav. */
 export interface SideNavProps {
+  /** The destinations to show. Defaults to Squads, Explore and Profile. */
   items?: readonly NavItemData[]
   /** Defaults to 'squads'. */
   value?: string
+  /** Called with the id of the tab that was pressed. */
   onChange?: (id: string) => void
   /** The signed-in person, pinned to the bottom. */
-  user?: { id?: string; name: string; phone?: string; src?: string }
+  user?: NavUser
 }
 
-const SideNavUser = ({ user }: { user: NonNullable<SideNavProps['user']> }): ReactElement => (
+/**
+ * The signed-in person at the bottom of the rail: avatar, name and phone.
+ * @returns The user block.
+ */
+const SideNavUser = ({ user }: SideNavUserProps): ReactElement => (
   <View className="flex-row items-center gap-3 border-t border-border px-3 pt-3">
     <Avatar
       name={user.name}
@@ -44,7 +65,10 @@ const SideNavUser = ({ user }: { user: NonNullable<SideNavProps['user']> }): Rea
   </View>
 )
 
-/** Vertical navigation from 1024 wide up. */
+/**
+ * Vertical navigation from 1024 wide up.
+ * @returns The side rail, a navigation tablist.
+ */
 export const SideNav = ({
   items,
   onChange,

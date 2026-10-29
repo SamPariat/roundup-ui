@@ -4,25 +4,38 @@ import { Pressable, View } from 'react-native'
 
 import { useT } from '@roundup/i18n'
 
+import type { Person } from '../lib/person.ts'
+
 import { Avatar } from './Avatar.tsx'
 import { AvatarGroup } from './AvatarGroup.tsx'
 import { Badge } from './Badge.tsx'
 import { Icon } from './Icon.tsx'
 import { Text } from './Text.tsx'
 
+/** Props for SquadCard. */
 export interface SquadCardProps {
+  /** Squad ID; picks the avatar tint. */
   id?: string
+  /** The squad's name. */
   name: string
+  /** Squad photo; initials are drawn without it. */
   avatarURL?: string
+  /** The signed-in person's role in the squad. ADMIN adds an Admin badge. */
   role?: 'ADMIN' | 'MEMBER'
+  /** Real member count when `members` is only a sample. Defaults to the sample length. */
   memberCount?: number
   /** A few members for the avatar stack. */
-  members?: { id?: string; name: string; src?: string }[]
+  members?: Person[]
+  /** Called when the card is pressed; the card is a button. */
   onPress?: () => void
 }
 
 const NO_MEMBERS: NonNullable<SquadCardProps['members']> = []
 
+/**
+ * A tappable card summarising a squad: name, avatar, stacked member avatars, count and role, spoken as one phrase.
+ * @returns The card as a single button.
+ */
 export const SquadCard = ({
   avatarURL,
   id,

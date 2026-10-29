@@ -9,6 +9,11 @@ import { SafeArea } from '../../src/components/SafeArea.tsx'
 const insets = { top: 47, right: 3, bottom: 34, left: 11 }
 const frame = { x: 0, y: 0, width: 466, height: 800 }
 
+/**
+ * Wraps an element in a safe-area provider with the Duo-like insets above.
+ * @param ui - The element under test.
+ * @returns The wrapped element.
+ */
 const inProvider = (ui: ReactElement) => (
   <SafeAreaProvider initialMetrics={{ insets, frame }}>{ui}</SafeAreaProvider>
 )

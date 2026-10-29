@@ -13,21 +13,34 @@ import { Price } from './Price.tsx'
 import { Rating } from './Rating.tsx'
 import { Text } from './Text.tsx'
 
+/** Props for VenueCard. */
 export interface VenueCardProps {
+  /** The venue's name. */
   name: string
+  /** Street address shown under the name. */
   address?: string
+  /** Average rating out of 5. */
   rating?: number
+  /** How many reviews the rating is based on. */
   reviews?: number
+  /** Google Places price level, 0 (unknown) to 4. */
   priceLevel?: 0 | 1 | 2 | 3 | 4
+  /** Whether the venue is open now. Omit when unknown. */
   isOpen?: boolean
+  /** Category tags drawn as plain badges. */
   types?: string[]
+  /** Photo URL. A pattern is drawn without it. */
   photo?: string
   /** Show the save button; true draws it filled. */
   saved?: boolean
+  /** Called when the save button is pressed. */
   onSave?: () => void
 }
 
-// Placeholder when a venue has no photo: tiles cut from the radius scale.
+/**
+ * Placeholder when a venue has no photo: tiles cut from the radius scale.
+ * @returns A decorative SVG of tinted tiles.
+ */
 const VenuePattern = (): ReactElement => {
   const { roles } = useTheme()
 
@@ -47,12 +60,15 @@ const VenuePattern = (): ReactElement => {
   )
 }
 
-// Optional props that callers may pass as undefined, which exactOptionalPropertyTypes otherwise rejects.
+/** Optional props that callers may pass as undefined, which exactOptionalPropertyTypes otherwise rejects. */
 type Loose<T> = { [K in keyof T]?: T[K] | undefined }
 
 const NO_TYPES: string[] = []
 
-// The photo, or the pattern when there is none, with the save button floated on top.
+/**
+ * The photo, or the pattern when there is none, with the save button floated on top.
+ * @returns The media area with the optional save button.
+ */
 const VenueMedia = ({
   onSave,
   photo,
@@ -89,7 +105,17 @@ const VenueMedia = ({
   )
 }
 
-const OpenBadge = ({ isOpen }: { isOpen: boolean }): ReactElement => {
+/** Props for the open/closed badge. */
+interface OpenBadgeProps {
+  /** Whether the venue is open now. */
+  isOpen: boolean
+}
+
+/**
+ * A success or danger badge that says Open or Closed.
+ * @returns A status pill worded Open or Closed.
+ */
+const OpenBadge = ({ isOpen }: OpenBadgeProps): ReactElement => {
   const { t } = useT()
 
   if (isOpen) return <Badge tone="success">{t('venueCard.open')}</Badge>
@@ -97,7 +123,10 @@ const OpenBadge = ({ isOpen }: { isOpen: boolean }): ReactElement => {
   return <Badge tone="danger">{t('venueCard.closed')}</Badge>
 }
 
-// Rating, price and opening status in one wrapping row; nothing renders when none is known.
+/**
+ * Rating, price and opening status in one wrapping row; nothing renders when none is known.
+ * @returns The facts row, or null when none of the facts is known.
+ */
 const VenueFacts = ({
   isOpen,
   priceLevel,
@@ -119,6 +148,10 @@ const VenueFacts = ({
   )
 }
 
+/**
+ * A card for a place: photo or pattern, name, address, rating, price level, opening status and category tags, with a save button when it can be saved.
+ * @returns A bordered card container.
+ */
 export const VenueCard = ({
   address,
   isOpen,

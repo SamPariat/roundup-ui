@@ -6,39 +6,108 @@ import { format } from 'prettier'
 
 import prettierConfig from '@roundup/config/prettier'
 
+/** A value that is either the same in both themes or given per theme. */
 type Themed = Record<ThemeId, string> | string
+/** The two themes: Mocha is dark, Latte is light. */
 type ThemeId = 'latte' | 'mocha'
 
+/** A colour in tokens.json. */
 interface ColorToken {
+  /** The token name, for example `bg` or `ctp-mauve`. */
   name: string
+  /** Its value, possibly a `{reference}` to another token. */
   value: Themed
 }
+/** A text style in tokens.json. */
 interface TextStyle {
+  /** The style name, such as `body`. */
   name: string
+  /** The size, in px. */
   fontSize: string
+  /** The line height, in px. */
   lineHeight: string
+  /** The weight, which picks the Onest family. */
   fontWeight: number
+  /** Tracking in em. */
   letterSpacing?: string
 }
-interface TokenFile {
-  color: { tokens: ColorToken[] }
-  type: { groups: { styles: TextStyle[] }[] }
-  spacing: { tokens: { name: string; value: string }[] }
-  radius: { tokens: { name: string; value: string }[] }
-  size: { tokens: { name: string; value: string }[] }
-  shadow: { tokens: { name: string; value: Record<ThemeId, string> }[] }
+
+/** A list of tokens, as tokens.json groups them. */
+interface Section<T> {
+  /** The tokens in order. */
+  tokens: T[]
 }
 
+/** A token with a plain value, such as a spacing step. */
+interface Named {
+  /** The token name. */
+  name: string
+  /** Its value, as written in the file (for example "16px"). */
+  value: string
+}
+
+/** A shadow, which differs by theme. */
+interface Shadow {
+  /** The token name. */
+  name: string
+  /** The CSS box-shadow for each theme. */
+  value: Record<ThemeId, string>
+}
+
+/** A group of text styles. */
+interface StyleGroup {
+  /** The styles in the group. */
+  styles: TextStyle[]
+}
+
+/** Text styles, which tokens.json files under named groups. */
+interface Grouped {
+  /** The groups in order. */
+  groups: StyleGroup[]
+}
+
+/** The parts of tokens.json the generator reads. */
+interface TokenFile {
+  /** The colour tokens, primitives and roles. */
+  color: Section<ColorToken>
+  /** The text styles, in groups. */
+  type: Grouped
+  /** The spacing steps. */
+  spacing: Section<Named>
+  /** The corner radii. */
+  radius: Section<Named>
+  /** The fixed sizes and breakpoints. */
+  size: Section<Named>
+  /** The shadows, per theme. */
+  shadow: Section<Shadow>
+}
+
+/**
+ * Resolves a path relative to this script.
+ * @param relative - A path relative to scripts/.
+ * @returns The file URL.
+ */
 const here = (relative: string): URL => new URL(relative, import.meta.url)
 const tokens = JSON.parse(readFileSync(here('../tokens.json'), 'utf8')) as TokenFile
 
 const PRIMITIVE_PREFIXES = ['ctp-', 'dawn-']
 
+/**
+ * Tells primitives (ctp-*, dawn-*) from roles; only roles reach components.
+ * @param name - The token name.
+ * @returns True for a primitive.
+ */
 const isPrimitive = (name: string): boolean =>
   PRIMITIVE_PREFIXES.some((prefix) => name.startsWith(prefix))
 
 const byName = new Map(tokens.color.tokens.map((token) => [token.name, token.value]))
 
+/**
+ * Follows `{reference}` chains to a literal colour for one theme.
+ * @param value - A colour or a reference.
+ * @param theme - Which theme to resolve for.
+ * @returns The colour value.
+ */
 const resolve = (value: string, theme: ThemeId): string => {
   const reference = /^\{(.+)\}$/.exec(value)?.[1]
 
@@ -52,15 +121,29 @@ const resolve = (value: string, theme: ThemeId): string => {
 
 const roleTokens = tokens.color.tokens.filter((token) => !isPrimitive(token.name))
 
+/**
+ * Lists every role with its resolved colour for one theme.
+ * @param theme - Which theme to resolve for.
+ * @returns Name and colour pairs.
+ */
 const rolesFor = (theme: ThemeId): [string, string][] =>
   roleTokens.map((token) => [
     token.name,
     resolve(typeof token.value === 'string' ? token.value : token.value[theme], theme),
   ])
 
+/**
+ * Reads a CSS pixel length as a number.
+ * @param value - A length such as "16px".
+ * @returns The number of pixels.
+ */
 const px = (value: string): number => Number.parseFloat(value)
 
-// React Native letter-spacing is in points, the design system writes em.
+/**
+ * React Native letter-spacing is in points, the design system writes em.
+ * @param style - The text style.
+ * @returns Points, with negative zero turned into zero.
+ */
 const letterSpacingPoints = (style: TextStyle): number => {
   if (style.letterSpacing === undefined) return 0
   const points = Math.round(Number.parseFloat(style.letterSpacing) * px(style.fontSize) * 100) / 100
@@ -79,6 +162,11 @@ const TABULAR_STYLES = new Set(['otp', 'numeric'])
 
 const textStyles = tokens.type.groups.flatMap((group) => group.styles)
 
+/**
+ * Maps a weight to the matching Onest family name, since React Native picks fonts by family.
+ * @param weight - A numeric weight such as 600.
+ * @returns The family name.
+ */
 const fontFamily = (weight: number): string => {
   const family = FONT_FAMILIES[weight]
 
@@ -87,8 +175,18 @@ const fontFamily = (weight: number): string => {
   return family
 }
 
+/**
+ * Writes a string as a quoted literal.
+ * @param value - The text to quote.
+ * @returns The quoted text.
+ */
 const quote = (value: string): string => JSON.stringify(value)
 
+/**
+ * Writes name and value pairs as an object literal.
+ * @param entries - Keys and string or number values.
+ * @returns The object source.
+ */
 const objectOf = (entries: [string, number | string][]): string =>
   `{\n${entries
     .map(([key, value]) => `  ${quote(key)}: ${typeof value === 'number' ? value : quote(value)},`)
@@ -96,6 +194,10 @@ const objectOf = (entries: [string, number | string][]): string =>
 
 const HEADER = `GENERATED by shared/tokens/scripts/generate.ts from tokens.json. Do not edit; run \`make tokens\`.`
 
+/**
+ * Builds the source of tokens.ts: role colours per theme, text styles, scales and shadows.
+ * @returns The unformatted TypeScript source.
+ */
 const buildTs = (): string => {
   const roleNames = roleTokens.map((token) => token.name)
   const sizes = tokens.size.tokens.filter((token) => !token.name.startsWith('bp-'))
@@ -149,6 +251,11 @@ export const shadows: Readonly<Record<ThemeName, Readonly<Record<string, string>
 `
 }
 
+/**
+ * Writes the roles of one theme as CSS custom properties.
+ * @param theme - Which theme to write.
+ * @returns The declarations.
+ */
 const cssVariables = (theme: ThemeId): string =>
   rolesFor(theme)
     .map(([name, value]) => `  --color-${name}: ${value};`)
@@ -159,6 +266,10 @@ const cssVariables = (theme: ThemeId): string =>
 // does not repeat them and components use the default classes (h-12, rounded-xl, md:flex).
 const CONTENT_WIDTH = tokens.size.tokens.find((t) => t.name === 'size-content')
 
+/**
+ * Builds the source of theme.css: the colour theme, the content width, both appearances and the type utilities.
+ * @returns The unformatted CSS source.
+ */
 const buildCss = (): string => {
   if (CONTENT_WIDTH === undefined) throw new Error('tokens.json has no size-content')
 
@@ -216,6 +327,12 @@ ${families}
 `
 }
 
+/**
+ * Formats generated source with the repo's Prettier settings, so the output is stable and diffable.
+ * @param source - The unformatted source.
+ * @param parser - Which language it is.
+ * @returns The formatted source.
+ */
 const formatWith = async (source: string, parser: 'css' | 'typescript'): Promise<string> =>
   format(source, { ...prettierConfig, plugins: [], parser })
 
@@ -224,6 +341,11 @@ const outputs = [
   { file: here('../src/theme.css'), content: await formatWith(buildCss(), 'css') },
 ]
 
+/**
+ * Reads a generated file, or returns an empty string when it does not exist yet.
+ * @param file - The file to read.
+ * @returns The file text.
+ */
 const readOrEmpty = (file: URL): string => {
   try {
     return readFileSync(file, 'utf8')

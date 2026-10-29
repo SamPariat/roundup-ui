@@ -1,6 +1,9 @@
 // Shared Jest settings. jest-expo supplies the React Native environment and transforms.
 import type { Config } from 'jest'
 
+/**
+ * Jest settings shared by every package: the jest-expo preset, where tests live, coverage inputs and the SVG transform.
+ */
 export const jestPreset = {
   preset: 'jest-expo',
   // Every package keeps its tests in tests/, mirroring the paths under src/.

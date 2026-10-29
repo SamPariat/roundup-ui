@@ -15,6 +15,9 @@ import { Icon } from './Icon.tsx'
 import { Spinner } from './Spinner.tsx'
 import { Text } from './Text.tsx'
 
+/**
+ * Class recipe for every button: variant (colour), size, full width, icon-only and inactive states. Exported so link-like elements can borrow the look.
+ */
 export const buttonVariants = cva(
   'flex-row items-center justify-center gap-2 rounded-xl border border-transparent focus:outline-2 focus:outline-offset-2 focus:outline-focus-ring active:scale-98',
   {
@@ -50,6 +53,7 @@ export const buttonVariants = cva(
   },
 )
 
+/** The four button variants: primary, secondary, ghost and destructive. */
 type Variant = NonNullable<VariantProps<typeof buttonVariants>['variant']>
 
 const LABEL_TONE = {
@@ -59,29 +63,58 @@ const LABEL_TONE = {
   destructive: 'on-accent',
 } as const satisfies Record<Variant, 'accent' | 'fg' | 'on-accent'>
 
+/** Props every button has, whatever it shows. */
 interface ButtonBase {
+  /** Colour treatment. Defaults to primary. */
   variant?: Variant
+  /** Height step: sm 36, md 48 (the tap target), lg 56. Defaults to md. */
   size?: 'lg' | 'md' | 'sm'
   /** A request is in flight: shows a spinner, disables the button and keeps its width. */
   loading?: boolean
   /** What the button says while loading, e.g. "Sending code…". Two or three words. */
   loadingLabel?: string
+  /** Turns the button inert and greys it out. */
   disabled?: boolean
   /** Stretch to the container width (bottom-of-screen actions). */
   block?: boolean
+  /** Called when the button is pressed. Not called while it is disabled or loading. */
   onPress?: (() => void) | undefined
+  /** Extra classes for placement. */
   className?: string
+}
+
+/** A button with content: its text (or custom children) is its accessible name. */
+interface WithContent {
+  /** The button's text, or custom content. */
+  children: ReactNode
+  /** Leading icon. */
+  icon?: IconName
+  /** Overrides the accessible name taken from the text. */
+  label?: string
+}
+
+/** An icon-only button, which must name itself with `label`. */
+interface IconOnly {
+  /** Icon-only buttons have no content. */
+  children?: never
+  /** The only thing drawn. */
+  icon: IconName
+  /** The accessible name, since there is no text. */
+  label: string
 }
 
 /** An icon-only button must name itself; a button with text names itself from the text. */
 export type ButtonProps = ButtonBase &
-  (
-    | { children: ReactNode; icon?: IconName; label?: string }
-    | { children?: never; icon: IconName; label: string }
-  )
+  /** A button with content: its text (or custom children) is its accessible name. */
+  (IconOnly | WithContent)
 
+/** The button size steps. */
 type Size = NonNullable<ButtonProps['size']>
 
+/**
+ * The resting content of a button: an optional icon, then the text or custom children.
+ * @returns The icon and label.
+ */
 const RestingContent = ({
   children,
   icon,
@@ -89,10 +122,15 @@ const RestingContent = ({
   size,
   textTone,
 }: {
+  /** What the button shows besides its icon. */
   children?: ReactNode
+  /** Leading icon, if any. */
   icon?: IconName | undefined
+  /** Role colour for the icon, already adjusted for the inactive state. */
   iconTone: NonNullable<IconProps['tone']>
+  /** The button size, which picks the icon and text sizes. */
   size: Size
+  /** Role colour for the text, already adjusted for the inactive state. */
   textTone: NonNullable<TextProps['tone']>
 }): ReactElement => (
   <>
@@ -109,13 +147,20 @@ const RestingContent = ({
   </>
 )
 
+/**
+ * The loading state: the resting content stays in layout, hidden, so the button keeps its width, with a spinner and optional live label drawn over it.
+ * @returns The hidden resting content plus the spinner overlay.
+ */
 const LoadingContent = ({
   children,
   loadingLabel,
   size,
 }: {
+  /** The resting content to keep in layout while loading. */
   children: ReactNode
+  /** Text announced and shown next to the spinner. */
   loadingLabel?: string | undefined
+  /** The button size, which picks the label size. */
   size: Size
 }): ReactElement => (
   <>
@@ -143,6 +188,10 @@ const LoadingContent = ({
   </>
 )
 
+/**
+ * A tappable button with variants, an icon-only form and a loading state. It reads the surrounding Modal: inside a busy Modal every button but the loading one goes inert.
+ * @returns The pressable button.
+ */
 export const Button = ({
   block: blockProp,
   children,

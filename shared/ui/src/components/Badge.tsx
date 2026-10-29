@@ -36,13 +36,18 @@ const dotVariants = cva('size-2 rounded-full', {
   defaultVariants: { tone: 'neutral' },
 })
 
+/** Props for Badge: the tone variant plus its text. */
 export type BadgeProps = VariantProps<typeof badgeVariants> & {
+  /** The badge text. The word carries the meaning, the dot only backs it up. */
   children?: ReactNode
   /** Hide the leading dot (plain tags such as venue types). */
   dot?: boolean
 }
 
-// The word carries the meaning; the dot colour only backs it up.
+/**
+ * A small status pill (admin, open, closed) whose tone sets its background and dot colour.
+ * @returns The pill.
+ */
 export const Badge = ({ children, dot = true, tone }: BadgeProps): ReactElement => (
   <View className={badgeVariants({ tone })}>
     {dot ? <View aria-hidden className={dotVariants({ tone })} /> : null}

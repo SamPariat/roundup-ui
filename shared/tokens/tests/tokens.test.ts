@@ -20,6 +20,7 @@ import {
 const TEXT = 4.5
 const GRAPHIC = 3
 
+/** A foreground, the background it sits on, and the lowest contrast ratio it may have. */
 type Pair = [foreground: RoleName, background: RoleName, floor: number]
 
 // Every pair from the design system's Accessibility section. fg-subtle is placeholder and
@@ -58,6 +59,12 @@ const knownLatteExceptions = new Set([
   'warning/bg-raised',
 ])
 
+/**
+ * Orders names alphabetically, for a stable comparison.
+ * @param a - One name.
+ * @param b - Another name.
+ * @returns Negative, zero or positive, as Array.sort expects.
+ */
 const byName = (a: string, b: string): number => a.localeCompare(b)
 
 const themeNames: ThemeName[] = ['mocha', 'latte']

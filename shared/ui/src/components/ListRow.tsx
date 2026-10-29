@@ -8,18 +8,30 @@ import { cn } from '../lib/cn.ts'
 import { Icon } from './Icon.tsx'
 import { Text } from './Text.tsx'
 
+/** Props for ListRow. */
 export interface ListRowProps {
+  /** The row's main text. */
   title: string
+  /** Secondary line under the title. */
   subtitle?: string
+  /** Content before the text, such as an Avatar or Icon. */
   leading?: ReactNode
+  /** Content after the text, such as a Badge or a value. */
   trailing?: ReactNode
+  /** Shows a chevron to say the row opens something. */
   chevron?: boolean
+  /** Draws the title in the danger colour (sign out, delete). */
   destructive?: boolean
+  /** Makes the row a button. Without it the row is plain content. */
   onPress?: () => void
   /** Why the row cannot be pressed right now, while a request is in flight. */
   busy?: boolean
 }
 
+/**
+ * A row of a List: leading content, a title with optional subtitle, and trailing content; a button when it has an `onPress`.
+ * @returns A full-width line, pressable when it has a handler.
+ */
 export const ListRow = ({
   busy = false,
   chevron = false,

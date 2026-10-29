@@ -3,8 +3,26 @@ import { existsSync, readFileSync } from 'node:fs'
 
 const packages = ['apps/app', 'apps/server', 'shared/i18n', 'shared/tokens', 'shared/ui']
 
+/** Line coverage numbers. */
+interface LineCoverage {
+  /** Lines run by tests. */
+  covered: number
+  /** Percent covered. */
+  pct: number
+  /** Lines that count. */
+  total: number
+}
+
+/** Coverage totals for a package. */
+interface Totals {
+  /** Line coverage. */
+  lines: LineCoverage
+}
+
+/** The part of Jest's coverage-summary.json that is read. */
 interface Summary {
-  total: { lines: { covered: number; pct: number; total: number } }
+  /** Totals across all files. */
+  total: Totals
 }
 
 console.log('| Package | Lines | Covered |')

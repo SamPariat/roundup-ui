@@ -20,8 +20,11 @@ import { Button } from './Button.tsx'
 import { Surface } from './Surface.tsx'
 import { Text } from './Text.tsx'
 
+/** Props for Modal. */
 export interface ModalProps {
+  /** The dialog's title. It is also the dialog's accessible name and receives focus when it opens. */
   title: string
+  /** A line under the title. */
   subtitle?: string
   /** The subject the modal is about, e.g. an Avatar. */
   leading?: ReactNode
@@ -29,26 +32,41 @@ export interface ModalProps {
   tone?: 'confirm' | 'content'
   /** One plain-text paragraph under the header (confirmations). */
   body?: string
+  /** Custom body content, in a scroll view under the header. */
   children?: ReactNode
   /** Footer buttons, primary first. Stacked on a phone, right-aligned on a wide screen. */
   actions?: ReactNode[]
-  /** A request is in flight: other actions disable, the body dims and the close button hides.
-   *  Put `loading` and a `loadingLabel` on the Button that started it. */
+  /**
+   * A request is in flight: other actions disable, the body dims and the close button hides.
+   * Put `loading` and a `loadingLabel` on the Button that started it.
+   */
   busy?: boolean
   /** Show the close button (content modals only). Default true. */
   closable?: boolean
   /** Whether it is showing. The modal mounts its content only while visible. */
   visible?: boolean
+  /** Called when the close button, Esc or the Android back button asks to close. Not called while busy. */
   onClose?: () => void
 }
 
+/** The native element behind the title wrapper, which gets focus on open. */
 type TitleElement = ComponentRef<typeof View>
 
+/** The web DOM focus method that the title element has on web. */
+interface Focusable {
+  /** Moves keyboard and screen-reader focus to the element. */
+  focus?: () => void
+}
+
+/**
+ * Moves focus to the dialog title so assistive technology starts reading at the top of the dialog.
+ * @param title - The title element, or null before it has mounted.
+ */
 const moveFocusTo = (title: null | TitleElement): void => {
   if (title === null) return
 
   if (Platform.OS === 'web') {
-    ;(title as unknown as { focus?: () => void }).focus?.()
+    ;(title as unknown as Focusable).focus?.()
 
     return
   }
@@ -56,15 +74,26 @@ const moveFocusTo = (title: null | TitleElement): void => {
   AccessibilityInfo.sendAccessibilityEvent(title, 'focus')
 }
 
+/** Props for the header row of the modal. */
 interface HeaderProps {
+  /** The subject the modal is about. */
   leading?: ReactNode
+  /** Called when the close button is pressed. */
   onClose?: (() => void) | undefined
+  /** The line under the title. */
   subtitle?: string | undefined
+  /** The title text. */
   title: string
+  /** Whether the close button is drawn. */
   showClose: boolean
+  /** Ref to the focusable title wrapper. */
   titleRef: RefObject<null | TitleElement>
 }
 
+/**
+ * The modal header: the subject, the title with its subtitle, and the close button.
+ * @returns The header row.
+ */
 const ModalHeader = ({
   leading,
   onClose,
@@ -103,13 +132,20 @@ const ModalHeader = ({
   )
 }
 
+/**
+ * The modal body: an optional paragraph and the children in a scroll view that dims and goes inert while busy.
+ * @returns The scroll view, or null when there is no body and no children.
+ */
 const ModalContent = ({
   body,
   busy,
   children,
 }: {
+  /** The plain-text paragraph. */
   body?: string | undefined
+  /** Whether a request is in flight. */
   busy: boolean
+  /** The custom body content. */
   children?: ReactNode
 }): null | ReactElement => {
   if (body === undefined && children === undefined) return null
@@ -132,9 +168,11 @@ const ModalContent = ({
 }
 
 /**
+ * A dialog that is a bottom sheet below the tablet breakpoint and a centred card above it. It traps focus, closes on Esc and the Android back button, and tells assistive technology it is a (alert)dialog and when it is busy.
  * Every sheet, form and confirmation. A bottom sheet below 768 wide, a centred 480 panel from
  * there up; identical content on web and app. The web build traps focus inside, closes on Esc
  * and returns focus to the trigger; native closes on the Android back button.
+ * @returns The native modal host with its sheet or card.
  */
 export const Modal = ({
   actions,

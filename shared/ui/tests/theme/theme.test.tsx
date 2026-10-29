@@ -11,7 +11,17 @@ import {
   useTheme,
 } from '../../src/theme/theme.tsx'
 
-const wrapper = ({ children }: { children: ReactNode }) => <ThemeProvider>{children}</ThemeProvider>
+/** Props of the hook test wrapper. */
+interface WrapperProps {
+  /** The hook's host. */
+  children: ReactNode
+}
+
+/**
+ * Wraps a hook under test in the ThemeProvider.
+ * @returns The provider around the children.
+ */
+const wrapper = ({ children }: WrapperProps) => <ThemeProvider>{children}</ThemeProvider>
 
 describe('themeNameFor', () => {
   it('follows the device when the preference is system', () => {

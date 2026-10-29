@@ -1,7 +1,9 @@
-// Every user-visible string in the client, nested by the feature or component that shows it.
-// `as const` keeps the literal key paths, which i18next's CustomTypeOptions (types.ts) turns into
-// type-checked t() keys. Plural forms use i18next's _one/_other suffixes. English is the only
-// language for now; another locale is a file with the same shape.
+/**
+ * Every user-visible string in the client, nested by the feature or component that shows it.
+ * `as const` keeps the literal key paths, which i18next's CustomTypeOptions (types.ts) turns into
+ * type-checked t() keys. Plural forms use i18next's _one/_other suffixes. English is the only
+ * language for now; another locale is a file with the same shape.
+ */
 export const en = {
   common: {
     appName: 'Roundup',

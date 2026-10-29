@@ -6,7 +6,9 @@ import { transform as svgr } from '@svgr/core'
 import jsx from '@svgr/plugin-jsx'
 import babelJest from 'babel-jest'
 
+/** The synchronous part of babel-jest that this transformer calls. */
 interface SyncBabelTransformer {
+  /** Compiles a source file. */
   process: (source: string, filename: string, options: unknown) => unknown
 }
 
@@ -17,6 +19,13 @@ const babel = babelJest.createTransformer({
   presets: ['babel-preset-expo'],
 }) as unknown as SyncBabelTransformer
 
+/**
+ * Turns an imported .svg into a component module.
+ * @param source - The SVG text.
+ * @param filename - Its path.
+ * @param options - Jest's transform options, passed on to Babel.
+ * @returns The compiled module.
+ */
 const process = (source: string, filename: string, options: unknown): unknown => {
   const component = svgr.sync(source, { native: true, plugins: [jsx] }, { filePath: filename })
 

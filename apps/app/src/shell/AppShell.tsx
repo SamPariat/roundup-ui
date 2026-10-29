@@ -10,13 +10,19 @@ import type { TabItem } from './tabs.ts'
 import { layoutFor } from './layout-for.ts'
 import { TAB_ITEMS } from './tabs.ts'
 
+/** Props for AppShell. */
 export interface AppShellProps {
+  /** Which tab is showing. */
   current: TabItem['id']
+  /** The routed screen. */
   children: ReactNode
 }
 
-// SideNav and PageHeader from 1024 wide up; TopAppBar and BottomNav below. The items are the
-// same everywhere, only the chrome changes.
+/**
+ * SideNav and PageHeader from 1024 wide up; TopAppBar and BottomNav below. The items are the
+ * same everywhere, only the chrome changes.
+ * @returns The page frame: nav, title and content.
+ */
 export const AppShell = ({ children, current }: AppShellProps): ReactElement => {
   const { t } = useT()
   const { width } = useBreakpoint()

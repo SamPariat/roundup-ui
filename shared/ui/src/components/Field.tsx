@@ -6,18 +6,27 @@ import { cn } from '../lib/cn.ts'
 import { Icon } from './Icon.tsx'
 import { Text } from './Text.tsx'
 
+/** Props for FieldFrame. */
 export interface FieldFrameProps {
+  /** The visible label above the box. */
   label: string
+  /** Hint shown below the box until there is an error. */
   helper?: string
   /** Replaces the helper text and turns the field red. */
   error?: string
+  /** Greys the box out. */
   disabled: boolean
+  /** Whether the input inside has focus, which draws the focus ring. */
   focused: boolean
+  /** The input (and any icon) that goes inside the box. */
   children: ReactNode
 }
 
-// The shared frame of TextField and PhoneInput: label above, box, then helper or error below.
-// An error is a live region, so it is announced when it appears.
+/**
+ * The shared frame of TextField and PhoneInput: label above, box, then helper or error below.
+ * An error is a live region, so it is announced when it appears.
+ * @returns The labelled box with its helper or error line.
+ */
 export const FieldFrame = ({
   children,
   disabled,

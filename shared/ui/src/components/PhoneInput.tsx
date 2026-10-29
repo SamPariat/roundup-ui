@@ -9,16 +9,26 @@ import { useTheme } from '../theme/theme.tsx'
 import { FieldFrame } from './Field.tsx'
 import { Text } from './Text.tsx'
 
+/** Props for PhoneInput. */
 export interface PhoneInputProps {
   /** Required: for example "Phone number". */
   label: string
+  /** The national number typed so far. */
   value?: string
+  /** Hint shown under the field until there is an error. */
   helper?: string
+  /** Error message that replaces the helper and turns the field red. */
   error?: string
+  /** Makes the field read-only and greyed out. */
   disabled?: boolean
+  /** Called with the digits as they change. */
   onChangeText?: (text: string) => void
 }
 
+/**
+ * A phone number field with a fixed country prefix, a numeric keyboard and one-tap autofill of the device number.
+ * @returns The labelled field.
+ */
 export const PhoneInput = ({
   disabled = false,
   error,

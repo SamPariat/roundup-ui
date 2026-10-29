@@ -6,6 +6,10 @@ import { View } from 'react-native'
 import { useT } from '@roundup/i18n'
 import { EmptyState, Text } from '@roundup/ui'
 
+/**
+ * Expo Router's fallback for any URL that matches no route, with a link back to the squads.
+ * @returns The window title and an empty state with the link.
+ */
 export default function NotFoundScreen(): ReactElement {
   const { t } = useT()
 

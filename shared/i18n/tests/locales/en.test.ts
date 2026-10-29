@@ -8,6 +8,11 @@ import { en, i18n } from '../../src/index.ts'
 const repoRoot = path.resolve(__dirname, '../../../..')
 const SOURCE_ROOTS = ['apps/app/src', 'shared/ui/src']
 
+/**
+ * Lists the TypeScript files under a folder, recursively.
+ * @param directory - The folder to walk.
+ * @returns Absolute file paths.
+ */
 const sourceFiles = (directory: string): string[] =>
   readdirSync(directory).flatMap((entry) => {
     const file = path.join(directory, entry)
@@ -17,6 +22,12 @@ const sourceFiles = (directory: string): string[] =>
     return /\.(?:ts|tsx)$/.test(file) ? [file] : []
   })
 
+/**
+ * Flattens nested resources into dotted keys and their values.
+ * @param value - The resources, or a branch of them.
+ * @param prefix - The dotted path to this branch.
+ * @returns Key and value pairs for every leaf.
+ */
 const leaves = (value: unknown, prefix = ''): [string, unknown][] => {
   if (typeof value !== 'object' || value === null) return [[prefix, value]]
 

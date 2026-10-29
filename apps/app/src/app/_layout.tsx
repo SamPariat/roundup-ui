@@ -23,6 +23,10 @@ import '../config/env.ts'
 
 void preventAutoHideAsync()
 
+/**
+ * The part of the root layout that needs the theme: page background, status bar style and the stack.
+ * @returns The themed root view.
+ */
 const Themed = (): ReactElement => {
   const { name, roles } = useTheme()
 
@@ -39,6 +43,10 @@ const Themed = (): ReactElement => {
   )
 }
 
+/**
+ * The root layout. On native it holds the splash screen until the fonts are ready; on web it renders at once so the static export has content.
+ * @returns The providers around the stack, or null while fonts load on native.
+ */
 export default function RootLayout(): null | ReactElement {
   const [loaded, error] = useFonts({
     Onest_400Regular,

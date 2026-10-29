@@ -18,21 +18,37 @@ import { Icon } from './Icon.tsx'
 import { Logo } from './Logo.tsx'
 import { Text } from './Text.tsx'
 
+/** Props for Welcome. */
 export interface WelcomeProps {
+  /** Headline. Defaults to the translated tagline. */
   title?: string
+  /** Paragraph under the headline. Defaults to the translated intro. */
   body?: string
+  /** Text of the main button. Defaults to the translated "Continue with phone". */
   startLabel?: string
+  /** Called when the main button is pressed. */
   onStart?: () => void
+}
+
+/** One of the three selling points. */
+interface Point {
+  /** Icon in the accent tile. */
+  icon: IconName
+  /** Which translated title and text to use. */
+  id: 'explore' | 'history' | 'squads'
 }
 
 const POINTS = [
   { icon: 'squads', id: 'squads' },
   { icon: 'explore', id: 'explore' },
   { icon: 'history', id: 'history' },
-] as const satisfies readonly { icon: IconName; id: 'explore' | 'history' | 'squads' }[]
+] as const satisfies readonly Point[]
 
-// The mark at large size with a cluster of dots: the squad gathering round. The artwork is an SVG
-// file per theme, in the logo-* token colours.
+/**
+ * The mark at large size with a cluster of dots: the squad gathering round. The artwork is an SVG
+ * file per theme, in the logo-* token colours.
+ * @returns The theme's welcome illustration, decorative.
+ */
 const WelcomeArt = (): ReactElement => {
   const { name } = useTheme()
   const Art = name === 'mocha' ? ArtDark : ArtLight
@@ -40,7 +56,10 @@ const WelcomeArt = (): ReactElement => {
   return <Art aria-hidden height="100%" width="100%" />
 }
 
-/** Full-page intro for signed-out visitors. Lays itself out from its own width, not the window's. */
+/**
+ * Full-page intro for signed-out visitors. Lays itself out from its own width, not the window's.
+ * @returns A full-height page with the logo, headline, call to action, artwork and three selling points.
+ */
 export const Welcome = ({ body, onStart, startLabel, title }: WelcomeProps): ReactElement => {
   const { t } = useT()
   const [width, setWidth] = useState(0)

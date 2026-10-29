@@ -10,16 +10,26 @@ import { SafeArea } from './SafeArea.tsx'
 import { Surface } from './Surface.tsx'
 import { Text } from './Text.tsx'
 
+/** Props for TopAppBar. */
 export interface TopAppBarProps {
+  /** The screen title, the page's level-1 heading. */
   title: string
+  /** Shows the back button even without an `onBack` handler. */
   back?: boolean
+  /** Called when the back button is pressed. Providing it also shows the button. */
   onBack?: () => void
+  /** Buttons on the right. */
   actions?: ReactNode
+  /** Puts the title on its own large line under the bar. */
   large?: boolean
   /** Show the logo mark; use on the top-level screens (Squads, Explore, Profile). */
   logo?: boolean
 }
 
+/**
+ * The top bar of a screen on phones: back button or logo, the title, and actions; it pads for the top safe area.
+ * @returns A top-safe-area surface holding the bar row.
+ */
 export const TopAppBar = ({
   actions,
   back = false,

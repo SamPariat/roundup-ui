@@ -5,6 +5,10 @@ import { View } from 'react-native'
 import { useT } from '@roundup/i18n'
 import { EmptyState, Text, ThemeSwitch, useTheme } from '@roundup/ui'
 
+/**
+ * The Profile tab: the theme choice, and an empty state until sign-in exists.
+ * @returns The theme switch above an empty state.
+ */
 export default function ProfileScreen(): ReactElement {
   const { preference, setPreference } = useTheme()
   const { t } = useT()

@@ -21,6 +21,7 @@ import { useTheme } from '../theme/theme.tsx'
 
 const SIZES = { sm: 24, md: 32, lg: 48, xl: 96 } as const
 
+/** Props for Logo. */
 export interface LogoProps {
   /** lockup = mark + wordmark (default). */
   type?: 'lockup' | 'mark' | 'wordmark'
@@ -28,13 +29,18 @@ export interface LogoProps {
   size?: keyof typeof SIZES | number
   /** brand uses the logo-* token colours of the current theme; mono draws everything in the text colour. */
   tone?: 'brand' | 'mono'
+  /** Accessible name. Defaults to the app name. */
   label?: string
+  /** Extra classes for placement. */
   className?: string
 }
 
+/** Which file of each artwork set to draw: Mocha colours, Latte colours, or currentColor. */
 type Variant = 'dark' | 'light' | 'mono'
 
+/** One kind of logo artwork (mark, wordmark or lockup) in its three colour variants. */
 interface Artwork {
+  /** The SVG component for each colour variant. */
   files: Record<Variant, FC<SvgProps>>
   /** Width over height of the file's viewBox. */
   aspect: number
@@ -59,7 +65,13 @@ const ARTWORK: Record<NonNullable<LogoProps['type']>, Artwork> = {
   },
 }
 
-// Mocha is the dark theme and Latte the light one; the files carry that theme's logo-* colours.
+/**
+ * Chooses the artwork variant from the tone and the active theme. Mocha is the dark theme and
+ * Latte the light one; the files carry that theme's logo-* colours.
+ * @param tone - Brand colours or one colour.
+ * @param themeName - The active theme.
+ * @returns dark for Mocha, light for Latte, mono when the tone says so.
+ */
 const variantFor = (tone: NonNullable<LogoProps['tone']>, themeName: Theme['name']): Variant => {
   if (tone === 'mono') return 'mono'
 
@@ -69,6 +81,7 @@ const variantFor = (tone: NonNullable<LogoProps['tone']>, themeName: Theme['name
 /**
  * The Roundup logo, drawn from the SVG files in assets/svg/logo (outlined paths, no font). It is
  * one image to assistive tech, named by `label` or the app name; the artwork itself is hidden.
+ * @returns The logo, one image to assistive technology.
  */
 export const Logo = ({
   className,

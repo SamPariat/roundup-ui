@@ -32,18 +32,22 @@ const avatarVariants = cva('shrink-0 items-center justify-center overflow-hidden
   defaultVariants: { size: 40, tint: 1 },
 })
 
+/** The pixel sizes an avatar comes in; each maps to one class so Tailwind can see it. */
 export type AvatarSize = NonNullable<VariantProps<typeof avatarVariants>['size']>
 
+/** Props for Avatar. */
 export interface AvatarProps {
   /** Also the accessible name, so every avatar says whose it is. */
   name: string
   /** User or squad ID; picks the initials tint so it stays stable. */
   id?: string
+  /** Photo URL. Without it (or while it is missing) the initials are drawn instead. */
   src?: string
   /** Force one of the six initials tints; normally derived from `id`. */
   tint?: AvatarTint
   /** Fixed steps, because sizes come from classes. */
   size?: AvatarSize
+  /** Extra classes for placement, such as a negative margin when stacked. */
   className?: string
 }
 
@@ -56,6 +60,10 @@ const INITIALS_TEXT = {
   64: 'text-2xl',
 } as const satisfies Record<AvatarSize, string>
 
+/**
+ * A round photo of a person or squad, falling back to tinted initials.
+ * @returns The avatar, an image named after its owner.
+ */
 export const Avatar = ({
   className,
   id,

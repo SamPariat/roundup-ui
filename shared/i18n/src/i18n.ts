@@ -5,7 +5,7 @@ import { initReactI18next } from 'react-i18next'
 import { FALLBACK_LANGUAGE, resolveLanguage } from './language.ts'
 import { en } from './locales/en.ts'
 
-// A fresh instance, not the i18next singleton, so tests and tools can never leak state into it.
+/** A fresh instance, not the i18next singleton, so tests and tools can never leak state into it. */
 export const i18n = i18next.createInstance()
 
 // Resources are bundled and init is synchronous (initAsync: false), so the first render already

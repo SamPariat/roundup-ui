@@ -7,8 +7,14 @@ import { Surface } from '../../src/components/Surface.tsx'
 import { Text } from '../../src/components/Text.tsx'
 import { renderWithTheme } from '../helpers/render.tsx'
 
+/** The real react-native exports that the glass mock needs. */
+interface NativeViews {
+  /** The plain View, which stands in for the native glass view. */
+  View: ComponentType
+}
+
 jest.mock('expo-glass-effect', () => {
-  const { View } = jest.requireActual<{ View: ComponentType }>('react-native')
+  const { View } = jest.requireActual<NativeViews>('react-native')
 
   return {
     GlassView: View,

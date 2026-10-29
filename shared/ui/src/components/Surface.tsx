@@ -10,14 +10,26 @@ import { cn } from '../lib/cn.ts'
 import { useGlass } from '../lib/use-glass.ts'
 import { useTheme } from '../theme/theme.tsx'
 
+/** How one surface tone looks. */
+interface ToneStyle {
+  /** Solid background class used when glass is off. */
+  className: string
+  /** Role colour the glass layer is tinted with. */
+  tint: RoleName
+}
+
 const TONES = {
   raised: { className: 'bg-bg-raised', tint: 'bg-raised' },
   sunken: { className: 'bg-bg-sunken', tint: 'bg-sunken' },
-} as const satisfies Record<string, { className: string; tint: RoleName }>
+} as const satisfies Record<string, ToneStyle>
 
+/** Props for Surface: the usual View props plus a tone. */
 export type SurfaceProps = ViewProps & {
+  /** What to draw on the surface. */
   children?: ReactNode
+  /** Extra classes for the wrapper. */
   className?: string
+  /** raised (cards, dialogs) or sunken (bars, tracks). Defaults to raised. */
   tone?: keyof typeof TONES
 }
 
@@ -28,6 +40,7 @@ const FILL = { position: 'absolute', top: 0, right: 0, bottom: 0, left: 0 } as c
  * The one surface primitive. On iOS 26+ it is Liquid Glass tinted with the role colour;
  * everywhere else, and whenever Reduce Transparency is on, it is the solid role colour.
  * Never put opacity on a Surface: glass does not render below opacity 1. Dim its content instead.
+ * @returns The surface view, with the glass layer behind its children when available.
  */
 export const Surface = ({
   children,

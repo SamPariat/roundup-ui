@@ -13,8 +13,19 @@ const FILES: Readonly<Record<string, string>> = {
   'favicon.svg': '<svg xmlns="http://www.w3.org/2000/svg"/>',
 }
 
-/** Writes a small Expo-shaped export to a temp folder; call the returned function to remove it. */
-export const makeDist = async (): Promise<{ cleanup: () => Promise<void>; dir: string }> => {
+/** A fixture export folder and the way to remove it. */
+interface Dist {
+  /** Deletes the folder. */
+  cleanup: () => Promise<void>
+  /** The folder holding the export. */
+  dir: string
+}
+
+/**
+ * Writes a small Expo-shaped export to a temp folder; call the returned function to remove it.
+ * @returns The folder and a function that deletes it.
+ */
+export const makeDist = async (): Promise<Dist> => {
   const dir = await mkdtemp(path.join(tmpdir(), 'roundup-dist-'))
 
   for (const [name, content] of Object.entries(FILES)) {
@@ -24,5 +35,10 @@ export const makeDist = async (): Promise<{ cleanup: () => Promise<void>; dir: s
     await writeFile(file, content)
   }
 
-  return { dir, cleanup: () => rm(dir, { recursive: true, force: true }) }
+  /** Removes the temp folder and everything in it. */
+  const cleanup = async (): Promise<void> => {
+    await rm(dir, { recursive: true, force: true })
+  }
+
+  return { dir, cleanup }
 }

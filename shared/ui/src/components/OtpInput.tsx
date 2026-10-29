@@ -8,19 +8,29 @@ import { cn } from '../lib/cn.ts'
 import { Icon } from './Icon.tsx'
 import { Text } from './Text.tsx'
 
+/** Props for OtpInput. */
 export interface OtpInputProps {
   /** Required: for example "6-digit code". */
   label: string
   /** Digits entered so far. Complete when its length equals `length`. */
   value?: string
+  /** How many digits the code has. Defaults to 6. */
   length?: number
+  /** Message shown in red instead of the resend row; also sets the input's hint. */
   error?: string
   /** Seconds until the code can be resent; 0 shows the Resend link. */
   resendIn?: number
+  /** Called when the Resend link is pressed. */
   onResend?: () => void
+  /** Called with the digits typed or pasted so far. */
   onChangeText?: (text: string) => void
 }
 
+/**
+ * Formats a number of seconds as m:ss for the resend countdown.
+ * @param seconds - Whole seconds remaining.
+ * @returns The time as minutes, a colon and two-digit seconds.
+ */
 export const formatCountdown = (seconds: number): string => {
   const minutes = Math.floor(seconds / 60)
   const rest = seconds % 60
@@ -28,8 +38,11 @@ export const formatCountdown = (seconds: number): string => {
   return `${String(minutes)}:${rest < 10 ? '0' : ''}${String(rest)}`
 }
 
-// One real text input sits invisibly over the boxes, so paste, autofill from SMS and the
-// keyboard all work, and a screen reader meets a single field instead of six.
+/**
+ * One real text input sits invisibly over the boxes, so paste, autofill from SMS and the
+ * keyboard all work, and a screen reader meets a single field instead of six.
+ * @returns The code boxes and the resend row.
+ */
 export const OtpInput = ({
   error,
   label,

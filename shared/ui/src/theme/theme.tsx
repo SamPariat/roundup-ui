@@ -11,12 +11,16 @@ import { shadows, themes } from '@roundup/tokens'
 
 import { useHydrated } from '../lib/use-hydrated.ts'
 
+/** What the person chose: follow the device, or force light or dark. */
 export type ThemePreference = 'dark' | 'light' | 'system'
 
+/** What useTheme returns. */
 export interface Theme {
   /** Mocha is dark, Latte is light. */
   name: ThemeName
+  /** The stored choice, which may be "system". */
   preference: ThemePreference
+  /** Saves a new choice and applies it at once. */
   setPreference: (preference: ThemePreference) => void
   /** Role colours for the few places that cannot use a class: svg fills, spinners, glass tints. */
   roles: Roles
@@ -24,12 +28,24 @@ export interface Theme {
   shadow: Readonly<Record<string, string>>
 }
 
+/** AsyncStorage key that holds the chosen preference. */
 export const THEME_STORAGE_KEY = 'roundup.theme'
 
 const PREFERENCES: ReadonlySet<unknown> = new Set(['system', 'light', 'dark'])
 
+/**
+ * Narrows a stored value to a known preference, so a corrupted entry is ignored.
+ * @param value - The raw value read from storage.
+ * @returns Whether the value is one of the three preferences.
+ */
 const isPreference = (value: unknown): value is ThemePreference => PREFERENCES.has(value)
 
+/**
+ * Resolves a preference and the device appearance to a theme. Dark (Mocha) is the fallback while the device is unknown, which is also what static HTML is built with.
+ * @param preference - The stored choice.
+ * @param device - The device appearance, if known.
+ * @returns The theme to apply.
+ */
 export const themeNameFor = (
   preference: ThemePreference,
   device: 'dark' | 'light' | null | undefined,
@@ -40,6 +56,11 @@ export const themeNameFor = (
   return device === 'light' ? 'latte' : 'mocha'
 }
 
+/**
+ * Lists a theme's roles as `--color-*` variables, the form NativeWind's variable context takes.
+ * @param name - The theme to read.
+ * @returns The variable name to colour map.
+ */
 export const cssVariablesFor = (name: ThemeName): Record<string, string> =>
   Object.fromEntries(
     Object.entries(themes[name]).map(([role, value]) => [`--color-${role}`, value]),
@@ -47,7 +68,17 @@ export const cssVariablesFor = (name: ThemeName): Record<string, string> =>
 
 const ThemeContext = createContext<null | Theme>(null)
 
-export const ThemeProvider = ({ children }: { children: ReactNode }): ReactElement => {
+/** Props for ThemeProvider. */
+interface ThemeProviderProps {
+  /** The app to theme. */
+  children: ReactNode
+}
+
+/**
+ * Owns the theme: reads the saved preference, follows the device appearance, publishes role colours through context and CSS variables, and saves changes.
+ * @returns The provider wrapping its children.
+ */
+export const ThemeProvider = ({ children }: ThemeProviderProps): ReactElement => {
   const device = useColorScheme()
   const [preference, setPreference] = useState<ThemePreference>('system')
 
@@ -113,6 +144,10 @@ export const ThemeProvider = ({ children }: { children: ReactNode }): ReactEleme
   )
 }
 
+/**
+ * Reads the current theme and its setter. Throws outside a ThemeProvider so a missing provider fails loudly.
+ * @returns The current theme, its roles and its setter.
+ */
 export const useTheme = (): Theme => {
   const theme = use(ThemeContext)
 

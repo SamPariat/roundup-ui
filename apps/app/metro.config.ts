@@ -3,6 +3,22 @@ import { withNativewind } from 'nativewind/metro'
 
 import { roleNames } from '@roundup/tokens'
 
+/** The file extension lists of Metro's resolver. */
+interface Extensions {
+  /** Extensions Metro copies as assets. */
+  assetExts: string[]
+  /** Extensions Metro compiles as code. */
+  sourceExts: string[]
+}
+
+/** The parts of Expo's Metro config that this file reads. */
+interface TouchedConfig {
+  /** Resolution settings, of which the file extension lists are changed. */
+  resolver: Extensions
+  /** Transform settings, spread through unchanged except for the Babel transformer. */
+  transformer: object
+}
+
 // Metro loads this file as CommonJS, where __dirname is the only way to name the project root.
 // eslint-disable-next-line unicorn/prefer-module -- see the comment above
 const defaults = getDefaultConfig(__dirname)
@@ -13,10 +29,7 @@ const defaults = getDefaultConfig(__dirname)
 // that calls the Babel transformer, and spreads config.transformer through. svg moves from the
 // asset extensions to the source extensions so Metro compiles it instead of copying it. Expo's
 // Metro types do not resolve from this package, so the two fields touched are typed here.
-const { resolver, transformer } = defaults as unknown as {
-  resolver: { assetExts: string[]; sourceExts: string[] }
-  transformer: object
-}
+const { resolver, transformer } = defaults as unknown as TouchedConfig
 
 const config = {
   ...defaults,

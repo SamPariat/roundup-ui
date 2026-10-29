@@ -4,19 +4,28 @@ import { View } from 'react-native'
 
 import { useT } from '@roundup/i18n'
 
+import type { Person } from '../lib/person.ts'
 import type { AvatarSize } from './Avatar.tsx'
 
 import { Avatar } from './Avatar.tsx'
 import { Text } from './Text.tsx'
 
+/** Props for AvatarGroup. */
 export interface AvatarGroupProps {
-  people: { id?: string; name: string; src?: string }[]
+  /** The people to draw, in order; only the first `max` are shown. */
+  people: Person[]
   /** Real member count when `people` is only a sample. */
   total?: number
+  /** How many avatars to draw before collapsing the rest into a +N chip. Defaults to 4. */
   max?: number
+  /** Avatar size for every member. Defaults to 32. */
   size?: AvatarSize
 }
 
+/**
+ * An overlapping row of member avatars with a +N chip for the overflow, announced as one image that says how many members there are.
+ * @returns The stacked avatars.
+ */
 export const AvatarGroup = ({
   max = 4,
   people,

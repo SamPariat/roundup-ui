@@ -8,23 +8,41 @@ import { useT } from '@roundup/i18n'
 import { cn } from '../lib/cn.ts'
 import { Text } from './Text.tsx'
 
+/** One segment of Tabs. */
+export interface TabItem {
+  /** A number shown after the label, such as how many items are in the tab. */
+  count?: number
+  /** Stable ID passed to `onChange`. */
+  id: string
+  /** The segment text. */
+  label: string
+}
+
+/** Props for Tabs. */
 export interface TabsProps {
-  items: { count?: number; id: string; label: string }[]
+  /** The segments, in order. */
+  items: TabItem[]
+  /** The id of the selected segment. */
   value: string
+  /** Called with the id of the segment that was pressed. */
   onChange?: (id: string) => void
 }
 
-type TabItem = TabsProps['items'][number]
-
-const TabButton = ({
-  active,
-  item,
-  onChange,
-}: {
+/** Props for one segment. */
+interface TabButtonProps {
+  /** Whether this segment is selected. */
   active: boolean
+  /** The segment to draw. */
   item: TabItem
+  /** Called with the segment's id when pressed. */
   onChange?: ((id: string) => void) | undefined
-}): ReactElement => {
+}
+
+/**
+ * One segment of the tab bar: label, optional count, selected state.
+ * @returns The pressable segment.
+ */
+const TabButton = ({ active, item, onChange }: TabButtonProps): ReactElement => {
   const { t } = useT()
 
   const press = useCallback(() => {
@@ -58,6 +76,10 @@ const TabButton = ({
   )
 }
 
+/**
+ * A segmented control that switches between views, announced as a tablist whose tabs are selected or not.
+ * @returns The segmented bar.
+ */
 export const Tabs = ({ items, onChange, value }: TabsProps): ReactElement => (
   <View className="flex-row gap-1 rounded-xl bg-bg-sunken p-1" role="tablist">
     {items.map((item) => (

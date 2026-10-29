@@ -6,8 +6,11 @@ import { useT } from '@roundup/i18n'
 
 import { TAB_ITEMS } from '../../shell/tabs.ts'
 
-// iOS draws the system tab bar: Liquid Glass on iOS 26+, and a sidebar on iPad and on the open
-// iPhone Duo in landscape. Same items, routes and order as the web and Android shell.
+/**
+ * iOS draws the system tab bar: Liquid Glass on iOS 26+, and a sidebar on iPad and on the open
+ * iPhone Duo in landscape. Same items, routes and order as the web and Android shell.
+ * @returns The system tab bar with one trigger per destination.
+ */
 export default function TabsLayout(): ReactElement {
   const { t } = useT()
 

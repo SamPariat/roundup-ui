@@ -8,15 +8,36 @@ import type { Theme } from '../theme/theme.tsx'
 import { useTheme } from '../theme/theme.tsx'
 import { Text } from './Text.tsx'
 
+/** Props for EmptyState. */
 export interface EmptyStateProps {
+  /** Headline saying what is missing. */
   title: string
+  /** One sentence on what will appear here or what to do. */
   body?: string
+  /** Which illustration to draw. Defaults to squads. */
   art?: 'favorites' | 'search' | 'squads'
+  /** A button or link below the copy. */
   action?: ReactNode
 }
 
-// Shapes only: discs and pills from the radius scale, in role colours.
-const SearchArt = ({ roles }: { roles: Theme['roles'] }): ReactElement => (
+/** Props shared by the three illustrations. */
+interface ArtProps {
+  /** Role colours of the active theme, which the shapes are filled with. */
+  roles: Theme['roles']
+}
+
+/** Props for the illustration frame. */
+interface EmptyArtProps {
+  /** Which illustration to draw. */
+  kind: NonNullable<EmptyStateProps['art']>
+}
+
+/**
+ * Magnifying-glass illustration. All three illustrations are shapes only: discs and pills from the
+ * radius scale, in role colours.
+ * @returns The SVG shapes.
+ */
+const SearchArt = ({ roles }: ArtProps): ReactElement => (
   <>
     <Circle
       cx={44}
@@ -38,14 +59,22 @@ const SearchArt = ({ roles }: { roles: Theme['roles'] }): ReactElement => (
   </>
 )
 
-const FavoritesArt = ({ roles }: { roles: Theme['roles'] }): ReactElement => (
+/**
+ * Bookmark illustration.
+ * @returns The SVG shapes.
+ */
+const FavoritesArt = ({ roles }: ArtProps): ReactElement => (
   <>
     <Path d="M32 22h32v54l-16-11-16 11z" fill={roles.accent} />
     <Circle cx={70} cy={26} fill={roles.highlight} r={8} />
   </>
 )
 
-const SquadsArt = ({ roles }: { roles: Theme['roles'] }): ReactElement => (
+/**
+ * People-and-pill illustration.
+ * @returns The SVG shapes.
+ */
+const SquadsArt = ({ roles }: ArtProps): ReactElement => (
   <>
     <Circle cx={36} cy={42} fill={roles.accent} r={14} />
     <Circle cx={62} cy={46} fill={roles.highlight} r={11} />
@@ -64,7 +93,11 @@ const SquadsArt = ({ roles }: { roles: Theme['roles'] }): ReactElement => (
 
 const ART = { favorites: FavoritesArt, search: SearchArt, squads: SquadsArt } as const
 
-const EmptyArt = ({ kind }: { kind: NonNullable<EmptyStateProps['art']> }): ReactElement => {
+/**
+ * Draws the chosen illustration on its round wash. Decorative, so hidden from assistive technology.
+ * @returns The SVG.
+ */
+const EmptyArt = ({ kind }: EmptyArtProps): ReactElement => {
   const { roles } = useTheme()
   const Art = ART[kind]
 
@@ -76,6 +109,10 @@ const EmptyArt = ({ kind }: { kind: NonNullable<EmptyStateProps['art']> }): Reac
   )
 }
 
+/**
+ * A centred placeholder for a screen or list with nothing in it yet: an illustration, a headline, an explanation and an optional action.
+ * @returns The placeholder.
+ */
 export const EmptyState = ({
   action,
   art = 'squads',

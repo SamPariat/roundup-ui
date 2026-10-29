@@ -25,6 +25,12 @@ const CONTENT_TYPES: Readonly<Record<string, string>> = {
 
 const ONE_YEAR_SECONDS = 31_536_000
 
+/**
+ * Picks the caching policy: hashed bundles are immutable, HTML is always revalidated so a deploy shows at once, anything else lasts an hour.
+ * @param root - The export folder.
+ * @param file - The file being sent.
+ * @returns The Cache-Control header value.
+ */
 const cacheControlFor = (root: string, file: string): string => {
   const relative = path.relative(root, file).split(path.sep).join('/')
 
@@ -36,6 +42,13 @@ const cacheControlFor = (root: string, file: string): string => {
   return 'public, max-age=3600'
 }
 
+/**
+ * Streams a file with its content type and caching header.
+ * @param file - The file to stream.
+ * @param status - 200 for a page, 404 for the export's not-found page.
+ * @param cacheControl - The Cache-Control header value.
+ * @returns The response.
+ */
 const send = (file: string, status: 200 | 404, cacheControl: string): Response => {
   const body = Readable.toWeb(createReadStream(file)) as ReadableStream<Uint8Array>
 
@@ -48,6 +61,10 @@ const send = (file: string, status: 200 | 404, cacheControl: string): Response =
   })
 }
 
+/**
+ * Builds the web server: security headers, the health check and the static export with clean URLs.
+ * @returns The Hono app, ready to serve.
+ */
 export const createApp = ({
   apiOrigin,
   distDir,

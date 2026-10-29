@@ -14,6 +14,7 @@ import boundaries from 'eslint-plugin-boundaries'
 import i18next from 'eslint-plugin-i18next'
 import { importX } from 'eslint-plugin-import-x'
 import jest from 'eslint-plugin-jest'
+import jsdoc from 'eslint-plugin-jsdoc'
 import perfectionist from 'eslint-plugin-perfectionist'
 import react from 'eslint-plugin-react'
 import reactHooks from 'eslint-plugin-react-hooks'
@@ -52,10 +53,18 @@ const TOOL_CONFIGS = [
   'shared/*/jest.setup*.ts',
 ]
 
-// eslint-config-expo and the type-checked presets mix warnings and errors. With
-// --max-warnings=0 a warning is a failure anyway, so say so in the config.
+/**
+ * Whether a rule level means warning.
+ * @param level - A rule severity.
+ * @returns True for "warn" or 1.
+ */
 const isWarn = (level: unknown): boolean => level === 'warn' || level === 1
 
+/**
+ * Turns a warning rule entry into an error one and keeps its options.
+ * @param value - A rule entry.
+ * @returns The entry, at error severity if it was a warning.
+ */
 const raiseSeverity = (value: Linter.RuleEntry | undefined): Linter.RuleEntry | undefined => {
   let raised = value
 
@@ -70,6 +79,11 @@ const raiseSeverity = (value: Linter.RuleEntry | undefined): Linter.RuleEntry | 
   return raised
 }
 
+/**
+ * eslint-config-expo and the type-checked presets mix warnings and errors. With --max-warnings=0 a warning is a failure anyway, so say so in the config.
+ * @param configs - Flat config objects.
+ * @returns The same configs with every warning raised.
+ */
 const warningsToErrors = (configs: Linter.Config[]): Linter.Config[] =>
   configs.map((config) => ({
     ...config,
@@ -98,15 +112,25 @@ const INSET_MATH_BAN = {
   message: 'Read each safe-area inset edge separately; never collapse them with Math.max/min.',
 }
 
+/** The shape of a plugin that ships no types: just its rules by name. */
+interface RuleSet {
+  /** The rules the plugin defines. */
+  rules: Record<string, unknown>
+}
+
 const a11yRules = Object.fromEntries(
-  Object.keys((reactNativeA11y as { rules: Record<string, unknown> }).rules).map((name) => [
+  Object.keys((reactNativeA11y as RuleSet).rules).map((name) => [
     `react-native-a11y/${name}`,
     'error',
   ]),
 )
 
-// Plugin config objects are typed loosely (exactOptionalPropertyTypes rejects their optional keys),
-// so the list is cast once here instead of at every entry. ESLint validates the shape at load time.
+/**
+ * Plugin config objects are typed loosely (exactOptionalPropertyTypes rejects their optional keys),
+ * so the list is cast once here instead of at every entry. ESLint validates the shape at load time.
+ * @param entries - Flat config objects from plugins and from this file.
+ * @returns The same objects, typed as flat configs.
+ */
 const blocks = (...entries: unknown[]): Linter.Config[] => entries as Linter.Config[]
 
 const config = blocks(
@@ -578,6 +602,57 @@ const config = blocks(
           ],
         },
       ],
+    },
+  },
+
+  // ── Documentation ───────────────────────────────────────────
+  {
+    // Everything is documented, so a reader never has to open the body to learn what a thing is for.
+    // The recommended-typescript preset leaves types to TypeScript (no-types) and checks tag
+    // syntax; the rules below add the requirement itself. Callbacks passed as arguments (describe,
+    // it, map, useEffect) are not matched by these contexts, so they stay exempt.
+    files: SOURCE,
+    ...jsdoc.configs['flat/recommended-typescript-error'],
+    rules: {
+      ...jsdoc.configs['flat/recommended-typescript-error'].rules,
+      'jsdoc/require-jsdoc': [
+        'error',
+        {
+          publicOnly: false,
+          require: {
+            ArrowFunctionExpression: true,
+            ClassDeclaration: true,
+            FunctionDeclaration: true,
+            FunctionExpression: true,
+            MethodDefinition: true,
+          },
+          contexts: [
+            'VariableDeclarator > ArrowFunctionExpression',
+            'TSInterfaceDeclaration',
+            'TSTypeAliasDeclaration',
+            'TSPropertySignature',
+            'TSEnumDeclaration',
+            // The same nodes as `ExportNamedDeclaration > VariableDeclaration`, selected from the export
+            // so the doc above `export const` is the one found: jsdoc looks for the comment before the
+            // matched node, and a bare VariableDeclaration inside an export can never have one there.
+            'ExportNamedDeclaration:has(> VariableDeclaration)',
+            'TSMethodSignature',
+          ],
+          checkGetters: true,
+          exemptEmptyFunctions: false,
+        },
+      ],
+      'jsdoc/require-description': 'error',
+      // Destructured props are documented once, on their interface, so a component does not
+      // need an @param per prop; plain parameters still do.
+      'jsdoc/require-param': ['error', { checkDestructured: false, checkDestructuredRoots: false }],
+      'jsdoc/require-param-description': 'error',
+      'jsdoc/require-returns': 'error',
+      'jsdoc/require-returns-description': 'error',
+      'jsdoc/check-param-names': 'error',
+      'jsdoc/informative-docs': 'error',
+      'jsdoc/no-types': 'error',
+      'jsdoc/require-hyphen-before-param-description': ['error', 'always'],
     },
   },
 

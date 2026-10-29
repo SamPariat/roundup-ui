@@ -19,10 +19,21 @@ const spinnerVariants = cva('size-4.5 rounded-full border-2 border-r-transparent
   defaultVariants: { tone: 'fg' },
 })
 
-export type SpinnerProps = VariantProps<typeof spinnerVariants> & { className?: string }
+/** Props for Spinner: the tone variant plus extra classes. */
+/** Props the spinner adds to its tone variant. */
+interface SpinnerOwnProps {
+  /** Extra classes for placement. */
+  className?: string
+}
 
-// Decorative: the control that owns the spinner announces what it is doing.
-// Under reduced motion it keeps turning, but slower.
+/** Props for Spinner: the tone variant plus extra classes. */
+export type SpinnerProps = SpinnerOwnProps & VariantProps<typeof spinnerVariants>
+
+/**
+ * Decorative: the control that owns the spinner announces what it is doing.
+ * Under reduced motion it keeps turning, but slower.
+ * @returns A round view that rotates.
+ */
 export const Spinner = ({ className, tone }: SpinnerProps): ReactElement => {
   const reduced = useReducedMotion()
 
