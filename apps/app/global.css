@@ -1,1 +1,8 @@
 @import 'tailwindcss/theme.css' layer(theme);
+@import 'tailwindcss/preflight.css' layer(base);
+@import 'tailwindcss/utilities.css';
+@import 'nativewind/theme';
+@import '@roundup/tokens/theme.css';
+
+/* Class names live in the shared components as well as in the app's routes. */
+@source '../../shared/ui/src';
