@@ -1,0 +1,14 @@
+# Sourced by the hooks. Picks the Node in .nvmrc when nvm is installed, then insists on it,
+# because the TypeScript configs rely on Node's built-in type stripping.
+if [ -s "${NVM_DIR:-$HOME/.nvm}/nvm.sh" ]; then
+  # shellcheck disable=SC1091
+  . "${NVM_DIR:-$HOME/.nvm}/nvm.sh" >/dev/null 2>&1
+  nvm use >/dev/null 2>&1 || true
+fi
+
+want=$(tr -d '[:space:]' < .nvmrc)
+have=$(node -p 'process.versions.node.split(".")[0]')
+if [ "$have" -lt "$want" ]; then
+  echo "Node $want or newer is required (found $have). Run: nvm install && nvm use"
+  exit 1
+fi

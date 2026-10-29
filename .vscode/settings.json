@@ -1,0 +1,19 @@
+{
+  // Format with Prettier and apply ESLint fixes on save, the same tools the pre-commit hook checks.
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": { "source.fixAll.eslint": "explicit" },
+  // The workspace TypeScript (6.x) matches what CI runs.
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "typescript.enablePromptUseWorkspaceTsdk": true,
+  // Flat config in eslint.config.ts; lint every package from the repo root.
+  "eslint.useFlatConfig": true,
+  "eslint.validate": ["typescript", "typescriptreact"],
+  // Tailwind IntelliSense inside cva() and cn() calls.
+  "tailwindCSS.experimental.classRegex": [
+    ["cva\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"],
+    ["cn\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"]
+  ],
+  // Jest runner: one command per package.
+  "jest.runMode": "on-demand"
+}

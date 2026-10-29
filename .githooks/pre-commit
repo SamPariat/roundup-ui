@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+# Pre-commit checks for staged files: eslint + prettier (check only), then no-js and tsc.
+# When dependencies change it also runs expo-doctor, since a bad pin only shows up there.
+set -eu
+
+# shellcheck source=.githooks/_node
+. "$(dirname "$0")/_node"
+
+staged_files=$(git diff --cached --name-only --diff-filter=ACM)
+
+if [ -z "$staged_files" ]; then
+  exit 0
+fi
+
+echo "Running pre-commit checks..."
+
+if ! pnpm exec lint-staged --quiet; then
+  echo "Fix with: make fmt, then re-stage."
+  exit 1
+fi
+
+pnpm run --silent no-js
+pnpm run --silent typecheck
+
+if echo "$staged_files" | grep -Eq '(^|/)package\.json$|^pnpm-lock\.yaml$|^pnpm-workspace\.yaml$'; then
+  echo "Dependencies changed, running expo-doctor..."
+  pnpm run --silent doctor
+fi

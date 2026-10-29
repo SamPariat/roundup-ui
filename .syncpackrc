@@ -1,0 +1,16 @@
+{
+  "$schema": "./node_modules/syncpack/schema.json",
+  "versionGroups": [
+    {
+      "label": "workspace packages link to each other, they are not in the catalog",
+      "dependencies": ["@roundup/*"],
+      "packages": ["**"],
+      "policy": "sameRange"
+    },
+    {
+      "label": "every other dependency comes from the pnpm catalog and nowhere else",
+      "dependencies": ["**", "!roundup-ui"],
+      "policy": "catalog"
+    }
+  ]
+}

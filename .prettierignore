@@ -1,0 +1,6 @@
+# Lockfile is written by pnpm; brand assets are copied from roundup-monorepo as-is.
+pnpm-lock.yaml
+assets/brand/
+**/dist/
+**/.expo/
+**/coverage/

@@ -1,0 +1,26 @@
+{
+  "name": "@roundup/tokens",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./theme.css": "./src/theme.css"
+  },
+  "scripts": {
+    "generate": "node scripts/generate.ts",
+    "typecheck": "tsc --noEmit",
+    "test": "jest"
+  },
+  "devDependencies": {
+    "@types/jest": "catalog:",
+    "@types/node": "catalog:",
+    "jest": "catalog:",
+    "jest-expo": "catalog:",
+    "typescript": "catalog:"
+  },
+  "dependencies": {
+    "@roundup/config": "workspace:*",
+    "prettier": "catalog:"
+  }
+}

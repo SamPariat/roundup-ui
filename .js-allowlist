@@ -1,0 +1,2 @@
+# Files allowed to stay JavaScript. Each must be a one-line shim that loads a .ts file,
+# and the line above it names the tool limitation. Empty means nothing is allowed.
