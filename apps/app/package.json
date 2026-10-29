@@ -7,9 +7,9 @@
     "@expo-google-fonts/onest": "catalog:",
     "@expo/metro-runtime": "catalog:",
     "@react-native-async-storage/async-storage": "catalog:",
+    "@roundup/tokens": "workspace:*",
+    "@roundup/ui": "workspace:*",
     "babel-preset-expo": "catalog:",
-    "class-variance-authority": "catalog:",
-    "clsx": "catalog:",
     "expo": "catalog:",
     "expo-constants": "catalog:",
     "expo-font": "catalog:",
@@ -29,13 +29,14 @@
     "react-native-screens": "catalog:",
     "react-native-svg": "catalog:",
     "react-native-web": "catalog:",
-    "react-native-worklets": "catalog:",
-    "tailwind-merge": "catalog:"
+    "react-native-worklets": "catalog:"
   },
   "devDependencies": {
+    "@roundup/config": "workspace:*",
     "@tailwindcss/postcss": "catalog:",
     "@testing-library/react-native": "catalog:",
     "@types/jest": "catalog:",
+    "@types/node": "catalog:",
     "@types/react": "catalog:",
     "babel-plugin-react-compiler": "catalog:",
     "expo-doctor": "catalog:",
@@ -48,13 +49,14 @@
     "typescript": "catalog:"
   },
   "scripts": {
-    "dev": "expo start",
-    "web": "expo start --web",
-    "ios": "expo start --ios",
-    "android": "expo start --android",
-    "export:web": "expo export --platform web",
-    "doctor": "expo install --check && expo-doctor",
+    "dev": "APP_ENV=${APP_ENV:-beta} expo start",
+    "web": "APP_ENV=${APP_ENV:-beta} expo start --web",
+    "ios": "APP_ENV=${APP_ENV:-beta} expo start --ios",
+    "android": "APP_ENV=${APP_ENV:-beta} expo start --android",
+    "export:web": "APP_ENV=${APP_ENV:-beta} expo export --platform web",
+    "doctor": "APP_ENV=${APP_ENV:-beta} expo install --check && APP_ENV=${APP_ENV:-beta} expo-doctor",
     "typecheck": "tsc --noEmit",
-    "test": "jest"
+    "test": "jest",
+    "test:coverage": "jest --coverage"
   }
 }

@@ -35,6 +35,8 @@ const TOOL_CONFIGS = [
   'shared/*/*.config.ts',
   'knip.ts',
   'shared/config/*.ts',
+  'apps/*/jest.setup*.ts',
+  'shared/*/jest.setup*.ts',
 ]
 
 // eslint-config-expo and the type-checked presets mix warnings and errors. With
@@ -182,7 +184,10 @@ const config = blocks(
         { selector: 'typeLike', format: ['PascalCase'] },
         { selector: 'enumMember', format: ['PascalCase', 'UPPER_CASE'] },
         // CSS variables, headers, hyphenated token names and route params are data keys, not identifiers.
-        { selector: ['objectLiteralProperty', 'typeProperty'], format: null },
+        {
+          selector: ['objectLiteralProperty', 'objectLiteralMethod', 'typeProperty'],
+          format: null,
+        },
         { selector: 'import', format: null },
       ],
     },
@@ -213,7 +218,8 @@ const config = blocks(
     files: SOURCE,
     plugins: { 'react-native': fixupPluginRules(reactNative as never) },
     rules: {
-      'react-native/no-raw-text': 'error',
+      // Our own components wrap string children in <Text>, so raw text inside them is fine.
+      'react-native/no-raw-text': ['error', { skip: ['Badge', 'Button', 'Chip', 'Text', 'Toast'] }],
       'react-native/no-color-literals': 'error',
     },
   },
@@ -221,7 +227,12 @@ const config = blocks(
     // Accessibility: every react-native-a11y rule at error. Same checks on web and native.
     files: SOURCE,
     plugins: { 'react-native-a11y': fixupPluginRules(reactNativeA11y as never) },
-    rules: a11yRules as Linter.RulesRecord,
+    rules: {
+      ...(a11yRules as Linter.RulesRecord),
+      // Hints belong only where the result of an action is not obvious from the label (Apple's
+      // guidance). Demanding one beside every label makes screen readers say more, not better.
+      'react-native-a11y/has-accessibility-hint': 'off',
+    },
   },
 
   // ── Project conventions ─────────────────────────────────────
@@ -267,17 +278,29 @@ const config = blocks(
   },
   {
     // Tool configs and the env module are the only places allowed to read process.env.
-    files: [...TOOL_CONFIGS, 'apps/app/src/config/env.ts', 'apps/server/src/**/env.ts'],
+    files: [
+      ...TOOL_CONFIGS,
+      'apps/app/src/config/env.ts',
+      'apps/server/src/env.ts',
+      'apps/server/src/main.ts',
+    ],
     rules: { 'no-restricted-properties': 'off' },
   },
   {
-    // The few files that need a raw style object (svg fills, boxShadow, spinner colour) say so here and nowhere else.
+    // The few files that need a raw style object (boxShadow on floating surfaces, per-edge safe-area padding, the glass layer) say so here and nowhere else.
     files: [
-      'shared/ui/src/Icon/Icon.tsx',
-      'shared/ui/src/Logo/Logo.tsx',
+      'shared/ui/src/Modal/Modal.tsx',
+      'shared/ui/src/SafeArea/SafeArea.tsx',
       'shared/ui/src/Surface/Surface.tsx',
+      'shared/ui/src/Toast/Toast.tsx',
     ],
     rules: { 'no-restricted-syntax': ['error', INACTIVE_BAN, INSET_MATH_BAN] },
+  },
+
+  {
+    // react-native-svg types mark the x/y geometry of <Rect> as deprecated, but there is no other way to place one.
+    files: ['shared/ui/src/{EmptyState,Icon,Logo,VenueCard,Welcome}/*.tsx'],
+    rules: { '@typescript-eslint/no-deprecated': 'off' },
   },
 
   // ── Architecture ────────────────────────────────────────────
@@ -303,13 +326,15 @@ const config = blocks(
     files: SOURCE,
     plugins: { 'import-x': importX },
     rules: {
-      'import-x/no-cycle': 'error',
+      'import-x/no-cycle': ['error', { ignoreExternal: true }],
       'import-x/no-extraneous-dependencies': [
         'error',
         {
           devDependencies: [
             '**/*.test.{ts,tsx}',
+            '**/test/**',
             '**/*.config.ts',
+            '**/jest.setup*.ts',
             'knip.ts',
             'shared/config/**',
             'shared/tokens/scripts/**',
@@ -376,7 +401,7 @@ const config = blocks(
   },
   {
     // Component folders are PascalCase by design (Button/Button.tsx).
-    files: ['shared/ui/src/**/*.{ts,tsx}'],
+    files: ['shared/ui/src/**/*.{ts,tsx}', 'apps/app/src/shell/*.{ts,tsx}'],
     rules: {
       'unicorn/filename-case': ['error', { cases: { pascalCase: true, kebabCase: true } }],
     },
@@ -394,14 +419,32 @@ const config = blocks(
     plugins: { 'better-tailwindcss': betterTailwind },
     settings: {
       'better-tailwindcss': {
+        // tailwindcss is installed in the app, so resolve it from there for shared/ui files too.
+        cwd: path.join(root, 'apps/app'),
         entryPoint: path.join(root, 'apps/app/global.css'),
-        tailwindConfig: undefined,
       },
     },
     rules: {
       'better-tailwindcss/no-unknown-classes': 'error',
       'better-tailwindcss/no-conflicting-classes': 'error',
       'better-tailwindcss/no-duplicate-classes': 'error',
+      // Colour comes from roles only: no hex, rgb or hsl arbitrary values. Spacing steps outside
+      // the token scale (1 2 3 4 6 8 12) are out too; sizes with no token use a visible [Npx].
+      'better-tailwindcss/no-restricted-classes': [
+        'error',
+        {
+          restrict: [
+            {
+              pattern: String.raw`^(?:[\w-]+:)*[\w-]+-\[(?:#|rgb|hsl|oklch|oklab|color).*\]$`,
+              message: 'Use a role class such as bg-accent, not a raw colour.',
+            },
+            {
+              pattern: String.raw`^(?:[\w-]+:)*-?(?:p|px|py|pt|pr|pb|pl|m|mx|my|mt|mr|mb|ml|gap|gap-x|gap-y|size|w|h|min-w|min-h|max-w|max-h|inset|top|right|bottom|left)-(?:5|7|9|10|11|1[3-9]|[2-9]\d|\d{3,})$`,
+              message: 'Spacing comes from the token scale: 1, 2, 3, 4, 6, 8, 12.',
+            },
+          ],
+        },
+      ],
     },
   },
 
@@ -436,6 +479,8 @@ const config = blocks(
     ...testingLibrary.configs['flat/react'],
     rules: {
       ...testingLibrary.configs['flat/react'].rules,
+      // React Native Testing Library 14 made fireEvent and render async, so awaiting them is correct.
+      'testing-library/no-await-sync-events': 'off',
       'testing-library/prefer-screen-queries': 'error',
       'no-restricted-syntax': [
         'error',

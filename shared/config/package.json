@@ -33,6 +33,7 @@
     "jest-expo": "catalog:",
     "prettier": "catalog:",
     "prettier-plugin-tailwindcss": "catalog:",
+    "tailwindcss": "catalog:",
     "typescript-eslint": "catalog:"
   }
 }

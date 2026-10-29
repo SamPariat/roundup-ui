@@ -95,23 +95,24 @@ no-js:
 
 # Expo's own checks: dependency versions against the SDK, then expo-doctor.
 doctor:
-	pnpm doctor
+	pnpm run doctor
 
 # Everything CI runs, minus the web export and the Docker build.
 check: lint fmt-check knip syncpack no-js typecheck test tokens-check doctor
 
+# The compose targets read apps/app/.env.$(APP_ENV) for the API address baked into the build.
 docker-build:
-	docker compose build web
+	docker compose --env-file apps/app/.env.$(APP_ENV) build web
 
-# Builds and runs the static web build at http://localhost:8081 (reads apps/app/.env.$(APP_ENV)).
+# Builds and runs the static web build at http://localhost:8081.
 docker-up:
-	docker compose up -d --build web
+	docker compose --env-file apps/app/.env.$(APP_ENV) up -d --build web
 
 docker-down:
-	docker compose down
+	docker compose --env-file apps/app/.env.$(APP_ENV) down
 
 docker-logs:
-	docker compose logs -f web
+	docker compose --env-file apps/app/.env.$(APP_ENV) logs -f web
 
 clean:
 	rm -rf node_modules apps/*/node_modules shared/*/node_modules apps/app/dist apps/app/.expo coverage

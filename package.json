@@ -18,11 +18,13 @@
     "typecheck": "pnpm -r --parallel run typecheck && tsc --noEmit",
     "test": "pnpm -r --parallel run test",
     "tokens": "pnpm --filter @roundup/tokens run generate",
-    "knip": "knip",
+    "knip": "APP_ENV=beta knip",
     "syncpack": "syncpack lint",
     "no-js": "node scripts/check-no-js.ts",
     "doctor": "pnpm --filter @roundup/app run doctor",
-    "commitlint": "commitlint --from origin/main --to HEAD"
+    "commitlint": "commitlint --from origin/main --to HEAD",
+    "test:coverage": "pnpm -r --parallel run test:coverage",
+    "coverage-summary": "node scripts/coverage-summary.ts"
   },
   "devDependencies": {
     "@commitlint/cli": "catalog:",
