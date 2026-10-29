@@ -41,7 +41,7 @@ const TabButton = ({
       accessibilityRole="tab"
       aria-selected={active}
       className={cn(
-        'min-h-tap flex-1 flex-row items-center justify-center gap-1 rounded-sm focus:outline-2 focus:outline-offset-2 focus:outline-focus-ring',
+        'min-h-12 flex-1 flex-row items-center justify-center gap-1 rounded-lg focus:outline-2 focus:outline-offset-2 focus:outline-focus-ring',
         active ? 'border border-border bg-bg-raised' : 'hover:bg-bg-hover',
       )}
       onPress={press}
@@ -59,7 +59,7 @@ const TabButton = ({
 }
 
 export const Tabs = ({ items, onChange, value }: TabsProps): ReactElement => (
-  <View className="flex-row gap-1 rounded-md bg-bg-sunken p-1" role="tablist">
+  <View className="flex-row gap-1 rounded-xl bg-bg-sunken p-1" role="tablist">
     {items.map((item) => (
       <TabButton active={item.id === value} item={item} key={item.id} onChange={onChange} />
     ))}

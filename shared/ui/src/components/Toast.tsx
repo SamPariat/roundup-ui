@@ -38,13 +38,11 @@ export const Toast = ({ action, children, onAction, tone = 'info' }: ToastProps)
       accessibilityLiveRegion={urgent ? 'assertive' : 'polite'}
       accessible
       aria-live={urgent ? 'assertive' : 'polite'}
-      className="rounded-md border border-border"
+      className="rounded-xl border border-border"
       role={urgent ? 'alert' : 'status'}
       style={{ boxShadow: shadow['shadow-toast'] ?? '' }}
     >
-      <View
-        className={cn('min-h-[52px] flex-row items-center gap-3 rounded-md py-2 pr-2 pl-4', fill)}
-      >
+      <View className={cn('min-h-13 flex-row items-center gap-3 rounded-xl py-2 pr-2 pl-4', fill)}>
         <Icon decorative name={icon} tone={color} />
         <Text className="min-w-0 flex-1" variant="body-sm">
           {children}

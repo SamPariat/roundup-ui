@@ -5,7 +5,7 @@ import { View } from 'react-native'
 
 /** A rounded container that draws dividers between ListRows. */
 export const List = ({ children }: { children?: ReactNode }): ReactElement => (
-  <View className="overflow-hidden rounded-lg border border-border bg-bg-raised" role="list">
+  <View className="overflow-hidden rounded-2xl border border-border bg-bg-raised" role="list">
     {/* eslint-disable-next-line @eslint-react/no-children-to-array -- the divider belongs to every row but the first, so the rows must be enumerated */}
     {Children.toArray(children).map((row, position) => (
       <View

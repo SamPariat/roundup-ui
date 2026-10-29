@@ -93,14 +93,12 @@ export const Welcome = ({ body, onStart, startLabel, title }: WelcomeProps): Rea
               aria-level={1}
               className={cn(
                 'font-onest-700 text-fg',
-                wide
-                  ? 'text-[64px] leading-[68px] tracking-[-2.88px]'
-                  : 'text-[36px] leading-[40px] tracking-[-1.26px]',
+                wide ? 'text-[64px]/17 tracking-[-2.88px]' : 'text-4xl/10 tracking-[-1.26px]',
               )}
             >
               {title ?? t('welcome.title')}
             </NativeText>
-            <Text className="max-w-[520px]" tone="muted" variant="body">
+            <Text className="max-w-130" tone="muted" variant="body">
               {body ?? t('welcome.body')}
             </Text>
             <View className={cn('mt-2 gap-2', wide && 'flex-row items-center gap-4')}>
@@ -112,18 +110,14 @@ export const Welcome = ({ body, onStart, startLabel, title }: WelcomeProps): Rea
               </Text>
             </View>
           </View>
-          <View
-            className={
-              wide ? 'aspect-[44/32] w-[40%] max-w-[420px]' : 'aspect-[44/32] w-[60%] max-w-[220px]'
-            }
-          >
+          <View className={wide ? 'aspect-44/32 w-2/5 max-w-105' : 'aspect-44/32 w-3/5 max-w-55'}>
             <WelcomeArt />
           </View>
         </View>
         <View className={cn('gap-4', wide && 'flex-row gap-6 border-t border-border pt-8')}>
           {POINTS.map((point) => (
             <View className={cn('flex-row items-start gap-3', wide && 'flex-1')} key={point.id}>
-              <View className="size-[40px] items-center justify-center rounded-md bg-accent-soft">
+              <View className="size-10 items-center justify-center rounded-xl bg-accent-soft">
                 <Icon decorative name={point.icon} tone="accent" />
               </View>
               <View className="min-w-0 flex-1">

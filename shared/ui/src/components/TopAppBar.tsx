@@ -44,7 +44,7 @@ export const TopAppBar = ({
       <SafeArea edges={['top', 'left', 'right']}>
         {large ? (
           <View className="pb-2">
-            <View className="h-appbar flex-row items-center px-1">
+            <View className="h-14 flex-row items-center px-1">
               {leading}
               <View className="flex-1" />
               {actions}
@@ -54,7 +54,7 @@ export const TopAppBar = ({
             </Text>
           </View>
         ) : (
-          <View className="h-appbar flex-row items-center gap-1 px-1">
+          <View className="h-14 flex-row items-center gap-1 px-1">
             {leading}
             <Text
               className="min-w-0 flex-1 px-2"

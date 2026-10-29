@@ -131,7 +131,7 @@ export const VenueCard = ({
   saved,
   types = NO_TYPES,
 }: VenueCardProps): ReactElement => (
-  <View className="overflow-hidden rounded-lg border border-border bg-bg-raised">
+  <View className="overflow-hidden rounded-2xl border border-border bg-bg-raised">
     <VenueMedia onSave={onSave} photo={photo} saved={saved} />
     <View className="gap-1 px-4 pt-3 pb-4">
       <Text heading={3} variant="body-strong">

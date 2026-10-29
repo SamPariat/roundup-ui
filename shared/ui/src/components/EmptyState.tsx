@@ -90,7 +90,7 @@ export const EmptyState = ({
       {title}
     </Text>
     {body === undefined ? null : (
-      <Text className="mb-4 max-w-[280px] text-center" tone="muted" variant="body-sm">
+      <Text className="mb-4 max-w-70 text-center" tone="muted" variant="body-sm">
         {body}
       </Text>
     )}

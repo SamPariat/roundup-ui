@@ -87,8 +87,6 @@ const fontFamily = (weight: number): string => {
   return family
 }
 
-const stripPrefix = (name: string, prefix: string): string => name.slice(prefix.length)
-
 const quote = (value: string): string => JSON.stringify(value)
 
 const objectOf = (entries: [string, number | string][]): string =>
@@ -156,29 +154,13 @@ const cssVariables = (theme: ThemeId): string =>
     .map(([name, value]) => `  --color-${name}: ${value};`)
     .join('\n')
 
+// Content width is the one size with no Tailwind class of its own. Every other spacing, size,
+// radius and breakpoint token equals a default Tailwind step (see tokens.test.ts), so the theme
+// does not repeat them and components use the default classes (h-12, rounded-xl, md:flex).
+const CONTENT_WIDTH = tokens.size.tokens.find((t) => t.name === 'size-content')
+
 const buildCss = (): string => {
-  const spaces = tokens.spacing.tokens
-    .map((t) => `  --spacing-${stripPrefix(t.name, 'space-')}: ${t.value};`)
-    .join('\n')
-
-  const radii = tokens.radius.tokens
-    .map((t) => `  --radius-${stripPrefix(t.name, 'radius-')}: ${t.value};`)
-    .join('\n')
-
-  const fixedSizes = tokens.size.tokens
-    .filter((t) => t.name.startsWith('size-') && !['size-content', 'size-reading'].includes(t.name))
-    .map((t) => `  --spacing-${stripPrefix(t.name, 'size-')}: ${t.value};`)
-    .join('\n')
-
-  const containers = tokens.size.tokens
-    .filter((t) => ['size-content', 'size-reading'].includes(t.name))
-    .map((t) => `  --container-${stripPrefix(t.name, 'size-')}: ${t.value};`)
-    .join('\n')
-
-  const breakpoints = tokens.size.tokens
-    .filter((t) => t.name.startsWith('bp-'))
-    .map((t) => `  --breakpoint-${stripPrefix(t.name, 'bp-')}: ${t.value};`)
-    .join('\n')
+  if (CONTENT_WIDTH === undefined) throw new Error('tokens.json has no size-content')
 
   const types = textStyles
     .map((style) => {
@@ -201,33 +183,18 @@ const buildCss = (): string => {
  *
  * Only role names reach Tailwind. The ctp-* and dawn-* primitives are never in the theme,
  * so a component can use bg-accent but not bg-ctp-mauve. Mocha is the default; the app's
- * ThemeProvider overrides these variables for Latte (and for a manual Mocha choice). */
+ * ThemeProvider overrides these variables for Latte (and for a manual Mocha choice).
+ *
+ * Spacing, sizing, radius, text, leading, shadow and breakpoint scales are Tailwind's own: they
+ * are deliberately not reset here. Only the colour palette is replaced. */
 
 @theme {
   --color-*: initial;
   --color-transparent: transparent;
 ${cssVariables('mocha')}
 
-  --spacing-*: initial;
-  --spacing: 4px;
-${spaces}
-${fixedSizes}
-
-  --container-*: initial;
-${containers}
-
-  --radius-*: initial;
-${radii}
-
-  --breakpoint-*: initial;
-${breakpoints}
-
-  --text-*: initial;
-  --font-*: initial;
-  --font-weight-*: initial;
-  --leading-*: initial;
-  --tracking-*: initial;
-  --shadow-*: initial;
+  /* The 1200px content column has no default max-w-* class. */
+  --container-content: ${CONTENT_WIDTH.value};
 
   /* Reduced motion keeps the spinner turning, only slower. */
   --animate-spin-slow: spin 2.4s linear infinite;

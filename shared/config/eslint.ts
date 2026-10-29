@@ -550,8 +550,12 @@ const config = blocks(
       'better-tailwindcss/no-unknown-classes': 'error',
       'better-tailwindcss/no-conflicting-classes': 'error',
       'better-tailwindcss/no-duplicate-classes': 'error',
-      // Colour comes from roles only: no hex, rgb or hsl arbitrary values. Spacing steps outside
-      // the token scale (1 2 3 4 6 8 12) are out too; sizes with no token use a visible [Npx].
+      // Tailwind's default scale is the vocabulary: h-[36px] must be h-9, w-[60%] w-3/5, and so on.
+      // An arbitrary value survives only where no default step exists (text-[15px], tracking).
+      'better-tailwindcss/enforce-canonical-classes': 'error',
+      'better-tailwindcss/enforce-shorthand-classes': 'error',
+      'better-tailwindcss/no-deprecated-classes': 'error',
+      // Colour comes from roles only: no hex, rgb or hsl arbitrary values.
       'better-tailwindcss/no-restricted-classes': [
         'error',
         {
@@ -559,10 +563,6 @@ const config = blocks(
             {
               pattern: String.raw`^(?:[\w-]+:)*[\w-]+-\[(?:#|rgb|hsl|oklch|oklab|color).*\]$`,
               message: 'Use a role class such as bg-accent, not a raw colour.',
-            },
-            {
-              pattern: String.raw`^(?:[\w-]+:)*-?(?:p|px|py|pt|pr|pb|pl|m|mx|my|mt|mr|mb|ml|gap|gap-x|gap-y|size|w|h|min-w|min-h|max-w|max-h|inset|top|right|bottom|left)-(?:5|7|9|10|11|1[3-9]|[2-9]\d|\d{3,})$`,
-              message: 'Spacing comes from the token scale: 1, 2, 3, 4, 6, 8, 12.',
             },
           ],
         },

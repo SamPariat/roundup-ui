@@ -46,7 +46,7 @@ export const SquadCard = ({
     <Pressable
       accessibilityLabel={spoken}
       accessibilityRole="button"
-      className="w-full gap-3 rounded-lg border border-border bg-bg-raised p-4 hover:bg-bg-hover focus:outline-2 focus:outline-offset-2 focus:outline-focus-ring active:bg-bg-hover"
+      className="w-full gap-3 rounded-2xl border border-border bg-bg-raised p-4 hover:bg-bg-hover focus:outline-2 focus:outline-offset-2 focus:outline-focus-ring active:bg-bg-hover"
       onPress={onPress}
     >
       <View className="flex-row items-center gap-3">

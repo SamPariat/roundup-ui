@@ -33,7 +33,7 @@ export const FieldFrame = ({
       <Text variant="label">{label}</Text>
       <View
         className={cn(
-          'h-[52px] flex-row items-center gap-2 rounded-md border border-border-strong bg-bg-raised px-3',
+          'h-13 flex-row items-center gap-2 rounded-xl border border-border-strong bg-bg-raised px-3',
           focused && 'border-accent',
           error !== undefined && 'border-danger bg-danger-soft',
           disabled && 'border-border bg-bg-sunken',

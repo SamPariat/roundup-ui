@@ -28,21 +28,21 @@ export const BottomNav = ({ items, onChange, value = 'squads' }: BottomNavProps)
 
   return (
     <SafeArea className="border-t border-border bg-bg-sunken" edges={['bottom', 'left', 'right']}>
-      <View accessibilityLabel={t('nav.main')} className="h-nav flex-row" role="tablist">
+      <View accessibilityLabel={t('nav.main')} className="h-18 flex-row" role="tablist">
         {shown.map((item) => {
           const active = item.id === value
 
           return (
             <NavTab
               active={active}
-              className="min-h-tap flex-1 items-center justify-center gap-1 focus:outline-2 focus:outline-offset-[-2px] focus:outline-focus-ring"
+              className="min-h-12 flex-1 items-center justify-center gap-1 focus:outline-2 focus:-outline-offset-2 focus:outline-focus-ring"
               item={item}
               key={item.id}
               onChange={onChange}
             >
               <View
                 className={cn(
-                  'h-[32px] w-[56px] items-center justify-center rounded-full',
+                  'h-8 w-14 items-center justify-center rounded-full',
                   active && 'bg-accent-soft',
                 )}
               >

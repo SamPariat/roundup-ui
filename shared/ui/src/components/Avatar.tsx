@@ -13,12 +13,12 @@ import { Text } from './Text.tsx'
 const avatarVariants = cva('shrink-0 items-center justify-center overflow-hidden rounded-full', {
   variants: {
     size: {
-      24: 'size-[24px]',
-      28: 'size-[28px]',
-      32: 'size-[32px]',
-      40: 'size-[40px]',
-      48: 'size-[48px]',
-      64: 'size-[64px]',
+      24: 'size-6',
+      28: 'size-7',
+      32: 'size-8',
+      40: 'size-10',
+      48: 'size-12',
+      64: 'size-16',
     },
     tint: {
       1: 'bg-avatar-1',
@@ -50,10 +50,10 @@ export interface AvatarProps {
 const INITIALS_TEXT = {
   24: 'text-[9px]',
   28: 'text-[11px]',
-  32: 'text-[12px]',
+  32: 'text-xs',
   40: 'text-[15px]',
-  48: 'text-[18px]',
-  64: 'text-[24px]',
+  48: 'text-lg',
+  64: 'text-2xl',
 } as const satisfies Record<AvatarSize, string>
 
 export const Avatar = ({

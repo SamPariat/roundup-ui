@@ -1,3 +1,6 @@
+import { readFileSync } from 'node:fs'
+import path from 'node:path'
+
 import type { RoleName, ThemeName } from '../src/tokens.ts'
 
 import { contrastRatio } from '../src/contrast.ts'
@@ -5,9 +8,11 @@ import {
   breakpoints,
   latte,
   mocha,
+  radius,
   roleNames,
   shadows,
   sizes,
+  spacing,
   textStyles,
   themes,
 } from '../src/tokens.ts'
@@ -133,5 +138,59 @@ describe('layout tokens', () => {
     for (const theme of themeNames) {
       expect(Object.keys(shadows[theme]).toSorted(byName)).toEqual(['shadow-sheet', 'shadow-toast'])
     }
+  })
+})
+
+// The components use Tailwind's own classes (h-12, rounded-xl, md:flex), and the theme does not
+// repeat them. These pin each token to the default step it stands for, so a changed token fails
+// here instead of silently drifting from the classes.
+describe('Tailwind default scale', () => {
+  const STEP = 4
+
+  it('keeps the spacing tokens on the 4px step (p-1 p-2 p-3 p-4 p-6 p-8 p-12)', () => {
+    expect(Object.values(spacing)).toEqual([1, 2, 3, 4, 6, 8, 12].map((step) => step * STEP))
+  })
+
+  it('keeps the fixed sizes on the 4px step (h-12 h-14 h-18 w-90 w-62)', () => {
+    expect(sizes['size-tap']).toBe(12 * STEP)
+    expect(sizes['size-appbar']).toBe(14 * STEP)
+    expect(sizes['size-nav']).toBe(18 * STEP)
+    expect(sizes['size-frame']).toBe(90 * STEP)
+    expect(sizes['size-sidenav']).toBe(62 * STEP)
+    expect(sizes['size-reading']).toBe(160 * STEP)
+  })
+
+  it('matches the radius tokens to rounded-lg, xl, 2xl and 3xl', () => {
+    expect([
+      radius['radius-sm'],
+      radius['radius-md'],
+      radius['radius-lg'],
+      radius['radius-xl'],
+    ]).toEqual([8, 12, 16, 24])
+  })
+
+  it('matches the breakpoints to Tailwind md and lg', () => {
+    expect([breakpoints['bp-tablet'], breakpoints['bp-desktop']]).toEqual([768, 1024])
+  })
+})
+
+describe('theme.css', () => {
+  // Jest runs this file as CommonJS, where __dirname is the way to find theme.css.
+
+  const css = readFileSync(path.join(__dirname, '../src/theme.css'), 'utf8')
+
+  it('resets only the colour palette', () => {
+    expect(css).toContain('--color-*: initial;')
+
+    expect(css).not.toMatch(
+      /--(?:spacing|radius|breakpoint|text|leading|tracking|shadow|font|font-weight)-\*: initial/,
+    )
+  })
+
+  it('adds the one size Tailwind has no class for', () => {
+    expect(css).toContain('--container-content: 1200px;')
+    expect(css).not.toContain('--spacing-')
+    expect(css).not.toContain('--radius-')
+    expect(css).not.toContain('--breakpoint-')
   })
 })

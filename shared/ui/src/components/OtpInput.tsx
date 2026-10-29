@@ -51,7 +51,7 @@ export const OtpInput = ({
           {boxes.map((position) => (
             <View
               className={cn(
-                'h-[56px] w-[44px] items-center justify-center rounded-sm border border-border-strong bg-bg-raised',
+                'h-14 w-11 items-center justify-center rounded-lg border border-border-strong bg-bg-raised',
                 error === undefined && !complete && position === digits.length && 'border-accent',
                 error !== undefined && 'border-danger bg-danger-soft',
                 error === undefined && complete && 'border-success',
@@ -68,7 +68,7 @@ export const OtpInput = ({
           aria-invalid={error !== undefined}
           autoComplete="sms-otp"
           caretHidden
-          className="absolute inset-0 text-transparent opacity-[0.01]"
+          className="absolute inset-0 text-transparent opacity-1"
           inputMode="numeric"
           keyboardType="number-pad"
           maxLength={length}
@@ -93,7 +93,7 @@ export const OtpInput = ({
               </Text>
               <Pressable
                 accessibilityRole="link"
-                className="min-h-tap justify-center focus:outline-2 focus:outline-offset-2 focus:outline-focus-ring"
+                className="min-h-12 justify-center focus:outline-2 focus:outline-offset-2 focus:outline-focus-ring"
                 hitSlop={8}
                 onPress={onResend}
               >

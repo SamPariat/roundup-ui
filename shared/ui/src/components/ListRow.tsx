@@ -54,7 +54,7 @@ export const ListRow = ({
     </>
   )
 
-  const layout = 'min-h-[64px] w-full flex-row items-center gap-3 px-4 py-2'
+  const layout = 'min-h-16 w-full flex-row items-center gap-3 px-4 py-2'
 
   if (onPress === undefined) return <View className={layout}>{content}</View>
 
@@ -65,7 +65,7 @@ export const ListRow = ({
       aria-busy={busy}
       className={cn(
         layout,
-        'hover:bg-bg-hover focus:outline-2 focus:outline-offset-[-2px] focus:outline-focus-ring active:bg-bg-hover',
+        'hover:bg-bg-hover focus:outline-2 focus:-outline-offset-2 focus:outline-focus-ring active:bg-bg-hover',
       )}
       onPress={onPress}
     >

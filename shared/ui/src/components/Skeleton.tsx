@@ -18,7 +18,7 @@ const Block = ({ className }: { className: string }): ReactElement => {
   return (
     <View
       className={cn(
-        'rounded-sm bg-bg-sunken',
+        'rounded-lg bg-bg-sunken',
         reduced ? 'animate-none' : 'animate-pulse',
         className,
       )}
@@ -36,13 +36,13 @@ export const Skeleton = ({ count = 1, variant = 'row' }: SkeletonProps): ReactEl
         accessibilityLabel={t('common.loading')}
         accessible
         aria-busy
-        className="overflow-hidden rounded-lg border border-border bg-bg-raised"
+        className="overflow-hidden rounded-2xl border border-border bg-bg-raised"
       >
-        <Block className="h-[160px] w-full rounded-none" />
+        <Block className="h-40 w-full rounded-none" />
         <View className="gap-1 px-4 pt-3 pb-4">
-          <Block className="h-[20px] w-[60%]" />
-          <Block className="h-[14px] w-[40%]" />
-          <Block className="h-[14px] w-[30%]" />
+          <Block className="h-5 w-3/5" />
+          <Block className="h-3.5 w-2/5" />
+          <Block className="h-3.5 w-3/10" />
         </View>
       </View>
     )
@@ -52,10 +52,10 @@ export const Skeleton = ({ count = 1, variant = 'row' }: SkeletonProps): ReactEl
     <View accessibilityLabel={t('common.loading')} accessible aria-busy>
       {Array.from({ length: count }, (_, index) => (
         <View className="flex-row items-center gap-3 px-4 py-3" key={index}>
-          <Block className="size-[40px] rounded-full" />
+          <Block className="size-10 rounded-full" />
           <View className="flex-1 gap-2">
-            <Block className={index % 2 === 0 ? 'h-[14px] w-[60%]' : 'h-[14px] w-[45%]'} />
-            <Block className={index % 2 === 0 ? 'h-3 w-[40%]' : 'h-3 w-[30%]'} />
+            <Block className={index % 2 === 0 ? 'h-3.5 w-3/5' : 'h-3.5 w-9/20'} />
+            <Block className={index % 2 === 0 ? 'h-3 w-2/5' : 'h-3 w-3/10'} />
           </View>
         </View>
       ))}

@@ -48,7 +48,7 @@ const ThemeOption = ({
       accessibilityRole="radio"
       aria-checked={checked}
       className={cn(
-        'min-h-tap flex-1 flex-row items-center justify-center gap-2 rounded-sm focus:outline-2 focus:outline-offset-2 focus:outline-focus-ring',
+        'min-h-12 flex-1 flex-row items-center justify-center gap-2 rounded-lg focus:outline-2 focus:outline-offset-2 focus:outline-focus-ring',
         checked ? 'border border-border bg-bg-raised' : 'hover:bg-bg-hover',
       )}
       onPress={press}
@@ -72,7 +72,7 @@ export const ThemeSwitch = ({
   return (
     <View
       accessibilityLabel={label ?? t('themeSwitch.label')}
-      className="flex-row gap-1 rounded-md bg-bg-sunken p-1"
+      className="flex-row gap-1 rounded-xl bg-bg-sunken p-1"
       role="radiogroup"
     >
       {OPTIONS.map((option) => (

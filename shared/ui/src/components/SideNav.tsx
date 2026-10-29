@@ -57,7 +57,7 @@ export const SideNav = ({
 
   return (
     <View
-      className="w-sidenav gap-1 border-r border-border bg-bg-sunken px-3 pt-6 pb-4"
+      className="w-62 gap-1 border-r border-border bg-bg-sunken px-3 pt-6 pb-4"
       role="navigation"
     >
       <View className="px-3 pb-6">
@@ -71,7 +71,7 @@ export const SideNav = ({
             <NavTab
               active={active}
               className={cn(
-                'h-[44px] w-full flex-row items-center gap-3 rounded-md px-3 hover:bg-bg-hover focus:outline-2 focus:outline-offset-2 focus:outline-focus-ring',
+                'h-11 w-full flex-row items-center gap-3 rounded-xl px-3 hover:bg-bg-hover focus:outline-2 focus:outline-offset-2 focus:outline-focus-ring',
                 active && 'bg-accent-soft',
               )}
               item={item}

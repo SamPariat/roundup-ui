@@ -11,7 +11,7 @@ export default function ProfileScreen(): ReactElement {
 
   return (
     <View className="flex-1 gap-6 py-6">
-      <View className="max-w-reading gap-2">
+      <View className="max-w-160 gap-2">
         <Text variant="heading">{t('screens.profile.themeHeading')}</Text>
         <ThemeSwitch onChange={setPreference} value={preference} />
       </View>

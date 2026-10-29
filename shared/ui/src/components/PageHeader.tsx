@@ -32,7 +32,7 @@ export const PageHeader = ({
     )}
     <View className="flex-row flex-wrap items-center gap-4">
       {leading}
-      <View className="min-w-[240px] flex-1 gap-1">
+      <View className="min-w-60 flex-1 gap-1">
         <Text heading={1} variant="display">
           {title}
         </Text>

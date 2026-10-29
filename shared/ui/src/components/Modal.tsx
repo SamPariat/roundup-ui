@@ -186,7 +186,7 @@ export const Modal = ({
           aria-modal
           className={cn(
             'max-h-[85%] p-6',
-            sheet ? 'w-full rounded-t-xl' : 'w-[480px] max-w-full rounded-lg',
+            sheet ? 'w-full rounded-t-3xl' : 'w-120 max-w-full rounded-2xl',
           )}
           role={confirm ? 'alertdialog' : 'dialog'}
           style={{ boxShadow: shadow[sheet ? 'shadow-sheet' : 'shadow-toast'] ?? '' }}

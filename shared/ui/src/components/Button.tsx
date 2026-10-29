@@ -16,7 +16,7 @@ import { Spinner } from './Spinner.tsx'
 import { Text } from './Text.tsx'
 
 export const buttonVariants = cva(
-  'flex-row items-center justify-center gap-2 rounded-md border border-transparent focus:outline-2 focus:outline-offset-2 focus:outline-focus-ring active:scale-98',
+  'flex-row items-center justify-center gap-2 rounded-xl border border-transparent focus:outline-2 focus:outline-offset-2 focus:outline-focus-ring active:scale-98',
   {
     variants: {
       variant: {
@@ -26,18 +26,18 @@ export const buttonVariants = cva(
         destructive: 'bg-danger active:opacity-85',
       },
       size: {
-        sm: 'h-[36px] px-3',
-        md: 'min-h-tap px-4',
-        lg: 'min-h-appbar px-6',
+        sm: 'h-9 px-3',
+        md: 'min-h-12 px-4',
+        lg: 'min-h-14 px-6',
       },
       block: { true: 'w-full', false: 'self-start' },
       iconOnly: { true: 'px-0', false: '' },
       inactive: { true: 'border-border bg-bg-sunken active:scale-100', false: '' },
     },
     compoundVariants: [
-      { iconOnly: true, size: 'sm', className: 'w-[36px]' },
-      { iconOnly: true, size: 'md', className: 'w-tap' },
-      { iconOnly: true, size: 'lg', className: 'w-appbar' },
+      { iconOnly: true, size: 'sm', className: 'w-9' },
+      { iconOnly: true, size: 'md', className: 'w-12' },
+      { iconOnly: true, size: 'lg', className: 'w-14' },
       { inactive: true, variant: 'ghost', className: 'border-transparent bg-transparent' },
     ],
     defaultVariants: {
