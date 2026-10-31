@@ -445,14 +445,19 @@ const config = blocks(
 
   // ── Architecture ────────────────────────────────────────────
   {
-    // app -> ui -> i18n and tokens, one direction only. i18n and tokens import nothing internal
-    // (config is the tooling every package may reach for its Jest preset and tsconfig).
-    // shared/* never imports apps/*.
+    // Inside the app: routes may import components and hooks; components may import hooks and
+    // @roundup/ui; hooks import no components. Across packages: app -> ui -> i18n and tokens, one
+    // direction only. i18n and tokens import nothing internal (config is the tooling every package
+    // may reach for its Jest preset and tsconfig). shared/* never imports apps/*.
+    // The first matching element wins, so the specific app folders come before the catch-all.
     files: SOURCE,
     plugins: { boundaries },
     settings: {
       'boundaries/elements': [
-        { type: 'app', pattern: 'apps/roundup/**', partialMatch: false },
+        { type: 'routes', pattern: 'apps/roundup/src/app/**', partialMatch: false },
+        { type: 'components', pattern: 'apps/roundup/src/components/**', partialMatch: false },
+        { type: 'hooks', pattern: 'apps/roundup/src/hooks/**', partialMatch: false },
+        { type: 'app-other', pattern: 'apps/roundup/**', partialMatch: false },
         { type: 'ui', pattern: 'shared/ui/**', partialMatch: false },
         { type: 'i18n', pattern: 'shared/i18n/**', partialMatch: false },
         { type: 'tokens', pattern: 'shared/tokens/**', partialMatch: false },
@@ -466,8 +471,55 @@ const config = blocks(
           default: 'disallow',
           policies: [
             {
-              from: { element: { type: 'app' } },
-              allow: { to: { element: { type: ['app', 'ui', 'i18n', 'tokens', 'config'] } } },
+              from: { element: { type: 'routes' } },
+              allow: {
+                to: {
+                  element: {
+                    type: [
+                      'routes',
+                      'components',
+                      'hooks',
+                      'app-other',
+                      'ui',
+                      'i18n',
+                      'tokens',
+                      'config',
+                    ],
+                  },
+                },
+              },
+            },
+            {
+              from: { element: { type: 'components' } },
+              allow: {
+                to: {
+                  element: { type: ['components', 'hooks', 'ui', 'i18n', 'tokens', 'config'] },
+                },
+              },
+            },
+            {
+              from: { element: { type: 'hooks' } },
+              allow: { to: { element: { type: ['hooks', 'ui', 'i18n', 'tokens', 'config'] } } },
+            },
+            {
+              // Tests and tool configs at the app root (global.css is imported by routes) may reach anything in the app.
+              from: { element: { type: 'app-other' } },
+              allow: {
+                to: {
+                  element: {
+                    type: [
+                      'app-other',
+                      'routes',
+                      'components',
+                      'hooks',
+                      'ui',
+                      'i18n',
+                      'tokens',
+                      'config',
+                    ],
+                  },
+                },
+              },
             },
             {
               from: { element: { type: 'ui' } },
@@ -589,12 +641,17 @@ const config = blocks(
     files: [
       'shared/ui/src/components/*.tsx',
       'shared/ui/tests/components/*.tsx',
-      'apps/roundup/src/shell/*.tsx',
-      'apps/roundup/tests/shell/*.tsx',
+      'apps/roundup/src/components/*.tsx',
+      'apps/roundup/tests/components/*.tsx',
     ],
     rules: {
       'unicorn/filename-case': ['error', { cases: { pascalCase: true, kebabCase: true } }],
     },
+  },
+  {
+    // Hook files are named after the hook, in camelCase (useTabItems.ts).
+    files: ['**/use[A-Z]*.{ts,tsx}'],
+    rules: { 'unicorn/filename-case': ['error', { cases: { camelCase: true } }] },
   },
   {
     // Route files and special Expo names ([id], (tabs), +not-found, _layout) have framework-mandated names.

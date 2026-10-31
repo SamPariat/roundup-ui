@@ -2,13 +2,12 @@ import type { ReactElement, ReactNode } from 'react'
 
 import { View } from 'react-native'
 
-import { useT } from '@roundup/i18n'
-import { BottomNav, cn, PageHeader, SideNav, TopAppBar, useBreakpoint } from '@roundup/ui'
+import { BottomNav, cn, PageHeader, SideNav, TopAppBar } from '@roundup/ui'
 
-import type { TabItem } from './tabs.ts'
+import type { TabItem } from '../hooks/useTabItems.ts'
 
-import { layoutFor } from './layout-for.ts'
-import { TAB_ITEMS } from './tabs.ts'
+import { useLayout } from '../hooks/useLayout.ts'
+import { useTabItems } from '../hooks/useTabItems.ts'
 
 /** Props for AppShell. */
 export interface AppShellProps {
@@ -24,17 +23,10 @@ export interface AppShellProps {
  * @returns The page frame: nav, title and content.
  */
 export const AppShell = ({ children, current }: AppShellProps): ReactElement => {
-  const { t } = useT()
-  const { width } = useBreakpoint()
-  const { gutter, nav } = layoutFor(width)
-  const title = t(`nav.tabs.${current}`)
-
-  const navItems = TAB_ITEMS.map(({ href, icon, id }) => ({
-    href,
-    icon,
-    id,
-    label: t(`nav.tabs.${id}`),
-  }))
+  const { gutter, nav } = useLayout()
+  const items = useTabItems()
+  const navItems = items.map(({ href, icon, id, label }) => ({ href, icon, id, label }))
+  const title = items.find((item) => item.id === current)?.label ?? ''
 
   return (
     <View className={cn('flex-1 bg-bg', nav === 'side' && 'flex-row')}>

@@ -1,10 +1,9 @@
 import type { ReactElement } from 'react'
 
-import { usePathname } from 'expo-router'
 import { TabList, Tabs, TabSlot, TabTrigger } from 'expo-router/ui'
 
-import { AppShell } from '../../shell/AppShell.tsx'
-import { TAB_ITEMS, tabIdForPath } from '../../shell/tabs.ts'
+import { AppShell } from '../../components/AppShell.tsx'
+import { useCurrentTab, useTabItems } from '../../hooks/useTabItems.ts'
 
 /**
  * Web and Android: expo-router's headless Tabs own the routing, and AppShell draws the chrome
@@ -13,12 +12,13 @@ import { TAB_ITEMS, tabIdForPath } from '../../shell/tabs.ts'
  * @returns The headless tabs wrapped in the app shell.
  */
 export default function TabsLayout(): ReactElement {
-  const current = tabIdForPath(usePathname())
+  const current = useCurrentTab()
+  const items = useTabItems()
 
   return (
     <Tabs>
       <TabList className="hidden">
-        {TAB_ITEMS.map((item) => (
+        {items.map((item) => (
           <TabTrigger href={item.href} key={item.id} name={item.id} />
         ))}
       </TabList>

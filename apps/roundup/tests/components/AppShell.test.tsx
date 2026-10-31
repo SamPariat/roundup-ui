@@ -7,7 +7,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context'
 
 import { ThemeProvider } from '@roundup/ui'
 
-import { AppShell } from '../../src/shell/AppShell.tsx'
+import { AppShell } from '../../src/components/AppShell.tsx'
 
 const mockWindow = { width: 390, height: 800, scale: 2, fontScale: 1 }
 

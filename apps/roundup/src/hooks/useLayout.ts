@@ -1,4 +1,5 @@
 import { breakpoints, sizes, spacing } from '@roundup/tokens'
+import { useBreakpoint } from '@roundup/ui'
 
 /** How the shell is laid out at a given width. */
 export interface ShellLayout {
@@ -22,3 +23,9 @@ export const layoutFor = (width: number): ShellLayout => {
 
   return { nav, gutter, contentWidth: Math.min(available - gutter * 2, sizes['size-content']) }
 }
+
+/**
+ * The shell layout for the current window, recomputed when it is resized, folded or rotated.
+ * @returns The navigation, gutter and content width.
+ */
+export const useLayout = (): ShellLayout => layoutFor(useBreakpoint().width)

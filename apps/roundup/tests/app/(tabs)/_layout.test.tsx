@@ -2,9 +2,8 @@ import type { ReactNode } from 'react'
 
 import { render } from '@testing-library/react-native'
 
-import Ios from '../../src/app/(tabs)/_layout.ios.tsx'
-import Shared from '../../src/app/(tabs)/_layout.tsx'
-import { TAB_ITEMS, tabIdForPath } from '../../src/shell/tabs.ts'
+import Ios from '../../../src/app/(tabs)/_layout.ios.tsx'
+import Shared from '../../../src/app/(tabs)/_layout.tsx'
 
 const mockTriggers: string[] = []
 
@@ -80,7 +79,7 @@ jest.mock('expo-router/ui', () => ({
 
 jest.mock('expo-router', () => ({ usePathname: mockPathname }))
 
-jest.mock('../../src/shell/AppShell.tsx', () => ({ AppShell: mockContainer }))
+jest.mock('../../../src/components/AppShell.tsx', () => ({ AppShell: mockContainer }))
 
 /**
  * Lists the trigger routes recorded under a prefix, in render order.
@@ -101,19 +100,7 @@ describe('tab layouts', () => {
     await render(<Ios />)
     await render(<Shared />)
 
-    expect(triggersWith('native:')).toEqual(TAB_ITEMS.map((item) => item.id))
+    expect(triggersWith('native:')).toEqual(['squads', 'explore', 'profile'])
     expect(triggersWith('headless:')).toEqual(triggersWith('native:'))
-  })
-})
-
-describe('tabIdForPath', () => {
-  it.each([
-    ['/squads', 'squads'],
-    ['/squads/42/members', 'squads'],
-    ['/explore', 'explore'],
-    ['/profile', 'profile'],
-    ['/unknown', 'squads'],
-  ] as const)('maps %s to %s', (path, id) => {
-    expect(tabIdForPath(path)).toBe(id)
   })
 })

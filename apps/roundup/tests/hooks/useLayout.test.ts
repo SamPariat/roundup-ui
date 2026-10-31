@@ -1,4 +1,4 @@
-import { layoutFor } from '../../src/shell/layout-for.ts'
+import { layoutFor } from '../../src/hooks/useLayout.ts'
 
 // 360 phone, 466 Duo folded, 626 Duo open portrait, 768 tablet, 890 Duo open landscape, 1024 and 1440 desktop.
 describe('layoutFor', () => {
