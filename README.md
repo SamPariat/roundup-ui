@@ -81,6 +81,7 @@ Every `make` target calls a root pnpm script.
 | `make syncpack`                        | Every dependency version comes from the pnpm catalog           |
 | `make files`                           | Fail on JavaScript files and non-kebab-case assets             |
 | `make doctor`                          | `expo install --check`, then `expo-doctor`                     |
+| `make updates`                         | Fail when a catalog dependency has a newer release it may take |
 | `make docker-up` / `down` / `logs`     | The static web build in Docker on port 8081                    |
 | `make docker-smoke`                    | Assert URLs, 404 page, headers and health on the running image |
 
@@ -108,7 +109,7 @@ roundup-ui/
 ├── .githooks/          # pre-commit (lint-staged, tsc, expo-doctor) and commit-msg (commitlint)
 ├── .github/            # CI workflow and the pull request template
 ├── infra/sws.toml      # static-web-server settings: clean URLs, 404 page, headers, health
-├── scripts/            # docker-smoke.ts, check-files.ts, copy-favicon.ts, setup.sh
+├── scripts/            # docker-smoke.ts, check-files.ts, check-updates.ts, copy-favicon.ts, setup.sh
 ├── Dockerfile          # deps → web export → static-web-server runtime
 ├── docker-compose.yml  # the web service on :8081
 └── Makefile            # the front door

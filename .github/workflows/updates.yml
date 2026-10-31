@@ -1,0 +1,26 @@
+name: updates
+
+# Fails when a dependency has a newer release it may take, so a stale pin shows up as a red run on
+# main rather than on an unrelated pull request. Run it by hand from the Actions tab too.
+on:
+  schedule:
+    - cron: '0 6 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  updates:
+    name: updates
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: dependency updates
+        run: pnpm run updates

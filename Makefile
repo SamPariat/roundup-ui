@@ -21,6 +21,7 @@ export APP_ENV
 	syncpack \
 	files \
 	doctor \
+	updates \
 	check \
 	docker-build \
 	docker-up \
@@ -94,9 +95,15 @@ syncpack:
 files:
 	pnpm run files
 
-# Expo's own checks: dependency versions against the SDK, then expo-doctor.
+# Expo's own checks (dependency versions against the SDK, then expo-doctor), then the update check.
 doctor:
 	pnpm run doctor
+	pnpm run updates
+
+# Fails when a catalog dependency has a newer release it may take (needs the network). Expo packages
+# are held to what SDK 58 allows; releases that are held back are printed as info.
+updates:
+	pnpm run updates
 
 # Everything CI runs, minus the web export and the Docker build.
 check: lint fmt-check knip syncpack files typecheck test tokens-check doctor

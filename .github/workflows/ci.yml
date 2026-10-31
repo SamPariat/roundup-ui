@@ -163,6 +163,23 @@ jobs:
         if: always()
         run: docker stop web
 
+  # New releases appear without any change in this repo, so this job is informative: it is not in
+  # ci-ok and cannot turn a pull request red. updates.yml runs the same check weekly and fails.
+  updates:
+    name: updates
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: dependency updates
+        run: pnpm run updates
+
   # The only check the main-branch ruleset requires. Job names can change as jobs are added or
   # split, so the ruleset points here instead of at them.
   ci-ok:
