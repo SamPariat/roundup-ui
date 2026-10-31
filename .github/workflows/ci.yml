@@ -94,23 +94,6 @@ jobs:
       - name: jest
         run: pnpm test
 
-  # make tokens, then fail if the committed generated files differ.
-  drift:
-    name: drift
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v7
-      - uses: pnpm/action-setup@v6
-      - uses: actions/setup-node@v7
-        with:
-          node-version-file: .nvmrc
-          cache: pnpm
-      - run: pnpm install --frozen-lockfile
-      - name: regenerate tokens
-        run: pnpm tokens
-      - name: committed files match
-        run: git diff --exit-code
-
   web:
     name: web
     runs-on: ubuntu-latest
@@ -186,7 +169,7 @@ jobs:
   ci-ok:
     name: ci-ok
     runs-on: ubuntu-latest
-    needs: [lint, typecheck, test, drift, web, docker]
+    needs: [lint, typecheck, test, web, docker]
     if: always()
     steps:
       - name: All jobs passed

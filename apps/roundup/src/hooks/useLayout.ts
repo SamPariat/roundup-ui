@@ -1,13 +1,12 @@
-import { breakpoints, sizes, spacing } from '@roundup/tokens'
-import { useBreakpoint } from '@roundup/ui'
+import { breakpointFor, useBreakpoint } from '@roundup/ui'
 
 /** How the shell is laid out at a given width. */
 export interface ShellLayout {
   /** Which navigation to show: the bottom bar or the side rail. */
   nav: 'bottom' | 'side'
-  /** Side gutter: space-4 on phones, space-8 from the tablet breakpoint. */
+  /** Side gutter: 16 (p-4) on phones, 32 (p-8) from the tablet breakpoint. */
   gutter: number
-  /** The column never grows past size-content; wider windows get margin, not longer lines. */
+  /** The column never grows past max-w-content (1200); wider windows get margin, not longer lines. */
   contentWidth: number
 }
 
@@ -17,11 +16,14 @@ export interface ShellLayout {
  * @returns The navigation, gutter and content width.
  */
 export const layoutFor = (width: number): ShellLayout => {
-  const nav = width >= breakpoints['bp-desktop'] ? 'side' : 'bottom'
-  const gutter = width >= breakpoints['bp-tablet'] ? spacing['space-8'] : spacing['space-4']
-  const available = width - (nav === 'side' ? sizes['size-sidenav'] : 0)
+  // Tailwind's defaults: md is 768 and lg is 1024, p-4 is 16 and p-8 is 32, w-62 (the SideNav) is
+  // 248. The content column is max-w-content, 1200, from theme.css.
+  const step = breakpointFor(width)
+  const nav = step === 'desktop' ? 'side' : 'bottom'
+  const gutter = step === 'phone' ? 16 : 32
+  const available = width - (nav === 'side' ? 248 : 0)
 
-  return { nav, gutter, contentWidth: Math.min(available - gutter * 2, sizes['size-content']) }
+  return { nav, gutter, contentWidth: Math.min(available - gutter * 2, 1200) }
 }
 
 /**

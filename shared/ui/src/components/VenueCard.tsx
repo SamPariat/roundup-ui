@@ -5,7 +5,7 @@ import Svg, { Rect } from 'react-native-svg'
 
 import { useT } from '@roundup/i18n'
 
-import { useTheme } from '../theme/theme.tsx'
+import { styleSvg } from '../lib/svg.ts'
 import { Badge } from './Badge.tsx'
 import { Button } from './Button.tsx'
 import { Icon } from './Icon.tsx'
@@ -37,28 +37,28 @@ export interface VenueCardProps {
   onSave?: () => void
 }
 
+// react-native-svg shapes that take Tailwind classes: fill-* picks a role colour.
+const StyledSvg = styleSvg(Svg)
+const StyledRect = styleSvg(Rect)
+
 /**
  * Placeholder when a venue has no photo: tiles cut from the radius scale.
  * @returns A decorative SVG of tinted tiles.
  */
-const VenuePattern = (): ReactElement => {
-  const { roles } = useTheme()
-
-  return (
-    <Svg
-      aria-hidden
-      className="absolute inset-0"
-      height="100%"
-      preserveAspectRatio="xMidYMid slice"
-      viewBox="0 0 320 180"
-      width="100%"
-    >
-      <Rect fill={roles['accent-soft']} height={96} rx={48} width={96} x={196} y={28} />
-      <Rect fill={roles['highlight-soft']} height={64} rx={16} width={64} x={236} y={92} />
-      <Rect fill={roles['bg-hover']} height={32} rx={16} width={120} x={28} y={120} />
-    </Svg>
-  )
-}
+const VenuePattern = (): ReactElement => (
+  <StyledSvg
+    aria-hidden
+    className="absolute inset-0"
+    height="100%"
+    preserveAspectRatio="xMidYMid slice"
+    viewBox="0 0 320 180"
+    width="100%"
+  >
+    <StyledRect className="fill-accent-soft" height={96} rx={48} width={96} x={196} y={28} />
+    <StyledRect className="fill-highlight-soft" height={64} rx={16} width={64} x={236} y={92} />
+    <StyledRect className="fill-bg-hover" height={32} rx={16} width={120} x={28} y={120} />
+  </StyledSvg>
+)
 
 /** Optional props that callers may pass as undefined, which exactOptionalPropertyTypes otherwise rejects. */
 type Loose<T> = { [K in keyof T]?: T[K] | undefined }

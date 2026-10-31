@@ -11,11 +11,10 @@ import {
 } from 'react-native'
 
 import { useT } from '@roundup/i18n'
-import { breakpoints } from '@roundup/tokens'
 
 import { ActionContext } from '../lib/action-context.ts'
 import { cn } from '../lib/cn.ts'
-import { useTheme } from '../theme/theme.tsx'
+import { breakpointFor } from '../lib/useBreakpoint.ts'
 import { Button } from './Button.tsx'
 import { Surface } from './Surface.tsx'
 import { Text } from './Text.tsx'
@@ -188,9 +187,8 @@ export const Modal = ({
   visible = true,
 }: ModalProps): ReactElement => {
   const { width } = useWindowDimensions()
-  const { shadow } = useTheme()
   const titleRef = useRef<TitleElement>(null)
-  const sheet = width < breakpoints['bp-tablet']
+  const sheet = breakpointFor(width) === 'phone'
   const confirm = tone === 'confirm'
   const showClose = !confirm && !busy && closable
 
@@ -224,10 +222,11 @@ export const Modal = ({
           aria-modal
           className={cn(
             'max-h-[85%] p-6',
-            sheet ? 'w-full rounded-t-3xl' : 'w-120 max-w-full rounded-2xl',
+            sheet
+              ? 'w-full rounded-t-3xl shadow-sheet'
+              : 'w-120 max-w-full rounded-2xl shadow-toast',
           )}
           role={confirm ? 'alertdialog' : 'dialog'}
-          style={{ boxShadow: shadow[sheet ? 'shadow-sheet' : 'shadow-toast'] ?? '' }}
         >
           {sheet ? (
             <View

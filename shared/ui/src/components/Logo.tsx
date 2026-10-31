@@ -5,6 +5,7 @@ import { View } from 'react-native'
 
 import { useT } from '@roundup/i18n'
 
+import type { Styled } from '../lib/svg.ts'
 import type { Theme } from '../theme/theme.tsx'
 
 import LockupDark from '../../../../assets/svg/logo/lockup-dark.svg'
@@ -17,6 +18,7 @@ import WordmarkDark from '../../../../assets/svg/logo/wordmark-dark.svg'
 import WordmarkLight from '../../../../assets/svg/logo/wordmark-light.svg'
 import WordmarkMono from '../../../../assets/svg/logo/wordmark-mono.svg'
 import { cn } from '../lib/cn.ts'
+import { styleSvg } from '../lib/svg.ts'
 import { useTheme } from '../theme/theme.tsx'
 
 const SIZES = { sm: 24, md: 32, lg: 48, xl: 96 } as const
@@ -41,7 +43,7 @@ type Variant = 'dark' | 'light' | 'mono'
 /** One kind of logo artwork (mark, wordmark or lockup) in its three colour variants. */
 interface Artwork {
   /** The SVG component for each colour variant. */
-  files: Record<Variant, FC<SvgProps>>
+  files: Record<Variant, FC<Styled<SvgProps>>>
   /** Width over height of the file's viewBox. */
   aspect: number
   /** Height as a share of the mark size the caller asked for. */
@@ -53,13 +55,21 @@ interface Artwork {
 // the height that keeps its letters the size they have inside the lockup (65.16 of 96 units).
 const ARTWORK: Record<NonNullable<LogoProps['type']>, Artwork> = {
   lockup: {
-    files: { dark: LockupDark, light: LockupLight, mono: LockupMono },
+    files: { dark: styleSvg(LockupDark), light: styleSvg(LockupLight), mono: styleSvg(LockupMono) },
     aspect: 417.26 / 96,
     height: 1,
   },
-  mark: { files: { dark: MarkDark, light: MarkLight, mono: MarkMono }, aspect: 1, height: 1 },
+  mark: {
+    files: { dark: styleSvg(MarkDark), light: styleSvg(MarkLight), mono: styleSvg(MarkMono) },
+    aspect: 1,
+    height: 1,
+  },
   wordmark: {
-    files: { dark: WordmarkDark, light: WordmarkLight, mono: WordmarkMono },
+    files: {
+      dark: styleSvg(WordmarkDark),
+      light: styleSvg(WordmarkLight),
+      mono: styleSvg(WordmarkMono),
+    },
     aspect: 288.86 / 65.16,
     height: 65.16 / 96,
   },
@@ -91,7 +101,7 @@ export const Logo = ({
   type = 'lockup',
 }: LogoProps): ReactElement => {
   const { t } = useT()
-  const { name, roles } = useTheme()
+  const { name } = useTheme()
   const mark = typeof size === 'number' ? size : SIZES[size]
   const { aspect, files, height: share } = ARTWORK[type]
   const Artwork = files[variantFor(tone, name)]
@@ -104,7 +114,7 @@ export const Logo = ({
       className={cn('shrink-0 flex-row items-center', className)}
       role="img"
     >
-      <Artwork aria-hidden color={roles.fg} height={height} width={height * aspect} />
+      <Artwork aria-hidden className="text-fg" height={height} width={height * aspect} />
     </View>
   )
 }

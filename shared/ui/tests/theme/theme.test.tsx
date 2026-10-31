@@ -3,13 +3,7 @@ import type { ReactNode } from 'react'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { act, renderHook, waitFor } from '@testing-library/react-native'
 
-import {
-  cssVariablesFor,
-  THEME_STORAGE_KEY,
-  themeNameFor,
-  ThemeProvider,
-  useTheme,
-} from '../../src/theme/theme.tsx'
+import { THEME_STORAGE_KEY, themeNameFor, ThemeProvider, useTheme } from '../../src/theme/theme.tsx'
 
 /** Props of the hook test wrapper. */
 interface WrapperProps {
@@ -39,22 +33,9 @@ describe('themeNameFor', () => {
   })
 })
 
-describe('cssVariablesFor', () => {
-  it('prefixes every role as a Tailwind colour variable', () => {
-    expect(cssVariablesFor('mocha')['--color-bg']).toBe('#1e1e2e')
-    expect(cssVariablesFor('latte')['--color-bg']).toBe('#f2e9e1')
-  })
-})
-
 describe('ThemeProvider', () => {
   beforeEach(async () => {
     await AsyncStorage.clear()
-  })
-
-  it('exposes the role colours of the active theme', async () => {
-    const { result } = await renderHook(() => useTheme(), { wrapper })
-
-    expect(result.current.roles.accent).toBeDefined()
   })
 
   it('saves the chosen preference on the device', async () => {

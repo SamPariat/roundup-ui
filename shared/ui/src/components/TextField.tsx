@@ -5,7 +5,7 @@ import { TextInput } from 'react-native'
 import type { IconName } from '../lib/icons.ts'
 
 import { useFocus } from '../lib/useFocus.ts'
-import { useTheme } from '../theme/theme.tsx'
+import { useRoleColor } from '../lib/useRoleColor.ts'
 import { FieldFrame } from './Field.tsx'
 import { Icon } from './Icon.tsx'
 
@@ -54,7 +54,7 @@ export const TextField = ({
   value,
 }: TextFieldProps): ReactElement => {
   const { focused, onBlur, onFocus } = useFocus()
-  const { roles } = useTheme()
+  const placeholderColor = useRoleColor('fg-subtle')
 
   return (
     <FieldFrame
@@ -76,7 +76,7 @@ export const TextField = ({
         onChangeText={onChangeText}
         onFocus={onFocus}
         placeholder={placeholder}
-        placeholderTextColor={roles['fg-subtle']}
+        placeholderTextColor={placeholderColor}
         value={value}
         {...INPUT_TYPES[type]}
       />

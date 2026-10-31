@@ -15,8 +15,6 @@ export APP_ENV
 	fmt-check \
 	typecheck \
 	test \
-	tokens \
-	tokens-check \
 	knip \
 	syncpack \
 	files \
@@ -30,8 +28,9 @@ export APP_ENV
 	docker-logs \
 	clean
 
-# Installs the exact versions in pnpm-lock.yaml. Needs the Node in .nvmrc and corepack (ships with Node).
+# Installs the exact versions in pnpm-lock.yaml. Needs the Node in .nvmrc. Node 25+ does not ship corepack, so it is installed from npm first.
 install:
+	npm install --global corepack@0.36.0
 	corepack enable
 	pnpm install --frozen-lockfile
 
@@ -75,14 +74,6 @@ typecheck:
 test:
 	pnpm test
 
-# Regenerates shared/tokens/src from tokens.json. Commit the result.
-tokens:
-	pnpm tokens
-
-# Fails when the generated tokens differ from tokens.json (what CI's drift job checks).
-tokens-check:
-	pnpm tokens -- --check
-
 # Unused files, exports and dependencies.
 knip:
 	pnpm knip
@@ -107,7 +98,7 @@ updates:
 	pnpm run updates
 
 # Everything CI runs, minus the web export and the Docker build.
-check: lint fmt-check knip syncpack files typecheck test tokens-check doctor
+check: lint fmt-check knip syncpack files typecheck test doctor
 
 # The compose targets read apps/roundup/.env.$(APP_ENV) for the API address baked into the build.
 docker-build:

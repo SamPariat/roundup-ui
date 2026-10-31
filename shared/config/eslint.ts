@@ -104,7 +104,8 @@ const warningsToErrors = (configs: Linter.Config[]): Linter.Config[] =>
 
 const STYLE_OBJECT_BAN = {
   selector: "JSXAttribute[name.name='style'] > JSXExpressionContainer > ObjectExpression",
-  message: 'No inline style objects. Use className; raw values come from useTheme().',
+  message:
+    'No inline style objects. Use className; colours and shadows come from theme.css classes.',
 }
 
 const ANY_BAN = {
@@ -163,14 +164,7 @@ const legacyPlugin = (plugin: unknown): ReturnType<typeof fixupPluginRules> =>
 const config = blocks(
   {
     // Build output, generated code and native folders are not ours to lint.
-    ignores: [
-      '**/node_modules/**',
-      '**/dist/**',
-      '**/.expo/**',
-      '**/ios/**',
-      '**/android/**',
-      'shared/tokens/src/tokens.ts',
-    ],
+    ignores: ['**/node_modules/**', '**/dist/**', '**/.expo/**', '**/ios/**', '**/android/**'],
   },
   {
     // A disable comment that no longer suppresses anything is dead weight.
@@ -446,8 +440,8 @@ const config = blocks(
   // ── Architecture ────────────────────────────────────────────
   {
     // Inside the app: routes may import components and hooks; components may import hooks and
-    // @roundup/ui; hooks import no components. Across packages: app -> ui -> i18n and tokens, one
-    // direction only. i18n and tokens import nothing internal (config is the tooling every package
+    // @roundup/ui; hooks import no components. Across packages: app -> ui -> i18n, one
+    // direction only. i18n imports nothing internal (config is the tooling every package
     // may reach for its Jest preset and tsconfig). shared/* never imports apps/*.
     // The first matching element wins, so the specific app folders come before the catch-all.
     files: SOURCE,
@@ -460,7 +454,6 @@ const config = blocks(
         { type: 'app-other', pattern: 'apps/roundup/**', partialMatch: false },
         { type: 'ui', pattern: 'shared/ui/**', partialMatch: false },
         { type: 'i18n', pattern: 'shared/i18n/**', partialMatch: false },
-        { type: 'tokens', pattern: 'shared/tokens/**', partialMatch: false },
         { type: 'config', pattern: 'shared/config/**', partialMatch: false },
       ],
     },
@@ -475,16 +468,7 @@ const config = blocks(
               allow: {
                 to: {
                   element: {
-                    type: [
-                      'routes',
-                      'components',
-                      'hooks',
-                      'app-other',
-                      'ui',
-                      'i18n',
-                      'tokens',
-                      'config',
-                    ],
+                    type: ['routes', 'components', 'hooks', 'app-other', 'ui', 'i18n', 'config'],
                   },
                 },
               },
@@ -493,13 +477,13 @@ const config = blocks(
               from: { element: { type: 'components' } },
               allow: {
                 to: {
-                  element: { type: ['components', 'hooks', 'ui', 'i18n', 'tokens', 'config'] },
+                  element: { type: ['components', 'hooks', 'ui', 'i18n', 'config'] },
                 },
               },
             },
             {
               from: { element: { type: 'hooks' } },
-              allow: { to: { element: { type: ['hooks', 'ui', 'i18n', 'tokens', 'config'] } } },
+              allow: { to: { element: { type: ['hooks', 'ui', 'i18n', 'config'] } } },
             },
             {
               // Tests and tool configs at the app root (global.css is imported by routes) may reach anything in the app.
@@ -507,31 +491,18 @@ const config = blocks(
               allow: {
                 to: {
                   element: {
-                    type: [
-                      'app-other',
-                      'routes',
-                      'components',
-                      'hooks',
-                      'ui',
-                      'i18n',
-                      'tokens',
-                      'config',
-                    ],
+                    type: ['app-other', 'routes', 'components', 'hooks', 'ui', 'i18n', 'config'],
                   },
                 },
               },
             },
             {
               from: { element: { type: 'ui' } },
-              allow: { to: { element: { type: ['ui', 'i18n', 'tokens', 'config'] } } },
+              allow: { to: { element: { type: ['ui', 'i18n', 'config'] } } },
             },
             {
               from: { element: { type: 'i18n' } },
               allow: { to: { element: { type: ['i18n', 'config'] } } },
-            },
-            {
-              from: { element: { type: 'tokens' } },
-              allow: { to: { element: { type: ['tokens', 'config'] } } },
             },
             {
               from: { element: { type: 'config' } },
@@ -559,7 +530,6 @@ const config = blocks(
             '**/jest.setup*.ts',
             'knip.ts',
             'shared/config/**',
-            'shared/tokens/scripts/**',
           ],
         },
       ],
@@ -660,7 +630,7 @@ const config = blocks(
 
   // ── Tailwind ────────────────────────────────────────────────
   {
-    // Only classes the generated theme defines. bg-ctp-mauve and bg-[#fff] cannot pass, so roles stay the only palette.
+    // Only classes theme.css defines. bg-ctp-mauve and bg-[#fff] cannot pass, so roles stay the only palette.
     files: COMPONENTS,
     plugins: { 'better-tailwindcss': betterTailwind },
     settings: {
@@ -803,8 +773,8 @@ const config = blocks(
 
   // ── Node tooling ────────────────────────────────────────────
   {
-    // Config files and the token generator run on Node, not in React Native.
-    files: [...TOOL_CONFIGS, 'shared/tokens/scripts/**/*.ts'],
+    // Config files run on Node, not in React Native.
+    files: [...TOOL_CONFIGS],
     languageOptions: { globals: globals.node },
   },
 

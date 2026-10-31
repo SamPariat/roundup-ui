@@ -5,7 +5,7 @@ import { TextInput, View } from 'react-native'
 import { useT } from '@roundup/i18n'
 
 import { useFocus } from '../lib/useFocus.ts'
-import { useTheme } from '../theme/theme.tsx'
+import { useRoleColor } from '../lib/useRoleColor.ts'
 import { FieldFrame } from './Field.tsx'
 import { Text } from './Text.tsx'
 
@@ -38,7 +38,7 @@ export const PhoneInput = ({
   value,
 }: PhoneInputProps): ReactElement => {
   const { focused, onBlur, onFocus } = useFocus()
-  const { roles } = useTheme()
+  const placeholderColor = useRoleColor('fg-subtle')
   const { t } = useT()
 
   return (
@@ -66,7 +66,7 @@ export const PhoneInput = ({
         onChangeText={onChangeText}
         onFocus={onFocus}
         placeholder={t('phoneInput.placeholder')}
-        placeholderTextColor={roles['fg-subtle']}
+        placeholderTextColor={placeholderColor}
         textContentType="telephoneNumber"
         value={value}
       />

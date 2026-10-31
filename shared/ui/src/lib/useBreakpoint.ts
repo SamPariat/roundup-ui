@@ -1,7 +1,5 @@
 import { useWindowDimensions } from 'react-native'
 
-import { breakpoints } from '@roundup/tokens'
-
 import { useHydrated } from './useHydrated.ts'
 
 /** Which layout step the window width falls in. */
@@ -16,13 +14,14 @@ export interface BreakpointState {
 }
 
 /**
- * Maps a window width to a layout step using the design-system breakpoints.
+ * Maps a window width to a layout step. The widths are Tailwind's defaults for md (768) and lg
+ * (1024), the same steps `md:` and `lg:` classes switch at, so JavaScript and CSS agree.
  * @param width - The window width in points.
  * @returns phone below 768, tablet from 768, desktop from 1024.
  */
 export const breakpointFor = (width: number): Breakpoint => {
-  if (width >= breakpoints['bp-desktop']) return 'desktop'
-  if (width >= breakpoints['bp-tablet']) return 'tablet'
+  if (width >= 1024) return 'desktop'
+  if (width >= 768) return 'tablet'
 
   return 'phone'
 }

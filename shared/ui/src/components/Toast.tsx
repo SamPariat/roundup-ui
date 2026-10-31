@@ -5,7 +5,6 @@ import { View } from 'react-native'
 import type { IconName } from '../lib/icons.ts'
 
 import { cn } from '../lib/cn.ts'
-import { useTheme } from '../theme/theme.tsx'
 import { Button } from './Button.tsx'
 import { Icon } from './Icon.tsx'
 import { Surface } from './Surface.tsx'
@@ -44,7 +43,6 @@ export interface ToastProps {
  * @returns The message strip.
  */
 export const Toast = ({ action, children, onAction, tone = 'info' }: ToastProps): ReactElement => {
-  const { shadow } = useTheme()
   const { color, fill, icon } = TONES[tone]
   const urgent = tone === 'error'
 
@@ -53,9 +51,8 @@ export const Toast = ({ action, children, onAction, tone = 'info' }: ToastProps)
       accessibilityLiveRegion={urgent ? 'assertive' : 'polite'}
       accessible
       aria-live={urgent ? 'assertive' : 'polite'}
-      className="rounded-xl border border-border"
+      className="rounded-xl border border-border shadow-toast"
       role={urgent ? 'alert' : 'status'}
-      style={{ boxShadow: shadow['shadow-toast'] ?? '' }}
     >
       <View className={cn('min-h-13 flex-row items-center gap-3 rounded-xl py-2 pr-2 pl-4', fill)}>
         <Icon decorative name={icon} tone={color} />

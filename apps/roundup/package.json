@@ -8,7 +8,6 @@
     "@expo/metro-runtime": "catalog:",
     "@react-native-async-storage/async-storage": "catalog:",
     "@roundup/i18n": "workspace:*",
-    "@roundup/tokens": "workspace:*",
     "@roundup/ui": "workspace:*",
     "babel-preset-expo": "catalog:",
     "expo": "catalog:",

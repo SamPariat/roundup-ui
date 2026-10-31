@@ -16,7 +16,7 @@ const config: UserConfig = {
     'scope-enum': [
       RuleConfigSeverity.Error,
       'always',
-      ['app', 'ui', 'i18n', 'tokens', 'config', 'infra', 'deps'],
+      ['app', 'ui', 'i18n', 'config', 'infra', 'deps'],
     ],
     // Subjects read as lowercase phrases.
     'subject-case': [RuleConfigSeverity.Error, 'always', 'lower-case'],

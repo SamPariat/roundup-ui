@@ -5,13 +5,13 @@ import { useCallback, useState } from 'react'
 import { Text as NativeText, View } from 'react-native'
 
 import { useT } from '@roundup/i18n'
-import { breakpoints } from '@roundup/tokens'
 
 import type { IconName } from '../lib/icons.ts'
 
 import ArtDark from '../../../../assets/svg/illustrations/welcome-dark.svg'
 import ArtLight from '../../../../assets/svg/illustrations/welcome-light.svg'
 import { cn } from '../lib/cn.ts'
+import { breakpointFor } from '../lib/useBreakpoint.ts'
 import { useTheme } from '../theme/theme.tsx'
 import { Button } from './Button.tsx'
 import { Icon } from './Icon.tsx'
@@ -63,7 +63,7 @@ const WelcomeArt = (): ReactElement => {
 export const Welcome = ({ body, onStart, startLabel, title }: WelcomeProps): ReactElement => {
   const { t } = useT()
   const [width, setWidth] = useState(0)
-  const wide = width >= breakpoints['bp-tablet']
+  const wide = breakpointFor(width) !== 'phone'
 
   const handleLayout = useCallback((event: LayoutChangeEvent) => {
     setWidth(event.nativeEvent.layout.width)

@@ -3,9 +3,7 @@ import type { ReactElement, ReactNode } from 'react'
 import { View } from 'react-native'
 import Svg, { Circle, Path, Rect } from 'react-native-svg'
 
-import type { Theme } from '../theme/theme.tsx'
-
-import { useTheme } from '../theme/theme.tsx'
+import { styleSvg } from '../lib/svg.ts'
 import { Text } from './Text.tsx'
 
 /** Props for EmptyState. */
@@ -20,35 +18,34 @@ export interface EmptyStateProps {
   action?: ReactNode
 }
 
-/** Props shared by the three illustrations. */
-interface ArtProps {
-  /** Role colours of the active theme, which the shapes are filled with. */
-  roles: Theme['roles']
-}
-
 /** Props for the illustration frame. */
 interface EmptyArtProps {
   /** Which illustration to draw. */
   kind: NonNullable<EmptyStateProps['art']>
 }
 
+// react-native-svg shapes that take Tailwind classes: fill-* and stroke-* pick a role colour.
+const StyledSvg = styleSvg(Svg)
+const StyledCircle = styleSvg(Circle)
+const StyledPath = styleSvg(Path)
+const StyledRect = styleSvg(Rect)
+
 /**
  * Magnifying-glass illustration. All three illustrations are shapes only: discs and pills from the
  * radius scale, in role colours.
  * @returns The SVG shapes.
  */
-const SearchArt = ({ roles }: ArtProps): ReactElement => (
+const SearchArt = (): ReactElement => (
   <>
-    <Circle
+    <StyledCircle
+      className="fill-bg-raised stroke-border-strong"
       cx={44}
       cy={44}
-      fill={roles['bg-raised']}
       r={20}
-      stroke={roles['border-strong']}
       strokeWidth={2}
     />
-    <Rect
-      fill={roles.accent}
+    <StyledRect
+      className="fill-accent"
       height={10}
       rx={5}
       transform="rotate(45 71 67)"
@@ -63,10 +60,10 @@ const SearchArt = ({ roles }: ArtProps): ReactElement => (
  * Bookmark illustration.
  * @returns The SVG shapes.
  */
-const FavoritesArt = ({ roles }: ArtProps): ReactElement => (
+const FavoritesArt = (): ReactElement => (
   <>
-    <Path d="M32 22h32v54l-16-11-16 11z" fill={roles.accent} />
-    <Circle cx={70} cy={26} fill={roles.highlight} r={8} />
+    <StyledPath className="fill-accent" d="M32 22h32v54l-16-11-16 11z" />
+    <StyledCircle className="fill-highlight" cx={70} cy={26} r={8} />
   </>
 )
 
@@ -74,15 +71,14 @@ const FavoritesArt = ({ roles }: ArtProps): ReactElement => (
  * People-and-pill illustration.
  * @returns The SVG shapes.
  */
-const SquadsArt = ({ roles }: ArtProps): ReactElement => (
+const SquadsArt = (): ReactElement => (
   <>
-    <Circle cx={36} cy={42} fill={roles.accent} r={14} />
-    <Circle cx={62} cy={46} fill={roles.highlight} r={11} />
-    <Rect
-      fill={roles['bg-raised']}
+    <StyledCircle className="fill-accent" cx={36} cy={42} r={14} />
+    <StyledCircle className="fill-highlight" cx={62} cy={46} r={11} />
+    <StyledRect
+      className="fill-bg-raised stroke-border-strong"
       height={16}
       rx={8}
-      stroke={roles['border-strong']}
       strokeWidth={2}
       width={60}
       x={18}
@@ -91,6 +87,7 @@ const SquadsArt = ({ roles }: ArtProps): ReactElement => (
   </>
 )
 
+/** The illustration for each kind. */
 const ART = { favorites: FavoritesArt, search: SearchArt, squads: SquadsArt } as const
 
 /**
@@ -98,14 +95,13 @@ const ART = { favorites: FavoritesArt, search: SearchArt, squads: SquadsArt } as
  * @returns The SVG.
  */
 const EmptyArt = ({ kind }: EmptyArtProps): ReactElement => {
-  const { roles } = useTheme()
   const Art = ART[kind]
 
   return (
-    <Svg aria-hidden height={96} viewBox="0 0 96 96" width={96}>
-      <Circle cx={48} cy={48} fill={roles['accent-soft']} r={48} />
-      <Art roles={roles} />
-    </Svg>
+    <StyledSvg aria-hidden height={96} viewBox="0 0 96 96" width={96}>
+      <StyledCircle className="fill-accent-soft" cx={48} cy={48} r={48} />
+      <Art />
+    </StyledSvg>
   )
 }
 

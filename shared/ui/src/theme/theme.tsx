@@ -1,18 +1,16 @@
 import type { ReactElement, ReactNode } from 'react'
 
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import { VariableContextProvider } from 'nativewind'
 import { createContext, use, useCallback, useEffect, useMemo, useState } from 'react'
 import { Appearance, Platform, useColorScheme } from 'react-native'
-
-import type { Roles, ThemeName } from '@roundup/tokens'
-
-import { shadows, themes } from '@roundup/tokens'
 
 import { useHydrated } from '../lib/useHydrated.ts'
 
 /** What the person chose: follow the device, or force light or dark. */
 export type ThemePreference = 'dark' | 'light' | 'system'
+
+/** The two themes: Mocha is the dark one and Latte the light one. */
+export type ThemeName = 'latte' | 'mocha'
 
 /** What useTheme returns. */
 export interface Theme {
@@ -22,10 +20,6 @@ export interface Theme {
   preference: ThemePreference
   /** Saves a new choice and applies it at once. */
   setPreference: (preference: ThemePreference) => void
-  /** Role colours for the few places that cannot use a class: svg fills, spinners, glass tints. */
-  roles: Roles
-  /** boxShadow strings by token name, for floating surfaces. */
-  shadow: Readonly<Record<string, string>>
 }
 
 /** AsyncStorage key that holds the chosen preference. */
@@ -56,16 +50,6 @@ export const themeNameFor = (
   return device === 'light' ? 'latte' : 'mocha'
 }
 
-/**
- * Lists a theme's roles as `--color-*` variables, the form NativeWind's variable context takes.
- * @param name - The theme to read.
- * @returns The variable name to colour map.
- */
-export const cssVariablesFor = (name: ThemeName): Record<string, string> =>
-  Object.fromEntries(
-    Object.entries(themes[name]).map(([role, value]) => [`--color-${role}`, value]),
-  )
-
 const ThemeContext = createContext<null | Theme>(null)
 
 /** Props for ThemeProvider. */
@@ -75,7 +59,7 @@ interface ThemeProviderProps {
 }
 
 /**
- * Owns the theme: reads the saved preference, follows the device appearance, publishes role colours through context and CSS variables, and saves changes.
+ * Owns the theme: reads the saved preference, follows the device appearance, tells the stylesheet which theme to use, and saves changes.
  * @returns The provider wrapping its children.
  */
 export const ThemeProvider = ({ children }: ThemeProviderProps): ReactElement => {
@@ -101,10 +85,21 @@ export const ThemeProvider = ({ children }: ThemeProviderProps): ReactElement =>
   useEffect(() => {
     const override = preference === 'system' ? 'unspecified' : preference
 
-    // react-native-web has no Appearance.setColorScheme; the browser takes color-scheme from the document.
-    if (Platform.OS === 'web')
-      document.documentElement.style.colorScheme = override === 'unspecified' ? '' : override
-    else Appearance.setColorScheme(override)
+    // react-native-web has no Appearance.setColorScheme. On the web a manual choice is data-theme
+    // on <html>, which theme.css gives priority over prefers-color-scheme, and color-scheme keeps
+    // the browser's own controls (scrollbars, form fields) in step. Following the device is left
+    // to the stylesheet. On native, setColorScheme changes what prefers-color-scheme means.
+    if (Platform.OS === 'web') {
+      const root = document.documentElement
+
+      if (override === 'unspecified') {
+        delete root.dataset['theme']
+        root.style.colorScheme = ''
+      } else {
+        root.dataset['theme'] = override
+        root.style.colorScheme = override
+      }
+    } else Appearance.setColorScheme(override)
   }, [preference])
 
   const choosePreference = useCallback((next: ThemePreference) => {
@@ -124,29 +119,16 @@ export const ThemeProvider = ({ children }: ThemeProviderProps): ReactElement =>
       name,
       preference,
       setPreference: choosePreference,
-      roles: themes[name],
-      shadow: shadows[name],
     }),
     [name, preference, choosePreference],
   )
 
-  // On the web, following the device is left to the stylesheet's prefers-color-scheme rule, so the
-  // static HTML already matches a dark or light browser. Everything else sets the variables here.
-  const variables = useMemo(
-    () => (Platform.OS === 'web' && preference === 'system' ? {} : cssVariablesFor(name)),
-    [name, preference],
-  )
-
-  return (
-    <ThemeContext value={value}>
-      <VariableContextProvider value={variables}>{children}</VariableContextProvider>
-    </ThemeContext>
-  )
+  return <ThemeContext value={value}>{children}</ThemeContext>
 }
 
 /**
  * Reads the current theme and its setter. Throws outside a ThemeProvider so a missing provider fails loudly.
- * @returns The current theme, its roles and its setter.
+ * @returns The current theme name, preference and setter.
  */
 export const useTheme = (): Theme => {
   const theme = use(ThemeContext)

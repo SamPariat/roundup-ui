@@ -13,7 +13,6 @@
   "dependencies": {
     "@react-native-async-storage/async-storage": "catalog:",
     "@roundup/i18n": "workspace:*",
-    "@roundup/tokens": "workspace:*",
     "class-variance-authority": "catalog:",
     "clsx": "catalog:",
     "expo-glass-effect": "catalog:",

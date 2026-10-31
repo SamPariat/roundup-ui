@@ -17,7 +17,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context'
 
 import '../../global.css'
 
-import { ThemeProvider, useTheme } from '@roundup/ui'
+import { ThemeProvider, useRoleColor, useTheme } from '@roundup/ui'
 
 void preventAutoHideAsync()
 
@@ -26,7 +26,8 @@ void preventAutoHideAsync()
  * @returns The themed root view.
  */
 const Themed = (): ReactElement => {
-  const { name, roles } = useTheme()
+  const { name } = useTheme()
+  const background = useRoleColor('bg')
 
   return (
     <View className="flex-1 bg-bg">
@@ -36,7 +37,9 @@ const Themed = (): ReactElement => {
         <meta content="dark light" name="color-scheme" />
       </Head>
       <StatusBar style={name === 'mocha' ? 'light' : 'dark'} />
-      <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: roles.bg } }} />
+      <Stack
+        screenOptions={{ headerShown: false, contentStyle: { backgroundColor: background } }}
+      />
     </View>
   )
 }

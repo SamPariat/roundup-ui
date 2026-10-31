@@ -3,13 +3,10 @@ import { screen, waitFor } from '@testing-library/react-native'
 import { readFileSync } from 'node:fs'
 import path from 'node:path'
 
-import type { RoleName } from '@roundup/tokens'
-
-import { latte, mocha } from '@roundup/tokens'
-
 import { Logo } from '../../src/components/Logo.tsx'
 import { THEME_STORAGE_KEY } from '../../src/theme/theme.tsx'
 import { renderWithTheme } from '../helpers/render.tsx'
+import { latte, mocha } from '../helpers/theme-css.ts'
 
 // Jest runs this file as CommonJS, where __dirname is the way to find the repo's assets folder.
 
@@ -39,23 +36,23 @@ const THEMES = [
   { variant: 'light', roles: latte },
 ] as const
 
-const BRAND_ROLES = ['logo-stem', 'logo-bowl', 'logo-leg'] as const satisfies RoleName[]
+const BRAND_ROLES = ['logo-stem', 'logo-bowl', 'logo-leg'] as const
 
 describe('Logo artwork files', () => {
   it.each(THEMES)('draws the $variant mark in the logo role colours', ({ roles, variant }) => {
     expect(fillsOf(svg(LOGO_DIR, `mark-${variant}`))).toEqual(
-      BRAND_ROLES.map((role) => roles[role].toLowerCase()),
+      BRAND_ROLES.map((role) => roles[role] ?? ''),
     )
   })
 
   it.each(THEMES)('draws the $variant wordmark in the text colour', ({ roles, variant }) => {
-    expect(fillsOf(svg(LOGO_DIR, `wordmark-${variant}`))).toEqual([roles.fg.toLowerCase()])
+    expect(fillsOf(svg(LOGO_DIR, `wordmark-${variant}`))).toEqual([roles['fg']])
   })
 
   it.each(THEMES)('draws the $variant lockup from both', ({ roles, variant }) => {
     expect(fillsOf(svg(LOGO_DIR, `lockup-${variant}`))).toEqual([
-      ...BRAND_ROLES.map((role) => roles[role].toLowerCase()),
-      roles.fg.toLowerCase(),
+      ...BRAND_ROLES.map((role) => roles[role] ?? ''),
+      roles['fg'],
     ])
   })
 
@@ -65,10 +62,10 @@ describe('Logo artwork files', () => {
       const [stem, bowl, leg, dots] = fillsOf(svg(ILLUSTRATION_DIR, `welcome-${variant}`))
 
       expect([stem, bowl, leg, dots]).toEqual([
-        roles['logo-stem'].toLowerCase(),
-        roles['logo-bowl'].toLowerCase(),
-        roles['logo-leg'].toLowerCase(),
-        roles['logo-bowl'].toLowerCase(),
+        roles['logo-stem'],
+        roles['logo-bowl'],
+        roles['logo-leg'],
+        roles['logo-bowl'],
       ])
     },
   )
@@ -108,8 +105,8 @@ interface JsonNode {
 interface JsonProps {
   /** Whether assistive technology skips the node. */
   'aria-hidden'?: boolean
-  /** The currentColor for the artwork inside. */
-  color?: string
+  /** The classes that set the currentColor for the artwork inside. */
+  className?: string
   /** A packed fill colour. */
   fill?: Fill
   /** Rendered height. */
@@ -199,7 +196,7 @@ describe('Logo', () => {
     await renderWithTheme(<Logo type="lockup" />)
 
     expect(new Set(renderedFills())).toEqual(
-      new Set([...BRAND_ROLES.map((role) => latte[role]), latte.fg, BLACK]),
+      new Set([...BRAND_ROLES.map((role) => latte[role]), latte['fg'], BLACK]),
     )
   })
 
@@ -212,15 +209,15 @@ describe('Logo', () => {
     })
 
     expect(new Set(renderedFills())).toEqual(
-      new Set([...BRAND_ROLES.map((role) => mocha[role]), mocha.fg, BLACK]),
+      new Set([...BRAND_ROLES.map((role) => mocha[role]), mocha['fg'], BLACK]),
     )
   })
 
-  it('follows the text colour in mono', async () => {
+  it('tints the mono artwork with the text colour class', async () => {
     await renderWithTheme(<Logo tone="mono" type="mark" />)
 
     const art = collect().find((node) => node.type === 'RNSVGSvgView')
 
-    expect(art?.props.color).toBe(latte.fg)
+    expect(art?.props.className).toBe('text-fg')
   })
 })

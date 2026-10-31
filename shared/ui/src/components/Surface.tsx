@@ -4,10 +4,11 @@ import type { ViewProps } from 'react-native'
 import { GlassView } from 'expo-glass-effect'
 import { View } from 'react-native'
 
-import type { RoleName } from '@roundup/tokens'
+import type { RoleColor } from '../lib/useRoleColor.ts'
 
 import { cn } from '../lib/cn.ts'
 import { useGlass } from '../lib/useGlass.ts'
+import { useRoleColor } from '../lib/useRoleColor.ts'
 import { useTheme } from '../theme/theme.tsx'
 
 /** How one surface tone looks. */
@@ -15,7 +16,7 @@ interface ToneStyle {
   /** Solid background class used when glass is off. */
   className: string
   /** Role colour the glass layer is tinted with. */
-  tint: RoleName
+  tint: RoleColor
 }
 
 const TONES = {
@@ -49,9 +50,10 @@ export const Surface = ({
   ...props
 }: SurfaceProps): ReactElement => {
   const { available, reduced } = useGlass()
-  const { name, roles } = useTheme()
+  const { name } = useTheme()
   const glass = available && !reduced
   const { className: solid, tint } = TONES[tone]
+  const tintColor = useRoleColor(tint)
 
   return (
     <View className={cn(glass ? 'overflow-hidden' : solid, className)} {...props}>
@@ -61,7 +63,7 @@ export const Surface = ({
           glassEffectStyle="regular"
           pointerEvents="none"
           style={FILL}
-          tintColor={roles[tint]}
+          tintColor={tintColor}
         />
       ) : null}
       {children}

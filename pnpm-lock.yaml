@@ -505,9 +505,6 @@ importers:
       '@roundup/i18n':
         specifier: workspace:*
         version: link:../../shared/i18n
-      '@roundup/tokens':
-        specifier: workspace:*
-        version: link:../../shared/tokens
       '@roundup/ui':
         specifier: workspace:*
         version: link:../../shared/ui
@@ -766,31 +763,6 @@ importers:
         specifier: 'catalog:'
         version: 6.0.3
 
-  shared/tokens:
-    dependencies:
-      '@roundup/config':
-        specifier: workspace:*
-        version: link:../config
-      prettier:
-        specifier: 'catalog:'
-        version: 3.9.10
-    devDependencies:
-      '@types/jest':
-        specifier: 'catalog:'
-        version: 30.0.0
-      '@types/node':
-        specifier: 'catalog:'
-        version: 26.6.6
-      jest:
-        specifier: 'catalog:'
-        version: 30.5.2(@types/node@26.6.6)(supports-color@8.1.1)
-      jest-expo:
-        specifier: 'catalog:'
-        version: 58.0.13(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/jest-preset@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(react@19.3.0)(supports-color@8.1.1))(@types/react@19.3.0)(expo@58.0.22)(jest@30.5.2(@types/node@26.6.6)(supports-color@8.1.1))(react-native@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/metro-config@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(supports-color@8.1.1))(@types/react@19.3.0)(react@19.3.0)(supports-color@8.1.1))(react@19.3.0)(supports-color@8.1.1)
-      typescript:
-        specifier: 'catalog:'
-        version: 6.0.3
-
   shared/ui:
     dependencies:
       '@react-native-async-storage/async-storage':
@@ -799,9 +771,6 @@ importers:
       '@roundup/i18n':
         specifier: workspace:*
         version: link:../i18n
-      '@roundup/tokens':
-        specifier: workspace:*
-        version: link:../tokens
       class-variance-authority:
         specifier: 'catalog:'
         version: 0.7.1

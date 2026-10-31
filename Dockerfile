@@ -6,8 +6,9 @@ ARG NODE_VERSION=26.13.0
 
 FROM node:${NODE_VERSION}-alpine AS base
 # pnpm is pinned by "packageManager" in package.json; corepack fetches that exact version.
+# Node 25 and later no longer ship corepack, so it is installed from npm (pinned).
 # bash runs the scripts in scripts/ (the app's pnpm scripts call them); alpine ships only busybox sh.
-RUN apk add --no-cache bash && corepack enable
+RUN apk add --no-cache bash && npm install --global corepack@0.36.0 && corepack enable
 WORKDIR /repo
 
 # Layer 1: every dependency, downloaded from the lockfile alone, so it is cached until the lockfile changes.

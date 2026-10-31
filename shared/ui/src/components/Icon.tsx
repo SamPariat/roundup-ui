@@ -2,13 +2,25 @@ import type { ReactElement } from 'react'
 
 import { View } from 'react-native'
 
-import type { RoleName } from '@roundup/tokens'
-
 import type { IconName } from '../lib/icons.ts'
 
 import { cn } from '../lib/cn.ts'
 import { ICONS } from '../lib/icons.ts'
-import { useTheme } from '../theme/theme.tsx'
+
+/** Tailwind needs each class spelled out, so a tone is looked up rather than built. */
+const TONE_CLASS = {
+  accent: 'text-accent',
+  danger: 'text-danger',
+  fg: 'text-fg',
+  'fg-muted': 'text-fg-muted',
+  'fg-subtle': 'text-fg-subtle',
+  highlight: 'text-highlight',
+  info: 'text-info',
+  'on-accent': 'text-on-accent',
+  'on-highlight': 'text-on-highlight',
+  success: 'text-success',
+  warning: 'text-warning',
+} as const
 
 /** Props every icon has. */
 interface IconBase {
@@ -17,7 +29,7 @@ interface IconBase {
   /** Grid size in points. 20 in controls, 22 in the bottom nav, 16 inline with small text. */
   size?: number
   /** Role colour for the strokes. Defaults to fg; React Native has no currentColor to inherit. */
-  tone?: RoleName
+  tone?: keyof typeof TONE_CLASS
   /** Extra classes for placement. */
   className?: string
 }
@@ -55,7 +67,6 @@ export const Icon = ({
   size = 20,
   tone = 'fg',
 }: IconProps): ReactElement => {
-  const { roles } = useTheme()
   const Glyph = ICONS[name]
 
   return (
@@ -67,7 +78,7 @@ export const Icon = ({
       className={cn('shrink-0', className)}
       importantForAccessibility={decorative === true ? 'no-hide-descendants' : 'auto'}
     >
-      <Glyph aria-hidden color={roles[tone]} height={size} width={size} />
+      <Glyph aria-hidden className={TONE_CLASS[tone]} height={size} width={size} />
     </View>
   )
 }
