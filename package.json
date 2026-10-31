@@ -20,7 +20,7 @@
     "tokens": "pnpm --filter @roundup/tokens run generate",
     "knip": "APP_ENV=beta knip",
     "syncpack": "syncpack lint",
-    "no-js": "node scripts/check-no-js.ts",
+    "files": "node scripts/check-files.ts",
     "doctor": "pnpm --filter @roundup/app run doctor",
     "commitlint": "commitlint --from origin/main --to HEAD"
   },

@@ -19,7 +19,7 @@ export APP_ENV
 	tokens-check \
 	knip \
 	syncpack \
-	no-js \
+	files \
 	doctor \
 	check \
 	docker-build \
@@ -90,16 +90,16 @@ knip:
 syncpack:
 	pnpm syncpack
 
-# Fails on tracked .js/.jsx/.mjs/.cjs files outside .js-allowlist.
-no-js:
-	pnpm no-js
+# Fails on JavaScript files outside .js-allowlist and on asset files that are not kebab-case.
+files:
+	pnpm run files
 
 # Expo's own checks: dependency versions against the SDK, then expo-doctor.
 doctor:
 	pnpm run doctor
 
 # Everything CI runs, minus the web export and the Docker build.
-check: lint fmt-check knip syncpack no-js typecheck test tokens-check doctor
+check: lint fmt-check knip syncpack files typecheck test tokens-check doctor
 
 # The compose targets read apps/app/.env.$(APP_ENV) for the API address baked into the build.
 docker-build:

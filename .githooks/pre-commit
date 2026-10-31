@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Pre-commit checks for staged files: eslint + prettier (check only), then no-js and tsc.
+# Pre-commit checks for staged files: eslint + prettier (check only), then files and tsc.
 # When dependencies change it also runs expo-doctor, since a bad pin only shows up there.
 set -eu
 
@@ -19,7 +19,7 @@ if ! pnpm exec lint-staged --quiet; then
   exit 1
 fi
 
-pnpm run --silent no-js
+pnpm run --silent files
 pnpm run --silent typecheck
 
 if echo "$staged_files" | grep -Eq '(^|/)package\.json$|^pnpm-lock\.yaml$|^pnpm-workspace\.yaml$'; then

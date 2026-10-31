@@ -93,7 +93,7 @@ const VenueMedia = ({
       {showSave ? (
         <View className="absolute top-2 right-2">
           <Button
-            icon={isSaved ? 'bookmarkFilled' : 'bookmark'}
+            icon={isSaved ? 'bookmark-filled' : 'bookmark'}
             label={isSaved ? t('venueCard.saved') : t('venueCard.save')}
             onPress={onSave}
             size="sm"

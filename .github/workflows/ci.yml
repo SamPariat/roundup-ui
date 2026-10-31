@@ -50,7 +50,7 @@ jobs:
         run: pnpm syncpack
 
       - name: no js files
-        run: pnpm no-js
+        run: pnpm files
 
       # expo install --check, then expo-doctor. Any issue fails the job.
       - name: expo doctor

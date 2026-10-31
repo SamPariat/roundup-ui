@@ -3,8 +3,8 @@ import type { SvgProps } from 'react-native-svg'
 
 import Alert from '../../../../assets/svg/icons/alert.svg'
 import Back from '../../../../assets/svg/icons/back.svg'
+import BookmarkFilled from '../../../../assets/svg/icons/bookmark-filled.svg'
 import Bookmark from '../../../../assets/svg/icons/bookmark.svg'
-import BookmarkFilled from '../../../../assets/svg/icons/bookmarkFilled.svg'
 import Check from '../../../../assets/svg/icons/check.svg'
 import Chevron from '../../../../assets/svg/icons/chevron.svg'
 import Clock from '../../../../assets/svg/icons/clock.svg'
@@ -37,7 +37,7 @@ export const ICONS = {
   alert: Alert,
   back: Back,
   bookmark: Bookmark,
-  bookmarkFilled: BookmarkFilled,
+  'bookmark-filled': BookmarkFilled,
   check: Check,
   chevron: Chevron,
   clock: Clock,
