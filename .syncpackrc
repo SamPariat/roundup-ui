@@ -3,14 +3,37 @@
   "versionGroups": [
     {
       "label": "workspace packages link to each other, they are not in the catalog",
-      "dependencies": ["@roundup/*"],
-      "packages": ["**"],
+      "dependencies": [
+        "@roundup/*"
+      ],
+      "packages": [
+        "**"
+      ],
       "policy": "sameRange"
     },
     {
       "label": "every other dependency comes from the pnpm catalog and nowhere else",
-      "dependencies": ["**", "!roundup-ui"],
+      "dependencies": [
+        "**",
+        "!roundup-ui"
+      ],
       "policy": "catalog"
+    }
+  ],
+  "semverGroups": [
+    {
+      "label": "workspace packages use workspace:*",
+      "dependencies": [
+        "@roundup/*"
+      ],
+      "isIgnored": true
+    },
+    {
+      "label": "every version is exact: no ^ or ~",
+      "dependencies": [
+        "**"
+      ],
+      "range": ""
     }
   ]
 }

@@ -84,6 +84,8 @@ Every `make` target calls a root pnpm script.
 | `make docker-up` / `down` / `logs`     | The static web build in Docker on port 8081                    |
 | `make docker-smoke`                    | Assert URLs, 404 page, headers and health on the running image |
 
+Every dependency is pinned to an exact version (no `^` or `~`): `.npmrc` sets `save-exact`, and `make files` and `make syncpack` fail on a range. Node (`.nvmrc`), pnpm (`packageManager`) and the Docker base image are pinned the same way.
+
 After any dependency change run `make doctor` and fix what it reports with `npx expo install --fix`, not by pinning versions by hand.
 
 <p align="center"><img src="assets/svg/brand/divider.svg" width="100%" alt=""></p>

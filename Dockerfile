@@ -2,7 +2,7 @@
 
 # Static web build served by static-web-server (settings in infra/sws.toml). Build from the repo root:
 #   docker build --build-arg EXPO_PUBLIC_API_URL=http://localhost:8080 .
-ARG NODE_VERSION=24
+ARG NODE_VERSION=24.22.2
 
 FROM node:${NODE_VERSION}-alpine AS base
 # pnpm is pinned by "packageManager" in package.json; corepack fetches that exact version.

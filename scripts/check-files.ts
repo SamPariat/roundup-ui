@@ -1,5 +1,7 @@
 // Checks the tracked files: no JavaScript outside .js-allowlist (the repo is TypeScript only), and
-// every asset file is named in kebab-case (bookmark-filled.svg, not bookmarkFilled.svg).
+// every asset file is named in kebab-case (bookmark-filled.svg, not bookmarkFilled.svg), and every
+// version in the pnpm catalog is exact. syncpack only sees package.json, where versions are `catalog:`,
+// so the ranges it cannot see are caught here.
 import { execFileSync } from 'node:child_process'
 import { readFileSync } from 'node:fs'
 
@@ -51,5 +53,18 @@ if (badNames.length > 0) {
   for (const file of badNames) console.error(`  ${file}`)
 }
 
-if (scripts.length > 0 || badNames.length > 0) process.exitCode = 1
+const ranges = readFileSync('pnpm-workspace.yaml', 'utf8')
+  .split('\n')
+  .filter((line) => line.startsWith('  ') && !line.trimStart().startsWith('#'))
+  .filter((line) =>
+    /^['~^<>*]+|^latest/.test(line.slice(line.lastIndexOf(': ') + 2).replace("'", '')),
+  )
+
+if (ranges.length > 0) {
+  console.error('Catalog versions must be exact (no ^, ~ or other ranges):')
+
+  for (const line of ranges) console.error(`  ${line.trim()}`)
+}
+
+if (scripts.length > 0 || badNames.length > 0 || ranges.length > 0) process.exitCode = 1
 else console.log('files: ok')
