@@ -56,6 +56,7 @@
     "ios": "pnpm run favicon && ../../scripts/with-env.sh expo start --ios",
     "android": "pnpm run favicon && ../../scripts/with-env.sh expo start --android",
     "export:web": "pnpm run favicon && ../../scripts/with-env.sh expo export --platform web",
+    "export:native": "../../scripts/with-env.sh expo export --platform ios --platform android --output-dir \"${TMPDIR:-/tmp}/roundup-native\"",
     "doctor": "../../scripts/with-env.sh expo install --check && ../../scripts/with-env.sh expo-doctor",
     "routes": "CI=1 ../../scripts/with-env.sh expo customize tsconfig.json",
     "typecheck": "pnpm run routes && tsc --noEmit",

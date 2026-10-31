@@ -29,6 +29,7 @@ held_back() {
     typescript) echo 'typescript-eslint supports TypeScript below 6.1 only' ;;
     @types/node) echo 'kept on the Node major in .nvmrc' ;;
     jest) echo 'moves with jest-expo' ;;
+    lightningcss) echo '1.30.2+ cannot read var() back from a visitor; react-native-css needs 1.30.1 for native styles (see the override in pnpm-workspace.yaml)' ;;
     eslint-plugin-unicorn) echo 'newer majors drop rule options this config sets (79 fails to load); upgrade with eslint 10' ;;
     *) echo '' ;;
   esac
