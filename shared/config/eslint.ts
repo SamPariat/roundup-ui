@@ -43,6 +43,12 @@ const ROUTES = ['apps/roundup/src/app/**/*.tsx']
 const NOT_USER_FACING_ATTRIBUTE =
   /^(?!(?:accessibilityLabel|accessibilityHint|aria-label|alt|label|loadingLabel|startLabel|placeholder|title|subtitle|body|helper|error|text|name)$).*$/
 
+const DIMENSIONS_BAN = {
+  object: 'Dimensions',
+  property: 'get',
+  message: 'Use useWindowDimensions(): window size changes on fold, rotate and Split View.',
+}
+
 const TOOL_CONFIGS = [
   '*.config.ts',
   'apps/*/*.config.ts',
@@ -358,25 +364,25 @@ const config = blocks(
         INSET_MATH_BAN,
         ...TYPE_BANS,
       ],
-      'no-restricted-properties': [
-        'error',
-        {
-          object: 'Dimensions',
-          property: 'get',
-          message: 'Use useWindowDimensions(): window size changes on fold, rotate and Split View.',
-        },
-        {
-          object: 'process',
-          property: 'env',
-          message: "Read configuration through the validated 'env' object.",
-        },
-      ],
+      'no-restricted-properties': ['error', DIMENSIONS_BAN],
     },
   },
   {
-    // Tool configs and the env module are the only places allowed to read process.env.
-    files: [...TOOL_CONFIGS, 'apps/roundup/src/config/env.ts'],
-    rules: { 'no-restricted-properties': 'off' },
+    // Shared packages take their configuration as arguments. Only the app reads process.env, and
+    // it reads EXPO_PUBLIC_* directly where it needs a value (Expo inlines it at build time).
+    files: ['shared/*/src/**/*.{ts,tsx}'],
+    rules: {
+      'no-restricted-properties': [
+        'error',
+        DIMENSIONS_BAN,
+        {
+          object: 'process',
+          property: 'env',
+          message:
+            'Shared packages take configuration as arguments; only the app reads process.env.',
+        },
+      ],
+    },
   },
   {
     // The few files that need a raw style object (boxShadow on floating surfaces, per-edge safe-area padding, the glass layer) say so here and nowhere else.

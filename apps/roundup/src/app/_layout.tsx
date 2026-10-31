@@ -19,8 +19,6 @@ import '../../global.css'
 
 import { ThemeProvider, useTheme } from '@roundup/ui'
 
-import '../config/env.ts'
-
 void preventAutoHideAsync()
 
 /**
