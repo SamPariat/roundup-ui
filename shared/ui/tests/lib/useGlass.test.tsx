@@ -1,7 +1,7 @@
 import { renderHook, waitFor } from '@testing-library/react-native'
 import { AccessibilityInfo, Platform } from 'react-native'
 
-import { useGlass } from '../../src/lib/use-glass.ts'
+import { useGlass } from '../../src/lib/useGlass.ts'
 
 jest.mock('expo-glass-effect', () => ({
   isLiquidGlassAvailable: jest.fn(() => true),

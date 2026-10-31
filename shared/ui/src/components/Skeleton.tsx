@@ -5,7 +5,7 @@ import { View } from 'react-native'
 import { useT } from '@roundup/i18n'
 
 import { cn } from '../lib/cn.ts'
-import { useReducedMotion } from '../lib/use-reduced-motion.ts'
+import { useReducedMotion } from '../lib/useReducedMotion.ts'
 
 /** Props for Skeleton. */
 export interface SkeletonProps {

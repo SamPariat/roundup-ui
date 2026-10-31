@@ -7,7 +7,7 @@ import { View } from 'react-native'
 import type { RoleName } from '@roundup/tokens'
 
 import { cn } from '../lib/cn.ts'
-import { useGlass } from '../lib/use-glass.ts'
+import { useGlass } from '../lib/useGlass.ts'
 import { useTheme } from '../theme/theme.tsx'
 
 /** How one surface tone looks. */

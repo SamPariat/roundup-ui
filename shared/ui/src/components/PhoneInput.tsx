@@ -4,7 +4,7 @@ import { TextInput, View } from 'react-native'
 
 import { useT } from '@roundup/i18n'
 
-import { useFocus } from '../lib/use-focus.ts'
+import { useFocus } from '../lib/useFocus.ts'
 import { useTheme } from '../theme/theme.tsx'
 import { FieldFrame } from './Field.tsx'
 import { Text } from './Text.tsx'

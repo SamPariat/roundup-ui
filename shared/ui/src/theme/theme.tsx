@@ -9,7 +9,7 @@ import type { Roles, ThemeName } from '@roundup/tokens'
 
 import { shadows, themes } from '@roundup/tokens'
 
-import { useHydrated } from '../lib/use-hydrated.ts'
+import { useHydrated } from '../lib/useHydrated.ts'
 
 /** What the person chose: follow the device, or force light or dark. */
 export type ThemePreference = 'dark' | 'light' | 'system'

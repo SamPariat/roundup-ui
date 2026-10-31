@@ -5,7 +5,7 @@ import { cva } from 'class-variance-authority'
 import { View } from 'react-native'
 
 import { cn } from '../lib/cn.ts'
-import { useReducedMotion } from '../lib/use-reduced-motion.ts'
+import { useReducedMotion } from '../lib/useReducedMotion.ts'
 
 const spinnerVariants = cva('size-4.5 rounded-full border-2 border-r-transparent', {
   variants: {

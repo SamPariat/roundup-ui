@@ -2,7 +2,7 @@ import { useWindowDimensions } from 'react-native'
 
 import { breakpoints } from '@roundup/tokens'
 
-import { useHydrated } from './use-hydrated.ts'
+import { useHydrated } from './useHydrated.ts'
 
 /** Which layout step the window width falls in. */
 export type Breakpoint = 'desktop' | 'phone' | 'tablet'

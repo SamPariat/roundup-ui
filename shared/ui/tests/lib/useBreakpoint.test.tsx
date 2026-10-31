@@ -1,6 +1,6 @@
 import { renderHook } from '@testing-library/react-native'
 
-import { breakpointFor, useBreakpoint } from '../../src/lib/use-breakpoint.ts'
+import { breakpointFor, useBreakpoint } from '../../src/lib/useBreakpoint.ts'
 
 describe('breakpointFor', () => {
   it.each([
