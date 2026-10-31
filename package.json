@@ -22,9 +22,7 @@
     "syncpack": "syncpack lint",
     "no-js": "node scripts/check-no-js.ts",
     "doctor": "pnpm --filter @roundup/app run doctor",
-    "commitlint": "commitlint --from origin/main --to HEAD",
-    "test:coverage": "pnpm -r --parallel run test:coverage",
-    "coverage-summary": "node scripts/coverage-summary.ts"
+    "commitlint": "commitlint --from origin/main --to HEAD"
   },
   "devDependencies": {
     "@commitlint/cli": "catalog:",

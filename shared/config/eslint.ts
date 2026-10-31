@@ -140,7 +140,6 @@ const config = blocks(
       '**/node_modules/**',
       '**/dist/**',
       '**/.expo/**',
-      '**/coverage/**',
       '**/ios/**',
       '**/android/**',
       'shared/tokens/src/tokens.ts',

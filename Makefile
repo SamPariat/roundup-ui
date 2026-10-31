@@ -120,4 +120,4 @@ docker-logs:
 	docker compose --env-file apps/app/.env.$(APP_ENV) logs -f web
 
 clean:
-	rm -rf node_modules apps/*/node_modules shared/*/node_modules apps/app/dist apps/app/.expo coverage
+	rm -rf node_modules apps/*/node_modules shared/*/node_modules apps/app/dist apps/app/.expo

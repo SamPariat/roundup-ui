@@ -1,0 +1,267 @@
+{
+  "total": {
+    "lines": { "total": 311, "covered": 297, "skipped": 0, "pct": 95.49 },
+    "statements": { "total": 338, "covered": 322, "skipped": 0, "pct": 95.26 },
+    "functions": { "total": 107, "covered": 97, "skipped": 0, "pct": 90.65 },
+    "branches": { "total": 467, "covered": 395, "skipped": 0, "pct": 84.58 },
+    "branchesTrue": { "total": 0, "covered": 0, "skipped": 0, "pct": 100 }
+  },
+  "/Users/sampariat/Documents/roundup-ui/shared/ui/src/Avatar/Avatar.tsx": {
+    "lines": { "total": 4, "covered": 4, "skipped": 0, "pct": 100 },
+    "functions": { "total": 1, "covered": 1, "skipped": 0, "pct": 100 },
+    "statements": { "total": 4, "covered": 4, "skipped": 0, "pct": 100 },
+    "branches": { "total": 7, "covered": 6, "skipped": 0, "pct": 85.71 }
+  },
+  "/Users/sampariat/Documents/roundup-ui/shared/ui/src/Avatar/avatar-tint.ts": {
+    "lines": { "total": 9, "covered": 9, "skipped": 0, "pct": 100 },
+    "functions": { "total": 2, "covered": 2, "skipped": 0, "pct": 100 },
+    "statements": { "total": 10, "covered": 10, "skipped": 0, "pct": 100 },
+    "branches": { "total": 8, "covered": 5, "skipped": 0, "pct": 62.5 }
+  },
+  "/Users/sampariat/Documents/roundup-ui/shared/ui/src/AvatarGroup/AvatarGroup.tsx": {
+    "lines": { "total": 6, "covered": 6, "skipped": 0, "pct": 100 },
+    "functions": { "total": 2, "covered": 2, "skipped": 0, "pct": 100 },
+    "statements": { "total": 6, "covered": 6, "skipped": 0, "pct": 100 },
+    "branches": { "total": 14, "covered": 9, "skipped": 0, "pct": 64.28 }
+  },
+  "/Users/sampariat/Documents/roundup-ui/shared/ui/src/Badge/Badge.tsx": {
+    "lines": { "total": 4, "covered": 4, "skipped": 0, "pct": 100 },
+    "functions": { "total": 1, "covered": 1, "skipped": 0, "pct": 100 },
+    "statements": { "total": 4, "covered": 4, "skipped": 0, "pct": 100 },
+    "branches": { "total": 3, "covered": 3, "skipped": 0, "pct": 100 }
+  },
+  "/Users/sampariat/Documents/roundup-ui/shared/ui/src/BottomNav/BottomNav.tsx": {
+    "lines": { "total": 5, "covered": 5, "skipped": 0, "pct": 100 },
+    "functions": { "total": 3, "covered": 3, "skipped": 0, "pct": 100 },
+    "statements": { "total": 5, "covered": 5, "skipped": 0, "pct": 100 },
+    "branches": { "total": 8, "covered": 8, "skipped": 0, "pct": 100 }
+  },
+  "/Users/sampariat/Documents/roundup-ui/shared/ui/src/Button/Button.tsx": {
+    "lines": { "total": 16, "covered": 16, "skipped": 0, "pct": 100 },
+    "functions": { "total": 2, "covered": 2, "skipped": 0, "pct": 100 },
+    "statements": { "total": 17, "covered": 17, "skipped": 0, "pct": 100 },
+    "branches": { "total": 40, "covered": 37, "skipped": 0, "pct": 92.5 }
+  },
+  "/Users/sampariat/Documents/roundup-ui/shared/ui/src/Chip/Chip.tsx": {
+    "lines": { "total": 2, "covered": 2, "skipped": 0, "pct": 100 },
+    "functions": { "total": 1, "covered": 1, "skipped": 0, "pct": 100 },
+    "statements": { "total": 2, "covered": 2, "skipped": 0, "pct": 100 },
+    "branches": { "total": 7, "covered": 6, "skipped": 0, "pct": 85.71 }
+  },
+  "/Users/sampariat/Documents/roundup-ui/shared/ui/src/EmptyState/EmptyState.tsx": {
+    "lines": { "total": 8, "covered": 8, "skipped": 0, "pct": 100 },
+    "functions": { "total": 2, "covered": 2, "skipped": 0, "pct": 100 },
+    "statements": { "total": 8, "covered": 8, "skipped": 0, "pct": 100 },
+    "branches": { "total": 7, "covered": 7, "skipped": 0, "pct": 100 }
+  },
+  "/Users/sampariat/Documents/roundup-ui/shared/ui/src/Icon/Icon.tsx": {
+    "lines": { "total": 11, "covered": 11, "skipped": 0, "pct": 100 },
+    "functions": { "total": 2, "covered": 2, "skipped": 0, "pct": 100 },
+    "statements": { "total": 11, "covered": 11, "skipped": 0, "pct": 100 },
+    "branches": { "total": 12, "covered": 12, "skipped": 0, "pct": 100 }
+  },
+  "/Users/sampariat/Documents/roundup-ui/shared/ui/src/Icon/icons.ts": {
+    "lines": { "total": 4, "covered": 4, "skipped": 0, "pct": 100 },
+    "functions": { "total": 3, "covered": 3, "skipped": 0, "pct": 100 },
+    "statements": { "total": 7, "covered": 7, "skipped": 0, "pct": 100 },
+    "branches": { "total": 2, "covered": 2, "skipped": 0, "pct": 100 }
+  },
+  "/Users/sampariat/Documents/roundup-ui/shared/ui/src/List/List.tsx": {
+    "lines": { "total": 3, "covered": 3, "skipped": 0, "pct": 100 },
+    "functions": { "total": 2, "covered": 2, "skipped": 0, "pct": 100 },
+    "statements": { "total": 3, "covered": 3, "skipped": 0, "pct": 100 },
+    "branches": { "total": 4, "covered": 3, "skipped": 0, "pct": 75 }
+  },
+  "/Users/sampariat/Documents/roundup-ui/shared/ui/src/ListRow/ListRow.tsx": {
+    "lines": { "total": 5, "covered": 5, "skipped": 0, "pct": 100 },
+    "functions": { "total": 1, "covered": 1, "skipped": 0, "pct": 100 },
+    "statements": { "total": 6, "covered": 6, "skipped": 0, "pct": 100 },
+    "branches": { "total": 19, "covered": 16, "skipped": 0, "pct": 84.21 }
+  },
+  "/Users/sampariat/Documents/roundup-ui/shared/ui/src/Logo/Logo.tsx": {
+    "lines": { "total": 12, "covered": 12, "skipped": 0, "pct": 100 },
+    "functions": { "total": 3, "covered": 3, "skipped": 0, "pct": 100 },
+    "statements": { "total": 14, "covered": 13, "skipped": 0, "pct": 92.85 },
+    "branches": { "total": 21, "covered": 19, "skipped": 0, "pct": 90.47 }
+  },
+  "/Users/sampariat/Documents/roundup-ui/shared/ui/src/Modal/Modal.tsx": {
+    "lines": { "total": 17, "covered": 11, "skipped": 0, "pct": 64.7 },
+    "functions": { "total": 5, "covered": 3, "skipped": 0, "pct": 60 },
+    "statements": { "total": 20, "covered": 13, "skipped": 0, "pct": 65 },
+    "branches": { "total": 47, "covered": 35, "skipped": 0, "pct": 74.46 }
+  },
+  "/Users/sampariat/Documents/roundup-ui/shared/ui/src/NavItem/nav-item.tsx": {
+    "lines": { "total": 5, "covered": 4, "skipped": 0, "pct": 80 },
+    "functions": { "total": 1, "covered": 1, "skipped": 0, "pct": 100 },
+    "statements": { "total": 6, "covered": 5, "skipped": 0, "pct": 83.33 },
+    "branches": { "total": 2, "covered": 1, "skipped": 0, "pct": 50 }
+  },
+  "/Users/sampariat/Documents/roundup-ui/shared/ui/src/OtpInput/OtpInput.tsx": {
+    "lines": { "total": 10, "covered": 10, "skipped": 0, "pct": 100 },
+    "functions": { "total": 4, "covered": 4, "skipped": 0, "pct": 100 },
+    "statements": { "total": 11, "covered": 11, "skipped": 0, "pct": 100 },
+    "branches": { "total": 20, "covered": 19, "skipped": 0, "pct": 95 }
+  },
+  "/Users/sampariat/Documents/roundup-ui/shared/ui/src/PageHeader/PageHeader.tsx": {
+    "lines": { "total": 2, "covered": 2, "skipped": 0, "pct": 100 },
+    "functions": { "total": 1, "covered": 1, "skipped": 0, "pct": 100 },
+    "statements": { "total": 2, "covered": 2, "skipped": 0, "pct": 100 },
+    "branches": { "total": 6, "covered": 5, "skipped": 0, "pct": 83.33 }
+  },
+  "/Users/sampariat/Documents/roundup-ui/shared/ui/src/PhoneInput/PhoneInput.tsx": {
+    "lines": { "total": 6, "covered": 4, "skipped": 0, "pct": 66.66 },
+    "functions": { "total": 3, "covered": 1, "skipped": 0, "pct": 33.33 },
+    "statements": { "total": 6, "covered": 4, "skipped": 0, "pct": 66.66 },
+    "branches": { "total": 7, "covered": 6, "skipped": 0, "pct": 85.71 }
+  },
+  "/Users/sampariat/Documents/roundup-ui/shared/ui/src/Price/Price.tsx": {
+    "lines": { "total": 5, "covered": 5, "skipped": 0, "pct": 100 },
+    "functions": { "total": 2, "covered": 2, "skipped": 0, "pct": 100 },
+    "statements": { "total": 6, "covered": 6, "skipped": 0, "pct": 100 },
+    "branches": { "total": 4, "covered": 4, "skipped": 0, "pct": 100 }
+  },
+  "/Users/sampariat/Documents/roundup-ui/shared/ui/src/Rating/Rating.tsx": {
+    "lines": { "total": 4, "covered": 4, "skipped": 0, "pct": 100 },
+    "functions": { "total": 1, "covered": 1, "skipped": 0, "pct": 100 },
+    "statements": { "total": 4, "covered": 4, "skipped": 0, "pct": 100 },
+    "branches": { "total": 4, "covered": 4, "skipped": 0, "pct": 100 }
+  },
+  "/Users/sampariat/Documents/roundup-ui/shared/ui/src/SafeArea/SafeArea.tsx": {
+    "lines": { "total": 3, "covered": 3, "skipped": 0, "pct": 100 },
+    "functions": { "total": 1, "covered": 1, "skipped": 0, "pct": 100 },
+    "statements": { "total": 3, "covered": 3, "skipped": 0, "pct": 100 },
+    "branches": { "total": 8, "covered": 8, "skipped": 0, "pct": 100 }
+  },
+  "/Users/sampariat/Documents/roundup-ui/shared/ui/src/SideNav/SideNav.tsx": {
+    "lines": { "total": 5, "covered": 5, "skipped": 0, "pct": 100 },
+    "functions": { "total": 3, "covered": 3, "skipped": 0, "pct": 100 },
+    "statements": { "total": 5, "covered": 5, "skipped": 0, "pct": 100 },
+    "branches": { "total": 16, "covered": 13, "skipped": 0, "pct": 81.25 }
+  },
+  "/Users/sampariat/Documents/roundup-ui/shared/ui/src/Skeleton/Skeleton.tsx": {
+    "lines": { "total": 8, "covered": 8, "skipped": 0, "pct": 100 },
+    "functions": { "total": 3, "covered": 3, "skipped": 0, "pct": 100 },
+    "statements": { "total": 8, "covered": 8, "skipped": 0, "pct": 100 },
+    "branches": { "total": 10, "covered": 9, "skipped": 0, "pct": 90 }
+  },
+  "/Users/sampariat/Documents/roundup-ui/shared/ui/src/Spinner/Spinner.tsx": {
+    "lines": { "total": 4, "covered": 4, "skipped": 0, "pct": 100 },
+    "functions": { "total": 1, "covered": 1, "skipped": 0, "pct": 100 },
+    "statements": { "total": 4, "covered": 4, "skipped": 0, "pct": 100 },
+    "branches": { "total": 2, "covered": 1, "skipped": 0, "pct": 50 }
+  },
+  "/Users/sampariat/Documents/roundup-ui/shared/ui/src/SquadCard/SquadCard.tsx": {
+    "lines": { "total": 6, "covered": 6, "skipped": 0, "pct": 100 },
+    "functions": { "total": 1, "covered": 1, "skipped": 0, "pct": 100 },
+    "statements": { "total": 6, "covered": 6, "skipped": 0, "pct": 100 },
+    "branches": { "total": 13, "covered": 10, "skipped": 0, "pct": 76.92 }
+  },
+  "/Users/sampariat/Documents/roundup-ui/shared/ui/src/Surface/Surface.tsx": {
+    "lines": { "total": 8, "covered": 8, "skipped": 0, "pct": 100 },
+    "functions": { "total": 1, "covered": 1, "skipped": 0, "pct": 100 },
+    "statements": { "total": 8, "covered": 8, "skipped": 0, "pct": 100 },
+    "branches": { "total": 9, "covered": 8, "skipped": 0, "pct": 88.88 }
+  },
+  "/Users/sampariat/Documents/roundup-ui/shared/ui/src/Tabs/Tabs.tsx": {
+    "lines": { "total": 5, "covered": 5, "skipped": 0, "pct": 100 },
+    "functions": { "total": 3, "covered": 3, "skipped": 0, "pct": 100 },
+    "statements": { "total": 5, "covered": 5, "skipped": 0, "pct": 100 },
+    "branches": { "total": 8, "covered": 8, "skipped": 0, "pct": 100 }
+  },
+  "/Users/sampariat/Documents/roundup-ui/shared/ui/src/Text/Text.tsx": {
+    "lines": { "total": 3, "covered": 3, "skipped": 0, "pct": 100 },
+    "functions": { "total": 1, "covered": 1, "skipped": 0, "pct": 100 },
+    "statements": { "total": 3, "covered": 3, "skipped": 0, "pct": 100 },
+    "branches": { "total": 2, "covered": 2, "skipped": 0, "pct": 100 }
+  },
+  "/Users/sampariat/Documents/roundup-ui/shared/ui/src/TextField/TextField.tsx": {
+    "lines": { "total": 7, "covered": 5, "skipped": 0, "pct": 71.42 },
+    "functions": { "total": 3, "covered": 1, "skipped": 0, "pct": 33.33 },
+    "statements": { "total": 7, "covered": 5, "skipped": 0, "pct": 71.42 },
+    "branches": { "total": 10, "covered": 9, "skipped": 0, "pct": 90 }
+  },
+  "/Users/sampariat/Documents/roundup-ui/shared/ui/src/ThemeSwitch/ThemeSwitch.tsx": {
+    "lines": { "total": 6, "covered": 6, "skipped": 0, "pct": 100 },
+    "functions": { "total": 3, "covered": 3, "skipped": 0, "pct": 100 },
+    "statements": { "total": 6, "covered": 6, "skipped": 0, "pct": 100 },
+    "branches": { "total": 8, "covered": 8, "skipped": 0, "pct": 100 }
+  },
+  "/Users/sampariat/Documents/roundup-ui/shared/ui/src/Toast/Toast.tsx": {
+    "lines": { "total": 6, "covered": 6, "skipped": 0, "pct": 100 },
+    "functions": { "total": 1, "covered": 1, "skipped": 0, "pct": 100 },
+    "statements": { "total": 6, "covered": 6, "skipped": 0, "pct": 100 },
+    "branches": { "total": 11, "covered": 10, "skipped": 0, "pct": 90.9 }
+  },
+  "/Users/sampariat/Documents/roundup-ui/shared/ui/src/TopAppBar/TopAppBar.tsx": {
+    "lines": { "total": 3, "covered": 3, "skipped": 0, "pct": 100 },
+    "functions": { "total": 1, "covered": 1, "skipped": 0, "pct": 100 },
+    "statements": { "total": 3, "covered": 3, "skipped": 0, "pct": 100 },
+    "branches": { "total": 11, "covered": 11, "skipped": 0, "pct": 100 }
+  },
+  "/Users/sampariat/Documents/roundup-ui/shared/ui/src/VenueCard/VenueCard.tsx": {
+    "lines": { "total": 8, "covered": 7, "skipped": 0, "pct": 87.5 },
+    "functions": { "total": 3, "covered": 2, "skipped": 0, "pct": 66.66 },
+    "statements": { "total": 8, "covered": 7, "skipped": 0, "pct": 87.5 },
+    "branches": { "total": 36, "covered": 25, "skipped": 0, "pct": 69.44 }
+  },
+  "/Users/sampariat/Documents/roundup-ui/shared/ui/src/Welcome/Welcome.tsx": {
+    "lines": { "total": 14, "covered": 14, "skipped": 0, "pct": 100 },
+    "functions": { "total": 6, "covered": 6, "skipped": 0, "pct": 100 },
+    "statements": { "total": 14, "covered": 14, "skipped": 0, "pct": 100 },
+    "branches": { "total": 19, "covered": 19, "skipped": 0, "pct": 100 }
+  },
+  "/Users/sampariat/Documents/roundup-ui/shared/ui/src/lib/Field.tsx": {
+    "lines": { "total": 3, "covered": 3, "skipped": 0, "pct": 100 },
+    "functions": { "total": 1, "covered": 1, "skipped": 0, "pct": 100 },
+    "statements": { "total": 3, "covered": 3, "skipped": 0, "pct": 100 },
+    "branches": { "total": 20, "covered": 14, "skipped": 0, "pct": 70 }
+  },
+  "/Users/sampariat/Documents/roundup-ui/shared/ui/src/lib/action-context.ts": {
+    "lines": { "total": 1, "covered": 1, "skipped": 0, "pct": 100 },
+    "functions": { "total": 0, "covered": 0, "skipped": 0, "pct": 100 },
+    "statements": { "total": 1, "covered": 1, "skipped": 0, "pct": 100 },
+    "branches": { "total": 0, "covered": 0, "skipped": 0, "pct": 100 }
+  },
+  "/Users/sampariat/Documents/roundup-ui/shared/ui/src/lib/cn.ts": {
+    "lines": { "total": 1, "covered": 1, "skipped": 0, "pct": 100 },
+    "functions": { "total": 1, "covered": 1, "skipped": 0, "pct": 100 },
+    "statements": { "total": 2, "covered": 2, "skipped": 0, "pct": 100 },
+    "branches": { "total": 0, "covered": 0, "skipped": 0, "pct": 100 }
+  },
+  "/Users/sampariat/Documents/roundup-ui/shared/ui/src/lib/use-breakpoint.ts": {
+    "lines": { "total": 9, "covered": 9, "skipped": 0, "pct": 100 },
+    "functions": { "total": 2, "covered": 2, "skipped": 0, "pct": 100 },
+    "statements": { "total": 11, "covered": 11, "skipped": 0, "pct": 100 },
+    "branches": { "total": 6, "covered": 5, "skipped": 0, "pct": 83.33 }
+  },
+  "/Users/sampariat/Documents/roundup-ui/shared/ui/src/lib/use-glass.ts": {
+    "lines": { "total": 14, "covered": 14, "skipped": 0, "pct": 100 },
+    "functions": { "total": 5, "covered": 5, "skipped": 0, "pct": 100 },
+    "statements": { "total": 16, "covered": 16, "skipped": 0, "pct": 100 },
+    "branches": { "total": 7, "covered": 6, "skipped": 0, "pct": 85.71 }
+  },
+  "/Users/sampariat/Documents/roundup-ui/shared/ui/src/lib/use-hydrated.ts": {
+    "lines": { "total": 6, "covered": 5, "skipped": 0, "pct": 83.33 },
+    "functions": { "total": 5, "covered": 4, "skipped": 0, "pct": 80 },
+    "statements": { "total": 8, "covered": 7, "skipped": 0, "pct": 87.5 },
+    "branches": { "total": 0, "covered": 0, "skipped": 0, "pct": 100 }
+  },
+  "/Users/sampariat/Documents/roundup-ui/shared/ui/src/lib/use-reduced-motion.ts": {
+    "lines": { "total": 11, "covered": 11, "skipped": 0, "pct": 100 },
+    "functions": { "total": 4, "covered": 4, "skipped": 0, "pct": 100 },
+    "statements": { "total": 12, "covered": 12, "skipped": 0, "pct": 100 },
+    "branches": { "total": 2, "covered": 1, "skipped": 0, "pct": 50 }
+  },
+  "/Users/sampariat/Documents/roundup-ui/shared/ui/src/test/render.tsx": {
+    "lines": { "total": 3, "covered": 3, "skipped": 0, "pct": 100 },
+    "functions": { "total": 1, "covered": 1, "skipped": 0, "pct": 100 },
+    "statements": { "total": 3, "covered": 3, "skipped": 0, "pct": 100 },
+    "branches": { "total": 3, "covered": 3, "skipped": 0, "pct": 100 }
+  },
+  "/Users/sampariat/Documents/roundup-ui/shared/ui/src/theme/theme.tsx": {
+    "lines": { "total": 39, "covered": 38, "skipped": 0, "pct": 97.43 },
+    "functions": { "total": 15, "covered": 13, "skipped": 0, "pct": 86.66 },
+    "statements": { "total": 44, "covered": 43, "skipped": 0, "pct": 97.72 },
+    "branches": { "total": 24, "covered": 18, "skipped": 0, "pct": 75 }
+  }
+}

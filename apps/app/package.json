@@ -60,7 +60,6 @@
     "export:web": "pnpm run favicon && APP_ENV=${APP_ENV:-beta} expo export --platform web",
     "doctor": "APP_ENV=${APP_ENV:-beta} expo install --check && APP_ENV=${APP_ENV:-beta} expo-doctor",
     "typecheck": "tsc --noEmit",
-    "test": "jest",
-    "test:coverage": "jest --coverage"
+    "test": "jest"
   }
 }

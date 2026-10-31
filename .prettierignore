@@ -3,4 +3,3 @@ pnpm-lock.yaml
 assets/svg/
 **/dist/
 **/.expo/
-**/coverage/

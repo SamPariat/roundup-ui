@@ -2,14 +2,12 @@
 import type { Config } from 'jest'
 
 /**
- * Jest settings shared by every package: the jest-expo preset, where tests live, coverage inputs and the SVG transform.
  */
 export const jestPreset = {
   preset: 'jest-expo',
   // Every package keeps its tests in tests/, mirroring the paths under src/.
   testMatch: ['<rootDir>/tests/**/*.test.{ts,tsx}'],
   collectCoverageFrom: ['src/**/*.{ts,tsx}', '!src/**/index.ts'],
-  coverageReporters: ['text', 'json-summary', 'lcov'],
   // Fail on a test that logs an error, so a bad render never passes quietly.
   errorOnDeprecated: true,
   // SVG imports become the same components Metro builds, so tests render the real artwork.

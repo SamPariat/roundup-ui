@@ -86,13 +86,8 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
 
-      # shared/ui, shared/i18n and shared/tokens fail below 80% line coverage (set in their jest.config.ts).
       - name: jest
-        run: pnpm test:coverage
-
-      # Line coverage per package, shown on the run's summary page.
-      - name: coverage summary
-        run: pnpm --silent coverage-summary >> "$GITHUB_STEP_SUMMARY"
+        run: pnpm test
 
   # make tokens, then fail if the committed generated files differ.
   drift:

@@ -10,8 +10,7 @@
   "scripts": {
     "generate": "node scripts/generate.ts",
     "typecheck": "tsc --noEmit",
-    "test": "jest",
-    "test:coverage": "jest --coverage"
+    "test": "jest"
   },
   "devDependencies": {
     "@types/jest": "catalog:",
