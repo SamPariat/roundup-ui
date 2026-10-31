@@ -57,7 +57,8 @@
     "android": "pnpm run favicon && ../../scripts/with-env.sh expo start --android",
     "export:web": "pnpm run favicon && ../../scripts/with-env.sh expo export --platform web",
     "doctor": "../../scripts/with-env.sh expo install --check && ../../scripts/with-env.sh expo-doctor",
-    "typecheck": "tsc --noEmit",
+    "routes": "CI=1 ../../scripts/with-env.sh expo customize tsconfig.json",
+    "typecheck": "pnpm run routes && tsc --noEmit",
     "test": "jest"
   }
 }
