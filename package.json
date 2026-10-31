@@ -12,7 +12,8 @@
     "web": "pnpm --filter @roundup/roundup run web",
     "ios": "pnpm --filter @roundup/roundup run ios",
     "android": "pnpm --filter @roundup/roundup run android",
-    "lint": "eslint . --max-warnings=0",
+    "lint": "eslint . --max-warnings=0 && pnpm run lint:sh",
+    "lint:sh": "shellcheck scripts/*.sh .githooks/*",
     "fmt": "prettier --write .",
     "fmt-check": "prettier --check .",
     "typecheck": "pnpm -r --parallel run typecheck && tsc --noEmit",
@@ -20,9 +21,9 @@
     "tokens": "pnpm --filter @roundup/tokens run generate",
     "knip": "APP_ENV=beta knip",
     "syncpack": "syncpack lint",
-    "files": "node scripts/check-files.ts",
+    "files": "scripts/check-files.sh",
     "doctor": "pnpm --filter @roundup/roundup run doctor",
-    "updates": "node scripts/check-updates.ts"
+    "updates": "scripts/check-updates.sh"
   },
   "devDependencies": {
     "@commitlint/cli": "catalog:",

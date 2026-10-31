@@ -37,13 +37,13 @@ This is the foundation: the workspace, the strictest lint and type setup, genera
 - 🧭 **A routed shell**: `/` is Welcome, `/squads`, `/explore` and `/profile` sit behind a side nav on wide screens and a bottom nav on narrow ones. iOS uses the system tab bar with Liquid Glass.
 - 🌐 **Web first**: a static export served by [static-web-server](https://static-web-server.net), in Docker.
 
-> **Language policy:** TypeScript only. No `.js`, `.jsx`, `.mjs` or `.cjs` files, except the one-line shims listed in `.js-allowlist` (there are none today).
+> **Language policy:** source and configs are TypeScript only: no `.js`, `.jsx`, `.mjs` or `.cjs` files, except the one-line shims listed in `.js-allowlist` (there are none today). Scripts in `scripts/` are bash (`#!/usr/bin/env bash`, `set -euo pipefail`) and are checked by shellcheck.
 
 <p align="center"><img src="assets/svg/brand/divider.svg" width="100%" alt=""></p>
 
 ## 🚀 Getting started
 
-You need Node (the version in `.nvmrc`) and Docker if you want the container. pnpm comes with Node through corepack.
+You need Node (the version in `.nvmrc`), `shellcheck` for `make lint` (`brew install shellcheck`; CI installs it with apt), `jq` and `curl` for `make updates`, and Docker if you want the container. pnpm comes with Node through corepack.
 
 ```sh
 nvm use                # Node from .nvmrc
@@ -56,7 +56,7 @@ make web               # the app on http://localhost:8081
 
 To use the backend, start the Go services from [roundup-monorepo](https://github.com/SamPariat/roundup) (`make services-up`). The app expects the gateway at `EXPO_PUBLIC_API_URL`, which is `http://localhost:8080` in `.env.beta`.
 
-`APP_ENV` is `beta` or `prod`, the same names the backend uses. Anything else stops the app at startup: `make web APP_ENV=prod`.
+`APP_ENV` is `beta` or `prod`, the same names the backend uses: `make web APP_ENV=prod`. `scripts/with-env.sh` loads `apps/roundup/.env.<APP_ENV>` before Expo starts; `app.config.ts` only returns the config object.
 
 ### 📱 iOS and Android
 
@@ -68,22 +68,22 @@ To use the backend, start the Go services from [roundup-monorepo](https://github
 
 Every `make` target calls a root pnpm script.
 
-| Command                                | What it does                                                   |
-| -------------------------------------- | -------------------------------------------------------------- |
-| `make dev` / `web` / `ios` / `android` | Start Expo for a platform                                      |
-| `make check`                           | Everything CI runs, except the web export and the Docker build |
-| `make lint`                            | ESLint with `--max-warnings=0`                                 |
-| `make fmt` / `fmt-check`               | Prettier, write or check                                       |
-| `make typecheck`                       | `tsc --noEmit` in every package                                |
-| `make test`                            | Jest in every package                                          |
-| `make tokens`                          | Regenerate `shared/tokens/src` from `tokens.json`              |
-| `make knip`                            | Unused files, exports and dependencies                         |
-| `make syncpack`                        | Every dependency version comes from the pnpm catalog           |
-| `make files`                           | Fail on JavaScript files and non-kebab-case assets             |
-| `make doctor`                          | `expo install --check`, then `expo-doctor`                     |
-| `make updates`                         | Fail when a catalog dependency has a newer release it may take |
-| `make docker-up` / `down` / `logs`     | The static web build in Docker on port 8081                    |
-| `make docker-smoke`                    | Assert URLs, 404 page, headers and health on the running image |
+| Command                                | What it does                                                         |
+| -------------------------------------- | -------------------------------------------------------------------- |
+| `make dev` / `web` / `ios` / `android` | Start Expo for a platform                                            |
+| `make check`                           | Everything CI runs, except the web export and the Docker build       |
+| `make lint`                            | ESLint with `--max-warnings=0`, then shellcheck                      |
+| `make fmt` / `fmt-check`               | Prettier, write or check                                             |
+| `make typecheck`                       | `tsc --noEmit` in every package                                      |
+| `make test`                            | Jest in every package                                                |
+| `make tokens`                          | Regenerate `shared/tokens/src` from `tokens.json`                    |
+| `make knip`                            | Unused files, exports and dependencies                               |
+| `make syncpack`                        | Every dependency version comes from the pnpm catalog                 |
+| `make files`                           | Fail on JavaScript files, bad script names and non-kebab-case assets |
+| `make doctor`                          | `expo install --check`, then `expo-doctor`                           |
+| `make updates`                         | Fail when a catalog dependency has a newer release it may take       |
+| `make docker-up` / `down` / `logs`     | The static web build in Docker on port 8081                          |
+| `make docker-smoke`                    | Assert URLs, 404 page, headers and health on the running image       |
 
 Every dependency is pinned to an exact version (no `^` or `~`): `.npmrc` sets `save-exact`, and `make files` and `make syncpack` fail on a range. Node (`.nvmrc`), pnpm (`packageManager`) and the Docker base image are pinned the same way.
 
@@ -109,7 +109,7 @@ roundup-ui/
 ├── .githooks/          # pre-commit (lint-staged, tsc, expo-doctor) and commit-msg (commitlint)
 ├── .github/            # CI workflow and the pull request template
 ├── infra/sws.toml      # static-web-server settings: clean URLs, 404 page, headers, health
-├── scripts/            # docker-smoke.ts, check-files.ts, check-updates.ts, copy-favicon.ts, setup.sh
+├── scripts/            # bash: docker-smoke, check-files, check-updates, copy-favicon, with-env, setup
 ├── Dockerfile          # deps → web export → static-web-server runtime
 ├── docker-compose.yml  # the web service on :8081
 └── Makefile            # the front door
@@ -125,7 +125,7 @@ Every user-visible string, including accessibility labels and hints, is a key in
 
 ### 🖼️ SVG assets
 
-SVG files live in `assets/svg` and are imported as components: `import MarkDark from '…/assets/svg/logo/mark-dark.svg'`. Metro compiles them with `react-native-svg-transformer` (configured in `apps/roundup/metro.config.ts`), Jest with a matching SVGR transform (`shared/config/jest-svg-transform.ts`), and `shared/ui/src/svg.d.ts` types the import. Icons and the `mono` logo files use `currentColor`, so the component's `color` (a role from the active theme) tints them. The `dark` and `light` logo files carry the `logo-*` role colours as literals, and `Logo.test.tsx` fails if they drift from the tokens. The logo is a mark, a wordmark of outlined paths (no font), or a lockup of both. `apps/roundup/public/favicon.svg` is generated from `logo/mark-dark.svg` by `scripts/copy-favicon.ts` before every dev, web and export run; it is git-ignored.
+SVG files live in `assets/svg` and are imported as components: `import MarkDark from '…/assets/svg/logo/mark-dark.svg'`. Metro compiles them with `react-native-svg-transformer` (configured in `apps/roundup/metro.config.ts`), Jest with a matching SVGR transform (`shared/config/jest-svg-transform.ts`), and `shared/ui/src/svg.d.ts` types the import. Icons and the `mono` logo files use `currentColor`, so the component's `color` (a role from the active theme) tints them. The `dark` and `light` logo files carry the `logo-*` role colours as literals, and `Logo.test.tsx` fails if they drift from the tokens. The logo is a mark, a wordmark of outlined paths (no font), or a lockup of both. `apps/roundup/public/favicon.svg` is generated from `logo/mark-dark.svg` by `scripts/copy-favicon.sh` before every dev, web and export run; it is git-ignored.
 
 ### 🎨 Tailwind classes
 
@@ -174,7 +174,7 @@ The image is built in stages: install from the lockfile, `expo export --platform
 - **Health**: `GET /health` returns 200 and is not logged; the compose healthcheck uses it.
 - **Other**: directory listing is off, text files are compressed on demand, and SIGTERM (`docker stop`) makes the server stop accepting connections and finish in-flight requests.
 
-`make docker-smoke` runs `scripts/docker-smoke.ts` against the running container and asserts all of the above; CI does the same after building the image.
+`make docker-smoke` runs `scripts/docker-smoke.sh` against the running container and asserts all of the above; CI does the same after building the image.
 
 `EXPO_PUBLIC_API_URL` is baked into the JavaScript at build time, so it is a build argument: rebuild after changing it.
 

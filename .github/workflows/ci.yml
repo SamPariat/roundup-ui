@@ -37,7 +37,12 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
-      - name: eslint
+      - name: install shellcheck
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y shellcheck
+
+      - name: eslint and shellcheck
         run: pnpm lint
 
       - name: prettier
@@ -141,10 +146,6 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-      - uses: actions/setup-node@v7
-        with:
-          node-version-file: .nvmrc
-
       # Run the image, wait for its health check, then assert clean URLs, the 404 page and the headers.
       - name: smoke test
         run: |
@@ -153,7 +154,7 @@ jobs:
             if curl -fsS http://localhost:8081/health > /dev/null; then break; fi
             sleep 1
           done
-          node scripts/docker-smoke.ts http://localhost:8081
+          ./scripts/docker-smoke.sh http://localhost:8081
 
       - name: container logs
         if: failure()

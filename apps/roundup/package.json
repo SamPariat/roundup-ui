@@ -52,13 +52,13 @@
     "typescript": "catalog:"
   },
   "scripts": {
-    "favicon": "node ../../scripts/copy-favicon.ts",
-    "dev": "pnpm run favicon && APP_ENV=${APP_ENV:-beta} expo start",
-    "web": "pnpm run favicon && APP_ENV=${APP_ENV:-beta} expo start --web",
-    "ios": "pnpm run favicon && APP_ENV=${APP_ENV:-beta} expo start --ios",
-    "android": "pnpm run favicon && APP_ENV=${APP_ENV:-beta} expo start --android",
-    "export:web": "pnpm run favicon && APP_ENV=${APP_ENV:-beta} expo export --platform web",
-    "doctor": "APP_ENV=${APP_ENV:-beta} expo install --check && APP_ENV=${APP_ENV:-beta} expo-doctor",
+    "favicon": "../../scripts/copy-favicon.sh",
+    "dev": "pnpm run favicon && ../../scripts/with-env.sh expo start",
+    "web": "pnpm run favicon && ../../scripts/with-env.sh expo start --web",
+    "ios": "pnpm run favicon && ../../scripts/with-env.sh expo start --ios",
+    "android": "pnpm run favicon && ../../scripts/with-env.sh expo start --android",
+    "export:web": "pnpm run favicon && ../../scripts/with-env.sh expo export --platform web",
+    "doctor": "../../scripts/with-env.sh expo install --check && ../../scripts/with-env.sh expo-doctor",
     "typecheck": "tsc --noEmit",
     "test": "jest"
   }

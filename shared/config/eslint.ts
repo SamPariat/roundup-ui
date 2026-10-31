@@ -560,7 +560,6 @@ const config = blocks(
             'knip.ts',
             'shared/config/**',
             'shared/tokens/scripts/**',
-            'scripts/**',
           ],
         },
       ],
@@ -804,8 +803,8 @@ const config = blocks(
 
   // ── Node tooling ────────────────────────────────────────────
   {
-    // Config files, and scripts run on Node, not in React Native.
-    files: [...TOOL_CONFIGS, 'scripts/**/*.ts', 'shared/tokens/scripts/**/*.ts'],
+    // Config files and the token generator run on Node, not in React Native.
+    files: [...TOOL_CONFIGS, 'shared/tokens/scripts/**/*.ts'],
     languageOptions: { globals: globals.node },
   },
 

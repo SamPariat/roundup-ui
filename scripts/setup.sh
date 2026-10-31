@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Turns on the repo's git hooks and creates apps/roundup/.env.beta from its template.
 # Existing env files are kept. .env.prod is never generated: copy .env.prod.example by hand.
-set -eu
+set -euo pipefail
 
 cd "$(dirname "$0")/.."
 

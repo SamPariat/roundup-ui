@@ -56,7 +56,7 @@ ios:
 android:
 	pnpm android
 
-# ESLint with zero warnings allowed.
+# ESLint with zero warnings allowed, then shellcheck on the scripts and git hooks.
 lint:
 	pnpm lint
 
@@ -91,7 +91,8 @@ knip:
 syncpack:
 	pnpm syncpack
 
-# Fails on JavaScript files outside .js-allowlist and on asset files that are not kebab-case.
+# Fails on JavaScript files outside .js-allowlist, scripts that are not executable kebab-case .sh
+# files, asset files that are not kebab-case, and catalog versions that are ranges.
 files:
 	pnpm run files
 
@@ -121,7 +122,7 @@ docker-down:
 
 # Checks the container started by docker-up: clean URLs, 404 page, cache and security headers, health.
 docker-smoke:
-	node scripts/docker-smoke.ts
+	./scripts/docker-smoke.sh
 
 docker-logs:
 	docker compose --env-file apps/roundup/.env.$(APP_ENV) logs -f web

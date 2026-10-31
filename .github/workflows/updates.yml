@@ -4,7 +4,7 @@ name: updates
 # main rather than on an unrelated pull request. Run it by hand from the Actions tab too.
 on:
   schedule:
-    - cron: '0 6 * * 1'
+    - cron: '0 9 * * 6'
   workflow_dispatch:
 
 permissions:

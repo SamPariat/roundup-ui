@@ -1,3 +1,4 @@
+# shellcheck shell=bash
 # Sourced by the hooks. Picks the Node in .nvmrc when nvm is installed, then insists on it,
 # because the TypeScript configs rely on Node's built-in type stripping.
 if [ -s "${NVM_DIR:-$HOME/.nvm}/nvm.sh" ]; then

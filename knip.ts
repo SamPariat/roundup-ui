@@ -10,10 +10,10 @@ const config: KnipConfig = {
   metro: false,
   workspaces: {
     '.': {
-      // Run by Make targets, hooks and CI rather than imported by code.
-      entry: ['scripts/*.ts'],
       // The pre-commit hook calls lint-staged through pnpm exec.
       ignoreDependencies: ['lint-staged'],
+      // shellcheck is a system tool (brew or apt), not an npm package.
+      ignoreBinaries: ['shellcheck'],
     },
     'apps/roundup': {
       // Expo Router discovers routes by file name, so every route is an entry.
@@ -29,6 +29,8 @@ const config: KnipConfig = {
         'babel-plugin-react-compiler',
         'expo-font',
         'expo-system-ui',
+        // Run as `with-env.sh expo-doctor` by the doctor script, which knip cannot follow.
+        'expo-doctor',
       ],
     },
     'shared/i18n': {
