@@ -32,6 +32,8 @@ export default {
         'expo-glass-effect',
         'expo-localization',
         // Named in app.config.ts plugins or loaded by Expo itself, never imported.
+        // expo-dev-client is linked natively by expo run:ios / run:android and never imported.
+        'expo-dev-client',
         'babel-preset-expo',
         'babel-plugin-react-compiler',
         'expo-font',

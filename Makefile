@@ -8,6 +8,7 @@ export APP_ENV
 	setup \
 	dev \
 	web \
+	prebuild \
 	ios \
 	android \
 	lint \
@@ -48,12 +49,22 @@ dev:
 web:
 	pnpm web
 
-# iOS simulator. Needs Xcode. The glass tab bar needs an iOS 26+ simulator.
+# Regenerates ios/ and android/ from app.config.ts from scratch (expo prebuild --clean). Both
+# folders are gitignored and owned by the config, so nothing hand-edited is lost.
+prebuild:
+	pnpm prebuild:ios
+	pnpm prebuild:android
+
+# Clean prebuild of ios/, then builds and runs the iOS development build (expo-dev-client, not
+# Expo Go) on a simulator. Needs Xcode. Glass needs iOS 26+.
 ios:
+	pnpm prebuild:ios
 	pnpm ios
 
-# Android emulator. Needs Android Studio.
+# Clean prebuild of android/, then builds and runs the Android development build on an emulator.
+# Needs Android Studio.
 android:
+	pnpm prebuild:android
 	pnpm android
 
 # ESLint with zero warnings allowed, then shellcheck on the scripts and git hooks.

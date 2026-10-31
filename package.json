@@ -10,6 +10,8 @@
   "scripts": {
     "dev": "pnpm --filter @roundup/roundup run dev",
     "web": "pnpm --filter @roundup/roundup run web",
+    "prebuild:ios": "pnpm --filter @roundup/roundup run prebuild:ios",
+    "prebuild:android": "pnpm --filter @roundup/roundup run prebuild:android",
     "ios": "pnpm --filter @roundup/roundup run ios",
     "android": "pnpm --filter @roundup/roundup run android",
     "lint": "eslint . --max-warnings=0 && pnpm run lint:sh",
