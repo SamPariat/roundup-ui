@@ -24,7 +24,7 @@ ARG APP_ENV=beta
 ARG EXPO_PUBLIC_API_URL
 ENV APP_ENV=${APP_ENV} \
     EXPO_PUBLIC_API_URL=${EXPO_PUBLIC_API_URL}
-RUN pnpm --filter @roundup/app run export:web
+RUN pnpm --filter @roundup/roundup run export:web
 
 # Fills the API origin into the committed server settings. The origin is EXPO_PUBLIC_API_URL
 # without a path; with no URL the placeholder is simply removed, leaving connect-src 'self'.
@@ -38,7 +38,7 @@ RUN origin="$(printf '%s' "${EXPO_PUBLIC_API_URL}" | sed -E 's#^(https?://[^/]+)
 # The alpine variant has wget for the compose healthcheck. The image already runs as the
 # non-root user sws (uid 1000); USER says so explicitly.
 FROM joseluisq/static-web-server:2.44.1-alpine AS runtime
-COPY --from=build /repo/apps/app/dist /public
+COPY --from=build /repo/apps/roundup/dist /public
 COPY --from=config /sws.toml /etc/sws.toml
 USER sws
 EXPOSE 3000

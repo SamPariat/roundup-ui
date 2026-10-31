@@ -48,11 +48,11 @@ You need Node (the version in `.nvmrc`) and Docker if you want the container. pn
 ```sh
 nvm use                # Node from .nvmrc
 make install           # corepack enable + pnpm install --frozen-lockfile
-make setup             # git hooks + apps/app/.env.beta from the template
+make setup             # git hooks + apps/roundup/.env.beta from the template
 make web               # the app on http://localhost:8081
 ```
 
-`make setup` keeps an existing `apps/app/.env.beta`. `.env.prod` is never created for you: copy `.env.prod.example` and fill in real values.
+`make setup` keeps an existing `apps/roundup/.env.beta`. `.env.prod` is never created for you: copy `.env.prod.example` and fill in real values.
 
 To use the backend, start the Go services from [roundup-monorepo](https://github.com/SamPariat/roundup) (`make services-up`). The app expects the gateway at `EXPO_PUBLIC_API_URL`, which is `http://localhost:8080` in `.env.beta`.
 
@@ -96,7 +96,7 @@ After any dependency change run `make doctor` and fix what it reports with `npx 
 ```
 roundup-ui/
 ├── apps/
-│   └── app/            # @roundup/app: Expo SDK 58, Expo Router (routes in src/app = web URLs)
+│   └── roundup/        # @roundup/roundup: Expo SDK 58, Expo Router (routes in src/app = web URLs)
 ├── shared/
 │   ├── config/         # @roundup/config: ESLint, Prettier, TypeScript and Jest settings, the SVG Jest transform
 │   ├── i18n/           # @roundup/i18n: i18next + react-i18next, typed English resources, useT
@@ -125,11 +125,11 @@ Every user-visible string, including accessibility labels and hints, is a key in
 
 ### 🖼️ SVG assets
 
-SVG files live in `assets/svg` and are imported as components: `import MarkDark from '…/assets/svg/logo/mark-dark.svg'`. Metro compiles them with `react-native-svg-transformer` (configured in `apps/app/metro.config.ts`), Jest with a matching SVGR transform (`shared/config/jest-svg-transform.ts`), and `shared/ui/src/svg.d.ts` types the import. Icons and the `mono` logo files use `currentColor`, so the component's `color` (a role from the active theme) tints them. The `dark` and `light` logo files carry the `logo-*` role colours as literals, and `Logo.test.tsx` fails if they drift from the tokens. The logo is a mark, a wordmark of outlined paths (no font), or a lockup of both. `apps/app/public/favicon.svg` is generated from `logo/mark-dark.svg` by `scripts/copy-favicon.ts` before every dev, web and export run; it is git-ignored.
+SVG files live in `assets/svg` and are imported as components: `import MarkDark from '…/assets/svg/logo/mark-dark.svg'`. Metro compiles them with `react-native-svg-transformer` (configured in `apps/roundup/metro.config.ts`), Jest with a matching SVGR transform (`shared/config/jest-svg-transform.ts`), and `shared/ui/src/svg.d.ts` types the import. Icons and the `mono` logo files use `currentColor`, so the component's `color` (a role from the active theme) tints them. The `dark` and `light` logo files carry the `logo-*` role colours as literals, and `Logo.test.tsx` fails if they drift from the tokens. The logo is a mark, a wordmark of outlined paths (no font), or a lockup of both. `apps/roundup/public/favicon.svg` is generated from `logo/mark-dark.svg` by `scripts/copy-favicon.ts` before every dev, web and export run; it is git-ignored.
 
 ### 🎨 Tailwind classes
 
-Components use Tailwind's default scale: `h-12`, `size-10`, `w-3/5`, `rounded-xl`, `md:flex`. The generated `theme.css` replaces only the colour palette with the role colours, adds the `type-*` text styles and the 1200px `max-w-content`, and resets nothing else. Token values line up with default steps (a test pins them): the 4px spacing steps, `size-tap` 48 = `h-12`, radius 8/12/16/24 = `rounded-lg/xl/2xl/3xl`, breakpoints 768/1024 = `md`/`lg`. An arbitrary value (`text-[15px]`) is allowed only where no default step exists; `better-tailwindcss/enforce-canonical-classes` rewrites the rest. Tailwind sizes in rem, so `apps/app/metro.config.ts` sets `inlineRem: 16` and a class is the same size on native as on web.
+Components use Tailwind's default scale: `h-12`, `size-10`, `w-3/5`, `rounded-xl`, `md:flex`. The generated `theme.css` replaces only the colour palette with the role colours, adds the `type-*` text styles and the 1200px `max-w-content`, and resets nothing else. Token values line up with default steps (a test pins them): the 4px spacing steps, `size-tap` 48 = `h-12`, radius 8/12/16/24 = `rounded-lg/xl/2xl/3xl`, breakpoints 768/1024 = `md`/`lg`. An arbitrary value (`text-[15px]`) is allowed only where no default step exists; `better-tailwindcss/enforce-canonical-classes` rewrites the rest. Tailwind sizes in rem, so `apps/roundup/metro.config.ts` sets `inlineRem: 16` and a class is the same size on native as on web.
 
 <p align="center"><img src="assets/svg/brand/divider.svg" width="100%" alt=""></p>
 

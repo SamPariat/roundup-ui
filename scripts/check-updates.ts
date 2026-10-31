@@ -54,9 +54,9 @@ const HELD_BACK: Readonly<Record<string, string>> = {
     'newer majors drop rule options this config sets (79 fails to load); upgrade with eslint 10',
 }
 
-// Resolved from apps/app, which depends on expo; a variable keeps knip from expecting expo at the root.
+// Resolved from apps/roundup, which depends on expo; a variable keeps knip from expecting expo at the root.
 const BUNDLED_LIST = 'expo/bundledNativeModules.json'
-const require = createRequire(new URL('../apps/app/package.json', import.meta.url))
+const require = createRequire(new URL('../apps/roundup/package.json', import.meta.url))
 
 const bundled = JSON.parse(readFileSync(require.resolve(BUNDLED_LIST), 'utf8')) as Record<
   string,
@@ -220,7 +220,7 @@ const allowedFor = (name: string, current: string, published: Published): string
  */
 const commandFor = (name: string, allowed: string): string =>
   name === 'expo'
-    ? `pnpm update -r expo@${allowed} && pnpm --filter @roundup/app exec expo install --fix`
+    ? `pnpm update -r expo@${allowed} && pnpm --filter @roundup/roundup exec expo install --fix`
     : `pnpm update -r ${name}@${allowed}`
 
 /**

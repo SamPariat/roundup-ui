@@ -8,10 +8,10 @@
     "node": "24.22.2"
   },
   "scripts": {
-    "dev": "pnpm --filter @roundup/app run dev",
-    "web": "pnpm --filter @roundup/app run web",
-    "ios": "pnpm --filter @roundup/app run ios",
-    "android": "pnpm --filter @roundup/app run android",
+    "dev": "pnpm --filter @roundup/roundup run dev",
+    "web": "pnpm --filter @roundup/roundup run web",
+    "ios": "pnpm --filter @roundup/roundup run ios",
+    "android": "pnpm --filter @roundup/roundup run android",
     "lint": "eslint . --max-warnings=0",
     "fmt": "prettier --write .",
     "fmt-check": "prettier --check .",
@@ -21,7 +21,7 @@
     "knip": "APP_ENV=beta knip",
     "syncpack": "syncpack lint",
     "files": "node scripts/check-files.ts",
-    "doctor": "pnpm --filter @roundup/app run doctor",
+    "doctor": "pnpm --filter @roundup/roundup run doctor",
     "updates": "node scripts/check-updates.ts"
   },
   "devDependencies": {

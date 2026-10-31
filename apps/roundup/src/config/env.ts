@@ -14,7 +14,7 @@ export class EnvError extends Error {
    * @param message - What is wrong with the configuration.
    */
   constructor(message: string) {
-    super(`${message}. Copy apps/app/.env.beta.example to .env.beta (make setup) and restart.`)
+    super(`${message}. Copy apps/roundup/.env.beta.example to .env.beta (make setup) and restart.`)
     this.name = 'EnvError'
   }
 }

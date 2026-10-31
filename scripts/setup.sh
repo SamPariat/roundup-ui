@@ -1,15 +1,15 @@
 #!/usr/bin/env bash
-# Turns on the repo's git hooks and creates apps/app/.env.beta from its template.
+# Turns on the repo's git hooks and creates apps/roundup/.env.beta from its template.
 # Existing env files are kept. .env.prod is never generated: copy .env.prod.example by hand.
 set -eu
 
 cd "$(dirname "$0")/.."
 
-if [ -f apps/app/.env.beta ]; then
-  echo "keep    apps/app/.env.beta"
+if [ -f apps/roundup/.env.beta ]; then
+  echo "keep    apps/roundup/.env.beta"
 else
-  cp apps/app/.env.beta.example apps/app/.env.beta
-  echo "created apps/app/.env.beta"
+  cp apps/roundup/.env.beta.example apps/roundup/.env.beta
+  echo "created apps/roundup/.env.beta"
 fi
 
 git config core.hooksPath .githooks

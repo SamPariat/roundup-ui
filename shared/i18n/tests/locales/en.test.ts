@@ -6,7 +6,7 @@ import { en, i18n } from '../../src/index.ts'
 // Jest runs this file as CommonJS, where __dirname is the way to find the repo root.
 
 const repoRoot = path.resolve(__dirname, '../../../..')
-const SOURCE_ROOTS = ['apps/app/src', 'shared/ui/src']
+const SOURCE_ROOTS = ['apps/roundup/src', 'shared/ui/src']
 
 /**
  * Lists the TypeScript files under a folder, recursively.

@@ -20,7 +20,7 @@ const config: Config = {
   // Sorts Tailwind classes. Resolved from this package so every workspace finds it.
   plugins: [fromHere('prettier-plugin-tailwindcss')],
   // The stylesheet tells the plugin which classes the generated theme defines.
-  tailwindStylesheet: fromHere('../../apps/app/global.css'),
+  tailwindStylesheet: fromHere('../../apps/roundup/global.css'),
   tailwindFunctions: ['cn', 'cva'],
 }
 

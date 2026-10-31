@@ -118,7 +118,7 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - name: expo export
-        run: pnpm --filter @roundup/app run export:web
+        run: pnpm --filter @roundup/roundup run export:web
 
   docker:
     name: docker

@@ -1,12 +1,12 @@
 # The static web build, served on http://localhost:8081. Start it with `make docker-up`.
-# Make passes --env-file apps/app/.env.<APP_ENV>, which supplies the variables below.
+# Make passes --env-file apps/roundup/.env.<APP_ENV>, which supplies the variables below.
 services:
   web:
     build:
       context: .
       args:
         APP_ENV: ${APP_ENV:-beta}
-        EXPO_PUBLIC_API_URL: ${EXPO_PUBLIC_API_URL:?run make setup to create apps/app/.env.beta}
+        EXPO_PUBLIC_API_URL: ${EXPO_PUBLIC_API_URL:?run make setup to create apps/roundup/.env.beta}
     image: roundup-web
     ports:
       - '8081:3000'

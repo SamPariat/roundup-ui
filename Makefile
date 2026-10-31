@@ -1,5 +1,5 @@
 # Front door for the Roundup client. Every target calls a root pnpm script.
-# Selects apps/app/.env.<APP_ENV> (beta or prod, the same names as the backend). Override per command:
+# Selects apps/roundup/.env.<APP_ENV> (beta or prod, the same names as the backend). Override per command:
 #   make web APP_ENV=prod
 APP_ENV ?= beta
 export APP_ENV
@@ -35,7 +35,7 @@ install:
 	corepack enable
 	pnpm install --frozen-lockfile
 
-# Turns on the git hooks and creates apps/app/.env.beta from its template. Existing files are kept.
+# Turns on the git hooks and creates apps/roundup/.env.beta from its template. Existing files are kept.
 # .env.prod is never generated: copy .env.prod.example by hand and fill in real values.
 setup:
 	./scripts/setup.sh
@@ -108,23 +108,23 @@ updates:
 # Everything CI runs, minus the web export and the Docker build.
 check: lint fmt-check knip syncpack files typecheck test tokens-check doctor
 
-# The compose targets read apps/app/.env.$(APP_ENV) for the API address baked into the build.
+# The compose targets read apps/roundup/.env.$(APP_ENV) for the API address baked into the build.
 docker-build:
-	docker compose --env-file apps/app/.env.$(APP_ENV) build web
+	docker compose --env-file apps/roundup/.env.$(APP_ENV) build web
 
 # Builds and runs the static web build at http://localhost:8081.
 docker-up:
-	docker compose --env-file apps/app/.env.$(APP_ENV) up -d --build web
+	docker compose --env-file apps/roundup/.env.$(APP_ENV) up -d --build web
 
 docker-down:
-	docker compose --env-file apps/app/.env.$(APP_ENV) down
+	docker compose --env-file apps/roundup/.env.$(APP_ENV) down
 
 # Checks the container started by docker-up: clean URLs, 404 page, cache and security headers, health.
 docker-smoke:
 	node scripts/docker-smoke.ts
 
 docker-logs:
-	docker compose --env-file apps/app/.env.$(APP_ENV) logs -f web
+	docker compose --env-file apps/roundup/.env.$(APP_ENV) logs -f web
 
 clean:
-	rm -rf node_modules apps/*/node_modules shared/*/node_modules apps/app/dist apps/app/.expo
+	rm -rf node_modules apps/*/node_modules shared/*/node_modules apps/roundup/dist apps/roundup/.expo

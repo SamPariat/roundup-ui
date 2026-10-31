@@ -37,8 +37,8 @@ const SOURCE = ['**/*.{ts,tsx}']
 // Every package keeps tests, fixtures and helpers in tests/; TEST_FILES is the subset Jest runs.
 const TESTS = ['**/tests/**/*.{ts,tsx}']
 const TEST_FILES = ['**/tests/**/*.test.{ts,tsx}']
-const COMPONENTS = ['shared/ui/src/**/*.tsx', 'apps/app/src/**/*.tsx']
-const ROUTES = ['apps/app/src/app/**/*.tsx']
+const COMPONENTS = ['shared/ui/src/**/*.tsx', 'apps/roundup/src/**/*.tsx']
+const ROUTES = ['apps/roundup/src/app/**/*.tsx']
 
 const NOT_USER_FACING_ATTRIBUTE =
   /^(?!(?:accessibilityLabel|accessibilityHint|aria-label|alt|label|loadingLabel|startLabel|placeholder|title|subtitle|body|helper|error|text|name)$).*$/
@@ -375,7 +375,7 @@ const config = blocks(
   },
   {
     // Tool configs and the env module are the only places allowed to read process.env.
-    files: [...TOOL_CONFIGS, 'apps/app/src/config/env.ts'],
+    files: [...TOOL_CONFIGS, 'apps/roundup/src/config/env.ts'],
     rules: { 'no-restricted-properties': 'off' },
   },
   {
@@ -414,7 +414,7 @@ const config = blocks(
     // Every user-visible string comes from @roundup/i18n. jsx-only flags literal text and literal
     // attribute values in JSX (labels, hints, placeholders), which is where copy hides; strings in
     // plain TypeScript are covered by review and by the i18n package's key tests.
-    files: ['apps/app/src/**/*.tsx', 'shared/ui/src/**/*.tsx'],
+    files: ['apps/roundup/src/**/*.tsx', 'shared/ui/src/**/*.tsx'],
     plugins: { i18next },
     rules: {
       'i18next/no-literal-string': [
@@ -446,7 +446,7 @@ const config = blocks(
     plugins: { boundaries },
     settings: {
       'boundaries/elements': [
-        { type: 'app', pattern: 'apps/app/**', partialMatch: false },
+        { type: 'app', pattern: 'apps/roundup/**', partialMatch: false },
         { type: 'ui', pattern: 'shared/ui/**', partialMatch: false },
         { type: 'i18n', pattern: 'shared/i18n/**', partialMatch: false },
         { type: 'tokens', pattern: 'shared/tokens/**', partialMatch: false },
@@ -583,8 +583,8 @@ const config = blocks(
     files: [
       'shared/ui/src/components/*.tsx',
       'shared/ui/tests/components/*.tsx',
-      'apps/app/src/shell/*.tsx',
-      'apps/app/tests/shell/*.tsx',
+      'apps/roundup/src/shell/*.tsx',
+      'apps/roundup/tests/shell/*.tsx',
     ],
     rules: {
       'unicorn/filename-case': ['error', { cases: { pascalCase: true, kebabCase: true } }],
@@ -592,7 +592,7 @@ const config = blocks(
   },
   {
     // Route files and special Expo names ([id], (tabs), +not-found, _layout) have framework-mandated names.
-    files: ['apps/app/src/app/**/*.{ts,tsx}'],
+    files: ['apps/roundup/src/app/**/*.{ts,tsx}'],
     rules: { 'unicorn/filename-case': 'off' },
   },
 
@@ -604,8 +604,8 @@ const config = blocks(
     settings: {
       'better-tailwindcss': {
         // tailwindcss is installed in the app, so resolve it from there for shared/ui files too.
-        cwd: path.join(root, 'apps/app'),
-        entryPoint: path.join(root, 'apps/app/global.css'),
+        cwd: path.join(root, 'apps/roundup'),
+        entryPoint: path.join(root, 'apps/roundup/global.css'),
       },
     },
     rules: {
@@ -749,7 +749,7 @@ const config = blocks(
   {
     // Tool configs must default-export; everything else uses named exports. Expo Router routes and the
     // ambient *.svg module declaration (a module's default export is its component) are the exceptions.
-    files: [...TOOL_CONFIGS, ...ROUTES, 'apps/app/src/app/**/*.ts', 'shared/ui/src/svg.d.ts'],
+    files: [...TOOL_CONFIGS, ...ROUTES, 'apps/roundup/src/app/**/*.ts', 'shared/ui/src/svg.d.ts'],
     rules: { 'import-x/no-default-export': 'off' },
   },
   // ── Formatting ──────────────────────────────────────────────

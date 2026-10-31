@@ -1,5 +1,5 @@
 {
-  "name": "@roundup/app",
+  "name": "@roundup/roundup",
   "version": "0.0.0",
   "private": true,
   "main": "expo-router/entry",

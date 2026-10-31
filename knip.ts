@@ -15,7 +15,7 @@ const config: KnipConfig = {
       // The pre-commit hook calls lint-staged through pnpm exec.
       ignoreDependencies: ['lint-staged'],
     },
-    'apps/app': {
+    'apps/roundup': {
       // Expo Router discovers routes by file name, so every route is an entry.
       entry: ['src/app/**/*.{ts,tsx}', 'metro.config.ts'],
       project: ['**/*.{ts,tsx,css}'],
