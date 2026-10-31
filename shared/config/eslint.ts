@@ -101,6 +101,19 @@ const STYLE_OBJECT_BAN = {
   message: 'No inline style objects. Use className; raw values come from useTheme().',
 }
 
+const ANY_BAN = {
+  selector: 'TSAnyKeyword',
+  message: 'Do not use any. Use unknown and narrow it (typeof, in, a type guard or a schema).',
+}
+
+const NEVER_BAN = {
+  selector: 'TSNeverKeyword',
+  message:
+    'Do not use never. For exclusive props in a discriminated union write `prop?: undefined`; for exhaustiveness use satisfies or an assertNever that takes the value typed as the union (switch-exhaustiveness-check also covers switches).',
+}
+
+const TYPE_BANS = [ANY_BAN, NEVER_BAN]
+
 const INACTIVE_BAN = {
   selector: "Literal[value='inactive']",
   message: "Do not branch on AppState 'inactive': Split View sends it. Pause on 'background' only.",
@@ -132,6 +145,14 @@ const a11yRules = Object.fromEntries(
  * @returns The same objects, typed as flat configs.
  */
 const blocks = (...entries: unknown[]): Linter.Config[] => entries as Linter.Config[]
+
+/**
+ * Adapts a plugin written for legacy configs. The two react-native plugins ship no types, so they arrive untyped.
+ * @param plugin - The imported plugin.
+ * @returns The plugin for a flat config.
+ */
+const legacyPlugin = (plugin: unknown): ReturnType<typeof fixupPluginRules> =>
+  fixupPluginRules(plugin as Parameters<typeof fixupPluginRules>[0])
 
 const config = blocks(
   {
@@ -200,6 +221,9 @@ const config = blocks(
         'error',
         { considerDefaultExhaustiveForUnions: false, requireDefaultForNonUnion: true },
       ],
+      // any switches the type checker off. Never rewritten to unknown automatically: the code then
+      // needs real narrowing.
+      '@typescript-eslint/no-explicit-any': ['error', { fixToUnknown: false }],
       // Numbers in template strings are safe and common (sizes, counts).
       '@typescript-eslint/restrict-template-expressions': ['error', { allowNumber: true }],
       // An unawaited promise is a silent failure.
@@ -283,7 +307,7 @@ const config = blocks(
     // react-native: text must sit inside <Text>, and styles must not use raw colours.
     // The plugin predates flat config, so fixupPluginRules adapts it.
     files: SOURCE,
-    plugins: { 'react-native': fixupPluginRules(reactNative as never) },
+    plugins: { 'react-native': legacyPlugin(reactNative) },
     rules: {
       // Our own components wrap string children in <Text>, so raw text inside them is fine.
       'react-native/no-raw-text': ['error', { skip: ['Badge', 'Button', 'Chip', 'Text', 'Toast'] }],
@@ -293,7 +317,7 @@ const config = blocks(
   {
     // Accessibility: every react-native-a11y rule at error. Same checks on web and native.
     files: SOURCE,
-    plugins: { 'react-native-a11y': fixupPluginRules(reactNativeA11y as never) },
+    plugins: { 'react-native-a11y': legacyPlugin(reactNativeA11y) },
     rules: {
       ...(a11yRules as Linter.RulesRecord),
       // Hints belong only where the result of an action is not obvious from the label (Apple's
@@ -327,7 +351,13 @@ const config = blocks(
           ],
         },
       ],
-      'no-restricted-syntax': ['error', STYLE_OBJECT_BAN, INACTIVE_BAN, INSET_MATH_BAN],
+      'no-restricted-syntax': [
+        'error',
+        STYLE_OBJECT_BAN,
+        INACTIVE_BAN,
+        INSET_MATH_BAN,
+        ...TYPE_BANS,
+      ],
       'no-restricted-properties': [
         'error',
         {
@@ -356,7 +386,7 @@ const config = blocks(
       'shared/ui/src/components/Surface.tsx',
       'shared/ui/src/components/Toast.tsx',
     ],
-    rules: { 'no-restricted-syntax': ['error', INACTIVE_BAN, INSET_MATH_BAN] },
+    rules: { 'no-restricted-syntax': ['error', INACTIVE_BAN, INSET_MATH_BAN, ...TYPE_BANS] },
   },
 
   {
@@ -397,6 +427,14 @@ const config = blocks(
         },
       ],
     },
+  },
+
+  {
+    // any and never are banned everywhere, including scripts, tool configs and .d.ts shims. Blocks
+    // below that set no-restricted-syntax for their files repeat TYPE_BANS, because a later
+    // setting replaces this one.
+    files: ['**/*.{ts,tsx}'],
+    rules: { 'no-restricted-syntax': ['error', ...TYPE_BANS] },
   },
 
   // ── Architecture ────────────────────────────────────────────
@@ -685,6 +723,7 @@ const config = blocks(
           selector: 'CallExpression[callee.property.name=/^(get|query|find)(All)?ByTestId$/]',
           message: 'Query by role, label or text so tests prove what users can reach.',
         },
+        ...TYPE_BANS,
       ],
     },
   },

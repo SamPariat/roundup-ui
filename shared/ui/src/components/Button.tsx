@@ -96,7 +96,7 @@ interface WithContent {
 /** An icon-only button, which must name itself with `label`. */
 interface IconOnly {
   /** Icon-only buttons have no content. */
-  children?: never
+  children?: undefined
   /** The only thing drawn. */
   icon: IconName
   /** The accessible name, since there is no text. */

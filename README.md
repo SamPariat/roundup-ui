@@ -141,6 +141,7 @@ Each rule in `shared/config/eslint.ts` carries a comment saying why it is on.
 - **Accessibility**: the a11y lint rules, role-and-label test queries (`getByTestId` is banned), types that force a `label` on icon-only buttons and inputs.
 - **Conventional commits with a scope**: `feat(ui): add toast`, subject in lower case. Scopes: `app`, `ui`, `i18n`, `tokens`, `config`, `infra`, `deps`.
 - **Named exports**, PascalCase component files, kebab-case everything else. Default exports only for Expo Router routes and tool configs.
+- **No `any`, no `never`**: use `unknown` and narrow it; write exclusive union props as `prop?: undefined`; exhaustiveness comes from `switch-exhaustiveness-check` or `satisfies`.
 - **No nested ternaries** (`no-nested-ternary` and SonarJS): use an early return, a lookup object or a small named helper.
 - **No inline functions in JSX props** (`react/jsx-no-bind`, refs and DOM components included): pass a module-level function, a `useCallback`, or a handler that reads its data from props.
 - **Blank lines in a fixed pattern** (`@stylistic/padding-line-between-statements`): before `return`/`throw`/`break`/`continue`, after a declaration group (single-line declarations may stack), around blocks, multi-line expressions and exports, and after directives. Test files add `jest/padding-around-all`. Neither rule is in `eslint-config-prettier`'s disable list, so no ordering trick is needed.

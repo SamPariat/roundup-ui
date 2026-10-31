@@ -27,13 +27,13 @@ interface Decorative {
   /** Marks the icon as decoration. */
   decorative: true
   /** Decorative icons are not announced, so they have no label. */
-  label?: never
+  label?: undefined
 }
 
 /** An icon that carries meaning: announced as an image with this label. */
 interface Labelled {
   /** A labelled icon is not decoration. */
-  decorative?: never
+  decorative?: undefined
   /** What the icon means, such as "Back". */
   label: string
 }

@@ -59,4 +59,12 @@ describe('Button', () => {
     expect(screen.getByText('Sending code…')).toBeOnTheScreen()
     expect(onPress).not.toHaveBeenCalled()
   })
+
+  it('rejects an icon-only button without a label at compile time', () => {
+    // Never rendered: tsc fails the typecheck if this stops being an error.
+    // @ts-expect-error an icon-only button must name itself with label
+    const unnamed = <Button icon="close" />
+
+    expect(unnamed).toBeDefined()
+  })
 })
