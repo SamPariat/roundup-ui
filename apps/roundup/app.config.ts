@@ -9,13 +9,13 @@ export default {
   version: '0.1.0',
   orientation: 'default',
   userInterfaceStyle: 'automatic',
+  android: {
+    package: process.env.APP_ENV === 'prod' ? 'app.roundup.client' : 'app.roundup.client.beta',
+  },
   ios: {
     supportsTablet: true,
     bundleIdentifier:
       process.env.APP_ENV === 'prod' ? 'app.roundup.client' : 'app.roundup.client.beta',
-  },
-  android: {
-    package: process.env.APP_ENV === 'prod' ? 'app.roundup.client' : 'app.roundup.client.beta',
   },
   web: { bundler: 'metro', output: 'static' },
   plugins: [

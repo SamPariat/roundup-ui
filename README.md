@@ -60,7 +60,7 @@ To use the backend, start the Go services from [roundup-monorepo](https://github
 
 ### iOS and Android
 
-`make ios` and `make android` need Xcode and Android Studio. Liquid Glass (the tab bar, the top bar, toasts and sheets) needs an iOS 26+ simulator; turn on **Reduce Transparency** and the surfaces go solid.
+`make ios` and `make android` build and run a development build (`expo-dev-client`), not Expo Go, so they need Xcode and Android Studio. Each run first does a clean `expo prebuild` for that platform, so the gitignored `ios/` and `android/` folders always match `app.config.ts` (`make prebuild` does both without building); expect a few minutes per build. After that `make dev` starts Metro for the installed build. Liquid Glass (the tab bar, the top bar, toasts and sheets) needs an iOS 26+ simulator; turn on **Reduce Transparency** and the surfaces go solid.
 
 <p align="center"><img src="assets/svg/brand/divider.svg" width="100%" alt=""></p>
 
