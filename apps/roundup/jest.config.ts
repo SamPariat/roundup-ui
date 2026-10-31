@@ -6,8 +6,10 @@ import type { Config } from 'jest'
 export default {
   preset: 'jest-expo',
   testMatch: ['<rootDir>/tests/**/*.test.{ts,tsx}'],
-  collectCoverageFrom: ['src/**/*.{ts,tsx}', '!src/**/index.ts'],
   errorOnDeprecated: true,
+  // CI runs every package's suite at once on two cores, so the first test of a file, which also
+  // loads React Native and the component tree, can take far longer than the 5s default.
+  testTimeout: 30_000,
   transform: { '\\.svg$': '<rootDir>/../../jest-svg-transform.ts' },
   setupFiles: ['<rootDir>/jest.setup.ts'],
   setupFilesAfterEnv: ['<rootDir>/jest.setup-after-env.ts'],
