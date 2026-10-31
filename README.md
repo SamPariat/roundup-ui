@@ -10,7 +10,7 @@
   <img alt="Expo SDK 58" src="https://img.shields.io/badge/Expo-SDK%2058-cba6f7?style=for-the-badge&logo=expo&logoColor=cdd6f4&labelColor=1e1e2e">
   <img alt="TypeScript only" src="https://img.shields.io/badge/TypeScript-only-89b4fa?style=for-the-badge&logo=typescript&logoColor=cdd6f4&labelColor=1e1e2e">
   <img alt="NativeWind 5" src="https://img.shields.io/badge/NativeWind-v5%20RC-fab387?style=for-the-badge&logo=tailwindcss&logoColor=cdd6f4&labelColor=1e1e2e">
-  <img alt="Made with love" src="https://img.shields.io/badge/made%20with-%F0%9F%92%9C-cba6f7?style=for-the-badge&labelColor=1e1e2e">
+  <img alt="Made with love" src="https://img.shields.io/badge/made%20with-love-cba6f7?style=for-the-badge&labelColor=1e1e2e">
 </p>
 
 <p align="center">
@@ -18,30 +18,30 @@
 </p>
 
 <p align="center">
-  <a href="#-getting-started">🚀 Getting started</a> ·
-  <a href="#-commands">🧰 Commands</a> ·
-  <a href="#-repository-structure">📁 Structure</a> ·
-  <a href="#-rules-the-tooling-enforces">📏 Rules</a> ·
-  <a href="#-docker">🐳 Docker</a>
+  <a href="#getting-started">Getting started</a> ·
+  <a href="#commands">Commands</a> ·
+  <a href="#repository-structure">Structure</a> ·
+  <a href="#rules-the-tooling-enforces">Rules</a> ·
+  <a href="#docker">Docker</a>
 </p>
 
 <p align="center"><img src="assets/svg/brand/divider.svg" width="100%" alt=""></p>
 
-## ✨ What is here
+## What is here
 
 This is the foundation: the workspace, the strictest lint and type setup, the NativeWind theme, every design-system component rebuilt in React Native, and an empty routed shell. There is no API client and there are no screens wired to the backend yet; sign-in comes next.
 
-- 🎨 **One hand-written theme** (`shared/ui/theme.css`): the Roundup design system's role colours, text styles and shadows as a Tailwind 4 stylesheet. Mocha is the dark theme, Latte the light one.
-- 🌍 **One place for every string**: `@roundup/i18n` holds the English copy as typed resources; components and screens never contain user-facing text.
-- 🧩 **27 components** with the design system's prop names (`Button`, `TextField`, `Modal`, `SquadCard`…), each with accessibility built into its types and tests.
-- 🧭 **A routed shell**: `/` is Welcome, `/squads`, `/explore` and `/profile` sit behind a side nav on wide screens and a bottom nav on narrow ones. iOS uses the system tab bar with Liquid Glass.
-- 🌐 **Web first**: a static export served by [static-web-server](https://static-web-server.net), in Docker.
+- **One hand-written theme** (`shared/ui/theme.css`): the Roundup design system's role colours, text styles and shadows as a Tailwind 4 stylesheet. Mocha is the dark theme, Latte the light one.
+- **One place for every string**: `@roundup/i18n` holds the English copy as typed resources; components and screens never contain user-facing text.
+- **27 components** with the design system's prop names (`Button`, `TextField`, `Modal`, `SquadCard`…), each with accessibility built into its types and tests.
+- **A routed shell**: `/` is Welcome, `/squads`, `/explore` and `/profile` sit behind a side nav on wide screens and a bottom nav on narrow ones. iOS uses the system tab bar with Liquid Glass.
+- **Web first**: a static export served by [static-web-server](https://static-web-server.net), in Docker.
 
 > **Language policy:** source and configs are TypeScript only: no `.js`, `.jsx`, `.mjs` or `.cjs` files, except the one-line shims listed in `.js-allowlist` (there are none today). Scripts in `scripts/` are bash (`#!/usr/bin/env bash`, `set -euo pipefail`) and are checked by shellcheck.
 
 <p align="center"><img src="assets/svg/brand/divider.svg" width="100%" alt=""></p>
 
-## 🚀 Getting started
+## Getting started
 
 You need Node (the version in `.nvmrc`), `shellcheck` for `make lint` (`brew install shellcheck`; CI installs it with apt), `jq` and `curl` for `make updates`, and Docker if you want the container. pnpm comes with Node through corepack.
 
@@ -58,13 +58,13 @@ To use the backend, start the Go services from [roundup-monorepo](https://github
 
 `APP_ENV` is `beta` or `prod`, the same names the backend uses: `make web APP_ENV=prod`. `scripts/with-env.sh` loads `apps/roundup/.env.<APP_ENV>` before Expo starts; `app.config.ts` only returns the config object.
 
-### 📱 iOS and Android
+### iOS and Android
 
 `make ios` and `make android` need Xcode and Android Studio. Liquid Glass (the tab bar, the top bar, toasts and sheets) needs an iOS 26+ simulator; turn on **Reduce Transparency** and the surfaces go solid.
 
 <p align="center"><img src="assets/svg/brand/divider.svg" width="100%" alt=""></p>
 
-## 🧰 Commands
+## Commands
 
 Every `make` target calls a root pnpm script.
 
@@ -76,6 +76,7 @@ Every `make` target calls a root pnpm script.
 | `make fmt` / `fmt-check`               | Prettier, write or check                                             |
 | `make typecheck`                       | `tsc --noEmit` in every package                                      |
 | `make test`                            | Jest in every package                                                |
+| `make splash`                          | Rasterise the logo mark into the native splash screen PNGs           |
 | `make knip`                            | Unused files, exports and dependencies                               |
 | `make syncpack`                        | Every dependency version comes from the pnpm catalog                 |
 | `make files`                           | Fail on JavaScript files, bad script names and non-kebab-case assets |
@@ -90,7 +91,7 @@ After any dependency change run `make doctor` and fix what it reports with `npx 
 
 <p align="center"><img src="assets/svg/brand/divider.svg" width="100%" alt=""></p>
 
-## 📁 Repository structure
+## Repository structure
 
 ```
 roundup-ui/
@@ -120,27 +121,27 @@ Every package has the same shape: `src/` for code and `tests/` beside it, mirror
 
 Imports run one way: `app → ui → i18n`; inside the app, routes may import components and hooks, components may import hooks and `@roundup/ui`, and hooks import no components. `i18n` imports nothing internal, and `shared/*` never imports from `apps/*`; ESLint's boundaries rule enforces it.
 
-### 🌍 Strings and i18n
+### Strings and i18n
 
 Every user-visible string, including accessibility labels and hints, is a key in `shared/i18n/src/locales/en.ts` (nested by feature, `as const`). `t('nav.tabs.squads')` is type-checked against that file, so a misspelt key fails `tsc`. Components stay prop-driven; where a prop is omitted, its default copy comes from `useT()`. i18next starts synchronously with the bundled resources and picks the device language through `expo-localization`; English is the only language so far, and a new one is another file with the same shape. `eslint-plugin-i18next` fails the build on a literal string in JSX (text, `accessibilityLabel`, `placeholder`, `title` and the like), and the package's own tests check that every key the code uses exists and that none is empty. Jest setup imports the package, so tests query by the real English text.
 
-### 🖼️ SVG assets
+### SVG assets
 
 SVG files live in `assets/svg` and are imported as components: `import MarkDark from '…/assets/svg/logo/mark-dark.svg'`. Metro compiles them with `react-native-svg-transformer` (configured in `apps/roundup/metro.config.ts`), Jest with a matching SVGR transform (`jest-svg-transform.ts` at the root), and `shared/ui/src/svg.d.ts` types the import. Icons and the `mono` logo files use `currentColor`, so a `text-*` class (`text-accent`) tints them; shapes drawn in code use `fill-*` and `stroke-*` classes. `lib/svg.ts` lets an SVG component take a className (on native, `lib/svg.native.ts` maps it to react-native-svg's `color`, `fill` and `stroke` props). The few props that cannot take a class (a placeholder colour, the glass tint, the navigator background) read a role through `useRoleColor`. The `dark` and `light` logo files carry the `logo-*` role colours as literals, and `Logo.test.tsx` fails if they drift from `theme.css`. The logo is a mark, a wordmark of outlined paths (no font), or a lockup of both. `apps/roundup/public/favicon.svg` is generated from `logo/mark-dark.svg` by `scripts/copy-favicon.sh` before every dev, web and export run; it is git-ignored.
 
-### 💧 Splash screen
+### Splash screen
 
 Native: the `expo-splash-screen` plugin in `apps/roundup/app.config.ts` shows the Roundup mark (96 pt wide) on the Latte background (`#f2e9e1`) with the light mark, or on the Mocha background (`#1e1e2e`) with the dark mark when the device is dark. The plugin needs PNGs, so `make splash` (`scripts/make-splash.sh`, rsvg-convert or macOS sips) rasterises `assets/svg/logo/mark-dark.svg` and `mark-light.svg` into `apps/roundup/assets/splash/`. Those PNGs are committed, not generated at build time: the plugin reads them on every prebuild and EAS build, and a build machine may have no SVG rasteriser. Run `make splash` and commit after changing the mark. The root layout calls `preventAutoHideAsync`, and `useSplash` hides the screen once the fonts and the saved theme are ready, with a 200 ms fade or none when the device asks for reduced motion.
 
 Web: `src/app/+html.tsx` puts the same mark, centred on the theme background, over the static page. It is fixed to the viewport, so nothing moves, and `useSplash` fades it out (or removes it at once with reduced motion) after hydration. A small inline script applies a saved manual theme before the first paint.
 
-### 🎨 Tailwind classes
+### Tailwind classes
 
 Components use Tailwind's default scale: `h-12`, `size-10`, `w-3/5`, `rounded-xl`, `md:flex`. `shared/ui/theme.css` (imported by `apps/roundup/global.css`) replaces only the colour palette with the role colours, adds the `type-*` text styles, the `shadow-sheet` and `shadow-toast` shadows and the 1200px `max-w-content`, and resets nothing else. Mocha is the default; Latte applies through `prefers-color-scheme` (the theme switch calls `Appearance.setColorScheme` on native and sets `data-theme` on the web). Breakpoints are Tailwind's `md` 768 and `lg` 1024, which `useBreakpoint` repeats in code. An arbitrary value (`text-[15px]`) is allowed only where no default step exists; `better-tailwindcss/enforce-canonical-classes` rewrites the rest. Tailwind sizes in rem, so `apps/roundup/metro.config.ts` sets `inlineRem: 16` and a class is the same size on native as on web.
 
 <p align="center"><img src="assets/svg/brand/divider.svg" width="100%" alt=""></p>
 
-## 📏 Rules the tooling enforces
+## Rules the tooling enforces
 
 Each rule in `eslint.config.ts` carries a comment saying why it is on.
 
@@ -163,7 +164,7 @@ The git hooks check, never rewrite: if one fails, run `make fmt` and stage again
 
 <p align="center"><img src="assets/svg/brand/divider.svg" width="100%" alt=""></p>
 
-## 🐳 Docker
+## Docker
 
 ```sh
 make setup
@@ -187,6 +188,6 @@ The image is built in stages: install from the lockfile, `expo export --platform
 
 <p align="center"><img src="assets/svg/brand/divider.svg" width="100%" alt=""></p>
 
-## 🗺️ Not here yet
+## Not here yet
 
 The API client (TanStack Query and orval), sign-in screens, view models, deploying the image, and end-to-end tests. See the pull request for the full list.
