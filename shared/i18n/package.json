@@ -17,7 +17,6 @@
     "react-i18next": "catalog:"
   },
   "devDependencies": {
-    "@roundup/config": "workspace:*",
     "@types/jest": "catalog:",
     "@types/react": "catalog:",
     "jest": "catalog:",

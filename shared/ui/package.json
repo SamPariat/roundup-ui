@@ -26,7 +26,6 @@
     "tailwind-merge": "catalog:"
   },
   "devDependencies": {
-    "@roundup/config": "workspace:*",
     "@testing-library/react-native": "catalog:",
     "@types/jest": "catalog:",
     "@types/react": "catalog:",

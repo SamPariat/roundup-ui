@@ -33,7 +33,6 @@
     "react-native-worklets": "catalog:"
   },
   "devDependencies": {
-    "@roundup/config": "workspace:*",
     "@tailwindcss/postcss": "catalog:",
     "@testing-library/react-native": "catalog:",
     "@types/jest": "catalog:",

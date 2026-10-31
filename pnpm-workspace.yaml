@@ -10,7 +10,7 @@ allowBuilds:
   unrs-resolver: true
 
 # eslint-plugin-react-native-a11y declares eslint ^3 to ^8, but it runs on ESLint 9 (every one of its
-# rules loads and reports; shared/config/eslint.ts turns them all on). ESLint 9 rather than 10 because
+# rules loads and reports; eslint.config.ts turns them all on). ESLint 9 rather than 10 because
 # this plugin and eslint-plugin-react-native stop there. Nothing else is relaxed.
 peerDependencyRules:
   allowedVersions:

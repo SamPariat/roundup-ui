@@ -1,6 +1,6 @@
 import type { KnipConfig } from 'knip'
 
-const config: KnipConfig = {
+export default {
   // An unreferenced file is dead weight in every workspace, so it fails the run (this is knip's
   // default, written out so nobody downgrades it). Each workspace lists its sources in `project`.
   rules: { files: 'error' },
@@ -10,8 +10,15 @@ const config: KnipConfig = {
   metro: false,
   workspaces: {
     '.': {
+      // The jest configs name the SVG transformer as a string.
+      entry: ['jest-svg-transform.ts'],
       // The pre-commit hook calls lint-staged through pnpm exec.
-      ignoreDependencies: ['lint-staged'],
+      ignoreDependencies: [
+        'lint-staged',
+        // Named as strings: jest-svg-transform.ts and the jest configs load these presets.
+        'babel-preset-expo',
+        'jest-expo',
+      ],
       // shellcheck is a system tool (brew or apt), not an npm package.
       ignoreBinaries: ['shellcheck'],
     },
@@ -41,15 +48,5 @@ const config: KnipConfig = {
       entry: ['src/**/*.native.ts'],
       project: ['src/**/*.{ts,tsx}', 'tests/**/*.{ts,tsx}', '*.ts'],
     },
-    'shared/config': {
-      entry: ['*.ts'],
-      project: ['*.{ts,css}'],
-      // jest-expo is named as a Jest preset string, babel-preset-expo as a Babel preset string, and
-      // the Tailwind Prettier plugin is resolved by path with import.meta.resolve, so none is a
-      // visible import.
-      ignoreDependencies: ['babel-preset-expo', 'jest-expo', 'prettier-plugin-tailwindcss'],
-    },
   },
-}
-
-export default config
+} satisfies KnipConfig

@@ -2,7 +2,7 @@ import type { UserConfig } from '@commitlint/types'
 
 import { RuleConfigSeverity } from '@commitlint/types'
 
-const config: UserConfig = {
+export default {
   extends: ['@commitlint/config-conventional'],
   rules: {
     // The set of change types this repo uses.
@@ -21,6 +21,4 @@ const config: UserConfig = {
     // Subjects read as lowercase phrases.
     'subject-case': [RuleConfigSeverity.Error, 'always', 'lower-case'],
   },
-}
-
-export default config
+} satisfies UserConfig

@@ -96,13 +96,16 @@ After any dependency change run `make doctor` and fix what it reports with `npx 
 roundup-ui/
 ├── apps/
 │   └── roundup/        # @roundup/roundup: Expo SDK 58, Expo Router (routes in src/app = web URLs)
+│                       #   src/components (app-only components), src/hooks (useTabItems, useLayout)
 ├── shared/
-│   ├── config/         # @roundup/config: ESLint, Prettier, TypeScript and Jest settings, the SVG Jest transform
 │   ├── i18n/           # @roundup/i18n: i18next + react-i18next, typed English resources, useT
 │   └── ui/             # @roundup/ui: the design-system components, ThemeProvider and useTheme
 ├── assets/
 │   ├── svg/            # every SVG: brand/ (README banner, divider), logo/, illustrations/, icons/
 │   └── brand/          # the Onest font licence and notes on the logo files
+├── eslint.config.ts, prettier.config.ts, knip.ts, commitlint.config.ts, lint-staged.config.ts
+│                       # each tool's settings, self-contained in its own file
+├── tsconfig.base.json, jest-svg-transform.ts, types.d.ts  # shared TypeScript base, SVG Jest transform, plugin typings
 ├── sonar-project.properties  # SonarCloud settings, for when a project is connected
 ├── .githooks/          # pre-commit (lint-staged, tsc, expo-doctor) and commit-msg (commitlint)
 ├── .github/            # CI workflow and the pull request template
@@ -113,9 +116,9 @@ roundup-ui/
 └── Makefile            # the front door
 ```
 
-Every package has the same shape: `src/` for code and `tests/` beside it, mirroring `src/`'s paths (`shared/ui/src/components/Button.tsx` is tested by `shared/ui/tests/components/Button.test.tsx`). Test helpers live in `tests/helpers`. In `shared/ui`, each component is one flat file in `src/components`; helpers go in `src/lib` and the theme in `src/theme`.
+Every package has the same shape: `src/` for code and `tests/` beside it, mirroring `src/`'s paths (`shared/ui/src/components/Button.tsx` is tested by `shared/ui/tests/components/Button.test.tsx`). Test helpers live in `tests/helpers`. The tests folder mirrors `src/` in the app too (`tests/components`, `tests/hooks`). Hook files are named after the hook in camel case (`useTabItems.ts`). In `shared/ui`, each component is one flat file in `src/components`; helpers go in `src/lib` and the theme in `src/theme`.
 
-Imports run one way: `app → ui → i18n`. `i18n` imports nothing internal, and `shared/*` never imports from `apps/*`; ESLint's boundaries rule enforces it.
+Imports run one way: `app → ui → i18n`; inside the app, routes may import components and hooks, components may import hooks and `@roundup/ui`, and hooks import no components. `i18n` imports nothing internal, and `shared/*` never imports from `apps/*`; ESLint's boundaries rule enforces it.
 
 ### 🌍 Strings and i18n
 
@@ -123,7 +126,7 @@ Every user-visible string, including accessibility labels and hints, is a key in
 
 ### 🖼️ SVG assets
 
-SVG files live in `assets/svg` and are imported as components: `import MarkDark from '…/assets/svg/logo/mark-dark.svg'`. Metro compiles them with `react-native-svg-transformer` (configured in `apps/roundup/metro.config.ts`), Jest with a matching SVGR transform (`shared/config/jest-svg-transform.ts`), and `shared/ui/src/svg.d.ts` types the import. Icons and the `mono` logo files use `currentColor`, so a `text-*` class (`text-accent`) tints them; shapes drawn in code use `fill-*` and `stroke-*` classes. `lib/svg.ts` lets an SVG component take a className (on native, `lib/svg.native.ts` maps it to react-native-svg's `color`, `fill` and `stroke` props). The few props that cannot take a class (a placeholder colour, the glass tint, the navigator background) read a role through `useRoleColor`. The `dark` and `light` logo files carry the `logo-*` role colours as literals, and `Logo.test.tsx` fails if they drift from `theme.css`. The logo is a mark, a wordmark of outlined paths (no font), or a lockup of both. `apps/roundup/public/favicon.svg` is generated from `logo/mark-dark.svg` by `scripts/copy-favicon.sh` before every dev, web and export run; it is git-ignored.
+SVG files live in `assets/svg` and are imported as components: `import MarkDark from '…/assets/svg/logo/mark-dark.svg'`. Metro compiles them with `react-native-svg-transformer` (configured in `apps/roundup/metro.config.ts`), Jest with a matching SVGR transform (`jest-svg-transform.ts` at the root), and `shared/ui/src/svg.d.ts` types the import. Icons and the `mono` logo files use `currentColor`, so a `text-*` class (`text-accent`) tints them; shapes drawn in code use `fill-*` and `stroke-*` classes. `lib/svg.ts` lets an SVG component take a className (on native, `lib/svg.native.ts` maps it to react-native-svg's `color`, `fill` and `stroke` props). The few props that cannot take a class (a placeholder colour, the glass tint, the navigator background) read a role through `useRoleColor`. The `dark` and `light` logo files carry the `logo-*` role colours as literals, and `Logo.test.tsx` fails if they drift from `theme.css`. The logo is a mark, a wordmark of outlined paths (no font), or a lockup of both. `apps/roundup/public/favicon.svg` is generated from `logo/mark-dark.svg` by `scripts/copy-favicon.sh` before every dev, web and export run; it is git-ignored.
 
 ### 🎨 Tailwind classes
 
@@ -133,7 +136,7 @@ Components use Tailwind's default scale: `h-12`, `size-10`, `w-3/5`, `rounded-xl
 
 ## 📏 Rules the tooling enforces
 
-Each rule in `shared/config/eslint.ts` carries a comment saying why it is on.
+Each rule in `eslint.config.ts` carries a comment saying why it is on.
 
 - **Strict types**: `strict`, `noUncheckedIndexedAccess`, `exactOptionalPropertyTypes`, and the typescript-eslint strict presets.
 - **No semicolons**, 100 columns, single quotes, trailing commas (Prettier).

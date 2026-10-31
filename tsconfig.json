@@ -1,5 +1,5 @@
 {
-  "extends": "@roundup/config/tsconfig.base.json",
+  "extends": "./tsconfig.base.json",
   "compilerOptions": { "types": ["node"] },
-  "include": ["*.ts", "shared/config/**/*.ts"]
+  "include": ["*.ts"]
 }
