@@ -770,7 +770,7 @@ importers:
         version: 58.0.29(c18a3731bdeb2d5bc78242331d697f99)
       nativewind:
         specifier: 'catalog:'
-        version: 5.0.0-rc.0(react-native-css@3.1.0-rc.0(@expo/metro-config@58.0.20(expo@58.0.22)(supports-color@8.1.1)(typescript@6.0.3))(lightningcss@1.32.0)(react-native@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/metro-config@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(supports-color@8.1.1))(@types/react@19.3.0)(react@19.3.0)(supports-color@8.1.1))(react@19.3.0)(supports-color@8.1.1))(tailwindcss@4.3.3)
+        version: 5.0.0-rc.0(react-native-css@3.1.0-rc.0(@expo/metro-config@58.0.20(expo@58.0.22)(supports-color@8.1.1)(typescript@6.0.3))(lightningcss@1.30.1)(react-native@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/metro-config@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(supports-color@8.1.1))(@types/react@19.3.0)(react@19.3.0)(supports-color@8.1.1))(react@19.3.0)(supports-color@8.1.1))(tailwindcss@4.3.3)
       react:
         specifier: 'catalog:'
         version: 19.3.0
@@ -779,7 +779,7 @@ importers:
         version: 0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/metro-config@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(supports-color@8.1.1))(@types/react@19.3.0)(react@19.3.0)(supports-color@8.1.1)
       react-native-css:
         specifier: 'catalog:'
-        version: 3.1.0-rc.0(@expo/metro-config@58.0.20(expo@58.0.22)(supports-color@8.1.1)(typescript@6.0.3))(lightningcss@1.32.0)(react-native@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/metro-config@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(supports-color@8.1.1))(@types/react@19.3.0)(react@19.3.0)(supports-color@8.1.1))(react@19.3.0)(supports-color@8.1.1)
+        version: 3.1.0-rc.0(@expo/metro-config@58.0.20(expo@58.0.22)(supports-color@8.1.1)(typescript@6.0.3))(lightningcss@1.30.1)(react-native@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/metro-config@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(supports-color@8.1.1))(@types/react@19.3.0)(react@19.3.0)(supports-color@8.1.1))(react@19.3.0)(supports-color@8.1.1)
       react-native-safe-area-context:
         specifier: 'catalog:'
         version: 5.10.1(react-native@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/metro-config@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(supports-color@8.1.1))(@types/react@19.3.0)(react@19.3.0)(supports-color@8.1.1))(react@19.3.0)
@@ -805,6 +805,9 @@ importers:
       jest-expo:
         specifier: 'catalog:'
         version: 58.0.13(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/jest-preset@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(react@19.3.0)(supports-color@8.1.1))(@types/react@19.3.0)(expo@58.0.22)(jest@30.5.2(@types/node@26.6.6)(supports-color@8.1.1))(react-native@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/metro-config@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(supports-color@8.1.1))(@types/react@19.3.0)(react@19.3.0)(supports-color@8.1.1))(react@19.3.0)(supports-color@8.1.1)
+      lightningcss:
+        specifier: 'catalog:'
+        version: 1.30.1
       test-renderer:
         specifier: 'catalog:'
         version: 1.3.1(@types/react@19.3.0)(react@19.3.0)
@@ -13066,12 +13069,6 @@ snapshots:
       tailwindcss: 4.3.3
       tailwindcss-safe-area: 1.3.0(tailwindcss@4.3.3)
 
-  nativewind@5.0.0-rc.0(react-native-css@3.1.0-rc.0(@expo/metro-config@58.0.20(expo@58.0.22)(supports-color@8.1.1)(typescript@6.0.3))(lightningcss@1.32.0)(react-native@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/metro-config@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(supports-color@8.1.1))(@types/react@19.3.0)(react@19.3.0)(supports-color@8.1.1))(react@19.3.0)(supports-color@8.1.1))(tailwindcss@4.3.3):
-    dependencies:
-      react-native-css: 3.1.0-rc.0(@expo/metro-config@58.0.20(expo@58.0.22)(supports-color@8.1.1)(typescript@6.0.3))(lightningcss@1.32.0)(react-native@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/metro-config@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(supports-color@8.1.1))(@types/react@19.3.0)(react@19.3.0)(supports-color@8.1.1))(react@19.3.0)(supports-color@8.1.1)
-      tailwindcss: 4.3.3
-      tailwindcss-safe-area: 1.3.0(tailwindcss@4.3.3)
-
   natural-compare@1.4.0: {}
 
   natural-orderby@5.0.0: {}
@@ -13495,20 +13492,6 @@ snapshots:
       comment-json: 4.6.2
       debug: 4.4.3(supports-color@8.1.1)
       lightningcss: 1.30.1
-      react: 19.3.0
-      react-native: 0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/metro-config@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(supports-color@8.1.1))(@types/react@19.3.0)(react@19.3.0)(supports-color@8.1.1)
-    transitivePeerDependencies:
-      - supports-color
-
-  react-native-css@3.1.0-rc.0(@expo/metro-config@58.0.20(expo@58.0.22)(supports-color@8.1.1)(typescript@6.0.3))(lightningcss@1.32.0)(react-native@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/metro-config@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(supports-color@8.1.1))(@types/react@19.3.0)(react@19.3.0)(supports-color@8.1.1))(react@19.3.0)(supports-color@8.1.1):
-    dependencies:
-      '@expo/metro-config': 58.0.20(expo@58.0.22)(supports-color@8.1.1)(typescript@6.0.3)
-      '@types/debug': 4.1.13
-      babel-plugin-react-compiler: 19.1.0-rc.3
-      colorjs.io: 0.7.0
-      comment-json: 4.6.2
-      debug: 4.4.3(supports-color@8.1.1)
-      lightningcss: 1.32.0
       react: 19.3.0
       react-native: 0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/metro-config@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(supports-color@8.1.1))(@types/react@19.3.0)(react@19.3.0)(supports-color@8.1.1)
     transitivePeerDependencies:
