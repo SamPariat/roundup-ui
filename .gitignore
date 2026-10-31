@@ -37,7 +37,8 @@ Thumbs.db
 *.swo
 
 # ── IDE ──────────────────────────────────────────────────────
-# .vscode/ is committed on purpose: it holds the shared ESLint and Prettier setup.
+# Editor settings are personal and stay local.
+.vscode/
 .idea/
 *.iml
 
