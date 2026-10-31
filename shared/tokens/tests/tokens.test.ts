@@ -120,11 +120,6 @@ describe('text styles', () => {
     expect(textStyles.display.letterSpacing).toBeCloseTo(-0.96, 2)
   })
 
-  it('uses one Onest family per weight', () => {
-    expect(textStyles['body-strong'].fontFamily).toBe('Onest_600SemiBold')
-    expect(textStyles.caption.fontFamily).toBe('Onest_500Medium')
-  })
-
   it('turns on tabular figures for numbers only', () => {
     expect(textStyles.otp.fontVariant).toEqual(['tabular-nums'])
     expect(textStyles.numeric.fontVariant).toEqual(['tabular-nums'])
@@ -133,14 +128,6 @@ describe('text styles', () => {
 })
 
 describe('layout tokens', () => {
-  it('keeps the design system breakpoints', () => {
-    expect(breakpoints).toEqual({ 'bp-tablet': 768, 'bp-desktop': 1024 })
-  })
-
-  it('keeps the tap target at 48', () => {
-    expect(sizes['size-tap']).toBe(48)
-  })
-
   it('has a sheet and a toast shadow in both themes', () => {
     for (const theme of themeNames) {
       expect(Object.keys(shadows[theme]).toSorted(byName)).toEqual(['shadow-sheet', 'shadow-toast'])

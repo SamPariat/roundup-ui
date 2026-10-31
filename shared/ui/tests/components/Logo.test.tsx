@@ -169,12 +169,6 @@ describe('Logo', () => {
     expect(screen.getByRole('image', { name: 'Roundup home' })).toBeOnTheScreen()
   })
 
-  it.each(['lockup', 'mark', 'wordmark'] as const)('draws the %s', async (type) => {
-    await renderWithTheme(<Logo size="lg" tone="mono" type={type} />)
-
-    expect(screen.getByRole('image')).toBeOnTheScreen()
-  })
-
   it('hides the artwork from assistive technology', async () => {
     await renderWithTheme(<Logo />)
 

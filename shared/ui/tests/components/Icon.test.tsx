@@ -17,9 +17,13 @@ describe('Icon', () => {
     expect(screen.queryByRole('image')).not.toBeOnTheScreen()
   })
 
-  it.each(Object.keys(ICONS) as (keyof typeof ICONS)[])('draws %s', async (name) => {
-    await renderWithTheme(<Icon label={name} name={name} />)
+  it('draws every icon in the set', async () => {
+    const names = Object.keys(ICONS) as (keyof typeof ICONS)[]
 
-    expect(screen.getByRole('image', { name })).toBeOnTheScreen()
+    for (const name of names) {
+      await renderWithTheme(<Icon label={name} name={name} />)
+
+      expect(screen.getByRole('image', { name })).toBeOnTheScreen()
+    }
   })
 })

@@ -21,8 +21,7 @@
     "knip": "APP_ENV=beta knip",
     "syncpack": "syncpack lint",
     "files": "node scripts/check-files.ts",
-    "doctor": "pnpm --filter @roundup/app run doctor",
-    "commitlint": "commitlint --from origin/main --to HEAD"
+    "doctor": "pnpm --filter @roundup/app run doctor"
   },
   "devDependencies": {
     "@commitlint/cli": "catalog:",

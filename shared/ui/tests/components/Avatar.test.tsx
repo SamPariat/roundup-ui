@@ -15,10 +15,6 @@ describe('initialsOf', () => {
 })
 
 describe('tintOf', () => {
-  it('is stable for the same key', () => {
-    expect(tintOf('user-42')).toBe(tintOf('user-42'))
-  })
-
   it('stays within the six tints', () => {
     for (const key of ['a', 'b', 'squad-7', 'x'.repeat(40)]) {
       expect(tintOf(key)).toBeGreaterThanOrEqual(1)

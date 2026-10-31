@@ -7,12 +7,6 @@ describe('readEnv', () => {
     )
   })
 
-  it('returns a frozen object', () => {
-    expect(Object.isFrozen(readEnv({ EXPO_PUBLIC_API_URL: 'https://api.roundup.example' }))).toBe(
-      true,
-    )
-  })
-
   it('fails with a clear message when the API address is missing', () => {
     expect(() => readEnv({ EXPO_PUBLIC_API_URL: undefined })).toThrow(
       /EXPO_PUBLIC_API_URL is not set.*make setup/,

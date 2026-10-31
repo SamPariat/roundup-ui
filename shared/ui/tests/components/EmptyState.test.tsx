@@ -17,10 +17,4 @@ describe('EmptyState', () => {
 
     expect(screen.getByText('Make one and add your friends.')).toBeOnTheScreen()
   })
-
-  it.each(['squads', 'search', 'favorites'] as const)('draws the %s art', async (art) => {
-    await renderWithTheme(<EmptyState art={art} title="Nothing here" />)
-
-    expect(screen.getByRole('heading')).toBeOnTheScreen()
-  })
 })

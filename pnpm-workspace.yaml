@@ -17,8 +17,6 @@ peerDependencyRules:
     eslint-plugin-react-native-a11y>eslint: '9'
 
 # Every dependency version lives here; packages say `catalog:`. syncpack enforces it.
-
-# Every dependency version lives here; packages say `catalog:`. syncpack enforces it.
 catalog:
   '@commitlint/cli': '^21.2.4'
   '@commitlint/config-conventional': '^21.2.4'

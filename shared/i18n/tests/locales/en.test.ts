@@ -60,14 +60,20 @@ describe('English resources', () => {
     expect(usedKeys.length).toBeGreaterThan(10)
   })
 
-  it.each(staticKeys)('defines %s', (key) => {
-    expect(i18n.exists(key, { count: 2 })).toBe(true)
+  it('defines every key the sources use', () => {
+    const missing = staticKeys.filter((key) => !i18n.exists(key, { count: 2 }))
+
+    expect(missing).toEqual([])
   })
 
   // A dynamic key such as nav.tabs.${id}: its parent must be a group with children.
-  it.each(dynamicKeys)('defines the group behind %s', (key) => {
-    const parent = key.slice(0, key.indexOf('${') - 1)
+  it('defines the group behind every dynamic key', () => {
+    const missing = dynamicKeys.filter((key) => {
+      const parent = key.slice(0, key.indexOf('${') - 1)
 
-    expect(leaves(i18n.getResource('en', 'translation', parent)).length).toBeGreaterThan(0)
+      return leaves(i18n.getResource('en', 'translation', parent)).length === 0
+    })
+
+    expect(missing).toEqual([])
   })
 })

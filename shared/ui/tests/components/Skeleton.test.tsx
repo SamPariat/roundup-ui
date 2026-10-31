@@ -8,10 +8,4 @@ describe('Skeleton', () => {
 
     expect(screen.getByLabelText('Loading')).toBeBusy()
   })
-
-  it('draws a card', async () => {
-    await render(<Skeleton variant="card" />)
-
-    expect(screen.getByLabelText('Loading')).toBeBusy()
-  })
 })

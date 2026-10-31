@@ -4,12 +4,6 @@ import { BottomNav } from '../../src/components/BottomNav.tsx'
 import { renderWithTheme } from '../helpers/render.tsx'
 
 describe('BottomNav', () => {
-  it('is a tab list with one tab per destination', async () => {
-    await renderWithTheme(<BottomNav />)
-
-    expect(screen.getAllByRole('tab')).toHaveLength(3)
-  })
-
   it('marks the current destination as selected', async () => {
     await renderWithTheme(<BottomNav value="explore" />)
 

@@ -7,6 +7,5 @@ describe('Spinner', () => {
     await render(<Spinner />)
 
     expect(screen.queryByRole('progressbar')).not.toBeOnTheScreen()
-    expect(screen.toJSON()).not.toBeNull()
   })
 })

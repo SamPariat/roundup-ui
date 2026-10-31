@@ -112,7 +112,7 @@ roundup-ui/
 └── Makefile            # the front door
 ```
 
-Every package has the same shape: `src/` for code and `tests/` beside it, mirroring `src/`'s paths (`shared/ui/src/components/Button.tsx` is tested by `shared/ui/tests/components/Button.test.tsx`). Test helpers and fixtures live in `tests/helpers` and `tests/fixtures`. In `shared/ui`, each component is one flat file in `src/components`; helpers go in `src/lib` and the theme in `src/theme`.
+Every package has the same shape: `src/` for code and `tests/` beside it, mirroring `src/`'s paths (`shared/ui/src/components/Button.tsx` is tested by `shared/ui/tests/components/Button.test.tsx`). Test helpers live in `tests/helpers`. In `shared/ui`, each component is one flat file in `src/components`; helpers go in `src/lib` and the theme in `src/theme`.
 
 Imports run one way: `app → ui → i18n` and `tokens`. `i18n` and `tokens` import nothing internal, and `shared/*` never imports from `apps/*`; ESLint's boundaries rule enforces it.
 

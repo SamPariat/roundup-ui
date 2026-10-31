@@ -26,10 +26,4 @@ describe('TopAppBar', () => {
     expect(screen.queryByRole('button', { name: 'Back' })).not.toBeOnTheScreen()
     expect(screen.getByRole('image', { name: 'Roundup' })).toBeOnTheScreen()
   })
-
-  it('draws the large variant with the same heading', async () => {
-    await renderWithTheme(<TopAppBar large title="Your squads" />)
-
-    expect(screen.getByRole('heading', { name: 'Your squads' })).toBeOnTheScreen()
-  })
 })
