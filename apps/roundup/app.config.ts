@@ -22,7 +22,18 @@ export default {
     ['expo-router', { root: './src/app' }],
     'expo-font',
     'expo-localization',
-    'expo-splash-screen',
+    [
+      'expo-splash-screen',
+      {
+        // The system appearance picks the pair: Latte (the warm light theme) by default and Mocha
+        // when the device is dark, the same split the app's theme.css makes. The PNGs come from
+        // assets/svg/logo/mark-*.svg through scripts/make-splash.sh.
+        image: './assets/splash/mark-light.png',
+        imageWidth: 96,
+        backgroundColor: '#f2e9e1',
+        dark: { image: './assets/splash/mark-dark.png', backgroundColor: '#1e1e2e' },
+      },
+    ],
     'expo-system-ui',
   ],
   experiments: { typedRoutes: true, reactCompiler: true },

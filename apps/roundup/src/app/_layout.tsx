@@ -9,9 +9,8 @@ import {
 } from '@expo-google-fonts/onest'
 import { Stack } from 'expo-router'
 import Head from 'expo-router/head'
-import { hideAsync, preventAutoHideAsync } from 'expo-splash-screen'
+import { preventAutoHideAsync } from 'expo-splash-screen'
 import { StatusBar } from 'expo-status-bar'
-import { useEffect } from 'react'
 import { Platform, View } from 'react-native'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 
@@ -19,15 +18,26 @@ import '../../global.css'
 
 import { ThemeProvider, useRoleColor, useTheme } from '@roundup/ui'
 
+import { useSplash } from '../hooks/useSplash.ts'
+
 void preventAutoHideAsync()
+
+/** Props for Themed. */
+interface ThemedProps {
+  /** Whether the fonts are loaded (or failed to), which the splash screen also waits for. */
+  fontsReady: boolean
+}
 
 /**
  * The part of the root layout that needs the theme: page background, status bar style and the stack.
+ * It also lifts the splash screen once the fonts and the saved theme are both ready.
  * @returns The themed root view.
  */
-const Themed = (): ReactElement => {
-  const { name } = useTheme()
+const Themed = ({ fontsReady }: ThemedProps): ReactElement => {
+  const { loaded, name } = useTheme()
   const background = useRoleColor('bg')
+
+  useSplash(fontsReady && loaded)
 
   return (
     <View className="flex-1 bg-bg">
@@ -45,7 +55,7 @@ const Themed = (): ReactElement => {
 }
 
 /**
- * The root layout. On native it holds the splash screen until the fonts are ready; on web it renders at once so the static export has content.
+ * The root layout. On native the splash screen stays up until the fonts and the saved theme are ready; on web it renders at once so the static export has content, and the splash drawn by +html.tsx is lifted at the same point.
  * @returns The providers around the stack, or null while fonts load on native.
  */
 export default function RootLayout(): null | ReactElement {
@@ -58,10 +68,6 @@ export default function RootLayout(): null | ReactElement {
 
   const ready = loaded || error !== null
 
-  useEffect(() => {
-    if (ready) void hideAsync()
-  }, [ready])
-
   // Native waits for the fonts behind the splash screen. Web renders at once so the static
   // export has real content, and the fonts swap in when they arrive.
   if (!ready && Platform.OS !== 'web') return null
@@ -69,7 +75,7 @@ export default function RootLayout(): null | ReactElement {
   return (
     <SafeAreaProvider>
       <ThemeProvider>
-        <Themed />
+        <Themed fontsReady={ready} />
       </ThemeProvider>
     </SafeAreaProvider>
   )

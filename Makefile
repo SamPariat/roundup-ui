@@ -15,6 +15,7 @@ export APP_ENV
 	fmt-check \
 	typecheck \
 	test \
+	splash \
 	knip \
 	syncpack \
 	files \
@@ -73,6 +74,10 @@ typecheck:
 # Jest in every package.
 test:
 	pnpm test
+
+# Rasterises assets/svg/logo/mark-*.svg into the PNGs the native splash screen needs. Commit the result.
+splash:
+	./scripts/make-splash.sh
 
 # Unused files, exports and dependencies.
 knip:

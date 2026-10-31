@@ -52,6 +52,14 @@ describe('ThemeProvider', () => {
     })
   })
 
+  it('reports loaded once the saved preference has been read', async () => {
+    const { result } = await renderHook(() => useTheme(), { wrapper })
+
+    await waitFor(() => {
+      expect(result.current.loaded).toBe(true)
+    })
+  })
+
   it('restores the saved preference on start', async () => {
     await AsyncStorage.setItem(THEME_STORAGE_KEY, 'dark')
 

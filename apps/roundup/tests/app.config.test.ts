@@ -1,3 +1,6 @@
+import { existsSync } from 'node:fs'
+import path from 'node:path'
+
 import type defaultConfig from '../app.config.ts'
 
 /** The shape of the config object app.config.ts exports. */
@@ -42,5 +45,54 @@ describe('app.config', () => {
     const config = loadConfig('beta')
 
     expect(config.experiments.typedRoutes).toBe(true)
+  })
+})
+
+/** The dark variant of the splash options. */
+interface DarkSplash {
+  /** The background colour. */
+  backgroundColor: string
+  /** The image path. */
+  image: string
+}
+
+/** The options of the expo-splash-screen plugin entry. */
+interface SplashOptions {
+  /** The light background. */
+  backgroundColor: string
+  /** The dark variant. */
+  dark: DarkSplash
+  /** The light image. */
+  image: string
+}
+
+/**
+ * Finds the splash plugin options.
+ * @returns The options given to expo-splash-screen.
+ */
+const splashOptions = (): SplashOptions => {
+  const entry = loadConfig('beta').plugins.find(
+    (plugin) => Array.isArray(plugin) && plugin[0] === 'expo-splash-screen',
+  )
+
+  return (entry as [string, SplashOptions])[1]
+}
+
+describe('app.config splash screen', () => {
+  it('uses the Latte background with the light mark and Mocha with the dark mark', () => {
+    const options = splashOptions()
+
+    expect(options.backgroundColor).toBe('#f2e9e1')
+    expect(options.dark.backgroundColor).toBe('#1e1e2e')
+    expect(options.image).toContain('mark-light')
+    expect(options.dark.image).toContain('mark-dark')
+  })
+
+  it('points at PNG files that exist', () => {
+    const options = splashOptions()
+
+    for (const image of [options.image, options.dark.image]) {
+      expect(existsSync(path.resolve(__dirname, '..', image))).toBe(true)
+    }
   })
 })

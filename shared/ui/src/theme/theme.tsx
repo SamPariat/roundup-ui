@@ -18,6 +18,8 @@ export interface Theme {
   name: ThemeName
   /** The stored choice, which may be "system". */
   preference: ThemePreference
+  /** False until the saved choice has been read (or storage failed), so a splash can wait for it. */
+  loaded: boolean
   /** Saves a new choice and applies it at once. */
   setPreference: (preference: ThemePreference) => void
 }
@@ -65,6 +67,7 @@ interface ThemeProviderProps {
 export const ThemeProvider = ({ children }: ThemeProviderProps): ReactElement => {
   const device = useColorScheme()
   const [preference, setPreference] = useState<ThemePreference>('system')
+  const [loaded, setLoaded] = useState(false)
 
   useEffect(() => {
     let active = true
@@ -75,6 +78,9 @@ export const ThemeProvider = ({ children }: ThemeProviderProps): ReactElement =>
       })
       .catch(() => {
         // Storage can be unavailable (private windows); the device default still works.
+      })
+      .finally(() => {
+        if (active) setLoaded(true)
       })
 
     return () => {
@@ -118,9 +124,10 @@ export const ThemeProvider = ({ children }: ThemeProviderProps): ReactElement =>
     () => ({
       name,
       preference,
+      loaded,
       setPreference: choosePreference,
     }),
-    [name, preference, choosePreference],
+    [name, preference, loaded, choosePreference],
   )
 
   return <ThemeContext value={value}>{children}</ThemeContext>
