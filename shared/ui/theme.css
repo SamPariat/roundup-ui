@@ -1,0 +1,370 @@
+/* The Roundup theme: the one Tailwind stylesheet for the whole app, written by hand.
+ *
+ * Colours are roles (bg-accent, text-fg-muted), never palette steps: only the names below exist, so
+ * bg-ctp-mauve and bg-[#fff] cannot be written. Mocha (Catppuccin dark) is the default and Latte
+ * (the warm light theme) replaces it:
+ *   - on native and on the web by default, through prefers-color-scheme. The app's ThemeProvider
+ *     calls Appearance.setColorScheme on native when someone picks a theme by hand;
+ *   - on the web, a manual choice also sets data-theme on <html>, which wins over the media query.
+ * Spacing, sizing, radius, text, leading and breakpoint scales are Tailwind's own and are
+ * deliberately not reset (md is 768, lg is 1024). Only the colour palette is replaced.
+ *
+ * Every colour is defined three times (@theme, then the Mocha and Latte blocks below); keep them in
+ * step when a role changes. The values were chosen for WCAG AA contrast (4.5:1) of fg, fg-muted and
+ * on-accent against their backgrounds in both themes; recheck that when changing one. */
+
+@theme {
+  /* Remove Tailwind's default palette. */
+  --color-*: initial;
+  --color-transparent: transparent;
+  --color-*: initial;
+  --color-transparent: transparent;
+  --color-bg: #1e1e2e;
+  --color-bg-raised: #313244;
+  --color-bg-sunken: #181825;
+  --color-bg-hover: #45475a;
+  --color-border: #45475a;
+  --color-border-strong: #7f849c;
+  --color-fg: #cdd6f4;
+  --color-fg-muted: #a6adc8;
+  --color-fg-subtle: #9399b2;
+  --color-accent: #cba6f7;
+  --color-on-accent: #11111b;
+  --color-highlight: #fab387;
+  --color-on-highlight: #11111b;
+  --color-success: #a6e3a1;
+  --color-warning: #f9e2af;
+  --color-danger: #f38ba8;
+  --color-info: #89b4fa;
+  --color-focus-ring: #b4befe;
+  --color-logo-stem: #cba6f7;
+  --color-logo-bowl: #fab387;
+  --color-logo-leg: #b4befe;
+  --color-accent-soft: #cba6f72e;
+  --color-highlight-soft: #fab3872e;
+  --color-success-soft: #a6e3a129;
+  --color-warning-soft: #f9e2af29;
+  --color-danger-soft: #f38ba829;
+  --color-info-soft: #89b4fa29;
+  --color-avatar-1: #cba6f74c;
+  --color-avatar-2: #fab3874c;
+  --color-avatar-3: #a6e3a14c;
+  --color-avatar-4: #94e2d54c;
+  --color-avatar-5: #89b4fa4c;
+  --color-avatar-6: #f5c2e74c;
+  --color-scrim: #11111bb8;
+
+  /* The 1200px content column has no default max-w-* class. */
+  --container-content: 1200px;
+
+  /* Reduced motion keeps the spinner turning, only slower. */
+  --animate-spin-slow: spin 2.4s linear infinite;
+}
+
+/* Mocha, the default and the theme the static HTML is built with. */
+:root {
+  /* Surfaces: the page, raised cards and sheets, sunken wells, hover fills. */
+  --color-bg: #1e1e2e;
+  --color-bg-raised: #313244;
+  --color-bg-sunken: #181825;
+  --color-bg-hover: #45475a;
+  /* Borders and dividers. */
+  --color-border: #45475a;
+  --color-border-strong: #7f849c;
+  /* Text. fg-subtle is the weakest step that still passes contrast on bg. */
+  --color-fg: #cdd6f4;
+  --color-fg-muted: #a6adc8;
+  --color-fg-subtle: #9399b2;
+  /* Mauve (Mocha) or the Latte purple: primary actions and links. */
+  --color-accent: #cba6f7;
+  --color-on-accent: #11111b;
+  /* The orange of the logo bowl: highlights and prices. */
+  --color-highlight: #fab387;
+  --color-on-highlight: #11111b;
+  /* Status colours. */
+  --color-success: #a6e3a1;
+  --color-warning: #f9e2af;
+  --color-danger: #f38ba8;
+  --color-info: #89b4fa;
+  /* Keyboard focus ring. */
+  --color-focus-ring: #b4befe;
+  /* Logo colours. The dark and light logo SVGs carry these as literals; Logo.test.tsx checks they match. */
+  --color-logo-stem: #cba6f7;
+  --color-logo-bowl: #fab387;
+  --color-logo-leg: #b4befe;
+  /* Soft tints: a role at low opacity, for chips, badges and illustrations. */
+  --color-accent-soft: #cba6f72e;
+  --color-highlight-soft: #fab3872e;
+  --color-success-soft: #a6e3a129;
+  --color-warning-soft: #f9e2af29;
+  --color-danger-soft: #f38ba829;
+  --color-info-soft: #89b4fa29;
+  /* Avatar backgrounds, six hues at low opacity. */
+  --color-avatar-1: #cba6f74c;
+  --color-avatar-2: #fab3874c;
+  --color-avatar-3: #a6e3a14c;
+  --color-avatar-4: #94e2d54c;
+  --color-avatar-5: #89b4fa4c;
+  --color-avatar-6: #f5c2e74c;
+  /* Modal backdrop. */
+  --color-scrim: #11111bb8;
+}
+
+/* Latte when the device is in light mode. */
+@media (prefers-color-scheme: light) {
+  :root {
+    --color-bg: #f2e9e1;
+    --color-bg-raised: #faf4ed;
+    --color-bg-sunken: #e9dfd5;
+    --color-bg-hover: #dfdad9;
+    --color-border: #dfdad9;
+    --color-border-strong: #7c7f93;
+    --color-fg: #4c4f69;
+    --color-fg-muted: #5c5f77;
+    --color-fg-subtle: #6c6f85;
+    --color-accent: #8839ef;
+    --color-on-accent: #faf4ed;
+    --color-highlight: #fe640b;
+    --color-on-highlight: #4c4f69;
+    --color-success: #40a02b;
+    --color-warning: #df8e1d;
+    --color-danger: #d20f39;
+    --color-info: #1e66f5;
+    --color-focus-ring: #1e66f5;
+    --color-logo-stem: #8839ef;
+    --color-logo-bowl: #fe640b;
+    --color-logo-leg: #7287fd;
+    --color-accent-soft: #8839ef1f;
+    --color-highlight-soft: #fe640b24;
+    --color-success-soft: #40a02b24;
+    --color-warning-soft: #df8e1d29;
+    --color-danger-soft: #d20f391f;
+    --color-info-soft: #1e66f51f;
+    --color-avatar-1: #8839ef38;
+    --color-avatar-2: #fe640b38;
+    --color-avatar-3: #40a02b38;
+    --color-avatar-4: #17929938;
+    --color-avatar-5: #1e66f538;
+    --color-avatar-6: #ea76cb38;
+    --color-scrim: #4c4f6966;
+  }
+}
+
+/* Web only: a manual choice in the theme switch overrides the device. */
+:root[data-theme='dark'] {
+  /* Surfaces: the page, raised cards and sheets, sunken wells, hover fills. */
+  --color-bg: #1e1e2e;
+  --color-bg-raised: #313244;
+  --color-bg-sunken: #181825;
+  --color-bg-hover: #45475a;
+  /* Borders and dividers. */
+  --color-border: #45475a;
+  --color-border-strong: #7f849c;
+  /* Text. fg-subtle is the weakest step that still passes contrast on bg. */
+  --color-fg: #cdd6f4;
+  --color-fg-muted: #a6adc8;
+  --color-fg-subtle: #9399b2;
+  /* Mauve (Mocha) or the Latte purple: primary actions and links. */
+  --color-accent: #cba6f7;
+  --color-on-accent: #11111b;
+  /* The orange of the logo bowl: highlights and prices. */
+  --color-highlight: #fab387;
+  --color-on-highlight: #11111b;
+  /* Status colours. */
+  --color-success: #a6e3a1;
+  --color-warning: #f9e2af;
+  --color-danger: #f38ba8;
+  --color-info: #89b4fa;
+  /* Keyboard focus ring. */
+  --color-focus-ring: #b4befe;
+  /* Logo colours. The dark and light logo SVGs carry these as literals; Logo.test.tsx checks they match. */
+  --color-logo-stem: #cba6f7;
+  --color-logo-bowl: #fab387;
+  --color-logo-leg: #b4befe;
+  /* Soft tints: a role at low opacity, for chips, badges and illustrations. */
+  --color-accent-soft: #cba6f72e;
+  --color-highlight-soft: #fab3872e;
+  --color-success-soft: #a6e3a129;
+  --color-warning-soft: #f9e2af29;
+  --color-danger-soft: #f38ba829;
+  --color-info-soft: #89b4fa29;
+  /* Avatar backgrounds, six hues at low opacity. */
+  --color-avatar-1: #cba6f74c;
+  --color-avatar-2: #fab3874c;
+  --color-avatar-3: #a6e3a14c;
+  --color-avatar-4: #94e2d54c;
+  --color-avatar-5: #89b4fa4c;
+  --color-avatar-6: #f5c2e74c;
+  /* Modal backdrop. */
+  --color-scrim: #11111bb8;
+}
+
+:root[data-theme='light'] {
+  /* Surfaces: the page, raised cards and sheets, sunken wells, hover fills. */
+  --color-bg: #f2e9e1;
+  --color-bg-raised: #faf4ed;
+  --color-bg-sunken: #e9dfd5;
+  --color-bg-hover: #dfdad9;
+  /* Borders and dividers. */
+  --color-border: #dfdad9;
+  --color-border-strong: #7c7f93;
+  /* Text. fg-subtle is the weakest step that still passes contrast on bg. */
+  --color-fg: #4c4f69;
+  --color-fg-muted: #5c5f77;
+  --color-fg-subtle: #6c6f85;
+  /* Mauve (Mocha) or the Latte purple: primary actions and links. */
+  --color-accent: #8839ef;
+  --color-on-accent: #faf4ed;
+  /* The orange of the logo bowl: highlights and prices. */
+  --color-highlight: #fe640b;
+  --color-on-highlight: #4c4f69;
+  /* Status colours. */
+  --color-success: #40a02b;
+  --color-warning: #df8e1d;
+  --color-danger: #d20f39;
+  --color-info: #1e66f5;
+  /* Keyboard focus ring. */
+  --color-focus-ring: #1e66f5;
+  /* Logo colours. The dark and light logo SVGs carry these as literals; Logo.test.tsx checks they match. */
+  --color-logo-stem: #8839ef;
+  --color-logo-bowl: #fe640b;
+  --color-logo-leg: #7287fd;
+  /* Soft tints: a role at low opacity, for chips, badges and illustrations. */
+  --color-accent-soft: #8839ef1f;
+  --color-highlight-soft: #fe640b24;
+  --color-success-soft: #40a02b24;
+  --color-warning-soft: #df8e1d29;
+  --color-danger-soft: #d20f391f;
+  --color-info-soft: #1e66f51f;
+  /* Avatar backgrounds, six hues at low opacity. */
+  --color-avatar-1: #8839ef38;
+  --color-avatar-2: #fe640b38;
+  --color-avatar-3: #40a02b38;
+  --color-avatar-4: #17929938;
+  --color-avatar-5: #1e66f538;
+  --color-avatar-6: #ea76cb38;
+  /* Modal backdrop. */
+  --color-scrim: #4c4f6966;
+}
+
+/* Shadows for floating surfaces. Their colour differs per theme, so each theme sets it. */
+:root {
+  --shadow-sheet-color: #11111b99;
+  --shadow-toast-color: #11111b80;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --shadow-sheet-color: #4c4f6926;
+    --shadow-toast-color: #4c4f6929;
+  }
+}
+
+:root[data-theme='dark'] {
+  --shadow-sheet-color: #11111b99;
+  --shadow-toast-color: #11111b80;
+}
+
+:root[data-theme='light'] {
+  --shadow-sheet-color: #4c4f6926;
+  --shadow-toast-color: #4c4f6929;
+}
+
+@utility shadow-sheet {
+  box-shadow: 0 -8px 32px var(--shadow-sheet-color);
+}
+
+@utility shadow-toast {
+  box-shadow: 0 8px 24px var(--shadow-toast-color);
+}
+
+/* Text styles (the design system's type scale). Font families are the Onest weights that
+ * @expo-google-fonts/onest registers, so the names must match. */
+@utility type-display {
+  font-family: Onest_700Bold;
+  font-size: 32px;
+  line-height: 40px;
+  letter-spacing: -0.96px;
+}
+
+@utility type-title {
+  font-family: Onest_700Bold;
+  font-size: 24px;
+  line-height: 32px;
+  letter-spacing: -0.48px;
+}
+
+@utility type-heading {
+  font-family: Onest_600SemiBold;
+  font-size: 20px;
+  line-height: 28px;
+  letter-spacing: -0.2px;
+}
+
+@utility type-body {
+  font-family: Onest_400Regular;
+  font-size: 16px;
+  line-height: 24px;
+  letter-spacing: 0px;
+}
+
+@utility type-body-strong {
+  font-family: Onest_600SemiBold;
+  font-size: 16px;
+  line-height: 24px;
+  letter-spacing: 0px;
+}
+
+@utility type-body-sm {
+  font-family: Onest_400Regular;
+  font-size: 14px;
+  line-height: 20px;
+  letter-spacing: 0px;
+}
+
+@utility type-label {
+  font-family: Onest_600SemiBold;
+  font-size: 14px;
+  line-height: 20px;
+  letter-spacing: 0px;
+}
+
+@utility type-caption {
+  font-family: Onest_500Medium;
+  font-size: 12px;
+  line-height: 16px;
+  letter-spacing: 0px;
+}
+
+@utility type-otp {
+  font-family: Onest_600SemiBold;
+  font-size: 24px;
+  line-height: 32px;
+  letter-spacing: 0px;
+  font-variant: tabular-nums;
+}
+
+@utility type-numeric {
+  font-family: Onest_500Medium;
+  font-size: 14px;
+  line-height: 20px;
+  letter-spacing: 0px;
+  font-variant: tabular-nums;
+}
+
+/* One weight at a time, for the few places that need only a family. */
+@utility font-onest-400 {
+  font-family: Onest_400Regular;
+}
+
+@utility font-onest-500 {
+  font-family: Onest_500Medium;
+}
+
+@utility font-onest-600 {
+  font-family: Onest_600SemiBold;
+}
+
+@utility font-onest-700 {
+  font-family: Onest_700Bold;
+}

@@ -1,0 +1,5 @@
+# Lockfile is written by pnpm; SVG artwork is copied from roundup-monorepo as-is.
+pnpm-lock.yaml
+assets/svg/
+**/dist/
+**/.expo/

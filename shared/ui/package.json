@@ -1,0 +1,37 @@
+{
+  "name": "@roundup/ui",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "jest"
+  },
+  "dependencies": {
+    "@react-native-async-storage/async-storage": "catalog:",
+    "@roundup/i18n": "workspace:*",
+    "class-variance-authority": "catalog:",
+    "clsx": "catalog:",
+    "expo-glass-effect": "catalog:",
+    "expo-router": "catalog:",
+    "nativewind": "catalog:",
+    "react": "catalog:",
+    "react-native": "catalog:",
+    "react-native-css": "catalog:",
+    "react-native-safe-area-context": "catalog:",
+    "react-native-svg": "catalog:",
+    "tailwind-merge": "catalog:"
+  },
+  "devDependencies": {
+    "@testing-library/react-native": "catalog:",
+    "@types/jest": "catalog:",
+    "@types/react": "catalog:",
+    "jest": "catalog:",
+    "jest-expo": "catalog:",
+    "test-renderer": "catalog:",
+    "typescript": "catalog:"
+  }
+}

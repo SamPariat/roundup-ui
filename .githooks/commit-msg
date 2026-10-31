@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+# Commit messages follow conventional commits with a required scope: type(scope): subject.
+set -eu
+
+# shellcheck source=.githooks/_node
+. "$(dirname "$0")/_node"
+
+pnpm exec commitlint --edit "$1"

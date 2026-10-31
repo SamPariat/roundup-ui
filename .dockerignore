@@ -1,0 +1,14 @@
+# Keeps the build context small and stops local files leaking into the image.
+**/node_modules
+**/.expo
+**/dist
+.git
+.github
+.idea
+.vscode
+.env
+.env.*
+**/.env
+**/.env.*
+!**/.env.*.example
+*.log

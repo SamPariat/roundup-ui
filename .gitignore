@@ -6,12 +6,13 @@
 # ── Build output ─────────────────────────────────────────────
 **/dist/
 **/build/
-**/coverage/
 
 # ── Expo / React Native ──────────────────────────────────────
 **/.expo/
 **/.expo-shared/
 **/expo-env.d.ts
+# `expo customize` (run by the app's routes script) writes this; the rules above already cover it.
+apps/roundup/.gitignore
 **/ios/
 **/android/
 **/*.orig.*
@@ -38,10 +39,14 @@ Thumbs.db
 *.swo
 
 # ── IDE ──────────────────────────────────────────────────────
-# .vscode/ is committed on purpose: it holds the shared ESLint and Prettier setup.
+# Editor settings are personal and stay local.
+.vscode/
 .idea/
 *.iml
 
 # ── Logs ─────────────────────────────────────────────────────
 **/*.log
 **/logs/
+
+# Generated from assets/svg/logo/mark-dark.svg by scripts/copy-favicon.ts
+apps/roundup/public/favicon.svg
