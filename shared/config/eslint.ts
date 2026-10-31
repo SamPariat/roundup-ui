@@ -346,12 +346,7 @@ const config = blocks(
   },
   {
     // Tool configs and the env module are the only places allowed to read process.env.
-    files: [
-      ...TOOL_CONFIGS,
-      'apps/app/src/config/env.ts',
-      'apps/server/src/env.ts',
-      'apps/server/src/main.ts',
-    ],
+    files: [...TOOL_CONFIGS, 'apps/app/src/config/env.ts'],
     rules: { 'no-restricted-properties': 'off' },
   },
   {
@@ -408,14 +403,13 @@ const config = blocks(
   // ── Architecture ────────────────────────────────────────────
   {
     // app -> ui -> i18n and tokens, one direction only. i18n and tokens import nothing internal
-    // (config is the tooling every package may reach for its Jest preset and tsconfig). The server
-    // is a separate service. shared/* never imports apps/*.
+    // (config is the tooling every package may reach for its Jest preset and tsconfig).
+    // shared/* never imports apps/*.
     files: SOURCE,
     plugins: { boundaries },
     settings: {
       'boundaries/elements': [
         { type: 'app', pattern: 'apps/app/**', partialMatch: false },
-        { type: 'server', pattern: 'apps/server/**', partialMatch: false },
         { type: 'ui', pattern: 'shared/ui/**', partialMatch: false },
         { type: 'i18n', pattern: 'shared/i18n/**', partialMatch: false },
         { type: 'tokens', pattern: 'shared/tokens/**', partialMatch: false },
@@ -431,10 +425,6 @@ const config = blocks(
             {
               from: { element: { type: 'app' } },
               allow: { to: { element: { type: ['app', 'ui', 'i18n', 'tokens', 'config'] } } },
-            },
-            {
-              from: { element: { type: 'server' } },
-              allow: { to: { element: { type: ['server', 'config'] } } },
             },
             {
               from: { element: { type: 'ui' } },
@@ -713,13 +703,8 @@ const config = blocks(
 
   // ── Node tooling ────────────────────────────────────────────
   {
-    // Config files, scripts and the server run on Node, not in React Native.
-    files: [
-      ...TOOL_CONFIGS,
-      'scripts/**/*.ts',
-      'shared/tokens/scripts/**/*.ts',
-      'apps/server/**/*.ts',
-    ],
+    // Config files, and scripts run on Node, not in React Native.
+    files: [...TOOL_CONFIGS, 'scripts/**/*.ts', 'shared/tokens/scripts/**/*.ts'],
     languageOptions: { globals: globals.node },
   },
 

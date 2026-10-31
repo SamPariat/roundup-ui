@@ -35,7 +35,7 @@ This is the foundation: the workspace, the strictest lint and type setup, genera
 - 🌍 **One place for every string**: `@roundup/i18n` holds the English copy as typed resources; components and screens never contain user-facing text.
 - 🧩 **27 components** with the design system's prop names (`Button`, `TextField`, `Modal`, `SquadCard`…), each with accessibility built into its types and tests.
 - 🧭 **A routed shell**: `/` is Welcome, `/squads`, `/explore` and `/profile` sit behind a side nav on wide screens and a bottom nav on narrow ones. iOS uses the system tab bar with Liquid Glass.
-- 🌐 **Web first**: a static export served by a tiny Node server, in Docker.
+- 🌐 **Web first**: a static export served by [static-web-server](https://static-web-server.net), in Docker.
 
 > **Language policy:** TypeScript only. No `.js`, `.jsx`, `.mjs` or `.cjs` files, except the one-line shims listed in `.js-allowlist` (there are none today).
 
@@ -82,6 +82,7 @@ Every `make` target calls a root pnpm script.
 | `make no-js`                           | Fail on `.js`/`.jsx`/`.mjs`/`.cjs` files                       |
 | `make doctor`                          | `expo install --check`, then `expo-doctor`                     |
 | `make docker-up` / `down` / `logs`     | The static web build in Docker on port 8081                    |
+| `make docker-smoke`                    | Assert URLs, 404 page, headers and health on the running image |
 
 After any dependency change run `make doctor` and fix what it reports with `npx expo install --fix`, not by pinning versions by hand.
 
@@ -92,8 +93,7 @@ After any dependency change run `make doctor` and fix what it reports with `npx 
 ```
 roundup-ui/
 ├── apps/
-│   ├── app/            # @roundup/app: Expo SDK 58, Expo Router (routes in src/app = web URLs)
-│   └── server/         # @roundup/server: Hono on Node, serves the web export
+│   └── app/            # @roundup/app: Expo SDK 58, Expo Router (routes in src/app = web URLs)
 ├── shared/
 │   ├── config/         # @roundup/config: ESLint, Prettier, TypeScript and Jest settings, the SVG Jest transform
 │   ├── i18n/           # @roundup/i18n: i18next + react-i18next, typed English resources, useT
@@ -105,7 +105,9 @@ roundup-ui/
 ├── sonar-project.properties  # SonarCloud settings, for when a project is connected
 ├── .githooks/          # pre-commit (lint-staged, tsc, expo-doctor) and commit-msg (commitlint)
 ├── .github/            # CI workflow and the pull request template
-├── Dockerfile          # deps → web export → Node runtime
+├── infra/sws.toml      # static-web-server settings: clean URLs, 404 page, headers, health
+├── scripts/            # docker-smoke.ts, check-no-js.ts, copy-favicon.ts, setup.sh
+├── Dockerfile          # deps → web export → static-web-server runtime
 ├── docker-compose.yml  # the web service on :8081
 └── Makefile            # the front door
 ```
@@ -157,7 +159,18 @@ make setup
 make docker-up         # http://localhost:8081
 ```
 
-The image is built in three steps: install from the lockfile, `expo export --platform web`, then a small Node runtime that runs `apps/server/src/main.ts` as the non-root `node` user. The server maps clean URLs (`/squads`) to the export's HTML, serves the export's 404 page, caches hashed assets for a year, sets security headers, answers `/healthz` and shuts down cleanly on SIGTERM.
+The image is built in stages: install from the lockfile, `expo export --platform web`, then the official `joseluisq/static-web-server:2.44.1-alpine` image (pinned) with the export in `/public` and `infra/sws.toml` as `/etc/sws.toml`. There is no custom server code. It runs as the image's non-root `sws` user on port 3000 (compose maps `8081:3000`).
+
+`infra/sws.toml` makes it behave like this:
+
+- **Clean URLs**: `/squads` serves `squads/index.html` with status 200 and no redirect (`redirect-trailing-slash = false`; `/squads/` works too).
+- **404**: any unknown path returns the export's `+not-found.html` with status 404 (`page404`).
+- **Caching**: `public, max-age=31536000, immutable` under `/_expo/static/`, `no-cache` on pages, one hour for `assets/`.
+- **Security headers**: the Content-Security-Policy, `X-Content-Type-Options: nosniff` and `Referrer-Policy: strict-origin-when-cross-origin`, set with `[[advanced.headers]]`. The Dockerfile replaces `__API_ORIGIN__` in the CSP's `connect-src` with the origin of `EXPO_PUBLIC_API_URL` while building.
+- **Health**: `GET /health` returns 200 and is not logged; the compose healthcheck uses it.
+- **Other**: directory listing is off, text files are compressed on demand, and SIGTERM (`docker stop`) makes the server stop accepting connections and finish in-flight requests.
+
+`make docker-smoke` runs `scripts/docker-smoke.ts` against the running container and asserts all of the above; CI does the same after building the image.
 
 `EXPO_PUBLIC_API_URL` is baked into the JavaScript at build time, so it is a build argument: rebuild after changing it.
 

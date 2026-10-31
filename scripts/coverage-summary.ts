@@ -1,7 +1,7 @@
 // Prints a Markdown table of line coverage per package. CI appends it to the job summary.
 import { existsSync, readFileSync } from 'node:fs'
 
-const packages = ['apps/app', 'apps/server', 'shared/i18n', 'shared/tokens', 'shared/ui']
+const packages = ['apps/app', 'shared/i18n', 'shared/tokens', 'shared/ui']
 
 /** Line coverage numbers. */
 interface LineCoverage {

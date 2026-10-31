@@ -12,11 +12,11 @@ services:
       - '8081:3000'
     # The browser calls the API at EXPO_PUBLIC_API_URL (localhost:8080, the Go gateway from
     # roundup-monorepo on the host). This line lets the container itself reach the host
-    # gateway too, as host.docker.internal:8080, for anything the server proxies later.
+    # gateway too, as host.docker.internal:8080, for anything the web server proxies later.
     extra_hosts:
       - 'host.docker.internal:host-gateway'
     healthcheck:
-      test: ['CMD', 'wget', '-qO-', 'http://127.0.0.1:3000/healthz']
+      test: ['CMD', 'wget', '-qO-', 'http://127.0.0.1:3000/health']
       interval: 10s
       timeout: 3s
       retries: 5

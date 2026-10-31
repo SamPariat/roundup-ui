@@ -31,9 +31,6 @@ const config: KnipConfig = {
         'expo-system-ui',
       ],
     },
-    'apps/server': {
-      project: ['src/**/*.ts', 'tests/**/*.ts', '*.ts'],
-    },
     'shared/i18n': {
       project: ['src/**/*.ts', 'tests/**/*.ts', '*.ts'],
     },

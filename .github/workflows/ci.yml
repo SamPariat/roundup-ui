@@ -133,16 +133,40 @@ jobs:
 
       - uses: docker/setup-buildx-action@v4
 
-      # Build only; the image is not pushed anywhere yet.
+      # Built into the local Docker daemon for the smoke test below; the image is not pushed anywhere.
       - uses: docker/build-push-action@v7
         with:
           context: .
+          load: true
           push: false
+          tags: roundup-web:ci
           build-args: |
             APP_ENV=beta
             EXPO_PUBLIC_API_URL=http://localhost:8080
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+
+      # Run the image, wait for its health check, then assert clean URLs, the 404 page and the headers.
+      - name: smoke test
+        run: |
+          docker run -d --name web -p 8081:3000 roundup-web:ci
+          for i in $(seq 1 30); do
+            if curl -fsS http://localhost:8081/health > /dev/null; then break; fi
+            sleep 1
+          done
+          node scripts/docker-smoke.ts http://localhost:8081
+
+      - name: container logs
+        if: failure()
+        run: docker logs web
+
+      - name: stop
+        if: always()
+        run: docker stop web
 
   # The only check the main-branch ruleset requires. Job names can change as jobs are added or
   # split, so the ruleset points here instead of at them.

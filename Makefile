@@ -25,6 +25,7 @@ export APP_ENV
 	docker-build \
 	docker-up \
 	docker-down \
+	docker-smoke \
 	docker-logs \
 	clean
 
@@ -110,6 +111,10 @@ docker-up:
 
 docker-down:
 	docker compose --env-file apps/app/.env.$(APP_ENV) down
+
+# Checks the container started by docker-up: clean URLs, 404 page, cache and security headers, health.
+docker-smoke:
+	node scripts/docker-smoke.ts
 
 docker-logs:
 	docker compose --env-file apps/app/.env.$(APP_ENV) logs -f web
