@@ -92,10 +92,7 @@ export const Welcome = ({ body, onStart, startLabel, title }: WelcomeProps): Rea
             <NativeText
               accessibilityRole="header"
               aria-level={1}
-              className={cn(
-                'font-onest-700 text-fg',
-                wide ? 'text-[64px]/17 tracking-[-2.88px]' : 'text-4xl/10 tracking-[-1.26px]',
-              )}
+              className={cn('text-fg', wide ? 'type-hero-wide' : 'type-hero')}
             >
               {title ?? t('welcome.title')}
             </NativeText>

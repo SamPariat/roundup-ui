@@ -280,6 +280,23 @@
 
 /* Text styles (the design system's type scale). Font families are the Onest weights that
  * @expo-google-fonts/onest registers, so the names must match. */
+/* The Welcome headline, larger than display. Line heights are fixed pixels: a Tailwind
+ * text-4xl/10 compiles to calc(var(--spacing) * 10), which react-native-css cannot give a unit,
+ * and iOS reads a unitless line height as a multiple of the font size. */
+@utility type-hero {
+  font-family: Onest_700Bold;
+  font-size: 36px;
+  line-height: 40px;
+  letter-spacing: -1.26px;
+}
+
+@utility type-hero-wide {
+  font-family: Onest_700Bold;
+  font-size: 64px;
+  line-height: 68px;
+  letter-spacing: -2.88px;
+}
+
 @utility type-display {
   font-family: Onest_700Bold;
   font-size: 32px;
