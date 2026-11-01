@@ -21,7 +21,7 @@ export const WelcomeDemo = (): ReactElement => {
   return (
     <>
       <Specimen note="Press Continue with phone." title="Default copy · onStart">
-        <Preview className="h-176 border border-border">
+        <Preview className="min-h-176 border border-border">
           <Welcome onStart={start} />
         </Preview>
         <Text tone="muted" variant="caption">
@@ -29,7 +29,7 @@ export const WelcomeDemo = (): ReactElement => {
         </Text>
       </Specimen>
       <Specimen title="title · body · startLabel">
-        <Preview className="h-176 border border-border">
+        <Preview className="min-h-176 border border-border">
           <Welcome
             body="Plan the evening in one place."
             startLabel="Get started"
