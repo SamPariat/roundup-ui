@@ -69,7 +69,7 @@ interface ButtonBase {
   variant?: Variant
   /** Height step: sm 36, md 48 (the tap target), lg 56. Defaults to md. */
   size?: 'lg' | 'md' | 'sm'
-  /** A request is in flight: shows a spinner, disables the button and keeps its width. */
+  /** A request is in flight: shows a spinner, disables the button and never makes it narrower. */
   loading?: boolean
   /** What the button says while loading, e.g. "Sending code…". Two or three words. */
   loadingLabel?: string
@@ -148,8 +148,8 @@ const RestingContent = ({
 )
 
 /**
- * The loading state: the resting content stays in layout, hidden, so the button keeps its width, with a spinner and optional live label drawn over it.
- * @returns The hidden resting content plus the spinner overlay.
+ * The loading state: the spinner and optional live label, with the resting content kept in layout at no height so the button never gets narrower than at rest.
+ * @returns The hidden resting content above the spinner row.
  */
 const LoadingContent = ({
   children,
@@ -163,16 +163,18 @@ const LoadingContent = ({
   /** The button size, which picks the label size. */
   size: Size
 }): ReactElement => (
-  <>
-    {/* The resting content stays in layout, hidden, so the button keeps its width. */}
+  <View className="items-center">
+    {/* The resting content stays in layout at no height, so the button never gets narrower than
+        at rest. The spinner row below is in layout too, so a longer loading label widens the
+        button instead of wrapping or spilling out of it. */}
     <View
       aria-hidden
-      className="flex-row items-center justify-center gap-2 opacity-0"
+      className="h-0 flex-row items-center justify-center gap-2 overflow-hidden opacity-0"
       importantForAccessibility="no-hide-descendants"
     >
       {children}
     </View>
-    <View className="absolute inset-0 flex-row items-center justify-center gap-2">
+    <View className="flex-row items-center justify-center gap-2">
       <Spinner tone="fg-subtle" />
       {loadingLabel === undefined ? null : (
         <Text
@@ -185,7 +187,7 @@ const LoadingContent = ({
         </Text>
       )}
     </View>
-  </>
+  </View>
 )
 
 /**
