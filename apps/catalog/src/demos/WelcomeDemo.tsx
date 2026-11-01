@@ -1,10 +1,10 @@
 import type { ReactElement } from 'react'
 
 import { useCallback, useState } from 'react'
-import { View } from 'react-native'
 
 import { Text, Welcome } from '@roundup/ui'
 
+import { Preview } from '../components/Preview.tsx'
 import { Specimen } from '../components/Specimen.tsx'
 
 /**
@@ -21,21 +21,21 @@ export const WelcomeDemo = (): ReactElement => {
   return (
     <>
       <Specimen note="Press Continue with phone." title="Default copy · onStart">
-        <View className="h-176 overflow-hidden rounded-lg border border-border">
+        <Preview className="h-176 border border-border">
           <Welcome onStart={start} />
-        </View>
+        </Preview>
         <Text tone="muted" variant="caption">
           {started ? 'Start was pressed' : 'Start not pressed'}
         </Text>
       </Specimen>
       <Specimen title="title · body · startLabel">
-        <View className="h-176 overflow-hidden rounded-lg border border-border">
+        <Preview className="h-176 border border-border">
           <Welcome
             body="Plan the evening in one place."
             startLabel="Get started"
             title="Dinner, sorted."
           />
-        </View>
+        </Preview>
       </Specimen>
     </>
   )

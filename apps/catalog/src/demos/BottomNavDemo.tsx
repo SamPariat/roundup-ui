@@ -1,10 +1,10 @@
 import type { ReactElement } from 'react'
 
 import { useState } from 'react'
-import { View } from 'react-native'
 
 import { BottomNav, Text } from '@roundup/ui'
 
+import { Preview } from '../components/Preview.tsx'
 import { Specimen } from '../components/Specimen.tsx'
 
 /**
@@ -18,19 +18,19 @@ export const BottomNavDemo = (): ReactElement => {
   return (
     <>
       <Specimen title="value=squads (default)">
-        <View className="overflow-hidden rounded-lg">
+        <Preview>
           <BottomNav />
-        </View>
+        </Preview>
       </Specimen>
       <Specimen title="value=explore">
-        <View className="overflow-hidden rounded-lg">
+        <Preview>
           <BottomNav value="explore" />
-        </View>
+        </Preview>
       </Specimen>
       <Specimen note="Press a tab." title="Interactive">
-        <View className="overflow-hidden rounded-lg">
+        <Preview>
           <BottomNav onChange={setValue} value={value} />
-        </View>
+        </Preview>
         <Text tone="muted" variant="caption">{`Current: ${value}`}</Text>
       </Specimen>
     </>

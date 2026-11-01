@@ -1,10 +1,10 @@
 import type { ReactElement } from 'react'
 
 import { useCallback, useState } from 'react'
-import { View } from 'react-native'
 
 import { Button, Text, TopAppBar } from '@roundup/ui'
 
+import { Preview } from '../components/Preview.tsx'
 import { Specimen } from '../components/Specimen.tsx'
 
 /**
@@ -26,20 +26,20 @@ export const TopAppBarDemo = (): ReactElement => {
   return (
     <>
       <Specimen title="logo=true">
-        <View className="overflow-hidden rounded-lg">
+        <Preview>
           <TopAppBar logo title="Squads" />
-        </View>
+        </Preview>
       </Specimen>
       <Specimen title="back=true">
-        <View className="overflow-hidden rounded-lg">
+        <Preview>
           <TopAppBar back title="Friday Footy" />
-        </View>
+        </Preview>
       </Specimen>
       <Specimen
         note="onBack shows the back button and is called when it is pressed."
         title="onBack · actions"
       >
-        <View className="overflow-hidden rounded-lg">
+        <Preview>
           <TopAppBar
             actions={
               <Button icon="plus" label="Add member" onPress={add} size="sm" variant="ghost" />
@@ -47,15 +47,15 @@ export const TopAppBarDemo = (): ReactElement => {
             onBack={back}
             title="Friday Footy"
           />
-        </View>
+        </Preview>
         <Text tone="muted" variant="caption">
           {`Pressed: ${pressed}`}
         </Text>
       </Specimen>
       <Specimen title="large=true">
-        <View className="overflow-hidden rounded-lg">
+        <Preview>
           <TopAppBar back large title="Explore venues" />
-        </View>
+        </Preview>
       </Specimen>
     </>
   )

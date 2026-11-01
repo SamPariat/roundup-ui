@@ -26,10 +26,15 @@ export const ComponentNav = ({ current }: ComponentNavProps): ReactElement => (
     edges={['top', 'bottom', 'left']}
     role="navigation"
   >
-    <ScrollView contentContainerClassName="gap-6 p-4">
+    <ScrollView contentContainerClassName="gap-6 px-3 pt-6 pb-4">
       <Link asChild href="/">
-        <Pressable accessibilityLabel="Roundup Catalog, all components" accessibilityRole="link">
-          <Logo size="md" />
+        {/* px-3 lines the logo up with the entries' text, as in the app's SideNav. */}
+        <Pressable
+          accessibilityLabel="Roundup Catalog, all components"
+          accessibilityRole="link"
+          className="self-start px-3"
+        >
+          <Logo size={28} />
         </Pressable>
       </Link>
       {GROUPS.map((group) => (

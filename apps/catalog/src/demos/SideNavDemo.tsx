@@ -1,10 +1,10 @@
 import type { ReactElement } from 'react'
 
 import { useState } from 'react'
-import { View } from 'react-native'
 
 import { SideNav } from '@roundup/ui'
 
+import { Preview } from '../components/Preview.tsx'
 import { Specimen } from '../components/Specimen.tsx'
 import { NAV_USER } from '../fixtures.ts'
 
@@ -19,14 +19,14 @@ export const SideNavDemo = (): ReactElement => {
   return (
     <>
       <Specimen title="value=squads (default)">
-        <View className="h-96 flex-row overflow-hidden rounded-lg">
+        <Preview className="h-96 flex-row">
           <SideNav />
-        </View>
+        </Preview>
       </Specimen>
       <Specimen note="Press a tab." title="user · Interactive">
-        <View className="h-96 flex-row overflow-hidden rounded-lg">
+        <Preview className="h-96 flex-row">
           <SideNav onChange={setValue} user={NAV_USER} value={value} />
-        </View>
+        </Preview>
       </Specimen>
     </>
   )
