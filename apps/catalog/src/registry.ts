@@ -1,7 +1,38 @@
 import type { ComponentType } from 'react'
 
+import { AvatarDemo } from './demos/AvatarDemo.tsx'
+import { AvatarGroupDemo } from './demos/AvatarGroupDemo.tsx'
+import { BadgeDemo } from './demos/BadgeDemo.tsx'
+import { BottomNavDemo } from './demos/BottomNavDemo.tsx'
 import { ButtonDemo } from './demos/ButtonDemo.tsx'
-import { PendingDemo } from './demos/PendingDemo.tsx'
+import { ChipDemo } from './demos/ChipDemo.tsx'
+import { ColoursDemo } from './demos/ColoursDemo.tsx'
+import { EmptyStateDemo } from './demos/EmptyStateDemo.tsx'
+import { IconDemo } from './demos/IconDemo.tsx'
+import { ListDemo } from './demos/ListDemo.tsx'
+import { ListRowDemo } from './demos/ListRowDemo.tsx'
+import { LogoDemo } from './demos/LogoDemo.tsx'
+import { ModalDemo } from './demos/ModalDemo.tsx'
+import { OtpInputDemo } from './demos/OtpInputDemo.tsx'
+import { PageHeaderDemo } from './demos/PageHeaderDemo.tsx'
+import { PhoneInputDemo } from './demos/PhoneInputDemo.tsx'
+import { PriceDemo } from './demos/PriceDemo.tsx'
+import { RatingDemo } from './demos/RatingDemo.tsx'
+import { SafeAreaDemo } from './demos/SafeAreaDemo.tsx'
+import { ScreenDemo } from './demos/ScreenDemo.tsx'
+import { SideNavDemo } from './demos/SideNavDemo.tsx'
+import { SkeletonDemo } from './demos/SkeletonDemo.tsx'
+import { SquadCardDemo } from './demos/SquadCardDemo.tsx'
+import { SurfaceDemo } from './demos/SurfaceDemo.tsx'
+import { TabsDemo } from './demos/TabsDemo.tsx'
+import { TextDemo } from './demos/TextDemo.tsx'
+import { TextFieldDemo } from './demos/TextFieldDemo.tsx'
+import { ThemeSwitchDemo } from './demos/ThemeSwitchDemo.tsx'
+import { ToastDemo } from './demos/ToastDemo.tsx'
+import { TopAppBarDemo } from './demos/TopAppBarDemo.tsx'
+import { TypeDemo } from './demos/TypeDemo.tsx'
+import { VenueCardDemo } from './demos/VenueCardDemo.tsx'
+import { WelcomeDemo } from './demos/WelcomeDemo.tsx'
 
 /** The sections of the component index, in the order they are listed. */
 export const GROUPS = [
@@ -56,193 +87,193 @@ const ENTRIES: readonly EntryInput[] = [
     title: 'Chip',
     group: 'Actions',
     summary: 'A pill toggle for filters and choices.',
-    Demo: PendingDemo,
+    Demo: ChipDemo,
   },
   {
     title: 'TextField',
     group: 'Inputs',
     summary: 'A labelled single-line input with helper and error text.',
-    Demo: PendingDemo,
+    Demo: TextFieldDemo,
   },
   {
     title: 'PhoneInput',
     group: 'Inputs',
     summary: 'A phone number field with its country prefix.',
-    Demo: PendingDemo,
+    Demo: PhoneInputDemo,
   },
   {
     title: 'OtpInput',
     group: 'Inputs',
     summary: 'A one-time code entry with a resend countdown.',
-    Demo: PendingDemo,
+    Demo: OtpInputDemo,
   },
   {
     title: 'ThemeSwitch',
     group: 'Inputs',
     summary: 'System, Latte or Mocha, as a three-way choice.',
-    Demo: PendingDemo,
+    Demo: ThemeSwitchDemo,
   },
   {
     title: 'Text',
     group: 'Display',
     summary: 'Text in a type style and a role colour.',
-    Demo: PendingDemo,
+    Demo: TextDemo,
   },
   {
     title: 'Icon',
     group: 'Display',
     summary: 'The icon set, tinted by role colour.',
-    Demo: PendingDemo,
+    Demo: IconDemo,
   },
   {
     title: 'Logo',
     group: 'Display',
     summary: 'The mark, the wordmark and the lockup, in brand or mono colour.',
-    Demo: PendingDemo,
+    Demo: LogoDemo,
   },
   {
     title: 'Avatar',
     group: 'Display',
     summary: 'A person or squad as a photo or tinted initials.',
-    Demo: PendingDemo,
+    Demo: AvatarDemo,
   },
   {
     title: 'AvatarGroup',
     group: 'Display',
     summary: 'Overlapping avatars with a +N chip.',
-    Demo: PendingDemo,
+    Demo: AvatarGroupDemo,
   },
   {
     title: 'Badge',
     group: 'Display',
     summary: 'A small status pill with a tone.',
-    Demo: PendingDemo,
+    Demo: BadgeDemo,
   },
   {
     title: 'Price',
     group: 'Display',
     summary: 'A price level from one to four marks.',
-    Demo: PendingDemo,
+    Demo: PriceDemo,
   },
   {
     title: 'Rating',
     group: 'Display',
     summary: 'A rating out of five with its review count.',
-    Demo: PendingDemo,
+    Demo: RatingDemo,
   },
   {
     title: 'Skeleton',
     group: 'Display',
     summary: 'Placeholders for a list row and a venue card while data loads.',
-    Demo: PendingDemo,
+    Demo: SkeletonDemo,
   },
   {
     title: 'Toast',
     group: 'Feedback',
     summary: 'A short message with an optional action.',
-    Demo: PendingDemo,
+    Demo: ToastDemo,
   },
   {
     title: 'EmptyState',
     group: 'Feedback',
     summary: 'What a screen shows when there is nothing in it yet.',
-    Demo: PendingDemo,
+    Demo: EmptyStateDemo,
   },
   {
     title: 'Modal',
     group: 'Feedback',
     summary: 'A dialog for content or a confirmation, with a busy state.',
-    Demo: PendingDemo,
+    Demo: ModalDemo,
   },
   {
     title: 'List',
     group: 'Lists and cards',
     summary: 'A rounded container that divides its rows.',
-    Demo: PendingDemo,
+    Demo: ListDemo,
   },
   {
     title: 'ListRow',
     group: 'Lists and cards',
     summary: 'A row with leading and trailing content, pressable on request.',
-    Demo: PendingDemo,
+    Demo: ListRowDemo,
   },
   {
     title: 'SquadCard',
     group: 'Lists and cards',
     summary: 'A squad with its members and the viewer role.',
-    Demo: PendingDemo,
+    Demo: SquadCardDemo,
   },
   {
     title: 'VenueCard',
     group: 'Lists and cards',
     summary: 'A venue with rating, price, opening state and a save button.',
-    Demo: PendingDemo,
+    Demo: VenueCardDemo,
   },
   {
     title: 'TopAppBar',
     group: 'Navigation',
     summary: 'The bar at the top of a phone screen.',
-    Demo: PendingDemo,
+    Demo: TopAppBarDemo,
   },
   {
     title: 'Tabs',
     group: 'Navigation',
     summary: 'Segments that switch the view in place.',
-    Demo: PendingDemo,
+    Demo: TabsDemo,
   },
   {
     title: 'BottomNav',
     group: 'Navigation',
     summary: 'The tab bar below the tablet breakpoint.',
-    Demo: PendingDemo,
+    Demo: BottomNavDemo,
   },
   {
     title: 'SideNav',
     group: 'Navigation',
     summary: 'The rail beside the page from the desktop breakpoint.',
-    Demo: PendingDemo,
+    Demo: SideNavDemo,
   },
   {
     title: 'PageHeader',
     group: 'Navigation',
     summary: 'The title block at the top of a wide page.',
-    Demo: PendingDemo,
+    Demo: PageHeaderDemo,
   },
   {
     title: 'Screen',
     group: 'Layout',
     summary: 'A full page outside the shell, kept clear of the notch and home indicator.',
-    Demo: PendingDemo,
+    Demo: ScreenDemo,
   },
   {
     title: 'SafeArea',
     group: 'Layout',
     summary: 'Pads the edges you choose with the device insets.',
-    Demo: PendingDemo,
+    Demo: SafeAreaDemo,
   },
   {
     title: 'Surface',
     group: 'Layout',
     summary: 'A raised or sunken background that turns to Liquid Glass on iOS 26.',
-    Demo: PendingDemo,
+    Demo: SurfaceDemo,
   },
   {
     title: 'Welcome',
     group: 'Layout',
     summary: 'The signed-out landing page.',
-    Demo: PendingDemo,
+    Demo: WelcomeDemo,
   },
   {
     title: 'Colours',
     group: 'Foundations',
     summary: 'Every role colour of the theme, in Mocha and Latte.',
-    Demo: PendingDemo,
+    Demo: ColoursDemo,
   },
   {
     title: 'Type',
     group: 'Foundations',
     summary: 'Every Text variant.',
-    Demo: PendingDemo,
+    Demo: TypeDemo,
   },
 ]
 
