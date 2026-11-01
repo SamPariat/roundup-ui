@@ -64,11 +64,33 @@ export const ButtonDemo = (): ReactElement => {
         </View>
       </Specimen>
       <Specimen
-        note="Shows a spinner and keeps its width; busy buttons ignore presses."
+        note="Shows a spinner and never gets narrower; a longer label widens it. Busy buttons ignore presses."
         title="loading=true · loadingLabel"
       >
-        <Button loading loadingLabel="Sending code…">
-          Send code
+        <View className="flex-row flex-wrap items-center gap-3">
+          {SIZES.map((size) => (
+            <Button key={size} loading loadingLabel="Sending code…" size={size}>
+              Send code
+            </Button>
+          ))}
+        </View>
+      </Specimen>
+      <Specimen
+        note="No loadingLabel: the spinner alone, at the resting width."
+        title="loading=true"
+      >
+        <View className="flex-row flex-wrap items-center gap-3">
+          <Button icon="plus" loading>
+            Add member
+          </Button>
+          <Button loading variant="secondary">
+            Save
+          </Button>
+        </View>
+      </Specimen>
+      <Specimen title="loading=true · block">
+        <Button block loading loadingLabel="Checking code…">
+          Verify
         </Button>
       </Specimen>
       <Specimen note="Press it: it loads for two seconds." title="Interactive">
