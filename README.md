@@ -35,6 +35,7 @@ This is the foundation: the workspace, the strictest lint and type setup, the Na
 - **One place for every string**: `@roundup/i18n` holds the English copy as typed resources; components and screens never contain user-facing text.
 - **27 components** with the design system's prop names (`Button`, `TextField`, `Modal`, `SquadCard`…), each with accessibility built into its types and tests.
 - **A routed shell**: `/` is Welcome, `/squads`, `/explore` and `/profile` sit behind a side nav on wide screens and a bottom nav on narrow ones. iOS uses the system tab bar with Liquid Glass.
+- **A component catalog** (`apps/catalog`): a second Expo app that shows every component in every variant and state, in Mocha and Latte, on web, iOS and Android. See [Component catalog](#component-catalog).
 - **Web first**: a static export served by [static-web-server](https://static-web-server.net), in Docker.
 
 > **Language policy:** source and configs are TypeScript only: no `.js`, `.jsx`, `.mjs` or `.cjs` files, except the one-line shims listed in `.js-allowlist` (there are none today). Scripts in `scripts/` are bash (`#!/usr/bin/env bash`, `set -euo pipefail`) and are checked by shellcheck.
@@ -62,29 +63,44 @@ To use the backend, start the Go services from [roundup-monorepo](https://github
 
 `make ios` and `make android` build and run a development build (`expo-dev-client`), not Expo Go, so they need Xcode and Android Studio. Each run first does a clean `expo prebuild` for that platform, so the gitignored `ios/` and `android/` folders always match `app.config.ts` (`make prebuild` does both without building); expect a few minutes per build. After that `make dev` starts Metro for the installed build. Liquid Glass (the tab bar, the top bar, toasts and sheets) needs an iOS 26+ simulator; turn on **Reduce Transparency** and the surfaces go solid.
 
+### Component catalog
+
+`apps/catalog` (`@roundup/catalog`) is a living reference for the design system and the place to check native-only behaviour (Liquid Glass `Surface`, Onest, safe areas) without touching the real app. It is its own Expo Router app with its own bundle id (`app.roundup.catalog`), so a development build installs as **Roundup Catalog** next to Roundup Beta instead of replacing it. It talks to no API: there is no `APP_ENV` and no `.env`.
+
+```sh
+make catalog                  # web, on http://localhost:8081 (stop `make web` first)
+make catalog-ios DEVICE=...   # clean prebuild, then a development build on a simulator
+make catalog-android          # the same on an emulator
+```
+
+The index lists every group (Actions, Inputs, Display, Feedback, Lists and cards, Navigation, Layout, Foundations); each component has a page of `Specimen` blocks, one per variant, size or state, named by the prop values (`variant=secondary · size=sm`). Loading, disabled, error and empty states are always shown, and interactive pieces keep local state so they really work. The toolbar above a demo switches System, Latte and Mocha, and on the web sets the preview width (360, 768, 1024 or full). From 1024 wide a list of components sits beside the page, like `SideNav`; below that the index is a screen of its own and each page has a back button. Foundations has the role colours and every `Text` variant.
+
+Every renderable value export of `@roundup/ui` must have a page: `apps/catalog/tests/registry.test.ts` lists the PascalCase exports (leaving out `ThemeProvider` and the `*Variants` recipes) and fails for any that `src/registry.ts` does not know. A new component cannot skip the catalog. Add a demo in `src/demos/<Component>Demo.tsx` and an entry in the registry. The catalog's text (specimen labels, sample data) is not localized, so `i18next/no-literal-string` is off there; the strings inside the components still come from `@roundup/i18n`.
+
 <p align="center"><img src="assets/svg/brand/divider.svg" width="100%" alt=""></p>
 
 ## Commands
 
 Every `make` target calls a root pnpm script.
 
-| Command                                | What it does                                                         |
-| -------------------------------------- | -------------------------------------------------------------------- |
-| `make dev` / `web` / `ios` / `android` | Start Expo for a platform                                            |
-| `make check`                           | Everything CI runs, except the web export and the Docker build       |
-| `make lint`                            | ESLint with `--max-warnings=0`, then shellcheck                      |
-| `make fmt` / `fmt-check`               | Prettier, write or check                                             |
-| `make typecheck`                       | `tsc --noEmit` in every package                                      |
-| `make test`                            | Jest in every package                                                |
-| `make splash`                          | Rasterise the logo mark into the native splash screen PNGs           |
-| `make icons`                           | Rasterise the app icon sources into the icon PNGs                    |
-| `make knip`                            | Unused files, exports and dependencies                               |
-| `make syncpack`                        | Every dependency version comes from the pnpm catalog                 |
-| `make files`                           | Fail on JavaScript files, bad script names and non-kebab-case assets |
-| `make doctor`                          | `expo install --check`, then `expo-doctor`                           |
-| `make updates`                         | Fail when a catalog dependency has a newer release it may take       |
-| `make docker-up` / `down` / `logs`     | The static web build in Docker on port 8081                          |
-| `make docker-smoke`                    | Assert URLs, 404 page, headers and health on the running image       |
+| Command                                            | What it does                                                                                 |
+| -------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| `make dev` / `web` / `ios` / `android`             | Start Expo for a platform                                                                    |
+| `make catalog` / `catalog-ios` / `catalog-android` | Start the component catalog on a platform (the native ones prebuild first and take `DEVICE`) |
+| `make check`                                       | Everything CI runs, except the web export and the Docker build                               |
+| `make lint`                                        | ESLint with `--max-warnings=0`, then shellcheck                                              |
+| `make fmt` / `fmt-check`                           | Prettier, write or check                                                                     |
+| `make typecheck`                                   | `tsc --noEmit` in every package                                                              |
+| `make test`                                        | Jest in every package                                                                        |
+| `make splash`                                      | Rasterise the logo mark into the native splash screen PNGs                                   |
+| `make icons`                                       | Rasterise the app icon sources into the icon PNGs                                            |
+| `make knip`                                        | Unused files, exports and dependencies                                                       |
+| `make syncpack`                                    | Every dependency version comes from the pnpm catalog                                         |
+| `make files`                                       | Fail on JavaScript files, bad script names and non-kebab-case assets                         |
+| `make doctor`                                      | `expo install --check`, then `expo-doctor`, for both apps                                    |
+| `make updates`                                     | Fail when a catalog dependency has a newer release it may take                               |
+| `make docker-up` / `down` / `logs`                 | The static web build in Docker on port 8081                                                  |
+| `make docker-smoke`                                | Assert URLs, 404 page, headers and health on the running image                               |
 
 Every dependency is pinned to an exact version (no `^` or `~`): `.npmrc` sets `save-exact`, and `make files` and `make syncpack` fail on a range. Node (`.nvmrc`), pnpm (`packageManager`) and the Docker base image are pinned the same way.
 
@@ -97,8 +113,10 @@ After any dependency change run `make doctor` and fix what it reports with `npx 
 ```
 roundup-ui/
 ├── apps/
-│   └── roundup/        # @roundup/roundup: Expo SDK 58, Expo Router (routes in src/app = web URLs)
-│                       #   src/components (app-only components), src/hooks (useTabItems, useLayout)
+│   ├── roundup/        # @roundup/roundup: Expo SDK 58, Expo Router (routes in src/app = web URLs)
+│   │                   #   src/components (app-only components), src/hooks (useTabItems, useLayout)
+│   └── catalog/        # @roundup/catalog: every ui component in every state, on web, iOS and Android
+│                       #   src/registry.ts (slug → demo), src/demos/<Component>Demo.tsx, src/fixtures.ts
 ├── shared/
 │   ├── i18n/           # @roundup/i18n: i18next + react-i18next, typed English resources, useT
 │   └── ui/             # @roundup/ui: the design-system components, ThemeProvider and useTheme
@@ -133,13 +151,13 @@ SVG files live in `assets/svg` and are imported as components: `import MarkDark 
 
 ### Splash screen
 
-Native: the `expo-splash-screen` plugin in `apps/roundup/app.config.ts` shows the Roundup mark (96 pt wide) on the Latte background (`#f2e9e1`) with the light mark, or on the Mocha background (`#1e1e2e`) with the dark mark when the device is dark. The plugin needs PNGs, so `make splash` (`scripts/make-splash.sh`, rsvg-convert or macOS sips) rasterises `assets/svg/logo/mark-dark.svg` and `mark-light.svg` into `apps/roundup/assets/splash/`. Those PNGs are committed, not generated at build time: the plugin reads them on every prebuild and EAS build, and a build machine may have no SVG rasteriser. Run `make splash` and commit after changing the mark. The root layout calls `preventAutoHideAsync`, and `useSplash` hides the screen once the fonts and the saved theme are ready, with a 200 ms fade or none when the device asks for reduced motion.
+Native: the `expo-splash-screen` plugin in `apps/roundup/app.config.ts` shows the Roundup mark (96 pt wide) on the Latte background (`#f2e9e1`) with the light mark, or on the Mocha background (`#1e1e2e`) with the dark mark when the device is dark. The plugin needs PNGs, so `make splash` (`scripts/make-splash.sh`, rsvg-convert or macOS sips) rasterises `assets/svg/logo/mark-dark.svg` and `mark-light.svg` into `apps/roundup/assets/splash/` (and a copy in `apps/catalog/assets/splash/`). Those PNGs are committed, not generated at build time: the plugin reads them on every prebuild and EAS build, and a build machine may have no SVG rasteriser. Run `make splash` and commit after changing the mark. The root layout calls `preventAutoHideAsync`, and `useSplash` hides the screen once the fonts and the saved theme are ready, with a 200 ms fade or none when the device asks for reduced motion.
 
 Web: `src/app/+html.tsx` puts the same mark, centred on the theme background, over the static page. It is fixed to the viewport, so nothing moves, and `useSplash` fades it out (or removes it at once with reduced motion) after hydration. A small inline script applies a saved manual theme before the first paint.
 
 ### App icon
 
-The icon follows the device. On iOS 18+ it has three variants that the home screen picks from its appearance setting: light (the Latte mark on the Latte background), dark (the Mocha mark on transparency, over the system's dark backdrop) and tinted (a greyscale mark the system colours). On Android it is an adaptive icon (the Latte mark on `#f2e9e1`) with a monochrome layer that Android 13+ recolours when themed icons are on. The sources are `assets/svg/app-icon/*.svg`; `make icons` (`scripts/make-icons.sh`) rasterises them to 1024 px PNGs in `apps/roundup/assets/icon/`, committed for the same reason as the splash PNGs. A new icon needs a new native build (`make ios`).
+The icon follows the device. On iOS 18+ it has three variants that the home screen picks from its appearance setting: light (the Latte mark on the Latte background), dark (the Mocha mark on transparency, over the system's dark backdrop) and tinted (a greyscale mark the system colours). On Android it is an adaptive icon (the Latte mark on `#f2e9e1`) with a monochrome layer that Android 13+ recolours when themed icons are on. The sources are `assets/svg/app-icon/*.svg`; `make icons` (`scripts/make-icons.sh`) rasterises them to 1024 px PNGs in `apps/roundup/assets/icon/` (and a copy in `apps/catalog/assets/icon/`), committed for the same reason as the splash PNGs. A new icon needs a new native build (`make ios`).
 
 ### Tailwind classes
 

@@ -107,6 +107,9 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - name: expo export
         run: pnpm --filter @roundup/roundup run export:web
+      # The component catalog is a second web app; a page that fails to render fails its export.
+      - name: expo export (catalog)
+        run: pnpm --filter @roundup/catalog run export:web
       # The native bundles compile CSS through a different path (react-native-css) than web, so a
       # broken native build would otherwise go unnoticed until someone opens a simulator.
       - name: expo export (ios and android bundles)
