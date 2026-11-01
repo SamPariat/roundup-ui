@@ -77,6 +77,7 @@ Every `make` target calls a root pnpm script.
 | `make typecheck`                       | `tsc --noEmit` in every package                                      |
 | `make test`                            | Jest in every package                                                |
 | `make splash`                          | Rasterise the logo mark into the native splash screen PNGs           |
+| `make icons`                           | Rasterise the app icon sources into the icon PNGs                    |
 | `make knip`                            | Unused files, exports and dependencies                               |
 | `make syncpack`                        | Every dependency version comes from the pnpm catalog                 |
 | `make files`                           | Fail on JavaScript files, bad script names and non-kebab-case assets |
@@ -135,6 +136,10 @@ SVG files live in `assets/svg` and are imported as components: `import MarkDark 
 Native: the `expo-splash-screen` plugin in `apps/roundup/app.config.ts` shows the Roundup mark (96 pt wide) on the Latte background (`#f2e9e1`) with the light mark, or on the Mocha background (`#1e1e2e`) with the dark mark when the device is dark. The plugin needs PNGs, so `make splash` (`scripts/make-splash.sh`, rsvg-convert or macOS sips) rasterises `assets/svg/logo/mark-dark.svg` and `mark-light.svg` into `apps/roundup/assets/splash/`. Those PNGs are committed, not generated at build time: the plugin reads them on every prebuild and EAS build, and a build machine may have no SVG rasteriser. Run `make splash` and commit after changing the mark. The root layout calls `preventAutoHideAsync`, and `useSplash` hides the screen once the fonts and the saved theme are ready, with a 200 ms fade or none when the device asks for reduced motion.
 
 Web: `src/app/+html.tsx` puts the same mark, centred on the theme background, over the static page. It is fixed to the viewport, so nothing moves, and `useSplash` fades it out (or removes it at once with reduced motion) after hydration. A small inline script applies a saved manual theme before the first paint.
+
+### App icon
+
+The icon follows the device. On iOS 18+ it has three variants that the home screen picks from its appearance setting: light (the Latte mark on the Latte background), dark (the Mocha mark on transparency, over the system's dark backdrop) and tinted (a greyscale mark the system colours). On Android it is an adaptive icon (the Latte mark on `#f2e9e1`) with a monochrome layer that Android 13+ recolours when themed icons are on. The sources are `assets/svg/app-icon/*.svg`; `make icons` (`scripts/make-icons.sh`) rasterises them to 1024 px PNGs in `apps/roundup/assets/icon/`, committed for the same reason as the splash PNGs. A new icon needs a new native build (`make ios`).
 
 ### Tailwind classes
 
