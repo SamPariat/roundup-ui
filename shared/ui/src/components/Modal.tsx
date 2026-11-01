@@ -3,6 +3,7 @@ import type { ComponentRef, ReactElement, ReactNode, RefObject } from 'react'
 import { useCallback, useMemo, useRef } from 'react'
 import {
   AccessibilityInfo,
+  KeyboardAvoidingView,
   Modal as NativeModal,
   Platform,
   ScrollView,
@@ -212,7 +213,10 @@ export const Modal = ({
       transparent
       visible={visible}
     >
-      <View
+      {/* iOS draws the keyboard over the window, so a field in the sheet would sit behind it;
+          padding by the keyboard's height lifts the sheet. Android resizes the window itself. */}
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         className={cn('flex-1 bg-scrim', sheet ? 'justify-end' : 'items-center justify-center p-6')}
       >
         <Surface
@@ -253,7 +257,7 @@ export const Modal = ({
             </ActionContext>
           ) : null}
         </Surface>
-      </View>
+      </KeyboardAvoidingView>
     </NativeModal>
   )
 }
