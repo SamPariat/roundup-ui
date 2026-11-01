@@ -41,11 +41,15 @@ const Themed = ({ fontsReady }: ThemedProps): ReactElement => {
 
   return (
     <View className="flex-1 bg-bg">
-      {/* Web only: the static export's own document already sets lang="en". */}
-      <Head>
-        <link href="/favicon.svg" rel="icon" type="image/svg+xml" />
-        <meta content="dark light" name="color-scheme" />
-      </Head>
+      {/* Web only: the favicon and colour-scheme hint mean nothing on native, where expo-router's
+          Head turns into Apple Handoff and demands a hosted origin we do not have yet. The static
+          export's own document already sets lang="en". */}
+      {Platform.OS === 'web' && (
+        <Head>
+          <link href="/favicon.svg" rel="icon" type="image/svg+xml" />
+          <meta content="dark light" name="color-scheme" />
+        </Head>
+      )}
       <StatusBar style={name === 'mocha' ? 'light' : 'dark'} />
       <Stack
         screenOptions={{ headerShown: false, contentStyle: { backgroundColor: background } }}

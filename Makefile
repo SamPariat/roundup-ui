@@ -3,11 +3,14 @@
 #   make web APP_ENV=prod
 APP_ENV ?= beta
 export APP_ENV
+# Simulator or emulator for make ios / make android; empty lets Expo pick the booted one.
+DEVICE ?=
 
 .PHONY: install \
 	setup \
 	dev \
 	web \
+	prebuild \
 	ios \
 	android \
 	lint \
@@ -48,13 +51,24 @@ dev:
 web:
 	pnpm web
 
-# iOS simulator. Needs Xcode. The glass tab bar needs an iOS 26+ simulator.
-ios:
-	pnpm ios
+# Regenerates ios/ and android/ from app.config.ts from scratch (expo prebuild --clean). Both
+# folders are gitignored and owned by the config, so nothing hand-edited is lost.
+prebuild:
+	pnpm prebuild:ios
+	pnpm prebuild:android
 
-# Android emulator. Needs Android Studio.
+# Clean prebuild of ios/, then builds and runs the iOS development build (expo-dev-client, not
+# Expo Go) on a simulator. Needs Xcode. Glass needs iOS 26+. With several simulators booted, pick
+# one by name or UDID (xcrun simctl list devices booted): make ios DEVICE=225FEA17-...
+ios:
+	pnpm prebuild:ios
+	pnpm ios $(if $(DEVICE),--device $(DEVICE))
+
+# Clean prebuild of android/, then builds and runs the Android development build on an emulator.
+# Needs Android Studio. DEVICE picks an emulator by name, as for ios.
 android:
-	pnpm android
+	pnpm prebuild:android
+	pnpm android $(if $(DEVICE),--device $(DEVICE))
 
 # ESLint with zero warnings allowed, then shellcheck on the scripts and git hooks.
 lint:
