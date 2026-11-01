@@ -403,6 +403,14 @@ export default [
   },
 
   {
+    // The catalog is a developer tool and is never localized: its text is specimen labels and
+    // sample data. The strings inside the components it shows still come from @roundup/i18n.
+    files: ['apps/catalog/src/**/*.tsx'],
+    plugins: { i18next },
+    rules: { 'i18next/no-literal-string': 'off' },
+  },
+
+  {
     // any and never are banned everywhere, including scripts, tool configs and .d.ts shims. Blocks
     // below that set no-restricted-syntax for their files repeat the any and never bans, because a later
     // setting replaces this one.
@@ -434,6 +442,8 @@ export default [
     plugins: { boundaries },
     settings: {
       'boundaries/elements': [
+        // The catalog is one element: it may import ui and i18n and itself, and nothing may import it.
+        { type: 'catalog', pattern: 'apps/catalog/**', partialMatch: false },
         { type: 'routes', pattern: 'apps/roundup/src/app/**', partialMatch: false },
         { type: 'components', pattern: 'apps/roundup/src/components/**', partialMatch: false },
         { type: 'hooks', pattern: 'apps/roundup/src/hooks/**', partialMatch: false },
@@ -480,6 +490,11 @@ export default [
                   },
                 },
               },
+            },
+            {
+              // Not apps/roundup: the two apps share nothing but the packages under shared/.
+              from: { element: { type: 'catalog' } },
+              allow: { to: { element: { type: ['catalog', 'ui', 'i18n'] } } },
             },
             {
               from: { element: { type: 'ui' } },
@@ -529,6 +544,7 @@ export default [
       'shared/ui/src/components/Logo.tsx',
       'shared/ui/src/components/Welcome.tsx',
       'apps/roundup/src/app/_layout.tsx',
+      'apps/catalog/src/app/_layout.tsx',
     ],
     rules: { 'import-x/no-relative-packages': 'off' },
   },
@@ -594,6 +610,10 @@ export default [
       'shared/ui/tests/components/*.tsx',
       'apps/roundup/src/components/*.tsx',
       'apps/roundup/tests/components/*.tsx',
+      'apps/catalog/src/components/*.tsx',
+      'apps/catalog/src/demos/*.tsx',
+      'apps/catalog/tests/components/*.tsx',
+      'apps/catalog/tests/demos/*.tsx',
     ],
     rules: {
       'unicorn/filename-case': ['error', { cases: { pascalCase: true, kebabCase: true } }],
@@ -606,14 +626,14 @@ export default [
   },
   {
     // Route files and special Expo names ([id], (tabs), +not-found, _layout) have framework-mandated names.
-    files: ['apps/roundup/src/app/**/*.{ts,tsx}'],
+    files: ['apps/roundup/src/app/**/*.{ts,tsx}', 'apps/catalog/src/app/**/*.{ts,tsx}'],
     rules: { 'unicorn/filename-case': 'off' },
   },
 
   // ── Tailwind ────────────────────────────────────────────────
   {
     // Only classes theme.css defines. bg-ctp-mauve and bg-[#fff] cannot pass, so roles stay the only palette.
-    files: ['shared/ui/src/**/*.tsx', 'apps/roundup/src/**/*.tsx'],
+    files: ['shared/ui/src/**/*.tsx', 'apps/roundup/src/**/*.tsx', 'apps/catalog/src/**/*.tsx'],
     plugins: { 'better-tailwindcss': betterTailwind },
     settings: {
       'better-tailwindcss': {
@@ -791,8 +811,11 @@ export default [
       'shared/*/jest.setup*.ts',
       'apps/roundup/src/app/**/*.tsx',
       'apps/roundup/src/app/**/*.ts',
+      'apps/catalog/src/app/**/*.tsx',
+      'apps/catalog/src/app/**/*.ts',
       'shared/ui/src/svg.d.ts',
       'apps/roundup/env.d.ts',
+      'apps/catalog/env.d.ts',
     ],
     rules: { 'import-x/no-default-export': 'off' },
   },

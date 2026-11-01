@@ -13,6 +13,9 @@ DEVICE ?=
 	prebuild \
 	ios \
 	android \
+	catalog \
+	catalog-ios \
+	catalog-android \
 	lint \
 	fmt \
 	fmt-check \
@@ -71,6 +74,23 @@ android:
 	pnpm prebuild:android
 	pnpm android $(if $(DEVICE),--device $(DEVICE))
 
+# The component catalog (apps/catalog): every @roundup/ui component in every variant and state, in
+# Mocha and Latte. Web only, served by Metro at http://localhost:8081 (stop `make web` first, or
+# pass --port to Expo). It reads no API, so APP_ENV does not matter to it.
+catalog:
+	pnpm catalog
+
+# Clean prebuild of the catalog's ios/, then builds and runs it as "Roundup Catalog", next to
+# Roundup Beta. DEVICE picks the simulator, as for ios.
+catalog-ios:
+	pnpm prebuild:catalog:ios
+	pnpm catalog:ios $(if $(DEVICE),--device $(DEVICE))
+
+# Clean prebuild of the catalog's android/, then builds and runs it on an emulator.
+catalog-android:
+	pnpm prebuild:catalog:android
+	pnpm catalog:android $(if $(DEVICE),--device $(DEVICE))
+
 # ESLint with zero warnings allowed, then shellcheck on the scripts and git hooks.
 lint:
 	pnpm lint
@@ -112,7 +132,7 @@ syncpack:
 files:
 	pnpm run files
 
-# Expo's own checks (dependency versions against the SDK, then expo-doctor), then the update check.
+# Expo's own checks for both apps (dependency versions against the SDK, then expo-doctor), then the update check.
 doctor:
 	pnpm run doctor
 	pnpm run updates

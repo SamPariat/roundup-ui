@@ -8,9 +8,11 @@ set -euo pipefail
 
 root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 out="$root/apps/roundup/assets/splash"
+# The catalog app shows the same splash, so it gets a copy of each PNG.
+copies=("$root/apps/catalog/assets/splash")
 size=288
 
-mkdir -p "$out"
+mkdir -p "$out" "${copies[@]}"
 
 for variant in dark light; do
   source="$root/assets/svg/logo/mark-$variant.svg"
@@ -26,4 +28,9 @@ for variant in dark light; do
   fi
 
   echo "splash: wrote $target"
+
+  for copy in "${copies[@]}"; do
+    cp "$target" "$copy/mark-$variant.png"
+    echo "splash: wrote $copy/mark-$variant.png"
+  done
 done

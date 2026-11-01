@@ -2,6 +2,7 @@ import type { ReactElement } from 'react'
 
 import { useRouter } from 'expo-router'
 import { useCallback } from 'react'
+import { ScrollView } from 'react-native'
 
 import { Screen, Welcome } from '@roundup/ui'
 
@@ -17,9 +18,13 @@ export default function WelcomeScreen(): ReactElement {
     router.push('/squads')
   }, [router])
 
+  // On a phone too short for the page (an iPhone SE, or with large text) it scrolls; on a taller
+  // one the content container grows, so Welcome fills the screen and centres its middle section.
   return (
     <Screen>
-      <Welcome onStart={start} />
+      <ScrollView contentContainerClassName="grow">
+        <Welcome onStart={start} />
+      </ScrollView>
     </Screen>
   )
 }

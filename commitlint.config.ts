@@ -16,7 +16,7 @@ export default {
     'scope-enum': [
       RuleConfigSeverity.Error,
       'always',
-      ['app', 'ui', 'i18n', 'config', 'infra', 'deps'],
+      ['app', 'catalog', 'ui', 'i18n', 'config', 'infra', 'deps'],
     ],
     // Subjects read as lowercase phrases.
     'subject-case': [RuleConfigSeverity.Error, 'always', 'lower-case'],
