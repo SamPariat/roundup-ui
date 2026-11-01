@@ -66,7 +66,7 @@ const ThemeOption = ({ checked, onChange, option }: ThemeOptionProps): ReactElem
       accessibilityRole="radio"
       aria-checked={checked}
       className={cn(
-        'min-h-12 flex-1 flex-row items-center justify-center gap-2 rounded-lg focus:outline-2 focus:outline-offset-2 focus:outline-focus-ring',
+        'min-h-12 flex-1 flex-row items-center justify-center gap-2 rounded-lg px-3 focus:outline-2 focus:outline-offset-2 focus:outline-focus-ring',
         checked ? 'border border-border bg-bg-raised' : 'hover:bg-bg-hover',
       )}
       onPress={press}
