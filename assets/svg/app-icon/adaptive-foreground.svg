@@ -1,0 +1,8 @@
+<!-- Android adaptive icon foreground: the Latte mark inside the 66% safe zone, on transparent. The background colour comes from app.config.ts. -->
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <g transform="translate(281 281) scale(14.4)">
+    <rect x="2" y="2" width="11" height="28" rx="5.5" fill="#8839ef"/>
+    <circle cx="21" cy="10" r="8" fill="#fe640b"/>
+    <circle cx="24" cy="25" r="5" fill="#7287fd"/>
+  </g>
+</svg>

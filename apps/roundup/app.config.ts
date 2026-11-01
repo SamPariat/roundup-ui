@@ -9,11 +9,28 @@ export default {
   version: '0.1.0',
   orientation: 'default',
   userInterfaceStyle: 'automatic',
+  // The light icon is the fallback wherever no themed variant applies. The PNGs come from
+  // assets/svg/app-icon through scripts/make-icons.sh (make icons) and are committed.
+  icon: './assets/icon/icon-light.png',
   android: {
     package: process.env.APP_ENV === 'prod' ? 'app.roundup.client' : 'app.roundup.client.beta',
+    // The mark on the Latte background. Android 13+ recolours the monochrome layer when the
+    // person turns on themed icons.
+    adaptiveIcon: {
+      foregroundImage: './assets/icon/adaptive-foreground.png',
+      monochromeImage: './assets/icon/adaptive-monochrome.png',
+      backgroundColor: '#f2e9e1',
+    },
   },
   ios: {
     supportsTablet: true,
+    // iOS 18+ follows the home screen appearance: Latte when light, the Mocha mark on the system's
+    // dark backdrop when dark, and a greyscale mark the system tints when tinted.
+    icon: {
+      light: './assets/icon/icon-light.png',
+      dark: './assets/icon/icon-dark.png',
+      tinted: './assets/icon/icon-tinted.png',
+    },
     bundleIdentifier:
       process.env.APP_ENV === 'prod' ? 'app.roundup.client' : 'app.roundup.client.beta',
   },

@@ -19,6 +19,7 @@ DEVICE ?=
 	typecheck \
 	test \
 	splash \
+	icons \
 	knip \
 	syncpack \
 	files \
@@ -92,6 +93,11 @@ test:
 # Rasterises assets/svg/logo/mark-*.svg into the PNGs the native splash screen needs. Commit the result.
 splash:
 	./scripts/make-splash.sh
+
+# Rasterises assets/svg/app-icon/*.svg into the app icon PNGs (light, dark and tinted on iOS;
+# adaptive foreground and themed monochrome on Android). Commit the result.
+icons:
+	./scripts/make-icons.sh
 
 # Unused files, exports and dependencies.
 knip:
