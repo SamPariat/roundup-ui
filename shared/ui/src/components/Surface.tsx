@@ -4,11 +4,11 @@ import type { ViewProps } from 'react-native'
 import { GlassView } from 'expo-glass-effect'
 import { View } from 'react-native'
 
-import type { RoleColor } from '../lib/useRoleColor.ts'
+import type { RoleColor } from '../lib/useRoleColor'
 
 import { cn } from '../lib/cn.ts'
 import { useGlass } from '../lib/useGlass.ts'
-import { useRoleColor } from '../lib/useRoleColor.ts'
+import { useRoleColor } from '../lib/useRoleColor'
 import { useTheme } from '../theme/theme.tsx'
 
 /** How one surface tone looks. */

@@ -1,5 +1,5 @@
 /** Role colours that a prop (not a class) has to receive. */
-export type RoleColor = 'bg' | 'bg-raised' | 'bg-sunken' | 'fg-subtle'
+export type RoleColor = 'accent' | 'bg' | 'bg-raised' | 'bg-sunken' | 'fg-subtle'
 
 /**
  * A role colour for the few props that cannot take a className, such as a placeholder or a glass

@@ -252,6 +252,15 @@ export default [
                 'Use className with cva for styling, and Pressable (or @roundup/ui Button) for taps.',
             },
           ],
+          patterns: [
+            {
+              // Metro picks svg.native.ts / useRoleColor.native.ts only for an extensionless
+              // import; with `.ts` it loads the web file on iOS and Android too.
+              regex: String.raw`/(svg|useRoleColor)\.ts$`,
+              message:
+                'Import platform-split modules without the extension (../lib/svg) so Metro can pick the .native file.',
+            },
+          ],
         },
       ],
       'no-restricted-syntax': [

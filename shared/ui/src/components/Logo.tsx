@@ -5,7 +5,7 @@ import { View } from 'react-native'
 
 import { useT } from '@roundup/i18n'
 
-import type { Styled } from '../lib/svg.ts'
+import type { Styled } from '../lib/svg'
 import type { Theme } from '../theme/theme.tsx'
 
 import LockupDark from '../../../../assets/svg/logo/lockup-dark.svg'
@@ -18,7 +18,7 @@ import WordmarkDark from '../../../../assets/svg/logo/wordmark-dark.svg'
 import WordmarkLight from '../../../../assets/svg/logo/wordmark-light.svg'
 import WordmarkMono from '../../../../assets/svg/logo/wordmark-mono.svg'
 import { cn } from '../lib/cn.ts'
-import { styleSvg } from '../lib/svg.ts'
+import { styleSvg } from '../lib/svg'
 import { useTheme } from '../theme/theme.tsx'
 
 const SIZES = { sm: 24, md: 32, lg: 48, xl: 96 } as const

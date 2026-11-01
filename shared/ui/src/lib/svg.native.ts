@@ -2,7 +2,7 @@ import type { ComponentType, FC } from 'react'
 
 import { styled } from 'nativewind'
 
-import type { Styled } from './svg.ts'
+import type { Styled } from './svg'
 
 /**
  * react-native-svg reads colour from props (`color`, `fill`, `stroke`), not from style, so a

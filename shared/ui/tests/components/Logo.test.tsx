@@ -8,6 +8,12 @@ import { THEME_STORAGE_KEY } from '../../src/theme/theme.tsx'
 import { renderWithTheme } from '../helpers/render.tsx'
 import { latte, mocha } from '../helpers/theme-css.ts'
 
+// Jest picks svg.native.ts, whose styled() wrapper hands the class to react-native-css, and that
+// has no compiled stylesheet under Jest. The web version passes the class straight through, so
+// these tests can see which class the artwork was given; the native colour mapping itself is
+// checked on a simulator.
+jest.mock('../../src/lib/svg', () => jest.requireActual<object>('../../src/lib/svg.ts'))
+
 // Jest runs this file as CommonJS, where __dirname is the way to find the repo's assets folder.
 
 const LOGO_DIR = path.resolve(__dirname, '../../../../assets/svg/logo')

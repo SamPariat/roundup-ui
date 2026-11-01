@@ -5,7 +5,7 @@ import { TextInput } from 'react-native'
 import type { IconName } from '../lib/icons.ts'
 
 import { useFocus } from '../lib/useFocus.ts'
-import { useRoleColor } from '../lib/useRoleColor.ts'
+import { useRoleColor } from '../lib/useRoleColor'
 import { FieldFrame } from './Field.tsx'
 import { Icon } from './Icon.tsx'
 

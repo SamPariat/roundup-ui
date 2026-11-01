@@ -5,7 +5,7 @@ import Svg, { Rect } from 'react-native-svg'
 
 import { useT } from '@roundup/i18n'
 
-import { styleSvg } from '../lib/svg.ts'
+import { styleSvg } from '../lib/svg'
 import { Badge } from './Badge.tsx'
 import { Button } from './Button.tsx'
 import { Icon } from './Icon.tsx'
