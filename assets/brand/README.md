@@ -30,4 +30,4 @@ All SVG artwork lives under `assets/svg`; only the font licence stays here. The 
 
 ## How these were made
 
-The wordmark and tagline are [Onest](https://fonts.google.com/specimen/Onest) (SIL Open Font License, see `OFL-Onest.txt`), outlined to SVG paths so they look the same everywhere without loading a font. Text was shaped with HarfBuzz and outlined with fontTools from Onest's variable font at weight 700 (wordmark) and 500 (tagline). The mark files are copied from the design system; the lockup and wordmark files were cropped to their artwork (the old files carried the clear space).
+The wordmark and tagline are [Onest](https://fonts.google.com/specimen/Onest) (SIL Open Font License, see [`../fonts/OFL-Onest.txt`](../fonts/OFL-Onest.txt)), outlined to SVG paths so they look the same everywhere without loading a font. Text was shaped with HarfBuzz and outlined with fontTools from Onest's variable font at weight 700 (wordmark) and 500 (tagline). The mark files are copied from the design system; the lockup and wordmark files were cropped to their artwork (the old files carried the clear space).
