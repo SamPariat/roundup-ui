@@ -49,13 +49,19 @@ fi
 
 # --- asset names -----------------------------------------------------------------------------
 # Everything under assets/svg, plus images and fonts anywhere. Licence and notes files in
-# assets/brand keep their conventional names.
+# assets/brand keep their conventional names, and the fonts in assets/fonts keep their PostScript
+# names (Onest-Regular.ttf): Android takes a font's family name from its file name and iOS from
+# the PostScript name, so the two must match for one font-family to work on both.
 bad_names=""
 
 while IFS= read -r file; do
   [ -n "$file" ] || continue
   case "$file" in node_modules/*) continue ;; esac
   name=${file##*/}
+
+  if [[ "$file" == assets/fonts/* && "$name" =~ ^[A-Z][A-Za-z0-9]*-[A-Z][A-Za-z0-9]*\.(ttf|otf)$ ]]; then
+    continue
+  fi
 
   if [[ ! "$name" =~ ^[a-z0-9]+(-[a-z0-9]+)*(\.[a-z0-9]+)*$ ]]; then
     bad_names+="  $file"$'\n'

@@ -26,7 +26,6 @@ catalog:
   '@eslint/compat': '2.1.1'
   '@eslint/js': '9.39.5'
   '@stylistic/eslint-plugin': '5.10.0'
-  '@expo-google-fonts/onest': '0.4.2'
   '@expo/metro-runtime': '58.0.16'
   '@react-native-async-storage/async-storage': '2.2.0'
   '@svgr/core': '8.1.0'

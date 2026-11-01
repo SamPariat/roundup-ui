@@ -3,7 +3,7 @@ import type { ReactElement, ReactNode } from 'react'
 import { View } from 'react-native'
 import Svg, { Circle, Path, Rect } from 'react-native-svg'
 
-import { styleSvg } from '../lib/svg.ts'
+import { styleSvg } from '../lib/svg'
 import { Text } from './Text.tsx'
 
 /** Props for EmptyState. */

@@ -1,6 +1,6 @@
 import { useUnstableNativeVariable } from 'nativewind'
 
-import type { RoleColor } from './useRoleColor.ts'
+import type { RoleColor } from './useRoleColor'
 
 // The package's types resolve to its web build, whose stub takes no argument; the native build takes the name.
 const useVariable = useUnstableNativeVariable as (name: string) => unknown

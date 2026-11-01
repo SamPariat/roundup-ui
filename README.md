@@ -103,7 +103,8 @@ roundup-ui/
 │   └── ui/             # @roundup/ui: the design-system components, ThemeProvider and useTheme
 ├── assets/
 │   ├── svg/            # every SVG: brand/ (README banner, divider), logo/, illustrations/, icons/
-│   └── brand/          # the Onest font licence and notes on the logo files
+│   ├── brand/          # notes on the logo files
+│   └── fonts/          # Onest, embedded by the expo-font plugin, and its licence
 ├── eslint.config.ts, prettier.config.ts, knip.ts, commitlint.config.ts, lint-staged.config.ts
 │                       # each tool's settings, self-contained in its own file
 ├── tsconfig.base.json, jest-svg-transform.ts, types.d.ts  # shared TypeScript base, SVG Jest transform, plugin typings

@@ -20,7 +20,19 @@ export default {
   web: { bundler: 'metro', output: 'static' },
   plugins: [
     ['expo-router', { root: './src/app' }],
-    'expo-font',
+    [
+      'expo-font',
+      {
+        // Onest, embedded in the native build so text never waits on a download. Files are named
+        // after their PostScript names, the family name iOS and Android both use (see theme.css).
+        fonts: [
+          '../../assets/fonts/Onest-Regular.ttf',
+          '../../assets/fonts/Onest-Medium.ttf',
+          '../../assets/fonts/Onest-SemiBold.ttf',
+          '../../assets/fonts/Onest-Bold.ttf',
+        ],
+      },
+    ],
     'expo-localization',
     [
       'expo-splash-screen',

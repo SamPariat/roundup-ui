@@ -278,66 +278,85 @@
   box-shadow: 0 8px 24px var(--shadow-toast-color);
 }
 
-/* Text styles (the design system's type scale). Font families are the Onest weights that
- * @expo-google-fonts/onest registers, so the names must match. */
+/* Text styles (the design system's type scale). Font families are the PostScript names of the
+ * files in assets/fonts: app.config.ts embeds them on iOS (which looks fonts up by PostScript name)
+ * and Android (by file name, so the files carry the same names), and the root layout registers
+ * them under those names on the web. */
+/* The Welcome headline, larger than display. Line heights are fixed pixels: a Tailwind
+ * text-4xl/10 compiles to calc(var(--spacing) * 10), which react-native-css cannot give a unit,
+ * and iOS reads a unitless line height as a multiple of the font size. */
+@utility type-hero {
+  font-family: Onest-Bold;
+  font-size: 36px;
+  line-height: 40px;
+  letter-spacing: -1.26px;
+}
+
+@utility type-hero-wide {
+  font-family: Onest-Bold;
+  font-size: 64px;
+  line-height: 68px;
+  letter-spacing: -2.88px;
+}
+
 @utility type-display {
-  font-family: Onest_700Bold;
+  font-family: Onest-Bold;
   font-size: 32px;
   line-height: 40px;
   letter-spacing: -0.96px;
 }
 
 @utility type-title {
-  font-family: Onest_700Bold;
+  font-family: Onest-Bold;
   font-size: 24px;
   line-height: 32px;
   letter-spacing: -0.48px;
 }
 
 @utility type-heading {
-  font-family: Onest_600SemiBold;
+  font-family: Onest-SemiBold;
   font-size: 20px;
   line-height: 28px;
   letter-spacing: -0.2px;
 }
 
 @utility type-body {
-  font-family: Onest_400Regular;
+  font-family: Onest-Regular;
   font-size: 16px;
   line-height: 24px;
   letter-spacing: 0px;
 }
 
 @utility type-body-strong {
-  font-family: Onest_600SemiBold;
+  font-family: Onest-SemiBold;
   font-size: 16px;
   line-height: 24px;
   letter-spacing: 0px;
 }
 
 @utility type-body-sm {
-  font-family: Onest_400Regular;
+  font-family: Onest-Regular;
   font-size: 14px;
   line-height: 20px;
   letter-spacing: 0px;
 }
 
 @utility type-label {
-  font-family: Onest_600SemiBold;
+  font-family: Onest-SemiBold;
   font-size: 14px;
   line-height: 20px;
   letter-spacing: 0px;
 }
 
 @utility type-caption {
-  font-family: Onest_500Medium;
+  font-family: Onest-Medium;
   font-size: 12px;
   line-height: 16px;
   letter-spacing: 0px;
 }
 
 @utility type-otp {
-  font-family: Onest_600SemiBold;
+  font-family: Onest-SemiBold;
   font-size: 24px;
   line-height: 32px;
   letter-spacing: 0px;
@@ -345,7 +364,7 @@
 }
 
 @utility type-numeric {
-  font-family: Onest_500Medium;
+  font-family: Onest-Medium;
   font-size: 14px;
   line-height: 20px;
   letter-spacing: 0px;
@@ -354,17 +373,17 @@
 
 /* One weight at a time, for the few places that need only a family. */
 @utility font-onest-400 {
-  font-family: Onest_400Regular;
+  font-family: Onest-Regular;
 }
 
 @utility font-onest-500 {
-  font-family: Onest_500Medium;
+  font-family: Onest-Medium;
 }
 
 @utility font-onest-600 {
-  font-family: Onest_600SemiBold;
+  font-family: Onest-SemiBold;
 }
 
 @utility font-onest-700 {
-  font-family: Onest_700Bold;
+  font-family: Onest-Bold;
 }

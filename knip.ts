@@ -36,7 +36,6 @@ export default {
         'expo-dev-client',
         'babel-preset-expo',
         'babel-plugin-react-compiler',
-        'expo-font',
         'expo-system-ui',
         // Run as `with-env.sh expo-doctor` by the doctor script, which knip cannot follow.
         'expo-doctor',

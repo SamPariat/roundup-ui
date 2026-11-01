@@ -252,6 +252,15 @@ export default [
                 'Use className with cva for styling, and Pressable (or @roundup/ui Button) for taps.',
             },
           ],
+          patterns: [
+            {
+              // Metro picks svg.native.ts / useRoleColor.native.ts only for an extensionless
+              // import; with `.ts` it loads the web file on iOS and Android too.
+              regex: String.raw`/(svg|useRoleColor)\.ts$`,
+              message:
+                'Import platform-split modules without the extension (../lib/svg) so Metro can pick the .native file.',
+            },
+          ],
         },
       ],
       'no-restricted-syntax': [
@@ -512,13 +521,14 @@ export default [
     },
   },
   {
-    // SVG artwork lives in the repo-root assets/ folder, which npm sees as the root package, so
+    // SVG artwork and fonts live in the repo-root assets/ folder, which npm sees as the root package, so
     // no-relative-packages would rewrite these paths into a package name that resolves nowhere.
     // There is no package to import the files from; a relative path is the only form that works.
     files: [
       'shared/ui/src/lib/icons.ts',
       'shared/ui/src/components/Logo.tsx',
       'shared/ui/src/components/Welcome.tsx',
+      'apps/roundup/src/app/_layout.tsx',
     ],
     rules: { 'import-x/no-relative-packages': 'off' },
   },
@@ -782,6 +792,7 @@ export default [
       'apps/roundup/src/app/**/*.tsx',
       'apps/roundup/src/app/**/*.ts',
       'shared/ui/src/svg.d.ts',
+      'apps/roundup/env.d.ts',
     ],
     rules: { 'import-x/no-default-export': 'off' },
   },

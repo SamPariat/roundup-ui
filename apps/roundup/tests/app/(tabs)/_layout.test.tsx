@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
 
 import { render } from '@testing-library/react-native'
+import { SafeAreaProvider } from 'react-native-safe-area-context'
 
 import Ios from '../../../src/app/(tabs)/_layout.ios.tsx'
 import Shared from '../../../src/app/(tabs)/_layout.tsx'
@@ -91,13 +92,25 @@ const triggersWith = (prefix: string): string[] =>
     .filter((entry) => entry.startsWith(prefix))
     .map((entry) => entry.slice(prefix.length))
 
+/** Insets and frame of a notched phone, so the safe-area hooks have values. */
+const METRICS = {
+  frame: { height: 844, width: 390, x: 0, y: 0 },
+  insets: { bottom: 34, left: 0, right: 0, top: 47 },
+}
+
 describe('tab layouts', () => {
   beforeEach(() => {
     mockTriggers.length = 0
   })
 
   it('give the iOS system tab bar and the web shell the same routes in the same order', async () => {
-    await render(<Ios />)
+    // The iOS layout reads the status bar inset to pad each screen.
+    await render(
+      <SafeAreaProvider initialMetrics={METRICS}>
+        <Ios />
+      </SafeAreaProvider>,
+    )
+
     await render(<Shared />)
 
     expect(triggersWith('native:')).toEqual(['squads', 'explore', 'profile'])

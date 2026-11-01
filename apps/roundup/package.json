@@ -4,7 +4,6 @@
   "private": true,
   "main": "expo-router/entry",
   "dependencies": {
-    "@expo-google-fonts/onest": "catalog:",
     "@expo/metro-runtime": "catalog:",
     "@react-native-async-storage/async-storage": "catalog:",
     "@roundup/i18n": "workspace:*",

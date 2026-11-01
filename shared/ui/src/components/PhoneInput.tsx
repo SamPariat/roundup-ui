@@ -5,7 +5,7 @@ import { TextInput, View } from 'react-native'
 import { useT } from '@roundup/i18n'
 
 import { useFocus } from '../lib/useFocus.ts'
-import { useRoleColor } from '../lib/useRoleColor.ts'
+import { useRoleColor } from '../lib/useRoleColor'
 import { FieldFrame } from './Field.tsx'
 import { Text } from './Text.tsx'
 

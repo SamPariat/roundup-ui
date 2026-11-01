@@ -1,12 +1,6 @@
 import type { ReactElement } from 'react'
 
-import {
-  Onest_400Regular,
-  Onest_500Medium,
-  Onest_600SemiBold,
-  Onest_700Bold,
-  useFonts,
-} from '@expo-google-fonts/onest'
+import { useFonts } from 'expo-font'
 import { Stack } from 'expo-router'
 import Head from 'expo-router/head'
 import { preventAutoHideAsync } from 'expo-splash-screen'
@@ -18,9 +12,25 @@ import '../../global.css'
 
 import { ThemeProvider, useRoleColor, useTheme } from '@roundup/ui'
 
+import OnestBold from '../../../../assets/fonts/Onest-Bold.ttf'
+import OnestMedium from '../../../../assets/fonts/Onest-Medium.ttf'
+import OnestRegular from '../../../../assets/fonts/Onest-Regular.ttf'
+import OnestSemiBold from '../../../../assets/fonts/Onest-SemiBold.ttf'
 import { useSplash } from '../hooks/useSplash.ts'
 
 void preventAutoHideAsync()
+
+// iOS and Android get Onest from the expo-font plugin in app.config.ts, built into the binary. The
+// web has no binary, so it registers the same files under the same names at runtime.
+const FONTS =
+  Platform.OS === 'web'
+    ? {
+        'Onest-Bold': OnestBold,
+        'Onest-Medium': OnestMedium,
+        'Onest-Regular': OnestRegular,
+        'Onest-SemiBold': OnestSemiBold,
+      }
+    : {}
 
 /** Props for Themed. */
 interface ThemedProps {
@@ -63,12 +73,7 @@ const Themed = ({ fontsReady }: ThemedProps): ReactElement => {
  * @returns The providers around the stack, or null while fonts load on native.
  */
 export default function RootLayout(): null | ReactElement {
-  const [loaded, error] = useFonts({
-    Onest_400Regular,
-    Onest_500Medium,
-    Onest_600SemiBold,
-    Onest_700Bold,
-  })
+  const [loaded, error] = useFonts(FONTS)
 
   const ready = loaded || error !== null
 

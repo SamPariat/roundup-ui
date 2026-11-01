@@ -1,7 +1,7 @@
 import type { FC } from 'react'
 import type { SvgProps } from 'react-native-svg'
 
-import type { Styled } from './svg.ts'
+import type { Styled } from './svg'
 
 import Alert from '../../../../assets/svg/icons/alert.svg'
 import Back from '../../../../assets/svg/icons/back.svg'
@@ -30,7 +30,7 @@ import Squads from '../../../../assets/svg/icons/squads.svg'
 import Star from '../../../../assets/svg/icons/star.svg'
 import Sun from '../../../../assets/svg/icons/sun.svg'
 import Trash from '../../../../assets/svg/icons/trash.svg'
-import { styleSvg } from './svg.ts'
+import { styleSvg } from './svg'
 
 /**
  * Each icon is an SVG file in assets/svg/icons (24-unit grid, 2px round strokes, currentColor),
