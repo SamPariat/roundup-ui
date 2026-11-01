@@ -41,6 +41,24 @@ export default {
         'expo-doctor',
       ],
     },
+    'apps/catalog': {
+      // Expo Router discovers routes by file name, so every route is an entry.
+      entry: ['src/app/**/*.{ts,tsx}', 'metro.config.ts'],
+      project: ['**/*.{ts,tsx,css}'],
+      ignoreDependencies: [
+        // Native modules must be direct dependencies of the app so Expo autolinking finds them
+        // (pnpm does not hoist them from shared/ui or shared/i18n), even though only those
+        // packages import them.
+        'expo-glass-effect',
+        'expo-localization',
+        // Named in app.config.ts plugins or loaded by Expo itself, never imported.
+        // expo-dev-client is linked natively by expo run:ios / run:android and never imported.
+        'expo-dev-client',
+        'babel-preset-expo',
+        'babel-plugin-react-compiler',
+        'expo-system-ui',
+      ],
+    },
     'shared/i18n': {
       project: ['src/**/*.ts', 'tests/**/*.ts', '*.ts'],
     },

@@ -1,17 +1,19 @@
 #!/usr/bin/env bash
 # Rasterises the app icon sources in assets/svg/app-icon into the 1024 px PNGs that app.config.ts
-# points at (Expo's icon fields take PNG, not SVG). Run it after changing a source and commit the
-# result, like the splash PNGs: every prebuild and EAS build reads them, and a build machine may
-# have no SVG rasteriser.
+# points at (Expo's icon fields take PNG, not SVG), for apps/roundup and apps/catalog alike. Run it
+# after changing a source and commit the result, like the splash PNGs: every prebuild and EAS build
+# reads them, and a build machine may have no SVG rasteriser.
 # Uses rsvg-convert when installed (brew install librsvg, or apt install librsvg2-bin) and falls
 # back to sips, which ships with macOS.
 set -euo pipefail
 
 root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 out="$root/apps/roundup/assets/icon"
+# The catalog app wears the same icon, so it gets a copy of each PNG.
+copies=("$root/apps/catalog/assets/icon")
 size=1024
 
-mkdir -p "$out"
+mkdir -p "$out" "${copies[@]}"
 
 for name in icon-light icon-dark icon-tinted adaptive-foreground adaptive-monochrome; do
   source="$root/assets/svg/app-icon/$name.svg"
@@ -27,4 +29,9 @@ for name in icon-light icon-dark icon-tinted adaptive-foreground adaptive-monoch
   fi
 
   echo "icons: wrote $target"
+
+  for copy in "${copies[@]}"; do
+    cp "$target" "$copy/$name.png"
+    echo "icons: wrote $copy/$name.png"
+  done
 done

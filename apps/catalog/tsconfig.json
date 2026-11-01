@@ -1,0 +1,18 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "types": ["jest", "node"],
+    "paths": {}
+  },
+  "include": [
+    "src",
+    "tests",
+    "*.ts",
+    "*.tsx",
+    "../../shared/ui/src/svg.d.ts",
+    ".expo/types/**/*.ts",
+    "expo-env.d.ts",
+    "nativewind-env.d.ts"
+  ],
+  "exclude": ["node_modules", "dist"]
+}
