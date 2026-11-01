@@ -41,6 +41,7 @@ Thumbs.db
 # ── IDE ──────────────────────────────────────────────────────
 # Editor settings are personal and stay local.
 .vscode/
+.zed/
 .idea/
 *.iml
 
