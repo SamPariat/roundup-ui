@@ -45,7 +45,15 @@ export default function ComponentScreen(): ReactElement {
     <>
       <Stack.Screen options={{ title: `${title} · Roundup Catalog` }} />
       <Screen header={wide ? undefined : <TopAppBar onBack={back} title={title} />}>
-        <ScrollView contentContainerClassName="mx-auto w-full max-w-content gap-6 p-4 pb-12 md:p-8">
+        {/* iOS draws the keyboard over the page: automaticallyAdjustKeyboardInsets scrolls a
+            focused field clear of it. Taps on a button reach it while the keyboard is up, and
+            dragging the page down dismisses the keyboard. */}
+        <ScrollView
+          automaticallyAdjustKeyboardInsets
+          contentContainerClassName="mx-auto w-full max-w-content gap-6 p-4 pb-12 md:p-8"
+          keyboardDismissMode="interactive"
+          keyboardShouldPersistTaps="handled"
+        >
           {wide ? <PageHeader subtitle={summary} title={title} /> : null}
           <Toolbar />
           <Frame>

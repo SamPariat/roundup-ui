@@ -1,8 +1,13 @@
 import type { ReactElement, ReactNode } from 'react'
 
-import { View } from 'react-native'
+import { Platform, View } from 'react-native'
 
-import { Text } from '@roundup/ui'
+import { cn, Text } from '@roundup/ui'
+
+// Tailwind sets border-style through --tw-border-style, which the web keeps to the element that
+// declares it. react-native-css lets it inherit, so on iOS and Android a dashed box would turn
+// every bordered component inside it (a TextField, a Chip) dashed too. Native draws it solid.
+const DASHED = Platform.OS === 'web' ? 'border-dashed' : ''
 
 /** Props for Specimen. */
 export interface SpecimenProps {
@@ -28,6 +33,6 @@ export const Specimen = ({ children, note, title }: SpecimenProps): ReactElement
         {note}
       </Text>
     )}
-    <View className="gap-3 rounded-xl border border-dashed border-border p-4">{children}</View>
+    <View className={cn('gap-3 rounded-xl border border-border p-4', DASHED)}>{children}</View>
   </View>
 )
