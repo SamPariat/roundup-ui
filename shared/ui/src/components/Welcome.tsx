@@ -72,11 +72,12 @@ export const Welcome = ({ body, onStart, startLabel, title }: WelcomeProps): Rea
   // The page and its middle section grow to fill a tall screen but never shrink (grow, not
   // flex-1): squeezed below their content, React Native would draw the artwork over the logo and
   // the points over the button. A screen too short for it scrolls instead, so put Welcome in a
-  // ScrollView whose content container grows.
+  // ScrollView whose content container grows. No min-h-full: in a parent sized by its content, iOS
+  // resolves "at least as tall as my parent" in a loop and the page ran thousands of points tall.
   return (
     <View
       accessibilityLabel={t('welcome.label')}
-      className="min-h-full w-full grow bg-bg"
+      className="w-full grow bg-bg"
       onLayout={handleLayout}
     >
       <View
