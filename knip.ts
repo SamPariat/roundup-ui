@@ -62,6 +62,11 @@ export default {
     'shared/api': {
       project: ['src/**/*.ts', 'tests/**/*.ts', '*.ts'],
     },
+    'shared/core': {
+      // Metro picks the .native.ts twin of a file on iOS and Android; nothing imports it by name.
+      entry: ['src/**/*.native.ts'],
+      project: ['src/**/*.{ts,tsx}', 'tests/**/*.{ts,tsx}', '*.ts'],
+    },
     'shared/i18n': {
       project: ['src/**/*.ts', 'tests/**/*.ts', '*.ts'],
     },

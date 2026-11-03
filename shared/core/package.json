@@ -1,0 +1,30 @@
+{
+  "name": "@roundup/core",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "jest"
+  },
+  "dependencies": {
+    "@roundup/api": "workspace:*",
+    "@roundup/i18n": "workspace:*",
+    "@tanstack/react-query": "catalog:",
+    "expo-secure-store": "catalog:",
+    "react": "catalog:",
+    "react-native": "catalog:"
+  },
+  "devDependencies": {
+    "@testing-library/react-native": "catalog:",
+    "@types/jest": "catalog:",
+    "@types/react": "catalog:",
+    "jest": "catalog:",
+    "jest-expo": "catalog:",
+    "test-renderer": "catalog:",
+    "typescript": "catalog:"
+  }
+}

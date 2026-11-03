@@ -83,6 +83,17 @@ export const en = {
       },
     },
   },
+  errors: {
+    invalidPhone: 'Enter a 10-digit mobile number that starts with 6, 7, 8 or 9.',
+    invalidName: 'Enter a name between 1 and 50 characters.',
+    wrongCode: "That code isn't right. Check it and try again.",
+    codeExpired: 'That code has expired or was tried too many times. Ask for a new one.',
+    tooManyRequests: 'Too many tries. Wait a few minutes and try again.',
+    offline: "You're offline. Check your connection and try again.",
+    generic: 'Something went wrong. Try again.',
+    genericWithId:
+      'Something went wrong. Try again. If it keeps happening, quote this reference: {{requestId}}',
+  },
   screens: {
     squads: {
       emptyTitle: 'No squads yet',
