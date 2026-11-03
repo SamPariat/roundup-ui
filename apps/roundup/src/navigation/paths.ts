@@ -54,6 +54,12 @@ export const paths = {
      * @returns The path with its parameters.
      */
     code: route('/sign-in/code') as (query: CodeQuery) => Link<'/sign-in/code', CodeQuery>,
+    /**
+     * Sign-in step three, for a first sign-in: the name.
+     * @param query - Extra query parameters, if any.
+     * @returns The path, or the path with its parameters.
+     */
+    name: route('/sign-in/name'),
   },
   tabs: {
     /**

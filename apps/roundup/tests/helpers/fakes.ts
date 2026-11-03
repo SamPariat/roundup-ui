@@ -98,66 +98,90 @@ const envelope = (data: unknown, status = 200): Response =>
   Response.json({ data, success: true }, { status })
 
 /**
- * Replaces global fetch with a backend that knows refresh, the profile and logout.
+ * Builds the profile the users route returns.
+ * @param name - The name on the profile.
+ * @returns The response.
+ */
+const profile = (name: string): Response =>
+  envelope({
+    avatarURL: '',
+    createdAt: '2026-01-01T00:00:00Z',
+    id: 'u1',
+    name,
+    phone: '+919876543210',
+    updatedAt: '2026-01-01T00:00:00Z',
+  })
+
+/**
+ * Builds a token pair for the auth routes.
+ * @param refreshToken - The refresh token in the pair.
+ * @param extra - Extra fields, such as the login response's isNewUser.
+ * @returns The response.
+ */
+const tokens = (refreshToken: string, extra: Record<string, unknown> = {}): Response =>
+  envelope({
+    accessToken: 'access',
+    accessTokenExpiresAt: '2030-01-01T00:00:00Z',
+    refreshToken,
+    refreshTokenExpiresAt: '2030-02-01T00:00:00Z',
+    ...extra,
+  })
+
+/**
+ * Answers the sign-in routes: request code and verify.
+ * @param path - The request path.
+ * @param backend - What the backend is told to do.
+ * @returns The response, or undefined when the path is not a sign-in route.
+ */
+const signInAnswer = async (path: string, backend: Backend): Promise<Response | undefined> => {
+  if (path === '/api/v1/auth/otp/request') {
+    if (backend.hangOtp === true) await hang()
+
+    return backend.otp === undefined || backend.otp === 202
+      ? new Response(null, { status: 202 })
+      : Response.json(
+          { error: 'nope', success: false },
+          { headers: { 'X-Request-ID': 'req-7' }, status: backend.otp },
+        )
+  }
+
+  if (path === '/api/v1/auth/otp/verify') {
+    if (backend.hangVerify === true) await hang()
+
+    return backend.verify === 'wrong'
+      ? Response.json({ error: 'invalid or expired code', success: false }, { status: 401 })
+      : tokens('r1', { isNewUser: backend.verify === 'new', userID: 'u1' })
+  }
+
+  return undefined
+}
+
+/**
+ * Replaces global fetch with a backend that knows sign-in, refresh, the profile and logout.
  * @param backend - What the backend answers and where requests are recorded.
  */
 export const stubBackend = (backend: Backend): void => {
   globalThis.fetch = (async (input: string, init?: RequestInit) => {
     const path = input.replace('http://localhost:8080', '')
+    const method = init?.method ?? 'GET'
 
-    backend.paths.push(`${init?.method ?? 'GET'} ${path}`)
+    backend.paths.push(`${method} ${path}`)
 
     if (path === '/api/v1/auth/refresh') {
       if (backend.hang === true) await hang()
 
-      return envelope({
-        accessToken: 'access',
-        accessTokenExpiresAt: '2030-01-01T00:00:00Z',
-        refreshToken: 'r2',
-        refreshTokenExpiresAt: '2030-02-01T00:00:00Z',
-      })
-    }
-
-    if (path === '/api/v1/auth/otp/request') {
-      if (backend.hangOtp === true) await hang()
-
-      return backend.otp === undefined || backend.otp === 202
-        ? new Response(null, { status: 202 })
-        : Response.json(
-            { error: 'nope', success: false },
-            { headers: { 'X-Request-ID': 'req-7' }, status: backend.otp },
-          )
-    }
-
-    if (path === '/api/v1/auth/otp/verify') {
-      if (backend.hangVerify === true) await hang()
-
-      return backend.verify === 'wrong'
-        ? Response.json({ error: 'invalid or expired code', success: false }, { status: 401 })
-        : envelope({
-            accessToken: 'access',
-            accessTokenExpiresAt: '2030-01-01T00:00:00Z',
-            isNewUser: backend.verify === 'new',
-            refreshToken: 'r1',
-            refreshTokenExpiresAt: '2030-02-01T00:00:00Z',
-            userID: 'u1',
-          })
+      return tokens('r2')
     }
 
     if (path === '/api/v1/auth/logout') return new Response(null, { status: 204 })
 
-    if (path === '/api/v1/users/me') {
-      return envelope({
-        avatarURL: '',
-        createdAt: '2026-01-01T00:00:00Z',
-        id: 'u1',
-        name: backend.user.name,
-        phone: '+919876543210',
-        updatedAt: '2026-01-01T00:00:00Z',
-      })
-    }
+    if (path === '/api/v1/users/me') return profile(method === 'PATCH' ? 'Asha' : backend.user.name)
 
-    throw new Error(`No stub for ${path}`)
+    const answer = await signInAnswer(path, backend)
+
+    if (answer === undefined) throw new Error(`No stub for ${path}`)
+
+    return answer
   }) as typeof fetch
 }
 

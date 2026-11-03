@@ -101,6 +101,14 @@ export const en = {
       submitting: 'Checking code…',
       changeNumber: 'Change number',
     },
+    name: {
+      title: 'What should your squad call you?',
+      body: 'Your squads see this name instead of your number.',
+      label: 'Name',
+      helper: 'Your squads see this name.',
+      submit: 'Continue',
+      submitting: 'Saving…',
+    },
   },
   errors: {
     invalidPhone: 'Enter a 10-digit mobile number that starts with 6, 7, 8 or 9.',

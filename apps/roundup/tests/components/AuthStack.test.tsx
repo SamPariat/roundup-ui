@@ -50,6 +50,12 @@ const TabsLayout = (): ReactElement => <Slot />
 const Phone = (): ReactElement => <Text>screen: phone</Text>
 
 /**
+ * Stand-in for the name screen.
+ * @returns A marker text.
+ */
+const Name = (): ReactElement => <Text>screen: name</Text>
+
+/**
  * Stand-in for the code screen.
  * @returns A marker text.
  */
@@ -75,6 +81,7 @@ const launch = async (initialUrl: string): Promise<void> => {
       index: WelcomeScreen,
       'sign-in/code': Code,
       'sign-in/index': Phone,
+      'sign-in/name': Name,
     },
     { initialUrl },
   )

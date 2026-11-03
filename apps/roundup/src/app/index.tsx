@@ -25,6 +25,8 @@ export default function WelcomeScreen(): ReactElement {
 
   if (gate === 'signedIn') return <Redirect href={paths.tabs.squads()} />
 
+  if (gate === 'needsName') return <Redirect href={paths.signIn.name()} />
+
   // On a phone too short for the page (an iPhone SE, or with large text) it scrolls; on a taller
   // one the content container grows, so Welcome fills the screen and centres its middle section.
   return (

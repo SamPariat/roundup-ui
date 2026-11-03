@@ -1,19 +1,24 @@
-import { useSession } from '@roundup/core'
+import { useMe, useSession } from '@roundup/core'
 
 /**
  * Which part of the app the session allows: nothing yet while it restores or loads the profile,
- * the signed-out screens, or the signed-in app.
+ * the signed-out screens, the name step for a profile with no name, or the signed-in app.
  */
-export type RouteGate = 'loading' | 'signedIn' | 'signedOut'
+export type RouteGate = 'loading' | 'needsName' | 'signedIn' | 'signedOut'
 
 /**
- * Turns the session into the one answer the route guards need.
- * @returns loading until the saved session has been checked, then signedOut or signedIn.
+ * Turns the session and the profile into the one answer the route guards need.
+ * @returns loading until the saved session and profile have been checked, then one of the rest.
  */
 export const useRouteGate = (): RouteGate => {
   const { status } = useSession()
+  const { loading, needsName } = useMe()
 
   if (status === 'restoring') return 'loading'
 
-  return status
+  if (status === 'signedOut') return 'signedOut'
+
+  if (loading) return 'loading'
+
+  return needsName ? 'needsName' : 'signedIn'
 }

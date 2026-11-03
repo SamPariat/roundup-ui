@@ -4,6 +4,7 @@ describe('paths', () => {
   it.each([
     ['welcome', paths.welcome, '/'],
     ['signIn.phone', paths.signIn.phone, '/sign-in'],
+    ['signIn.name', paths.signIn.name, '/sign-in/name'],
     ['tabs.squads', paths.tabs.squads, '/squads'],
     ['tabs.explore', paths.tabs.explore, '/explore'],
     ['tabs.profile', paths.tabs.profile, '/profile'],
@@ -14,6 +15,7 @@ describe('paths', () => {
   it.each([
     ['welcome', paths.welcome, '/'],
     ['signIn.phone', paths.signIn.phone, '/sign-in'],
+    ['signIn.name', paths.signIn.name, '/sign-in/name'],
     ['tabs.squads', paths.tabs.squads, '/squads'],
     ['tabs.explore', paths.tabs.explore, '/explore'],
     ['tabs.profile', paths.tabs.profile, '/profile'],
