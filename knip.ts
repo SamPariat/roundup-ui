@@ -59,6 +59,9 @@ export default {
         'expo-system-ui',
       ],
     },
+    'shared/api': {
+      project: ['src/**/*.ts', 'tests/**/*.ts', '*.ts'],
+    },
     'shared/i18n': {
       project: ['src/**/*.ts', 'tests/**/*.ts', '*.ts'],
     },

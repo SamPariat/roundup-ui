@@ -24,6 +24,8 @@ DEVICE ?=
 	splash \
 	icons \
 	knip \
+	api \
+	api-check \
 	syncpack \
 	files \
 	doctor \
@@ -118,6 +120,17 @@ splash:
 # adaptive foreground and themed monochrome on Android). Commit the result.
 icons:
 	./scripts/make-icons.sh
+
+# Regenerates shared/api/src/generated from the gateway's OpenAPI file in the sibling roundup-monorepo
+# checkout (or ROUNDUP_API_SPEC=/path/to/openapi.yaml). Commit the result. Fails with a hint when
+# the spec is missing.
+api:
+	pnpm api
+
+# Regenerates the client and fails on any diff from the committed output. Prints "skipped: no spec"
+# where the spec does not exist. Not part of check or CI, which have no Go repo.
+api-check:
+	pnpm api-check
 
 # Unused files, exports and dependencies.
 knip:

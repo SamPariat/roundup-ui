@@ -25,6 +25,8 @@
     "fmt-check": "prettier --check .",
     "typecheck": "pnpm -r --parallel run typecheck && tsc --noEmit",
     "test": "pnpm -r --parallel run test",
+    "api": "pnpm --filter @roundup/api run api",
+    "api-check": "scripts/api-check.sh",
     "knip": "APP_ENV=beta knip",
     "syncpack": "syncpack lint",
     "files": "scripts/check-files.sh",
