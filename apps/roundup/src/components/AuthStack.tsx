@@ -4,7 +4,7 @@ import { Stack } from 'expo-router'
 
 import { useRoleColor } from '@roundup/ui'
 
-import { useRouteGate } from '../hooks/useRouteGate.ts'
+import { useRouteGate } from '../hooks/useRouteGate'
 
 /** The route names of the root stack, as the files under src/app spell them. */
 const ROUTES = {

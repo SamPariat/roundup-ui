@@ -1,7 +1,7 @@
 import { fireEvent, screen } from '@testing-library/react-native'
 
-import { BottomNav } from '../../src/components/BottomNav.tsx'
-import { renderWithTheme } from '../helpers/render.tsx'
+import { BottomNav } from '../../src/components/BottomNav'
+import { renderWithTheme } from '../helpers/render'
 
 describe('BottomNav', () => {
   it('marks the current destination as selected', async () => {

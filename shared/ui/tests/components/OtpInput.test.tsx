@@ -1,7 +1,7 @@
 import { fireEvent, screen } from '@testing-library/react-native'
 
-import { formatCountdown, OtpInput } from '../../src/components/OtpInput.tsx'
-import { renderWithTheme } from '../helpers/render.tsx'
+import { formatCountdown, OtpInput } from '../../src/components/OtpInput'
+import { renderWithTheme } from '../helpers/render'
 
 describe('formatCountdown', () => {
   it.each([

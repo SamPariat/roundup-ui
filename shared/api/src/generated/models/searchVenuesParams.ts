@@ -22,7 +22,7 @@
  *
  * OpenAPI spec version: 1.0.0
  */
-import type { CursorParameter } from './cursorParameter.ts'
+import type { CursorParameter } from './cursorParameter'
 
 export type SearchVenuesParams = {
   /**

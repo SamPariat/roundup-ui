@@ -22,7 +22,7 @@
  *
  * OpenAPI spec version: 1.0.0
  */
-import type { StatusResponseDataStatus } from './statusResponseDataStatus.ts'
+import type { StatusResponseDataStatus } from './statusResponseDataStatus'
 
 export type StatusResponseData = {
   status: StatusResponseDataStatus

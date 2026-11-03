@@ -5,8 +5,8 @@ import { View } from 'react-native'
 
 import { Screen, Text, TopAppBar } from '@roundup/ui'
 
-import { Preview } from '../components/Preview.tsx'
-import { Specimen } from '../components/Specimen.tsx'
+import { Preview } from '../components/Preview'
+import { Specimen } from '../components/Specimen'
 
 /**
  * A pretend status bar and home indicator, so the padding Screen adds shows the same on the web,

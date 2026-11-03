@@ -1,7 +1,7 @@
 import { fireEvent, screen } from '@testing-library/react-native'
 
-import { PageHeader } from '../../src/components/PageHeader.tsx'
-import { renderWithTheme } from '../helpers/render.tsx'
+import { PageHeader } from '../../src/components/PageHeader'
+import { renderWithTheme } from '../helpers/render'
 
 describe('PageHeader', () => {
   it('titles the page with a level 1 heading', async () => {

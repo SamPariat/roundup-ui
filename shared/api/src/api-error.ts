@@ -21,11 +21,13 @@ export class ApiError extends Error {
     this.status = status
     this.requestId = requestId
   }
-}
 
-/**
- * Narrows an unknown caught value to an ApiError.
- * @param value - Anything that was thrown.
- * @returns True when the value is an ApiError.
- */
-export const isApiError = (value: unknown): value is ApiError => value instanceof ApiError
+  /**
+   * Narrows an unknown caught value to an ApiError.
+   * @param value - Anything that was thrown.
+   * @returns True when the value is an ApiError.
+   */
+  static is(value: unknown): value is ApiError {
+    return value instanceof ApiError
+  }
+}

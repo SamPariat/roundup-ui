@@ -3,14 +3,14 @@ import { screen, waitFor } from '@testing-library/react-native'
 import { readFileSync } from 'node:fs'
 import path from 'node:path'
 
-import { Logo } from '../../src/components/Logo.tsx'
-import { THEME_STORAGE_KEY } from '../../src/theme/theme.tsx'
-import { renderWithTheme } from '../helpers/render.tsx'
-import { latte, mocha } from '../helpers/theme-css.ts'
+import { Logo } from '../../src/components/Logo'
+import { THEME_STORAGE_KEY } from '../../src/theme/theme'
+import { renderWithTheme } from '../helpers/render'
+import { latte, mocha } from '../helpers/theme-css'
 
 // Jest picks svg.native.ts, whose styled() wrapper hands the class to react-native-css, and that
 // has no compiled stylesheet under Jest. The web version passes the class straight through, so
-// these tests can see which class the artwork was given; the native colour mapping itself is
+// these tests can see which class the artwork was given; the native color mapping itself is
 // checked on a simulator.
 jest.mock('../../src/lib/svg', () => jest.requireActual<object>('../../src/lib/svg.ts'))
 
@@ -30,7 +30,7 @@ const svg = (directory: string, file: string): string =>
   readFileSync(path.join(directory, `${file}.svg`), 'utf8')
 
 /**
- * Collects the fill colours of an SVG source, in document order.
+ * Collects the fill colors of an SVG source, in document order.
  * @param source - The SVG text.
  * @returns Lowercase fill values, such as "#cba6f7" or "currentcolor".
  */
@@ -45,13 +45,13 @@ const THEMES = [
 const BRAND_ROLES = ['logo-stem', 'logo-bowl', 'logo-leg'] as const
 
 describe('Logo artwork files', () => {
-  it.each(THEMES)('draws the $variant mark in the logo role colours', ({ roles, variant }) => {
+  it.each(THEMES)('draws the $variant mark in the logo role colors', ({ roles, variant }) => {
     expect(fillsOf(svg(LOGO_DIR, `mark-${variant}`))).toEqual(
       BRAND_ROLES.map((role) => roles[role] ?? ''),
     )
   })
 
-  it.each(THEMES)('draws the $variant wordmark in the text colour', ({ roles, variant }) => {
+  it.each(THEMES)('draws the $variant wordmark in the text color', ({ roles, variant }) => {
     expect(fillsOf(svg(LOGO_DIR, `wordmark-${variant}`))).toEqual([roles['fg']])
   })
 
@@ -63,7 +63,7 @@ describe('Logo artwork files', () => {
   })
 
   it.each(THEMES)(
-    'draws the $variant welcome art in the logo role colours',
+    'draws the $variant welcome art in the logo role colors',
     ({ roles, variant }) => {
       const [stem, bowl, leg, dots] = fillsOf(svg(ILLUSTRATION_DIR, `welcome-${variant}`))
 
@@ -76,7 +76,7 @@ describe('Logo artwork files', () => {
     },
   )
 
-  it.each(['mark', 'wordmark', 'lockup'])('lets the mono %s follow the text colour', (type) => {
+  it.each(['mark', 'wordmark', 'lockup'])('lets the mono %s follow the text color', (type) => {
     expect(new Set(fillsOf(svg(LOGO_DIR, `${type}-mono`)))).toEqual(new Set(['currentcolor']))
   })
 
@@ -91,39 +91,39 @@ describe('Logo artwork files', () => {
 const BLACK = '#000000'
 
 /**
- * Converts the ARGB number react-native-svg stores for a colour back to #rrggbb.
- * @param argb - The packed colour.
- * @returns The colour as lowercase hex.
+ * Converts the ARGB number react-native-svg stores for a color back to #rrggbb.
+ * @param argb - The packed color.
+ * @returns The color as lowercase hex.
  */
 const hexOf = (argb: number): string => `#${(argb % 0x1_00_00_00).toString(16).padStart(6, '0')}`
 
 /** The shape of screen.toJSON() nodes that these tests read. */
-interface JsonNode {
+interface IJsonNode {
   /** The host component name, such as RNSVGPath. */
   type: string
   /** The props that the tests look at. */
-  props: JsonProps
+  props: IJsonProps
   /** Child nodes, or null for a leaf. */
-  children: JsonNode[] | null
+  children: IJsonNode[] | null
 }
 
 /** The props of a JsonNode that the tests read. */
-interface JsonProps {
+interface IJsonProps {
   /** Whether assistive technology skips the node. */
   'aria-hidden'?: boolean
   /** The classes that set the currentColor for the artwork inside. */
   className?: string
-  /** A packed fill colour. */
-  fill?: Fill
+  /** A packed fill color. */
+  fill?: IFill
   /** Rendered height. */
   height?: number
   /** Rendered width. */
   width?: number
 }
 
-/** react-native-svg's processed colour. */
-interface Fill {
-  /** The colour packed as ARGB. */
+/** react-native-svg's processed color. */
+interface IFill {
+  /** The color packed as ARGB. */
   payload?: number
 }
 
@@ -132,23 +132,23 @@ interface Fill {
  * @param nodes - Sibling nodes.
  * @returns The nodes and all their descendants, depth first.
  */
-const flatten = (nodes: JsonNode[]): JsonNode[] =>
+const flatten = (nodes: IJsonNode[]): IJsonNode[] =>
   nodes.flatMap((node) => [node, ...flatten(node.children ?? [])])
 
 /**
  * Lists every node of the rendered screen.
  * @returns All nodes, depth first.
  */
-const collect = (): JsonNode[] =>
+const collect = (): IJsonNode[] =>
   flatten(
-    [screen.toJSON() as unknown as JsonNode | JsonNode[] | null]
+    [screen.toJSON() as unknown as IJsonNode | IJsonNode[] | null]
       .flat()
       .filter((node) => node !== null),
   )
 
 /**
- * Lists the fill colours that reached the rendered artwork.
- * @returns Lowercase hex colours.
+ * Lists the fill colors that reached the rendered artwork.
+ * @returns Lowercase hex colors.
  */
 const renderedFills = (): string[] =>
   collect()
@@ -198,7 +198,7 @@ describe('Logo', () => {
     expect((art?.props.width ?? 0) / (art?.props.height ?? 1)).toBeCloseTo(width / height, 2)
   })
 
-  it('draws the light theme in Latte colours', async () => {
+  it('draws the light theme in Latte colors', async () => {
     await renderWithTheme(<Logo type="lockup" />)
 
     expect(new Set(renderedFills())).toEqual(
@@ -206,7 +206,7 @@ describe('Logo', () => {
     )
   })
 
-  it('draws the dark theme in Mocha colours', async () => {
+  it('draws the dark theme in Mocha colors', async () => {
     await AsyncStorage.setItem(THEME_STORAGE_KEY, 'dark')
     await renderWithTheme(<Logo type="lockup" />)
 
@@ -219,7 +219,7 @@ describe('Logo', () => {
     )
   })
 
-  it('tints the mono artwork with the text colour class', async () => {
+  it('tints the mono artwork with the text color class', async () => {
     await renderWithTheme(<Logo tone="mono" type="mark" />)
 
     const art = collect().find((node) => node.type === 'RNSVGSvgView')

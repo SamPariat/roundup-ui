@@ -3,10 +3,10 @@ import type { ReactNode } from 'react'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { act, renderHook, waitFor } from '@testing-library/react-native'
 
-import { THEME_STORAGE_KEY, themeNameFor, ThemeProvider, useTheme } from '../../src/theme/theme.tsx'
+import { THEME_STORAGE_KEY, themeNameFor, ThemeProvider, useTheme } from '../../src/theme/theme'
 
 /** Props of the hook test wrapper. */
-interface WrapperProps {
+interface IWrapperProps {
   /** The hook's host. */
   children: ReactNode
 }
@@ -15,7 +15,7 @@ interface WrapperProps {
  * Wraps a hook under test in the ThemeProvider.
  * @returns The provider around the children.
  */
-const wrapper = ({ children }: WrapperProps) => <ThemeProvider>{children}</ThemeProvider>
+const wrapper = ({ children }: IWrapperProps) => <ThemeProvider>{children}</ThemeProvider>
 
 describe('themeNameFor', () => {
   it('follows the device when the preference is system', () => {

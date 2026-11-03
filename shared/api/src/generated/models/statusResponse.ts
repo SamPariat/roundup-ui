@@ -22,8 +22,8 @@
  *
  * OpenAPI spec version: 1.0.0
  */
-import type { StatusResponseData } from './statusResponseData.ts'
-import type { SuccessEnvelope } from './successEnvelope.ts'
+import type { StatusResponseData } from './statusResponseData'
+import type { SuccessEnvelope } from './successEnvelope'
 
 export type StatusResponse = SuccessEnvelope & {
   data: StatusResponseData

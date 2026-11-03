@@ -22,8 +22,8 @@
  *
  * OpenAPI spec version: 1.0.0
  */
-import type { CursorParameter } from './cursorParameter.ts'
-import type { LimitParameter } from './limitParameter.ts'
+import type { CursorParameter } from './cursorParameter'
+import type { LimitParameter } from './limitParameter'
 
 export type GetVisitHistoryParams = {
   /**

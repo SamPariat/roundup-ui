@@ -22,9 +22,9 @@
  *
  * OpenAPI spec version: 1.0.0
  */
-import type { EventStatus } from './eventStatus.ts'
-import type { EventType } from './eventType.ts'
-import type { Winner } from './winner.ts'
+import type { EventStatus } from './eventStatus'
+import type { EventType } from './eventType'
+import type { Winner } from './winner'
 
 export interface Event {
   id?: string

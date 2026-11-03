@@ -1,15 +1,15 @@
 import { existsSync } from 'node:fs'
 import path from 'node:path'
 
-import type defaultConfig from '../app.config.ts'
+import type defaultConfig from '../app.config'
 
 /** The shape of the config object app.config.ts exports. */
-type AppConfig = typeof defaultConfig
+type TAppConfig = typeof defaultConfig
 
 /** The module app.config.ts compiles to. */
-interface ConfigModule {
+interface IConfigModule {
   /** The exported Expo config. */
-  default: AppConfig
+  default: TAppConfig
 }
 
 /**
@@ -17,11 +17,11 @@ interface ConfigModule {
  * @param appEnv - The value of APP_ENV.
  * @returns The Expo config.
  */
-const loadConfig = (appEnv: string): AppConfig => {
+const loadConfig = (appEnv: string): TAppConfig => {
   process.env.APP_ENV = appEnv
   jest.resetModules()
 
-  return jest.requireActual<ConfigModule>('../app.config.ts').default
+  return jest.requireActual<IConfigModule>('../app.config').default
 }
 
 describe('app.config', () => {
@@ -49,19 +49,19 @@ describe('app.config', () => {
 })
 
 /** The dark variant of the splash options. */
-interface DarkSplash {
-  /** The background colour. */
+interface IDarkSplash {
+  /** The background color. */
   backgroundColor: string
   /** The image path. */
   image: string
 }
 
 /** The options of the expo-splash-screen plugin entry. */
-interface SplashOptions {
+interface ISplashOptions {
   /** The light background. */
   backgroundColor: string
   /** The dark variant. */
-  dark: DarkSplash
+  dark: IDarkSplash
   /** The light image. */
   image: string
 }
@@ -70,12 +70,12 @@ interface SplashOptions {
  * Finds the splash plugin options.
  * @returns The options given to expo-splash-screen.
  */
-const splashOptions = (): SplashOptions => {
+const splashOptions = (): ISplashOptions => {
   const entry = loadConfig('beta').plugins.find(
     (plugin) => Array.isArray(plugin) && plugin[0] === 'expo-splash-screen',
   )
 
-  return (entry as [string, SplashOptions])[1]
+  return (entry as [string, ISplashOptions])[1]
 }
 
 describe('app.config splash screen', () => {

@@ -1,7 +1,7 @@
 import { screen } from '@testing-library/react-native'
 
-import { EmptyState } from '../../src/components/EmptyState.tsx'
-import { renderWithTheme } from '../helpers/render.tsx'
+import { EmptyState } from '../../src/components/EmptyState'
+import { renderWithTheme } from '../helpers/render'
 
 describe('EmptyState', () => {
   it('titles itself with a heading', async () => {

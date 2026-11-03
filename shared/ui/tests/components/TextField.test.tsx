@@ -1,7 +1,7 @@
 import { fireEvent, screen } from '@testing-library/react-native'
 
-import { TextField } from '../../src/components/TextField.tsx'
-import { renderWithTheme } from '../helpers/render.tsx'
+import { TextField } from '../../src/components/TextField'
+import { renderWithTheme } from '../helpers/render'
 
 describe('TextField', () => {
   it('is named by its label', async () => {

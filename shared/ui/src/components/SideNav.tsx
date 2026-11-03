@@ -4,47 +4,47 @@ import { View } from 'react-native'
 
 import { useT } from '@roundup/i18n'
 
-import type { NavItemData } from '../lib/nav-items.ts'
-import type { Person } from '../lib/person.ts'
+import type { INavItemData } from '../lib/nav-items'
+import type { IPerson } from '../lib/person'
 
-import { cn } from '../lib/cn.ts'
-import { useDefaultNavItems } from '../lib/nav-items.ts'
-import { Avatar } from './Avatar.tsx'
-import { Icon } from './Icon.tsx'
-import { Logo } from './Logo.tsx'
-import { NavTab } from './NavTab.tsx'
-import { Text } from './Text.tsx'
+import { cn } from '../lib/cn'
+import { useDefaultNavItems } from '../lib/nav-items'
+import { Avatar } from './Avatar'
+import { Icon } from './Icon'
+import { Logo } from './Logo'
+import { NavTab } from './NavTab'
+import { Text } from './Text'
 
 /** Props for SideNav. */
 /** The person shown at the bottom of the rail. */
-export interface NavUser extends Person {
+export interface INavUser extends IPerson {
   /** Phone number shown under the name. */
   phone?: string
 }
 
 /** Props for the user block. */
-interface SideNavUserProps {
+interface ISideNavUserProps {
   /** The person to show. */
-  user: NavUser
+  user: INavUser
 }
 
 /** Props for SideNav. */
-export interface SideNavProps {
+export interface ISideNavProps {
   /** The destinations to show. Defaults to Squads, Explore and Profile. */
-  items?: readonly NavItemData[]
+  items?: readonly INavItemData[]
   /** Defaults to 'squads'. */
   value?: string
   /** Called with the id of the tab that was pressed. */
   onChange?: (id: string) => void
   /** The signed-in person, pinned to the bottom. */
-  user?: NavUser
+  user?: INavUser
 }
 
 /**
  * The signed-in person at the bottom of the rail: avatar, name and phone.
  * @returns The user block.
  */
-const SideNavUser = ({ user }: SideNavUserProps): ReactElement => (
+const SideNavUser = ({ user }: ISideNavUserProps): ReactElement => (
   <View className="flex-row items-center gap-3 border-t border-border px-3 pt-3">
     <Avatar
       name={user.name}
@@ -74,7 +74,7 @@ export const SideNav = ({
   onChange,
   user,
   value = 'squads',
-}: SideNavProps): ReactElement => {
+}: ISideNavProps): ReactElement => {
   const { t } = useT()
   const defaults = useDefaultNavItems()
   const shown = items ?? defaults

@@ -7,10 +7,10 @@ import { SafeAreaProvider } from 'react-native-safe-area-context'
 import { CoreProvider } from '@roundup/core'
 import { ThemeProvider } from '@roundup/ui'
 
-import type { Backend } from './fakes.ts'
+import type { IBackend } from './fakes'
 
-import { AuthStack } from '../../src/components/AuthStack.tsx'
-import { stubBackend, testDeps } from './fakes.ts'
+import { AuthStack } from '../../src/components/AuthStack'
+import { stubBackend, testDeps } from './fakes'
 
 /** Insets and frame of a phone, so the safe-area hooks have values. */
 const METRICS = {
@@ -19,13 +19,13 @@ const METRICS = {
 }
 
 /** Where a test app starts, and what its backend does. */
-export interface AppOptions {
+export interface IAppOptions {
   /** The url the app opens at, as a deep link would. */
   url: string
   /** The refresh token the Keychain holds; none means a signed-out launch. */
   saved?: string
   /** What the stubbed backend answers. */
-  backend: Backend
+  backend: IBackend
   /** True to render the real AuthStack guards instead of a plain slot. */
   guarded?: boolean
 }
@@ -38,7 +38,7 @@ export interface AppOptions {
  */
 export const renderApp = async (
   routes: Record<string, ComponentType>,
-  options: AppOptions,
+  options: IAppOptions,
 ): Promise<void> => {
   const { backend, guarded = false, saved, url } = options
 

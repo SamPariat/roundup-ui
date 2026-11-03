@@ -5,11 +5,11 @@ import { Pressable, ScrollView, View } from 'react-native'
 
 import { Logo, SafeArea, Text } from '@roundup/ui'
 
-import { entriesIn, GROUPS } from '../registry.ts'
-import { NavEntry } from './NavEntry.tsx'
+import { entriesIn, GROUPS } from '../registry'
+import { NavEntry } from './NavEntry'
 
 /** Props for ComponentNav. */
-export interface ComponentNavProps {
+export interface IComponentNavProps {
   /** The slug of the page on show, if any. */
   current?: string | undefined
 }
@@ -19,7 +19,7 @@ export interface ComponentNavProps {
  * logo on top, then every group with its components.
  * @returns The side list.
  */
-export const ComponentNav = ({ current }: ComponentNavProps): ReactElement => (
+export const ComponentNav = ({ current }: IComponentNavProps): ReactElement => (
   <SafeArea
     accessibilityLabel="Components"
     className="w-62 border-r border-border bg-bg-sunken"

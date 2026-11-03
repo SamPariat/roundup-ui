@@ -22,7 +22,7 @@
  *
  * OpenAPI spec version: 1.0.0
  */
-import type { Photo } from './photo.ts'
+import type { Photo } from './photo'
 
 /**
  * A suggested place's details, copied from venue-service when suggested.

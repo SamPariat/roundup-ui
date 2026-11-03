@@ -2,12 +2,12 @@ import type { ReactElement } from 'react'
 
 import { TextInput } from 'react-native'
 
-import type { IconName } from '../lib/icons.ts'
+import type { TIconName } from '../lib/icons'
 
-import { useFocus } from '../lib/useFocus.ts'
+import { useFocus } from '../lib/useFocus'
 import { useRoleColor } from '../lib/useRoleColor'
-import { FieldFrame } from './Field.tsx'
-import { Icon } from './Icon.tsx'
+import { FieldFrame } from './Field'
+import { Icon } from './Icon'
 
 const INPUT_TYPES = {
   text: { keyboardType: 'default', secureTextEntry: false, autoCapitalize: 'sentences' },
@@ -17,7 +17,7 @@ const INPUT_TYPES = {
 } as const
 
 /** Props for TextField. */
-export interface TextFieldProps {
+export interface ITextFieldProps {
   /** Required: a field with no visible name has no accessible name either. */
   label: string
   /** The current text. */
@@ -28,10 +28,10 @@ export interface TextFieldProps {
   helper?: string
   /** Replaces the helper text and turns the field red. */
   error?: string
-  /** Makes the field read-only and greyed out. */
+  /** Makes the field read-only and grayed out. */
   disabled?: boolean
   /** Icon drawn at the start of the field. */
-  icon?: IconName
+  icon?: TIconName
   /** Keyboard and masking preset. Defaults to text. */
   type?: keyof typeof INPUT_TYPES
   /** Called with the text as it changes. */
@@ -39,8 +39,8 @@ export interface TextFieldProps {
 }
 
 /**
- * A labelled single-line input with helper and error text, a focus ring, and presets for text, email, password and number.
- * @returns The labelled field.
+ * A labeled single-line input with helper and error text, a focus ring, and presets for text, email, password and number.
+ * @returns The labeled field.
  */
 export const TextField = ({
   disabled = false,
@@ -52,7 +52,7 @@ export const TextField = ({
   placeholder,
   type = 'text',
   value,
-}: TextFieldProps): ReactElement => {
+}: ITextFieldProps): ReactElement => {
   const { focused, onBlur, onFocus } = useFocus()
   const placeholderColor = useRoleColor('fg-subtle')
 

@@ -22,8 +22,8 @@
  *
  * OpenAPI spec version: 1.0.0
  */
-import type { LoginResponse } from './loginResponse.ts'
-import type { SuccessEnvelope } from './successEnvelope.ts'
+import type { LoginResponse } from './loginResponse'
+import type { SuccessEnvelope } from './successEnvelope'
 
 export type VerifyOTP200 = SuccessEnvelope & {
   data: LoginResponse

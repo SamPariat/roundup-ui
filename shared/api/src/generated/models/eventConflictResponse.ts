@@ -22,7 +22,7 @@
  *
  * OpenAPI spec version: 1.0.0
  */
-import type { ErrorResponse } from './errorResponse.ts'
+import type { ErrorResponse } from './errorResponse'
 
 /**
  * The event's status doesn't allow this now, or the place was already suggested.

@@ -22,8 +22,8 @@
  *
  * OpenAPI spec version: 1.0.0
  */
-import type { SuccessEnvelope } from './successEnvelope.ts'
-import type { User } from './user.ts'
+import type { SuccessEnvelope } from './successEnvelope'
+import type { User } from './user'
 
 export type UserResponse = SuccessEnvelope & {
   data: User

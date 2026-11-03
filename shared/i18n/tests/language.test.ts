@@ -1,4 +1,4 @@
-import { resolveLanguage } from '../src/language.ts'
+import { resolveLanguage } from '../src/language'
 
 describe('resolveLanguage', () => {
   it('uses a language we ship', () => {

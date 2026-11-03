@@ -22,8 +22,8 @@
  *
  * OpenAPI spec version: 1.0.0
  */
-import type { FavoritesResponse } from './favoritesResponse.ts'
-import type { SuccessEnvelope } from './successEnvelope.ts'
+import type { FavoritesResponse } from './favoritesResponse'
+import type { SuccessEnvelope } from './successEnvelope'
 
 export type ListFavorites200 = SuccessEnvelope & {
   data: FavoritesResponse

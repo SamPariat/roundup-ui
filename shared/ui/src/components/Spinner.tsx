@@ -4,8 +4,8 @@ import type { ReactElement } from 'react'
 import { cva } from 'class-variance-authority'
 import { View } from 'react-native'
 
-import { cn } from '../lib/cn.ts'
-import { useReducedMotion } from '../lib/useReducedMotion.ts'
+import { cn } from '../lib/cn'
+import { useReducedMotion } from '../lib/useReducedMotion'
 
 const spinnerVariants = cva('size-4.5 rounded-full border-2', {
   variants: {
@@ -21,27 +21,27 @@ const spinnerVariants = cva('size-4.5 rounded-full border-2', {
 
 /** Props for Spinner: the tone variant plus extra classes. */
 /** Props the spinner adds to its tone variant. */
-interface SpinnerOwnProps {
+interface ISpinnerOwnProps {
   /** Extra classes for placement. */
   className?: string
 }
 
 /** Props for Spinner: the tone variant plus extra classes. */
-export type SpinnerProps = SpinnerOwnProps & VariantProps<typeof spinnerVariants>
+export type TSpinnerProps = ISpinnerOwnProps & VariantProps<typeof spinnerVariants>
 
 /**
  * Decorative: the control that owns the spinner announces what it is doing.
  * Under reduced motion it keeps turning, but slower.
  * @returns A round view that rotates.
  */
-export const Spinner = ({ className, tone }: SpinnerProps): ReactElement => {
+export const Spinner = ({ className, tone }: TSpinnerProps): ReactElement => {
   const reduced = useReducedMotion()
 
   return (
     <View
       aria-hidden
-      // The gap that shows the turn comes after the tone: tailwind-merge drops a border-r colour
-      // that an all-sides border colour follows, which left a closed ring that looked still.
+      // The gap that shows the turn comes after the tone: tailwind-merge drops a border-r color
+      // that an all-sides border color follows, which left a closed ring that looked still.
       className={cn(
         spinnerVariants({ tone }),
         'border-r-transparent',

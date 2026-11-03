@@ -5,19 +5,19 @@ import { View } from 'react-native'
 
 import { Avatar, Button, Modal, Text } from '@roundup/ui'
 
-import { Specimen } from '../components/Specimen.tsx'
+import { Specimen } from '../components/Specimen'
 
 /** Which modal is open, if any. */
-type Open = 'busy' | 'confirm' | 'content' | 'locked' | null
+type TOpen = 'busy' | 'confirm' | 'content' | 'locked' | null
 
 /**
  * Modal as content, as a confirmation, busy while a request runs, and without a close button. Each
  * is opened from a button, because a modal covers the screen. The sheet below 768 wide is a bottom
- * sheet, from there up a centred card.
+ * sheet, from there up a centerd card.
  * @returns The specimens.
  */
 export const ModalDemo = (): ReactElement => {
-  const [open, setOpen] = useState<Open>(null)
+  const [open, setOpen] = useState<TOpen>(null)
   const [saving, setSaving] = useState(false)
 
   const showContent = useCallback(() => {

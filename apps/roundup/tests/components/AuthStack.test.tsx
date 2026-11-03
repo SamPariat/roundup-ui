@@ -8,11 +8,11 @@ import { SafeAreaProvider } from 'react-native-safe-area-context'
 import { CoreProvider } from '@roundup/core'
 import { ThemeProvider } from '@roundup/ui'
 
-import type { Backend } from '../helpers/fakes.ts'
+import type { IBackend } from '../helpers/fakes'
 
-import WelcomeScreen from '../../src/app/index.tsx'
-import { AuthStack } from '../../src/components/AuthStack.tsx'
-import { stubBackend, testDeps } from '../helpers/fakes.ts'
+import WelcomeScreen from '../../src/app/index'
+import { AuthStack } from '../../src/components/AuthStack'
+import { stubBackend, testDeps } from '../helpers/fakes'
 
 /** Insets and frame of a phone, so the safe-area hooks have values. */
 const METRICS = {
@@ -88,7 +88,7 @@ const launch = async (initialUrl: string): Promise<void> => {
 }
 
 /** The backend the test talks to. */
-let backend: Backend
+let backend: IBackend
 
 describe('AuthStack', () => {
   beforeEach(() => {

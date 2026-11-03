@@ -2,10 +2,10 @@ import type { ComponentType, FC } from 'react'
 
 import { styled } from 'nativewind'
 
-import type { Styled } from './svg'
+import type { TStyled } from './svg'
 
 /**
- * react-native-svg reads colour from props (`color`, `fill`, `stroke`), not from style, so a
+ * react-native-svg reads color from props (`color`, `fill`, `stroke`), not from style, so a
  * className is resolved to a style first and then mapped onto those props. `text-accent` becomes
  * `color` (what `currentColor` follows), `fill-accent` becomes `fill`, `stroke-border` `stroke`.
  */
@@ -17,9 +17,9 @@ const MAPPING = {
 } as const
 
 /**
- * Lets an SVG component take a className, resolved by react-native-css into the colour props.
+ * Lets an SVG component take a className, resolved by react-native-css into the color props.
  * @param component - A react-native-svg component or an imported .svg file.
  * @returns A component that reads `text-*`, `fill-*` and `stroke-*` classes.
  */
-export const styleSvg = <P extends object>(component: ComponentType<P>): FC<Styled<P>> =>
-  styled(component as ComponentType<Record<string, unknown>>, MAPPING) as unknown as FC<Styled<P>>
+export const styleSvg = <P extends object>(component: ComponentType<P>): FC<TStyled<P>> =>
+  styled(component as ComponentType<Record<string, unknown>>, MAPPING) as unknown as FC<TStyled<P>>

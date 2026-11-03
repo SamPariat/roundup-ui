@@ -4,7 +4,7 @@ import { View } from 'react-native'
 
 import { Logo } from '@roundup/ui'
 
-import { Specimen } from '../components/Specimen.tsx'
+import { Specimen } from '../components/Specimen'
 
 /** The three artworks. */
 const TYPES = ['lockup', 'mark', 'wordmark'] as const
@@ -13,7 +13,7 @@ const TYPES = ['lockup', 'mark', 'wordmark'] as const
 const SIZES = ['sm', 'md', 'lg', 'xl'] as const
 
 /**
- * The logo as lockup, mark and wordmark, in brand and mono colour and at each size. Brand colours follow the theme.
+ * The logo as lockup, mark and wordmark, in brand and mono color and at each size. Brand colors follow the theme.
  * @returns The specimens.
  */
 export const LogoDemo = (): ReactElement => (

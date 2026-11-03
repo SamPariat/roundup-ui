@@ -22,8 +22,8 @@
  *
  * OpenAPI spec version: 1.0.0
  */
-import type { EventPlace } from './eventPlace.ts'
-import type { Member } from './member.ts'
+import type { EventPlace } from './eventPlace'
+import type { Member } from './member'
 
 export type Nomination = EventPlace & {
   nominatedBy?: string

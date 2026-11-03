@@ -22,8 +22,8 @@
  *
  * OpenAPI spec version: 1.0.0
  */
-import type { SquadEventsResponse } from './squadEventsResponse.ts'
-import type { SuccessEnvelope } from './successEnvelope.ts'
+import type { SquadEventsResponse } from './squadEventsResponse'
+import type { SuccessEnvelope } from './successEnvelope'
 
 export type ListSquadEvents200 = SuccessEnvelope & {
   data: SquadEventsResponse

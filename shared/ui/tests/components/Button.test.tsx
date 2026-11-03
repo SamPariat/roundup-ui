@@ -1,7 +1,7 @@
 import { fireEvent, screen } from '@testing-library/react-native'
 
-import { Button } from '../../src/components/Button.tsx'
-import { renderWithTheme } from '../helpers/render.tsx'
+import { Button } from '../../src/components/Button'
+import { renderWithTheme } from '../helpers/render'
 
 describe('Button', () => {
   it('is a button named by its text', async () => {

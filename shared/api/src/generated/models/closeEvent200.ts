@@ -22,8 +22,8 @@
  *
  * OpenAPI spec version: 1.0.0
  */
-import type { EventDetail } from './eventDetail.ts'
-import type { SuccessEnvelope } from './successEnvelope.ts'
+import type { EventDetail } from './eventDetail'
+import type { SuccessEnvelope } from './successEnvelope'
 
 export type CloseEvent200 = SuccessEnvelope & {
   data: EventDetail

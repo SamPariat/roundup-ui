@@ -22,7 +22,7 @@
  *
  * OpenAPI spec version: 1.0.0
  */
-import type { UserSummary } from './userSummary.ts'
+import type { UserSummary } from './userSummary'
 
 export interface LookupUsersResponse {
   users: UserSummary[]

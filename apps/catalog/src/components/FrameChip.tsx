@@ -4,14 +4,14 @@ import { useCallback } from 'react'
 
 import { Chip } from '@roundup/ui'
 
-import type { FrameOption, FrameWidth } from '../hooks/useFrame.ts'
+import type { IFrameOption, TFrameWidth } from '../hooks/useFrame'
 
 /** Props for FrameChip. */
-export interface FrameChipProps {
+export interface IFrameChipProps {
   /** Called with the option's ID when the chip is pressed. */
-  onSelect: (id: FrameWidth) => void
+  onSelect: (id: TFrameWidth) => void
   /** The width this chip stands for. */
-  option: FrameOption
+  option: IFrameOption
   /** Whether this width is the chosen one. */
   selected: boolean
 }
@@ -20,7 +20,7 @@ export interface FrameChipProps {
  * A Chip bound to one width, so the list of chips needs no inline handler.
  * @returns The chip, selected when its width is the chosen one.
  */
-export const FrameChip = ({ onSelect, option, selected }: FrameChipProps): ReactElement => {
+export const FrameChip = ({ onSelect, option, selected }: IFrameChipProps): ReactElement => {
   const select = useCallback(() => {
     onSelect(option.id)
   }, [onSelect, option.id])

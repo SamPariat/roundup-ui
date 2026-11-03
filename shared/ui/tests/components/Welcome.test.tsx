@@ -1,7 +1,7 @@
 import { fireEvent, screen } from '@testing-library/react-native'
 
-import { Welcome } from '../../src/components/Welcome.tsx'
-import { renderWithTheme } from '../helpers/render.tsx'
+import { Welcome } from '../../src/components/Welcome'
+import { renderWithTheme } from '../helpers/render'
 
 /**
  * Tells the Welcome page it was laid out at a width, as React Native does after the first layout.

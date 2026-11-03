@@ -25,6 +25,8 @@ export default defineConfig({
       target: 'src/generated/endpoints.ts',
       schemas: 'src/generated/models',
       clean: true,
+      // Extensionless imports in the output, like the rest of the repo: orval adds .ts when the tsconfig allows importing it.
+      tsconfig: { compilerOptions: { moduleResolution: 'bundler' } },
       override: {
         // Hooks return the response body (the {success, data} envelope), not {data, status, headers}:
         // src/fetcher.ts throws an ApiError for any non-2xx status, so the status is always a success.

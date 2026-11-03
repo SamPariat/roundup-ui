@@ -22,7 +22,7 @@
  *
  * OpenAPI spec version: 1.0.0
  */
-import type { Phone } from './phone.ts'
+import type { Phone } from './phone'
 
 export interface UserSummary {
   id: string

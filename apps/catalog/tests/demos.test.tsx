@@ -1,7 +1,7 @@
 import { createElement } from 'react'
 
-import { REGISTRY } from '../src/registry.ts'
-import { renderInCatalog } from './helpers/render.tsx'
+import { REGISTRY } from '../src/registry'
+import { renderInCatalog } from './helpers/render'
 
 describe('demos', () => {
   it.each(REGISTRY.map(({ Demo, title }) => [title, Demo] as const))(

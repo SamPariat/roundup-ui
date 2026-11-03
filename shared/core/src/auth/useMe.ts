@@ -2,10 +2,10 @@ import type { User } from '@roundup/api'
 
 import { useGetMe } from '@roundup/api'
 
-import { useSession } from '../session/useSession.ts'
+import { useSession } from '../session/useSession'
 
 /** The signed-in person's profile as the app needs it. */
-export interface Me {
+export interface IMe {
   /** The profile, once loaded. */
   me: undefined | User
   /** True while the profile is loading for a signed-in session. */
@@ -19,7 +19,7 @@ export interface Me {
  * a lost connection never sends a returning person back to the name step.
  * @returns The profile, whether it is loading, and whether a name is missing.
  */
-export const useMe = (): Me => {
+export const useMe = (): IMe => {
   const { status } = useSession()
   const signedIn = status === 'signedIn'
   const query = useGetMe({ query: { enabled: signedIn } })

@@ -22,8 +22,8 @@
  *
  * OpenAPI spec version: 1.0.0
  */
-import type { Member } from './member.ts'
-import type { Photo } from './photo.ts'
+import type { Member } from './member'
+import type { Photo } from './photo'
 
 export interface Favorite {
   placeID: string

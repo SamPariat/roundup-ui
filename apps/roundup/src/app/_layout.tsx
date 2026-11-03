@@ -16,26 +16,26 @@ import OnestBold from '../../../../assets/fonts/Onest-Bold.ttf'
 import OnestMedium from '../../../../assets/fonts/Onest-Medium.ttf'
 import OnestRegular from '../../../../assets/fonts/Onest-Regular.ttf'
 import OnestSemiBold from '../../../../assets/fonts/Onest-SemiBold.ttf'
-import { AuthStack } from '../components/AuthStack.tsx'
-import { useRouteGate } from '../hooks/useRouteGate.ts'
-import { useSplash } from '../hooks/useSplash.ts'
+import { AuthStack } from '../components/AuthStack'
+import { useRouteGate } from '../hooks/useRouteGate'
+import { useSplash } from '../hooks/useSplash'
 
 void preventAutoHideAsync()
 
 // iOS and Android get Onest from the expo-font plugin in app.config.ts, built into the binary. The
 // web has no binary, so it registers the same files under the same names at runtime.
-const FONTS =
-  Platform.OS === 'web'
-    ? {
-        'Onest-Bold': OnestBold,
-        'Onest-Medium': OnestMedium,
-        'Onest-Regular': OnestRegular,
-        'Onest-SemiBold': OnestSemiBold,
-      }
-    : {}
+const FONTS = Platform.select({
+  default: {},
+  web: {
+    'Onest-Bold': OnestBold,
+    'Onest-Medium': OnestMedium,
+    'Onest-Regular': OnestRegular,
+    'Onest-SemiBold': OnestSemiBold,
+  },
+})
 
 /** Props for Themed. */
-interface ThemedProps {
+interface IThemedProps {
   /** Whether the fonts are loaded (or failed to), which the splash screen also waits for. */
   fontsReady: boolean
 }
@@ -45,7 +45,7 @@ interface ThemedProps {
  * It also lifts the splash screen once the fonts, the saved theme and the saved session are all ready.
  * @returns The themed root view.
  */
-const Themed = ({ fontsReady }: ThemedProps): ReactElement => {
+const Themed = ({ fontsReady }: IThemedProps): ReactElement => {
   const { loaded, name } = useTheme()
   const gate = useRouteGate()
 
@@ -53,7 +53,7 @@ const Themed = ({ fontsReady }: ThemedProps): ReactElement => {
 
   return (
     <View className="flex-1 bg-bg">
-      {/* Web only: the favicon and colour-scheme hint mean nothing on native, where expo-router's
+      {/* Web only: the favicon and color-scheme hint mean nothing on native, where expo-router's
           Head turns into Apple Handoff and demands a hosted origin we do not have yet. The static
           export's own document already sets lang="en". */}
       {Platform.OS === 'web' && (

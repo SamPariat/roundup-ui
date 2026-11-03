@@ -1,9 +1,9 @@
 import { QueryClient } from '@tanstack/react-query'
 
-import type { Session } from '../../src/session/session.ts'
+import type { ISession } from '../../src/session/session'
 
-import { createSession } from '../../src/session/session.ts'
-import { empty, failure, FakeStore, goOffline, ok, pair, stubNetwork } from '../helpers/fakes.ts'
+import { createSession } from '../../src/session/session'
+import { empty, failure, FakeStore, goOffline, ok, pair, stubNetwork } from '../helpers/fakes'
 
 /** The query client the session clears on sign-out. */
 let queryClient: QueryClient
@@ -13,7 +13,7 @@ let queryClient: QueryClient
  * @param store - The store to use.
  * @returns The session.
  */
-const build = (store: FakeStore): Session => createSession({ queryClient, store })
+const build = (store: FakeStore): ISession => createSession({ queryClient, store })
 
 /**
  * Builds a token pair as the type the session takes.
@@ -21,8 +21,8 @@ const build = (store: FakeStore): Session => createSession({ queryClient, store 
  * @param refresh - The refresh token, or none for the web shape.
  * @returns The pair.
  */
-const tokens = (access: string, refresh?: string): Parameters<Session['signIn']>[0] =>
-  pair(access, refresh) as unknown as Parameters<Session['signIn']>[0]
+const tokens = (access: string, refresh?: string): Parameters<ISession['signIn']>[0] =>
+  pair(access, refresh) as unknown as Parameters<ISession['signIn']>[0]
 
 describe('session', () => {
   beforeEach(() => {

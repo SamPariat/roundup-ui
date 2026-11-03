@@ -1,7 +1,7 @@
 import { screen } from '@testing-library/react-native'
 
-import { AvatarGroup } from '../../src/components/AvatarGroup.tsx'
-import { renderWithTheme } from '../helpers/render.tsx'
+import { AvatarGroup } from '../../src/components/AvatarGroup'
+import { renderWithTheme } from '../helpers/render'
 
 const people = [
   { id: '1', name: 'Meera Krishnan' },

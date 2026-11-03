@@ -1,7 +1,7 @@
-import type { SessionStore } from '../../src/session/types.ts'
+import type { ISessionStore } from '../../src/session/types'
 
 /** A session store that keeps its token in memory and records what core asked of it. */
-export class FakeStore implements SessionStore {
+export class FakeStore implements ISessionStore {
   /** True when this store behaves like the web one, which holds no token. */
   readonly cookie: boolean
 
@@ -65,7 +65,7 @@ export class FakeStore implements SessionStore {
 }
 
 /** What a stubbed route answers. */
-export interface RouteSpec {
+export interface IRouteSpec {
   /** The HTTP status. */
   status: number
   /** The JSON body; none for 202 and 204. */
@@ -77,7 +77,7 @@ export interface RouteSpec {
 }
 
 /** The request a stubbed route received. */
-interface RecordedRequest {
+interface IRecordedRequest {
   /** The path, such as /api/v1/auth/refresh. */
   path: string
   /** The HTTP method. */
@@ -87,11 +87,11 @@ interface RecordedRequest {
 }
 
 /** Everything a test needs to see of the fake network. */
-export interface StubbedNetwork {
+export interface IStubbedNetwork {
   /** Every request, in order. */
-  requests: RecordedRequest[]
+  requests: IRecordedRequest[]
   /** The answers by "METHOD /path"; change an entry to change what the next request gets. */
-  routes: Record<string, RouteSpec>
+  routes: Record<string, IRouteSpec>
 }
 
 /**
@@ -100,8 +100,8 @@ export interface StubbedNetwork {
  * @param routes - The answers by route.
  * @returns The record of requests and the live routes.
  */
-export const stubNetwork = (routes: Record<string, RouteSpec>): StubbedNetwork => {
-  const network: StubbedNetwork = { requests: [], routes }
+export const stubNetwork = (routes: Record<string, IRouteSpec>): IStubbedNetwork => {
+  const network: IStubbedNetwork = { requests: [], routes }
 
   globalThis.fetch = (async (input: string, init?: RequestInit) => {
     const path = input.replace('http://localhost:8080', '')
@@ -147,14 +147,14 @@ export const goOffline = (): void => {
  * @param data - The payload.
  * @returns A 200 answer.
  */
-export const ok = (data: unknown): RouteSpec => ({ body: { data, success: true }, status: 200 })
+export const ok = (data: unknown): IRouteSpec => ({ body: { data, success: true }, status: 200 })
 
 /**
  * Builds an answer that has no body, such as a 202 or 204.
  * @param status - The HTTP status.
  * @returns The answer.
  */
-export const empty = (status: number): RouteSpec => ({ status })
+export const empty = (status: number): IRouteSpec => ({ status })
 
 /**
  * Builds the failure envelope the gateway sends, with a request ID.
@@ -162,7 +162,7 @@ export const empty = (status: number): RouteSpec => ({ status })
  * @param error - The error text.
  * @returns The answer.
  */
-export const failure = (status: number, error: string): RouteSpec => ({
+export const failure = (status: number, error: string): IRouteSpec => ({
   body: { error, success: false },
   headers: { 'X-Request-ID': 'req-1' },
   status,
@@ -186,5 +186,5 @@ export const pair = (access: string, refresh?: string): Record<string, unknown> 
  * @param isNewUser - Whether this is the person's first sign-in.
  * @returns The answer.
  */
-export const login = (isNewUser: boolean): RouteSpec =>
+export const login = (isNewUser: boolean): IRouteSpec =>
   ok({ ...pair('a1', 'r1'), isNewUser, userID: 'u1' })

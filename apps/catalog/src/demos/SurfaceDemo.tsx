@@ -4,13 +4,13 @@ import { View } from 'react-native'
 
 import { Surface, Text, useGlass } from '@roundup/ui'
 
-import { Specimen } from '../components/Specimen.tsx'
+import { Specimen } from '../components/Specimen'
 
 /** The tones of a surface. */
 const TONES = ['raised', 'sunken'] as const
 
 /**
- * Surface in both tones on the page background, then over coloured shapes, where Liquid Glass
+ * Surface in both tones on the page background, then over colored shapes, where Liquid Glass
  * shows on iOS 26. Elsewhere, or with Reduce Transparency on, the surface is solid.
  * @returns The specimens.
  */

@@ -3,7 +3,7 @@ import type { ReactElement } from 'react'
 import { useCallback } from 'react'
 import { View } from 'react-native'
 
-import { formatPhone, isE164, useProfileViewModel } from '@roundup/core'
+import { useDeps, useProfileViewModel } from '@roundup/core'
 import { useT } from '@roundup/i18n'
 import { Avatar, Icon, List, ListRow, Skeleton, Text, ThemeSwitch, useTheme } from '@roundup/ui'
 
@@ -15,6 +15,7 @@ import { Avatar, Icon, List, ListRow, Skeleton, Text, ThemeSwitch, useTheme } fr
 export default function ProfileScreen(): ReactElement {
   const { preference, setPreference } = useTheme()
   const { t } = useT()
+  const { helpers } = useDeps()
   const { loading, me, signOut } = useProfileViewModel()
 
   const logOut = useCallback(() => {
@@ -33,7 +34,7 @@ export default function ProfileScreen(): ReactElement {
               {me.name}
             </Text>
             <Text numberOfLines={1} tone="muted" variant="body">
-              {isE164(me.phone) ? formatPhone(me.phone) : me.phone}
+              {helpers.phone.isE164(me.phone) ? helpers.phone.format(me.phone) : me.phone}
             </Text>
           </View>
         </View>

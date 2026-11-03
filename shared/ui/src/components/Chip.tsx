@@ -2,18 +2,18 @@ import type { ReactElement } from 'react'
 
 import { Pressable } from 'react-native'
 
-import type { IconName } from '../lib/icons.ts'
+import type { TIconName } from '../lib/icons'
 
-import { cn } from '../lib/cn.ts'
-import { Icon } from './Icon.tsx'
-import { Text } from './Text.tsx'
+import { cn } from '../lib/cn'
+import { Icon } from './Icon'
+import { Text } from './Text'
 
 /** Props for Chip. */
-export interface ChipProps {
+export interface IChipProps {
   /** Whether the chip is chosen. A chosen chip is filled and shows a check. */
   selected?: boolean
   /** Leading icon shown while the chip is not selected. */
-  icon?: IconName
+  icon?: TIconName
   /** Called when the chip is pressed. */
   onPress?: () => void
   /** The chip's text. It is also its accessible name. */
@@ -29,7 +29,7 @@ const ChipIcon = ({
   selected,
 }: {
   /** The chip's own icon. */
-  icon?: IconName | undefined
+  icon?: TIconName | undefined
   /** Whether the chip is selected. */
   selected: boolean
 }): null | ReactElement => {
@@ -44,7 +44,7 @@ const ChipIcon = ({
  * A pill-shaped toggle for filters and choices, announced as a button that is selected or not.
  * @returns A pressable pill, selected or not.
  */
-export const Chip = ({ children, icon, onPress, selected = false }: ChipProps): ReactElement => (
+export const Chip = ({ children, icon, onPress, selected = false }: IChipProps): ReactElement => (
   <Pressable
     accessibilityRole="button"
     aria-selected={selected}

@@ -5,7 +5,7 @@ import type { TextProps as NativeTextProps } from 'react-native'
 import { cva } from 'class-variance-authority'
 import { Text as NativeText } from 'react-native'
 
-import { cn } from '../lib/cn.ts'
+import { cn } from '../lib/cn'
 
 const textVariants = cva('', {
   variants: {
@@ -35,17 +35,17 @@ const textVariants = cva('', {
 })
 
 /** Props for Text: native text props plus the type style and tone variants. */
-export type TextProps = NativeTextProps &
+export type TTextProps = NativeTextProps &
   VariantProps<typeof textVariants> & {
     /** Marks the text as a heading for screen readers (1 is the page title). */
     heading?: 1 | 2 | 3
   }
 
 /**
- * Text in one of the design-system type styles and a role colour. Every visible string goes through it so type and colour stay on the scale.
+ * Text in one of the design-system type styles and a role color. Every visible string goes through it so type and color stay on the scale.
  * @returns The styled text.
  */
-export const Text = ({ className, heading, tone, variant, ...props }: TextProps): ReactElement => (
+export const Text = ({ className, heading, tone, variant, ...props }: TTextProps): ReactElement => (
   <NativeText
     aria-level={heading}
     className={cn(textVariants({ tone, variant }), className)}

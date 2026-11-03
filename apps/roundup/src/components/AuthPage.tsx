@@ -5,7 +5,7 @@ import { ScrollView, View } from 'react-native'
 import { cn, Logo, Screen, Text, TopAppBar, useBreakpoint } from '@roundup/ui'
 
 /** Props for AuthPage. */
-export interface AuthPageProps {
+export interface IAuthPageProps {
   /** The page's level-1 heading. */
   title: string
   /** The sentence under it. */
@@ -18,11 +18,11 @@ export interface AuthPageProps {
 
 /**
  * The frame of the sign-in screens. On a phone it is a single column, with a back bar when the
- * step has one; from 768 wide it is a centred card with the brand on the left and the form on the
+ * step has one; from 768 wide it is a centerd card with the brand on the left and the form on the
  * right.
  * @returns A scrolling page that keeps clear of the notch and the keyboard.
  */
-export const AuthPage = ({ body, children, onBack, title }: AuthPageProps): ReactElement => {
+export const AuthPage = ({ body, children, onBack, title }: IAuthPageProps): ReactElement => {
   const { breakpoint } = useBreakpoint()
   const wide = breakpoint !== 'phone'
   const bar = !wide && onBack !== undefined

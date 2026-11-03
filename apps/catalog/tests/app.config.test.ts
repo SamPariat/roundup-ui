@@ -1,15 +1,15 @@
-import type config from '../app.config.ts'
+import type config from '../app.config'
 
 /** The shape of the config object app.config.ts exports. */
-type AppConfig = typeof config
+type TAppConfig = typeof config
 
 /** The module app.config.ts compiles to. */
-interface ConfigModule {
+interface IConfigModule {
   /** The exported Expo config. */
-  default: AppConfig
+  default: TAppConfig
 }
 
-const { default: appConfig } = jest.requireActual<ConfigModule>('../app.config.ts')
+const { default: appConfig } = jest.requireActual<IConfigModule>('../app.config')
 
 describe('app.config', () => {
   it('installs next to Roundup Beta instead of replacing it', () => {

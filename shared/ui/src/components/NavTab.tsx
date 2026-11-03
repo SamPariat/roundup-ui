@@ -4,12 +4,12 @@ import { Link } from 'expo-router'
 import { useCallback } from 'react'
 import { Pressable } from 'react-native'
 
-import type { NavItemData } from '../lib/nav-items.ts'
+import type { INavItemData } from '../lib/nav-items'
 
 /** Props for NavTab. */
-interface NavTabProps {
+interface INavTabProps {
   /** The destination this tab goes to. */
-  item: NavItemData
+  item: INavItemData
   /** Whether this is the current destination. */
   active: boolean
   /** Called with the item's id when the tab is pressed. */
@@ -32,7 +32,7 @@ export const NavTab = ({
   className,
   item,
   onChange,
-}: NavTabProps): ReactElement => {
+}: INavTabProps): ReactElement => {
   const press = useCallback(() => {
     onChange?.(item.id)
   }, [item.id, onChange])

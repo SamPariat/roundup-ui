@@ -1,12 +1,12 @@
 import { fireEvent, screen, waitFor } from 'expo-router/testing-library'
 
-import type { Backend } from '../../helpers/fakes.ts'
+import type { IBackend } from '../../helpers/fakes'
 
-import NameScreen from '../../../src/app/sign-in/name.tsx'
-import { renderApp } from '../../helpers/render.tsx'
+import NameScreen from '../../../src/app/sign-in/name'
+import { renderApp } from '../../helpers/render'
 
 /** The backend of the current test. */
-let backend: Backend
+let backend: IBackend
 
 /**
  * Opens the name screen, signed in.
@@ -20,7 +20,7 @@ describe('name screen', () => {
     backend = { paths: [], user: { name: '' } }
   })
 
-  it('shows the question, the labelled field with its helper, and Continue without a back button', async () => {
+  it('shows the question, the labeled field with its helper, and Continue without a back button', async () => {
     await open()
 
     expect(

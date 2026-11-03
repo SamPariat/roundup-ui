@@ -4,8 +4,8 @@ import { Platform, View } from 'react-native'
 
 import { Text, ThemeSwitch, useTheme } from '@roundup/ui'
 
-import { FRAME_OPTIONS, useFrame } from '../hooks/useFrame.ts'
-import { FrameChip } from './FrameChip.tsx'
+import { FRAME_OPTIONS, useFrame } from '../hooks/useFrame'
+import { FrameChip } from './FrameChip'
 
 /**
  * The theme switch (system, Latte or Mocha) and, on the web, the preview width picker, which sit above every demo.

@@ -22,7 +22,7 @@
  *
  * OpenAPI spec version: 1.0.0
  */
-import type { RSVPStatus } from './rSVPStatus.ts'
+import type { RSVPStatus } from './rSVPStatus'
 
 export interface RSVPRequest {
   status: RSVPStatus

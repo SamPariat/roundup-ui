@@ -4,12 +4,12 @@ import type { EdgeInsets } from 'react-native-safe-area-context'
 import { render } from '@testing-library/react-native'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 
-import { ThemeProvider } from '../../src/theme/theme.tsx'
+import { ThemeProvider } from '../../src/theme/theme'
 
 const NO_INSETS: EdgeInsets = { top: 0, right: 0, bottom: 0, left: 0 }
 
 /** The device being simulated. */
-interface RenderOptions {
+interface IRenderOptions {
   /** Safe-area insets of the device. Defaults to none. */
   insets?: EdgeInsets
   /** Window width in points. Defaults to 390, an iPhone. */
@@ -17,7 +17,7 @@ interface RenderOptions {
 }
 
 /**
- * Components read colours through useTheme() and safe areas through the provider, so every
+ * Components read colors through useTheme() and safe areas through the provider, so every
  * test renders inside both. Pass insets and a frame width to test a particular device.
  * @param ui - The element under test.
  * @param options - The simulated device.
@@ -25,7 +25,7 @@ interface RenderOptions {
  */
 export const renderWithTheme = async (
   ui: ReactElement,
-  options: RenderOptions = {},
+  options: IRenderOptions = {},
 ): ReturnType<typeof render> => {
   const { insets = NO_INSETS, width = 390 } = options
 

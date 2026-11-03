@@ -4,8 +4,8 @@ import { View } from 'react-native'
 
 import { List, Text } from '@roundup/ui'
 
-import { entriesIn, GROUPS } from '../registry.ts'
-import { CatalogRow } from './CatalogRow.tsx'
+import { entriesIn, GROUPS } from '../registry'
+import { CatalogRow } from './CatalogRow'
 
 /**
  * The component index: every group as a heading over a list of its components.

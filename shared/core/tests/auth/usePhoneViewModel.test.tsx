@@ -1,28 +1,28 @@
 import { act, renderHook } from '@testing-library/react-native'
 
-import type { PhoneViewModel } from '../../src/auth/usePhoneViewModel.ts'
+import type { IPhoneViewModel } from '../../src/auth/usePhoneViewModel'
 
-import { usePhoneViewModel } from '../../src/auth/usePhoneViewModel.ts'
-import { empty, failure, goOffline, stubNetwork } from '../helpers/fakes.ts'
-import { createTestCore } from '../helpers/wrapper.tsx'
+import { usePhoneViewModel } from '../../src/auth/usePhoneViewModel'
+import { empty, failure, goOffline, stubNetwork } from '../helpers/fakes'
+import { createTestCore } from '../helpers/wrapper'
 
 /** The latest value of a hook under test. */
-interface Current {
+interface ICurrent {
   /** The view model as of the last render. */
-  current: PhoneViewModel
+  current: IPhoneViewModel
 }
 
 /** What renderHook hands back for this view model. */
-interface Rendered {
+interface IRendered {
   /** Holds the latest view model. */
-  result: Current
+  result: ICurrent
 }
 
 /**
  * Renders the view model inside a CoreProvider with fakes.
  * @returns The rendered hook.
  */
-const setup = (): Promise<Rendered> =>
+const setup = (): Promise<IRendered> =>
   renderHook(() => usePhoneViewModel(), { wrapper: createTestCore().wrapper })
 
 describe('usePhoneViewModel', () => {

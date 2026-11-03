@@ -22,11 +22,11 @@
  *
  * OpenAPI spec version: 1.0.0
  */
-import type { Event } from './event.ts'
-import type { EventMember } from './eventMember.ts'
-import type { EventPermissions } from './eventPermissions.ts'
-import type { Nomination } from './nomination.ts'
-import type { RSVPStatus } from './rSVPStatus.ts'
+import type { Event } from './event'
+import type { EventMember } from './eventMember'
+import type { EventPermissions } from './eventPermissions'
+import type { Nomination } from './nomination'
+import type { RSVPStatus } from './rSVPStatus'
 
 export type EventDetail = Event & {
   /** @nullable */

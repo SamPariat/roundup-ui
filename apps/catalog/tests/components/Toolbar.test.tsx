@@ -3,8 +3,8 @@ import { Text } from 'react-native'
 
 import { useTheme } from '@roundup/ui'
 
-import { Toolbar } from '../../src/components/Toolbar.tsx'
-import { renderInCatalog } from '../helpers/render.tsx'
+import { Toolbar } from '../../src/components/Toolbar'
+import { renderInCatalog } from '../helpers/render'
 
 /**
  * Prints the chosen theme preference, so a test can see the toolbar change it.

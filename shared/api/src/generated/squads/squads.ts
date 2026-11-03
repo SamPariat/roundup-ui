@@ -59,7 +59,7 @@ import type {
   UpdateSquadRequest,
 } from '../models'
 
-import { fetcher } from '../../fetcher.ts'
+import { fetcher } from '../../fetcher'
 
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1]
 

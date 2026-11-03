@@ -2,12 +2,12 @@ import type { ReactElement, ReactNode } from 'react'
 
 import { useMemo, useState } from 'react'
 
-import type { FrameWidth } from '../hooks/useFrame.ts'
+import type { TFrameWidth } from '../hooks/useFrame'
 
-import { FrameContext } from '../hooks/useFrame.ts'
+import { FrameContext } from '../hooks/useFrame'
 
 /** Props for FrameProvider. */
-export interface FrameProviderProps {
+export interface IFrameProviderProps {
   /** The app to give the preview width to. */
   children: ReactNode
 }
@@ -17,8 +17,8 @@ export interface FrameProviderProps {
  * above the router, which means the choice survives moving from one component to the next.
  * @returns The provider wrapping its children.
  */
-export const FrameProvider = ({ children }: FrameProviderProps): ReactElement => {
-  const [width, setWidth] = useState<FrameWidth>('full')
+export const FrameProvider = ({ children }: IFrameProviderProps): ReactElement => {
+  const [width, setWidth] = useState<TFrameWidth>('full')
 
   const value = useMemo(() => ({ setWidth, width }), [width])
 

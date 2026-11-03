@@ -1,9 +1,9 @@
 import { fireEvent, screen } from '@testing-library/react-native'
 
-import { Button } from '../../src/components/Button.tsx'
-import { Modal } from '../../src/components/Modal.tsx'
-import { Text } from '../../src/components/Text.tsx'
-import { renderWithTheme } from '../helpers/render.tsx'
+import { Button } from '../../src/components/Button'
+import { Modal } from '../../src/components/Modal'
+import { Text } from '../../src/components/Text'
+import { renderWithTheme } from '../helpers/render'
 
 /**
  * onRequestClose lives on the native Modal, the ancestor of the dialog Surface; fireEvent wants that element.

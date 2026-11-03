@@ -7,9 +7,9 @@ import { usePhoneViewModel } from '@roundup/core'
 import { useT } from '@roundup/i18n'
 import { Button, PhoneInput, Text } from '@roundup/ui'
 
-import { AuthPage } from '../../components/AuthPage.tsx'
-import { useErrorText } from '../../hooks/useErrorText.ts'
-import { paths } from '../../navigation/paths.ts'
+import { AuthPage } from '../../components/AuthPage'
+import { useErrorText } from '../../hooks/useErrorText'
+import { Paths } from '../../navigation/paths'
 
 /**
  * Sign-in step one: the phone number. Sending the code opens the code screen.
@@ -23,7 +23,7 @@ export default function PhoneScreen(): ReactElement {
 
   const send = useCallback(() => {
     void submit().then((e164) => {
-      if (e164 !== undefined) router.push(paths.signIn.code({ phone: e164 }))
+      if (e164 !== undefined) router.push(Paths.signInCode({ phone: e164 }))
     })
   }, [router, submit])
 

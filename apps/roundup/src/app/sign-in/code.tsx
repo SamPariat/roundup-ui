@@ -3,16 +3,16 @@ import type { ReactElement } from 'react'
 import { Redirect, useLocalSearchParams, useRouter } from 'expo-router'
 import { useCallback } from 'react'
 
-import { formatPhone, isE164, useCodeViewModel } from '@roundup/core'
+import { useCodeViewModel, useDeps } from '@roundup/core'
 import { useT } from '@roundup/i18n'
 import { Button, OtpInput } from '@roundup/ui'
 
-import { AuthPage } from '../../components/AuthPage.tsx'
-import { useErrorText } from '../../hooks/useErrorText.ts'
-import { paths } from '../../navigation/paths.ts'
+import { AuthPage } from '../../components/AuthPage'
+import { useErrorText } from '../../hooks/useErrorText'
+import { Paths } from '../../navigation/paths'
 
 /** Props for CodeForm. */
-interface CodeFormProps {
+interface ICodeFormProps {
   /** The E.164 number the code was sent to. */
   phone: string
 }
@@ -21,9 +21,10 @@ interface CodeFormProps {
  * The code step for a number that is known to be valid.
  * @returns The code field, the Verify button and the way back.
  */
-const CodeForm = ({ phone }: CodeFormProps): ReactElement => {
+const CodeForm = ({ phone }: ICodeFormProps): ReactElement => {
   const { t } = useT()
   const router = useRouter()
+  const { helpers } = useDeps()
 
   const { busy, code, error, requestId, resend, resendIn, setCode, submit } =
     useCodeViewModel(phone)
@@ -44,7 +45,7 @@ const CodeForm = ({ phone }: CodeFormProps): ReactElement => {
 
   return (
     <AuthPage
-      body={t('signIn.code.body', { phone: formatPhone(phone) })}
+      body={t('signIn.code.body', { phone: helpers.phone.format(phone) })}
       onBack={back}
       title={t('signIn.code.title')}
     >
@@ -78,9 +79,11 @@ const CodeForm = ({ phone }: CodeFormProps): ReactElement => {
  * @returns The code form, or a redirect to the phone screen.
  */
 export default function CodeScreen(): ReactElement {
+  const { helpers } = useDeps()
   const { phone } = useLocalSearchParams()
 
-  if (typeof phone !== 'string' || !isE164(phone)) return <Redirect href={paths.signIn.phone()} />
+  if (typeof phone !== 'string' || !helpers.phone.isE164(phone))
+    return <Redirect href={Paths.signInPhone()} />
 
   return <CodeForm phone={phone} />
 }

@@ -1,6 +1,6 @@
 import * as SecureStore from 'expo-secure-store'
 
-import { createSessionStore } from '../../src/session/session-store.native.ts'
+import { createSessionStore } from '../../src/session/session-store.native'
 
 /** The options every call must carry, so a background refresh works after the first unlock. */
 const OPTIONS = { keychainAccessible: SecureStore.AFTER_FIRST_UNLOCK }

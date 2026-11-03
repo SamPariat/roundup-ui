@@ -6,20 +6,20 @@ import { Text as NativeText, View } from 'react-native'
 
 import { useT } from '@roundup/i18n'
 
-import type { IconName } from '../lib/icons.ts'
+import type { TIconName } from '../lib/icons'
 
 import ArtDark from '../../../../assets/svg/illustrations/welcome-dark.svg'
 import ArtLight from '../../../../assets/svg/illustrations/welcome-light.svg'
-import { cn } from '../lib/cn.ts'
-import { breakpointFor } from '../lib/useBreakpoint.ts'
-import { useTheme } from '../theme/theme.tsx'
-import { Button } from './Button.tsx'
-import { Icon } from './Icon.tsx'
-import { Logo } from './Logo.tsx'
-import { Text } from './Text.tsx'
+import { cn } from '../lib/cn'
+import { breakpointFor } from '../lib/useBreakpoint'
+import { useTheme } from '../theme/theme'
+import { Button } from './Button'
+import { Icon } from './Icon'
+import { Logo } from './Logo'
+import { Text } from './Text'
 
 /** Props for Welcome. */
-export interface WelcomeProps {
+export interface IWelcomeProps {
   /** Headline. Defaults to the translated tagline. */
   title?: string
   /** Paragraph under the headline. Defaults to the translated intro. */
@@ -31,9 +31,9 @@ export interface WelcomeProps {
 }
 
 /** One of the three selling points. */
-interface Point {
+interface IPoint {
   /** Icon in the accent tile. */
-  icon: IconName
+  icon: TIconName
   /** Which translated title and text to use. */
   id: 'explore' | 'history' | 'squads'
 }
@@ -42,11 +42,11 @@ const POINTS = [
   { icon: 'squads', id: 'squads' },
   { icon: 'explore', id: 'explore' },
   { icon: 'history', id: 'history' },
-] as const satisfies readonly Point[]
+] as const satisfies readonly IPoint[]
 
 /**
  * The mark at large size with a cluster of dots: the squad gathering round. The artwork is an SVG
- * file per theme, in the logo-* token colours.
+ * file per theme, in the logo-* token colors.
  * @returns The theme's welcome illustration, decorative.
  */
 const WelcomeArt = (): ReactElement => {
@@ -60,7 +60,7 @@ const WelcomeArt = (): ReactElement => {
  * Full-page intro for signed-out visitors. Lays itself out from its own width, not the window's.
  * @returns A full-height page with the logo, headline, call to action, artwork and three selling points.
  */
-export const Welcome = ({ body, onStart, startLabel, title }: WelcomeProps): ReactElement => {
+export const Welcome = ({ body, onStart, startLabel, title }: IWelcomeProps): ReactElement => {
   const { t } = useT()
   const [width, setWidth] = useState(0)
   const wide = breakpointFor(width) !== 'phone'

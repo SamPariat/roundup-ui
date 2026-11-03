@@ -22,8 +22,8 @@
  *
  * OpenAPI spec version: 1.0.0
  */
-import type { LookupUsersResponse } from './lookupUsersResponse.ts'
-import type { SuccessEnvelope } from './successEnvelope.ts'
+import type { LookupUsersResponse } from './lookupUsersResponse'
+import type { SuccessEnvelope } from './successEnvelope'
 
 export type LookupUsers200 = SuccessEnvelope & {
   data: LookupUsersResponse

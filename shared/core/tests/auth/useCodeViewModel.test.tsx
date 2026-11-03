@@ -1,15 +1,15 @@
 import { act, renderHook } from '@testing-library/react-native'
 
-import { useCodeViewModel } from '../../src/auth/useCodeViewModel.ts'
-import { useSession } from '../../src/session/useSession.ts'
-import { empty, failure, goOffline, login, stubNetwork } from '../helpers/fakes.ts'
-import { createTestCore } from '../helpers/wrapper.tsx'
+import { useCodeViewModel } from '../../src/auth/useCodeViewModel'
+import { useSession } from '../../src/session/useSession'
+import { empty, failure, goOffline, login, stubNetwork } from '../helpers/fakes'
+import { createTestCore } from '../helpers/wrapper'
 
 /** The number the code was sent to. */
 const PHONE = '+919876543210'
 
 /** The view model and the session beside it, so a test can see sign-in happen. */
-interface Both {
+interface IBoth {
   /** The session. */
   session: ReturnType<typeof useSession>
   /** The code view model. */
@@ -20,7 +20,7 @@ interface Both {
  * Calls the view model and the session in one hook.
  * @returns The session status and the code screen's state.
  */
-const useBoth = (): Both => ({ session: useSession(), vm: useCodeViewModel(PHONE) })
+const useBoth = (): IBoth => ({ session: useSession(), vm: useCodeViewModel(PHONE) })
 
 describe('useCodeViewModel', () => {
   afterEach(() => {

@@ -28,7 +28,7 @@ import path from 'node:path'
 import tseslint from 'typescript-eslint'
 
 /** The shape of a plugin that ships no types: just its rules by name. */
-interface RuleSet {
+interface IRuleSet {
   /** The rules the plugin defines. */
   rules: Record<string, unknown>
 }
@@ -153,6 +153,9 @@ export default [
         { selector: 'function', format: ['camelCase', 'PascalCase'] },
         { selector: 'parameter', format: ['camelCase', 'PascalCase'], leadingUnderscore: 'allow' },
         { selector: 'typeLike', format: ['PascalCase'] },
+        // Visual consistency: every interface starts with I (IMe) and every type alias with T (TMe).
+        { selector: 'interface', format: ['PascalCase'], prefix: ['I'] },
+        { selector: 'typeAlias', format: ['PascalCase'], prefix: ['T'] },
         { selector: 'enumMember', format: ['PascalCase', 'UPPER_CASE'] },
         // CSS variables, headers, hyphenated token names and route params are data keys, not identifiers.
         {
@@ -204,7 +207,7 @@ export default [
     },
   },
   {
-    // react-native: text must sit inside <Text>, and styles must not use raw colours.
+    // react-native: text must sit inside <Text>, and styles must not use raw colors.
     // The plugin predates flat config, so fixupPluginRules adapts it.
     files: ['**/*.{ts,tsx}'],
     plugins: {
@@ -226,7 +229,7 @@ export default [
     },
     rules: {
       ...Object.fromEntries(
-        Object.keys((reactNativeA11y as RuleSet).rules).map((name) => [
+        Object.keys((reactNativeA11y as IRuleSet).rules).map((name) => [
           `react-native-a11y/${name}`,
           'error',
         ]),
@@ -262,6 +265,11 @@ export default [
           ],
           patterns: [
             {
+              // The extension is dropped from every relative import; assets (svg, ttf, css) keep theirs.
+              regex: String.raw`^\.{1,2}/.*\.(?:tsx?|jsx?)$`,
+              message: 'Import without the file extension (../lib/cn, not ../lib/cn.ts).',
+            },
+            {
               // Metro picks svg.native.ts / useRoleColor.native.ts only for an extensionless
               // import; with `.ts` it loads the web file on iOS and Android too.
               regex: String.raw`/(svg|useRoleColor)\.ts$`,
@@ -276,7 +284,7 @@ export default [
         {
           selector: "JSXAttribute[name.name='style'] > JSXExpressionContainer > ObjectExpression",
           message:
-            'No inline style objects. Use className; colours and shadows come from theme.css classes.',
+            'No inline style objects. Use className; colors and shadows come from theme.css classes.',
         },
         {
           selector: "Literal[value='inactive']",
@@ -651,6 +659,10 @@ export default [
       'unicorn/filename-case': ['error', { cases: { kebabCase: true } }],
       // null is part of React Native APIs (refs, style, children).
       'unicorn/no-null': 'off',
+      // Helpers are classes of static methods (the NestJS/Java style) by project convention, so a
+      // class with only static members is intended, and the dependency container holds the class.
+      'unicorn/no-static-only-class': 'off',
+      '@typescript-eslint/no-extraneous-class': ['error', { allowStaticOnly: true }],
       // Array#reduce is fine when typed; the rule only pushes people toward worse loops here.
       'unicorn/no-array-reduce': 'off',
       // Route files use the Expo Router default export and sibling index files.
@@ -709,14 +721,14 @@ export default [
       'better-tailwindcss/enforce-canonical-classes': 'error',
       'better-tailwindcss/enforce-shorthand-classes': 'error',
       'better-tailwindcss/no-deprecated-classes': 'error',
-      // Colour comes from roles only: no hex, rgb or hsl arbitrary values.
+      // Color comes from roles only: no hex, rgb or hsl arbitrary values.
       'better-tailwindcss/no-restricted-classes': [
         'error',
         {
           restrict: [
             {
               pattern: String.raw`^(?:[\w-]+:)*[\w-]+-\[(?:#|rgb|hsl|oklch|oklab|color).*\]$`,
-              message: 'Use a role class such as bg-accent, not a raw colour.',
+              message: 'Use a role class such as bg-accent, not a raw color.',
             },
           ],
         },

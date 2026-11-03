@@ -1,4 +1,4 @@
-import type { ErrorKey } from '@roundup/core'
+import type { TErrorKey } from '@roundup/core'
 
 import { useT } from '@roundup/i18n'
 
@@ -10,7 +10,7 @@ import { useT } from '@roundup/i18n'
  * @returns The message to show, or undefined when there is no error.
  */
 export const useErrorText = (
-  error: ErrorKey | undefined,
+  error: TErrorKey | undefined,
   requestId: string | undefined,
 ): string | undefined => {
   const { t } = useT()

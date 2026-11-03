@@ -22,7 +22,7 @@
  *
  * OpenAPI spec version: 1.0.0
  */
-import type { Role } from './role.ts'
+import type { Role } from './role'
 
 export interface ChangeRoleRequest {
   role: Role

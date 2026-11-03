@@ -1,6 +1,6 @@
 import { AFTER_FIRST_UNLOCK, deleteItemAsync, getItemAsync, setItemAsync } from 'expo-secure-store'
 
-import type { SessionStore } from './types.ts'
+import type { ISessionStore } from './types'
 
 /** The Keychain/Keystore entry that holds the refresh token. */
 const KEY = 'roundup.refresh'
@@ -13,7 +13,7 @@ const OPTIONS = { keychainAccessible: AFTER_FIRST_UNLOCK }
  * through expo-secure-store and is mirrored in memory after restore().
  * @returns The Keychain-backed session store.
  */
-export const createSessionStore = (): SessionStore => {
+export const createSessionStore = (): ISessionStore => {
   let token: string | undefined
 
   return {

@@ -1,15 +1,15 @@
 /* The Roundup theme: the one Tailwind stylesheet for the whole app, written by hand.
  *
- * Colours are roles (bg-accent, text-fg-muted), never palette steps: only the names below exist, so
+ * Colors are roles (bg-accent, text-fg-muted), never palette steps: only the names below exist, so
  * bg-ctp-mauve and bg-[#fff] cannot be written. Mocha (Catppuccin dark) is the default and Latte
  * (the warm light theme) replaces it:
  *   - on native and on the web by default, through prefers-color-scheme. The app's ThemeProvider
  *     calls Appearance.setColorScheme on native when someone picks a theme by hand;
  *   - on the web, a manual choice also sets data-theme on <html>, which wins over the media query.
  * Spacing, sizing, radius, text, leading and breakpoint scales are Tailwind's own and are
- * deliberately not reset (md is 768, lg is 1024). Only the colour palette is replaced.
+ * deliberately not reset (md is 768, lg is 1024). Only the color palette is replaced.
  *
- * Every colour is defined three times (@theme, then the Mocha and Latte blocks below); keep them in
+ * Every color is defined three times (@theme, then the Mocha and Latte blocks below); keep them in
  * step when a role changes. The values were chosen for WCAG AA contrast (4.5:1) of fg, fg-muted and
  * on-accent against their backgrounds in both themes; recheck that when changing one. */
 
@@ -81,14 +81,14 @@
   /* The orange of the logo bowl: highlights and prices. */
   --color-highlight: #fab387;
   --color-on-highlight: #11111b;
-  /* Status colours. */
+  /* Status colors. */
   --color-success: #a6e3a1;
   --color-warning: #f9e2af;
   --color-danger: #f38ba8;
   --color-info: #89b4fa;
   /* Keyboard focus ring. */
   --color-focus-ring: #b4befe;
-  /* Logo colours. The dark and light logo SVGs carry these as literals; Logo.test.tsx checks they match. */
+  /* Logo colors. The dark and light logo SVGs carry these as literals; Logo.test.tsx checks they match. */
   --color-logo-stem: #cba6f7;
   --color-logo-bowl: #fab387;
   --color-logo-leg: #b4befe;
@@ -170,14 +170,14 @@
   /* The orange of the logo bowl: highlights and prices. */
   --color-highlight: #fab387;
   --color-on-highlight: #11111b;
-  /* Status colours. */
+  /* Status colors. */
   --color-success: #a6e3a1;
   --color-warning: #f9e2af;
   --color-danger: #f38ba8;
   --color-info: #89b4fa;
   /* Keyboard focus ring. */
   --color-focus-ring: #b4befe;
-  /* Logo colours. The dark and light logo SVGs carry these as literals; Logo.test.tsx checks they match. */
+  /* Logo colors. The dark and light logo SVGs carry these as literals; Logo.test.tsx checks they match. */
   --color-logo-stem: #cba6f7;
   --color-logo-bowl: #fab387;
   --color-logo-leg: #b4befe;
@@ -218,14 +218,14 @@
   /* The orange of the logo bowl: highlights and prices. */
   --color-highlight: #fe640b;
   --color-on-highlight: #4c4f69;
-  /* Status colours. */
+  /* Status colors. */
   --color-success: #40a02b;
   --color-warning: #df8e1d;
   --color-danger: #d20f39;
   --color-info: #1e66f5;
   /* Keyboard focus ring. */
   --color-focus-ring: #1e66f5;
-  /* Logo colours. The dark and light logo SVGs carry these as literals; Logo.test.tsx checks they match. */
+  /* Logo colors. The dark and light logo SVGs carry these as literals; Logo.test.tsx checks they match. */
   --color-logo-stem: #8839ef;
   --color-logo-bowl: #fe640b;
   --color-logo-leg: #7287fd;
@@ -247,7 +247,7 @@
   --color-scrim: #4c4f6966;
 }
 
-/* Shadows for floating surfaces. Their colour differs per theme, so each theme sets it. */
+/* Shadows for floating surfaces. Their color differs per theme, so each theme sets it. */
 :root {
   --shadow-sheet-color: #11111b99;
   --shadow-toast-color: #11111b80;

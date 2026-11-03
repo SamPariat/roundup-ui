@@ -16,27 +16,27 @@ import OnestBold from '../../../../assets/fonts/Onest-Bold.ttf'
 import OnestMedium from '../../../../assets/fonts/Onest-Medium.ttf'
 import OnestRegular from '../../../../assets/fonts/Onest-Regular.ttf'
 import OnestSemiBold from '../../../../assets/fonts/Onest-SemiBold.ttf'
-import { ComponentNav } from '../components/ComponentNav.tsx'
-import { FrameProvider } from '../components/FrameProvider.tsx'
-import { useSplash } from '../hooks/useSplash.ts'
-import { useWide } from '../hooks/useWide.ts'
+import { ComponentNav } from '../components/ComponentNav'
+import { FrameProvider } from '../components/FrameProvider'
+import { useSplash } from '../hooks/useSplash'
+import { useWide } from '../hooks/useWide'
 
 void preventAutoHideAsync()
 
 // iOS and Android get Onest from the expo-font plugin in app.config.ts, built into the binary. The
 // web has no binary, so it registers the same files under the same names at runtime.
-const FONTS =
-  Platform.OS === 'web'
-    ? {
-        'Onest-Bold': OnestBold,
-        'Onest-Medium': OnestMedium,
-        'Onest-Regular': OnestRegular,
-        'Onest-SemiBold': OnestSemiBold,
-      }
-    : {}
+const FONTS = Platform.select({
+  default: {},
+  web: {
+    'Onest-Bold': OnestBold,
+    'Onest-Medium': OnestMedium,
+    'Onest-Regular': OnestRegular,
+    'Onest-SemiBold': OnestSemiBold,
+  },
+})
 
 /** Props for Themed. */
-interface ThemedProps {
+interface IThemedProps {
   /** Whether the fonts are loaded (or failed to), which the splash screen also waits for. */
   fontsReady: boolean
 }
@@ -47,7 +47,7 @@ interface ThemedProps {
  * the fonts and the saved theme are both ready.
  * @returns The themed root view.
  */
-const Themed = ({ fontsReady }: ThemedProps): ReactElement => {
+const Themed = ({ fontsReady }: IThemedProps): ReactElement => {
   const { loaded, name } = useTheme()
   const background = useRoleColor('bg')
   const wide = useWide()
@@ -57,7 +57,7 @@ const Themed = ({ fontsReady }: ThemedProps): ReactElement => {
 
   return (
     <View className={cn('flex-1 bg-bg', wide && 'flex-row')}>
-      {/* Web only: the colour-scheme hint means nothing on native, where expo-router's Head turns
+      {/* Web only: the color-scheme hint means nothing on native, where expo-router's Head turns
           into Apple Handoff and demands a hosted origin we do not have. */}
       {Platform.OS === 'web' && (
         <Head>

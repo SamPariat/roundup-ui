@@ -1,10 +1,10 @@
 import type { User } from '@roundup/api'
 
-import { useSession } from '../session/useSession.ts'
-import { useMe } from './useMe.ts'
+import { useSession } from '../session/useSession'
+import { useMe } from './useMe'
 
 /** What the profile tab shows and does. */
-export interface ProfileViewModel {
+export interface IProfileViewModel {
   /** The signed-in person, once loaded. */
   me: undefined | User
   /** True while the profile loads. */
@@ -17,7 +17,7 @@ export interface ProfileViewModel {
  * The view model of the profile tab.
  * @returns The profile and the log out action.
  */
-export const useProfileViewModel = (): ProfileViewModel => {
+export const useProfileViewModel = (): IProfileViewModel => {
   const { loading, me } = useMe()
   const { signOut } = useSession()
 

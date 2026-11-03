@@ -22,7 +22,7 @@
  *
  * OpenAPI spec version: 1.0.0
  */
-import type { ErrorResponse } from './errorResponse.ts'
+import type { ErrorResponse } from './errorResponse'
 
 /**
  * The body, a query parameter or a path parameter is invalid.

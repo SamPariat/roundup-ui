@@ -22,7 +22,7 @@
  *
  * OpenAPI spec version: 1.0.0
  */
-import type { Favorite } from './favorite.ts'
+import type { Favorite } from './favorite'
 
 export interface FavoritesResponse {
   favorites: Favorite[]

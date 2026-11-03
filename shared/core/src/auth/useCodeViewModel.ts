@@ -2,11 +2,11 @@ import { useCallback, useEffect, useState } from 'react'
 
 import { requestOTP, verifyOTP } from '@roundup/api'
 
-import type { ErrorKey } from './errors.ts'
+import type { TErrorKey } from '../helpers/error-helper'
 
-import { useDeps } from '../di/useDeps.ts'
-import { useSession } from '../session/useSession.ts'
-import { useAttempt } from './useAttempt.ts'
+import { useDeps } from '../di/useDeps'
+import { useSession } from '../session/useSession'
+import { useAttempt } from './useAttempt'
 
 /** How many digits the code has. */
 const CODE_LENGTH = 6
@@ -18,13 +18,13 @@ const RESEND_SECONDS = 30
 const SECOND = 1000
 
 /** What the code screen shows and does. */
-export interface CodeViewModel {
+export interface ICodeViewModel {
   /** The digits typed so far. */
   code: string
   /** Types into the field; keeps digits only. The sixth digit sends the code. */
   setCode: (text: string) => void
   /** The message key to show, or undefined. */
-  error: ErrorKey | undefined
+  error: TErrorKey | undefined
   /** The request ID for the generic message. */
   requestId: string | undefined
   /** True while the code is being checked or sent again. */
@@ -50,7 +50,7 @@ const toCodeDigits = (text: string): string => text.replaceAll(/\D/g, '').slice(
  * @param phone - The E.164 number the code was sent to.
  * @returns The state and the actions.
  */
-export const useCodeViewModel = (phone: string): CodeViewModel => {
+export const useCodeViewModel = (phone: string): ICodeViewModel => {
   const { now } = useDeps()
   const { signIn } = useSession()
   const { busy, clear, error, fail, requestId, run } = useAttempt()

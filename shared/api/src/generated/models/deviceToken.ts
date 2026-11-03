@@ -22,7 +22,7 @@
  *
  * OpenAPI spec version: 1.0.0
  */
-import type { Platform } from './platform.ts'
+import type { Platform } from './platform'
 
 export interface DeviceToken {
   id: number

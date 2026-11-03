@@ -1,7 +1,7 @@
 import { fireEvent, screen } from '@testing-library/react-native'
 
-import { Chip } from '../../src/components/Chip.tsx'
-import { renderWithTheme } from '../helpers/render.tsx'
+import { Chip } from '../../src/components/Chip'
+import { renderWithTheme } from '../helpers/render'
 
 describe('Chip', () => {
   it('is a button named by its text', async () => {

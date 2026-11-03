@@ -1,11 +1,11 @@
 import { renderHook, waitFor } from '@testing-library/react-native'
 
-import type { TestCore } from '../helpers/wrapper.tsx'
+import type { ITestCore } from '../helpers/wrapper'
 
-import { useMe } from '../../src/auth/useMe.ts'
-import { useProfileViewModel } from '../../src/auth/useProfileViewModel.ts'
-import { empty, failure, ok, pair, stubNetwork } from '../helpers/fakes.ts'
-import { createTestCore } from '../helpers/wrapper.tsx'
+import { useMe } from '../../src/auth/useMe'
+import { useProfileViewModel } from '../../src/auth/useProfileViewModel'
+import { empty, failure, ok, pair, stubNetwork } from '../helpers/fakes'
+import { createTestCore } from '../helpers/wrapper'
 
 /**
  * Builds the profile of a signed-in user.
@@ -25,7 +25,7 @@ const user = (name: string): Record<string, unknown> => ({
  * Starts a core that has a saved refresh token, so it restores into a signed-in session.
  * @returns The fakes behind a provider that will restore a session.
  */
-const signedInCore = async (): Promise<TestCore> => {
+const signedInCore = async (): Promise<ITestCore> => {
   const core = createTestCore()
 
   await core.store.save('r1')

@@ -1,7 +1,7 @@
 import { breakpointFor, useBreakpoint } from '@roundup/ui'
 
 /** How the shell is laid out at a given width. */
-export interface ShellLayout {
+export interface IShellLayout {
   /** Which navigation to show: the bottom bar or the side rail. */
   nav: 'bottom' | 'side'
   /** Side gutter: 16 (p-4) on phones, 32 (p-8) from the tablet breakpoint. */
@@ -15,7 +15,7 @@ export interface ShellLayout {
  * @param width - The window width in points.
  * @returns The navigation, gutter and content width.
  */
-export const layoutFor = (width: number): ShellLayout => {
+export const layoutFor = (width: number): IShellLayout => {
   // Tailwind's defaults: md is 768 and lg is 1024, p-4 is 16 and p-8 is 32, w-62 (the SideNav) is
   // 248. The content column is max-w-content, 1200, from theme.css.
   const step = breakpointFor(width)
@@ -30,4 +30,4 @@ export const layoutFor = (width: number): ShellLayout => {
  * The shell layout for the current window, recomputed when it is resized, folded or rotated.
  * @returns The navigation, gutter and content width.
  */
-export const useLayout = (): ShellLayout => layoutFor(useBreakpoint().width)
+export const useLayout = (): IShellLayout => layoutFor(useBreakpoint().width)

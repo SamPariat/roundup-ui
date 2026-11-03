@@ -7,7 +7,7 @@ import { EmptyState } from '@roundup/ui'
 
 /**
  * The Explore tab. Venue search arrives with the places work; for now it shows an empty state.
- * @returns The empty state, centred.
+ * @returns The empty state, centerd.
  */
 export default function ExploreScreen(): ReactElement {
   const { t } = useT()

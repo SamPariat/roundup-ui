@@ -1,7 +1,7 @@
 import { fireEvent, screen } from '@testing-library/react-native'
 
-import { ThemeSwitch } from '../../src/components/ThemeSwitch.tsx'
-import { renderWithTheme } from '../helpers/render.tsx'
+import { ThemeSwitch } from '../../src/components/ThemeSwitch'
+import { renderWithTheme } from '../helpers/render'
 
 describe('ThemeSwitch', () => {
   it('is a radio group named Theme', async () => {

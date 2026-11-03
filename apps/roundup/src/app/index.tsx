@@ -6,8 +6,8 @@ import { ScrollView } from 'react-native'
 
 import { Screen, Welcome } from '@roundup/ui'
 
-import { useRouteGate } from '../hooks/useRouteGate.ts'
-import { paths } from '../navigation/paths.ts'
+import { useRouteGate } from '../hooks/useRouteGate'
+import { Paths } from '../navigation/paths'
 
 /**
  * The "/" of the app. A signed-out visitor sees Welcome, and Start opens the sign-in screens; a
@@ -20,15 +20,15 @@ export default function WelcomeScreen(): ReactElement {
   const gate = useRouteGate()
 
   const start = useCallback(() => {
-    router.push(paths.signIn.phone())
+    router.push(Paths.signInPhone())
   }, [router])
 
-  if (gate === 'signedIn') return <Redirect href={paths.tabs.squads()} />
+  if (gate === 'signedIn') return <Redirect href={Paths.tabsSquads()} />
 
-  if (gate === 'needsName') return <Redirect href={paths.signIn.name()} />
+  if (gate === 'needsName') return <Redirect href={Paths.signInName()} />
 
   // On a phone too short for the page (an iPhone SE, or with large text) it scrolls; on a taller
-  // one the content container grows, so Welcome fills the screen and centres its middle section.
+  // one the content container grows, so Welcome fills the screen and centers its middle section.
   return (
     <Screen>
       <ScrollView contentContainerClassName="grow">

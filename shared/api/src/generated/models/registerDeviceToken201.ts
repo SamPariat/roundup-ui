@@ -22,8 +22,8 @@
  *
  * OpenAPI spec version: 1.0.0
  */
-import type { DeviceToken } from './deviceToken.ts'
-import type { SuccessEnvelope } from './successEnvelope.ts'
+import type { DeviceToken } from './deviceToken'
+import type { SuccessEnvelope } from './successEnvelope'
 
 export type RegisterDeviceToken201 = SuccessEnvelope & {
   data: DeviceToken

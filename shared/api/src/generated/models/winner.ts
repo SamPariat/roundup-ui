@@ -22,7 +22,7 @@
  *
  * OpenAPI spec version: 1.0.0
  */
-import type { EventPlace } from './eventPlace.ts'
+import type { EventPlace } from './eventPlace'
 
 export type Winner = EventPlace & {
   /** Votes it won with. Only on the event detail. */

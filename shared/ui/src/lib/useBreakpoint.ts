@@ -1,14 +1,14 @@
 import { useWindowDimensions } from 'react-native'
 
-import { useHydrated } from './useHydrated.ts'
+import { useHydrated } from './useHydrated'
 
 /** Which layout step the window width falls in. */
-export type Breakpoint = 'desktop' | 'phone' | 'tablet'
+export type TBreakpoint = 'desktop' | 'phone' | 'tablet'
 
 /** The current layout step and the width it was derived from. */
-export interface BreakpointState {
+export interface IBreakpointState {
   /** The layout step. */
-  breakpoint: Breakpoint
+  breakpoint: TBreakpoint
   /** The window width the step came from; 0 before hydration. */
   width: number
 }
@@ -19,7 +19,7 @@ export interface BreakpointState {
  * @param width - The window width in points.
  * @returns phone below 768, tablet from 768, desktop from 1024.
  */
-export const breakpointFor = (width: number): Breakpoint => {
+export const breakpointFor = (width: number): TBreakpoint => {
   if (width >= 1024) return 'desktop'
   if (width >= 768) return 'tablet'
 
@@ -33,7 +33,7 @@ export const breakpointFor = (width: number): Breakpoint => {
  * replaces it on the next pass, which keeps the static HTML and the first client render equal.
  * @returns The layout step and width, re-read on every resize.
  */
-export const useBreakpoint = (): BreakpointState => {
+export const useBreakpoint = (): IBreakpointState => {
   const { width: live } = useWindowDimensions()
   const hydrated = useHydrated()
   const width = hydrated ? live : 0

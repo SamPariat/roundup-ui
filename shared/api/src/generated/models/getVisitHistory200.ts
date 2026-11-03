@@ -22,8 +22,8 @@
  *
  * OpenAPI spec version: 1.0.0
  */
-import type { SuccessEnvelope } from './successEnvelope.ts'
-import type { VisitHistoryResponse } from './visitHistoryResponse.ts'
+import type { SuccessEnvelope } from './successEnvelope'
+import type { VisitHistoryResponse } from './visitHistoryResponse'
 
 export type GetVisitHistory200 = SuccessEnvelope & {
   data: VisitHistoryResponse

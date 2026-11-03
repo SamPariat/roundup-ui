@@ -4,19 +4,19 @@ import { View } from 'react-native'
 
 import { useT } from '@roundup/i18n'
 
-import type { NavItemData } from '../lib/nav-items.ts'
+import type { INavItemData } from '../lib/nav-items'
 
-import { cn } from '../lib/cn.ts'
-import { useDefaultNavItems } from '../lib/nav-items.ts'
-import { Icon } from './Icon.tsx'
-import { NavTab } from './NavTab.tsx'
-import { SafeArea } from './SafeArea.tsx'
-import { Text } from './Text.tsx'
+import { cn } from '../lib/cn'
+import { useDefaultNavItems } from '../lib/nav-items'
+import { Icon } from './Icon'
+import { NavTab } from './NavTab'
+import { SafeArea } from './SafeArea'
+import { Text } from './Text'
 
 /** Props for BottomNav. */
-export interface BottomNavProps {
+export interface IBottomNavProps {
   /** The destinations to show. Defaults to Squads, Explore and Profile. */
-  items?: readonly NavItemData[]
+  items?: readonly INavItemData[]
   /** Defaults to 'squads'. */
   value?: string
   /** Called with the id of the tab that was pressed. */
@@ -28,7 +28,7 @@ export interface BottomNavProps {
  * Height is size-nav (72) plus the gesture inset, which SafeArea reads from the bottom edge only.
  * @returns The tab bar, a navigation tablist.
  */
-export const BottomNav = ({ items, onChange, value = 'squads' }: BottomNavProps): ReactElement => {
+export const BottomNav = ({ items, onChange, value = 'squads' }: IBottomNavProps): ReactElement => {
   const { t } = useT()
   const defaults = useDefaultNavItems()
   const shown = items ?? defaults

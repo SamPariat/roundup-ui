@@ -22,7 +22,7 @@
  *
  * OpenAPI spec version: 1.0.0
  */
-import type { EventSummary } from './eventSummary.ts'
+import type { EventSummary } from './eventSummary'
 
 export interface SquadEventsResponse {
   events?: EventSummary[]

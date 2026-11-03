@@ -3,11 +3,11 @@ import type { ReactElement } from 'react'
 import { Slot } from 'expo-router'
 import { fireEvent, screen } from 'expo-router/testing-library'
 
-import type { Backend } from '../../helpers/fakes.ts'
+import type { IBackend } from '../../helpers/fakes'
 
-import ProfileScreen from '../../../src/app/(tabs)/profile/index.tsx'
-import WelcomeScreen from '../../../src/app/index.tsx'
-import { renderApp } from '../../helpers/render.tsx'
+import ProfileScreen from '../../../src/app/(tabs)/profile/index'
+import WelcomeScreen from '../../../src/app/index'
+import { renderApp } from '../../helpers/render'
 
 /**
  * Stand-in for the tabs layout: renders the active tab.
@@ -16,7 +16,7 @@ import { renderApp } from '../../helpers/render.tsx'
 const TabsLayout = (): ReactElement => <Slot />
 
 /** The backend of the current test. */
-let backend: Backend
+let backend: IBackend
 
 describe('profile screen', () => {
   beforeEach(() => {

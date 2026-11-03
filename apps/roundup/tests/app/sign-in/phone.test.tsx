@@ -1,13 +1,13 @@
 import { fireEvent, screen } from 'expo-router/testing-library'
 
-import type { Backend } from '../../helpers/fakes.ts'
+import type { IBackend } from '../../helpers/fakes'
 
-import CodeScreen from '../../../src/app/sign-in/code.tsx'
-import PhoneScreen from '../../../src/app/sign-in/index.tsx'
-import { renderApp } from '../../helpers/render.tsx'
+import CodeScreen from '../../../src/app/sign-in/code'
+import PhoneScreen from '../../../src/app/sign-in/index'
+import { renderApp } from '../../helpers/render'
 
 /** The backend of the current test. */
-let backend: Backend
+let backend: IBackend
 
 /**
  * Opens the phone screen.
@@ -24,7 +24,7 @@ describe('phone screen', () => {
     backend = { paths: [], user: { name: 'Asha' } }
   })
 
-  it('shows the heading, the labelled field with its helper, and the button', async () => {
+  it('shows the heading, the labeled field with its helper, and the button', async () => {
     await open()
 
     expect(await screen.findByRole('heading', { name: 'Sign in' })).toBeOnTheScreen()

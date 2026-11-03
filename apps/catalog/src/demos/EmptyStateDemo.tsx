@@ -2,7 +2,7 @@ import type { ReactElement } from 'react'
 
 import { Button, EmptyState } from '@roundup/ui'
 
-import { Specimen } from '../components/Specimen.tsx'
+import { Specimen } from '../components/Specimen'
 
 /**
  * EmptyState with each illustration, with and without a body and an action.

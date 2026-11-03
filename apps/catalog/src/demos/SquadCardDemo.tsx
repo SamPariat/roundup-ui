@@ -4,8 +4,8 @@ import { useCallback, useState } from 'react'
 
 import { SquadCard, Text } from '@roundup/ui'
 
-import { Specimen } from '../components/Specimen.tsx'
-import { BOOK_CLUB, FRIDAY_FOOTY, PEOPLE } from '../fixtures.ts'
+import { Specimen } from '../components/Specimen'
+import { BOOK_CLUB, FRIDAY_FOOTY, PEOPLE } from '../fixtures'
 
 /**
  * SquadCard as admin and member, without members, with a real count beyond the sample, and pressable.

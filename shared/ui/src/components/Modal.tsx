@@ -13,15 +13,15 @@ import {
 
 import { useT } from '@roundup/i18n'
 
-import { ActionContext } from '../lib/action-context.ts'
-import { cn } from '../lib/cn.ts'
-import { breakpointFor } from '../lib/useBreakpoint.ts'
-import { Button } from './Button.tsx'
-import { Surface } from './Surface.tsx'
-import { Text } from './Text.tsx'
+import { ActionContext } from '../lib/action-context'
+import { cn } from '../lib/cn'
+import { breakpointFor } from '../lib/useBreakpoint'
+import { Button } from './Button'
+import { Surface } from './Surface'
+import { Text } from './Text'
 
 /** Props for Modal. */
-export interface ModalProps {
+export interface IModalProps {
   /** The dialog's title. It is also the dialog's accessible name and receives focus when it opens. */
   title: string
   /** A line under the title. */
@@ -50,10 +50,10 @@ export interface ModalProps {
 }
 
 /** The native element behind the title wrapper, which gets focus on open. */
-type TitleElement = ComponentRef<typeof View>
+type TTitleElement = ComponentRef<typeof View>
 
 /** The web DOM focus method that the title element has on web. */
-interface Focusable {
+interface IFocusable {
   /** Moves keyboard and screen-reader focus to the element. */
   focus?: () => void
 }
@@ -62,11 +62,11 @@ interface Focusable {
  * Moves focus to the dialog title so assistive technology starts reading at the top of the dialog.
  * @param title - The title element, or null before it has mounted.
  */
-const moveFocusTo = (title: null | TitleElement): void => {
+const moveFocusTo = (title: null | TTitleElement): void => {
   if (title === null) return
 
   if (Platform.OS === 'web') {
-    ;(title as unknown as Focusable).focus?.()
+    ;(title as unknown as IFocusable).focus?.()
 
     return
   }
@@ -75,7 +75,7 @@ const moveFocusTo = (title: null | TitleElement): void => {
 }
 
 /** Props for the header row of the modal. */
-interface HeaderProps {
+interface IHeaderProps {
   /** The subject the modal is about. */
   leading?: ReactNode
   /** Called when the close button is pressed. */
@@ -87,7 +87,7 @@ interface HeaderProps {
   /** Whether the close button is drawn. */
   showClose: boolean
   /** Ref to the focusable title wrapper. */
-  titleRef: RefObject<null | TitleElement>
+  titleRef: RefObject<null | TTitleElement>
 }
 
 /**
@@ -101,7 +101,7 @@ const ModalHeader = ({
   subtitle,
   title,
   titleRef,
-}: HeaderProps): ReactElement => {
+}: IHeaderProps): ReactElement => {
   const { t } = useT()
 
   return (
@@ -168,8 +168,8 @@ const ModalContent = ({
 }
 
 /**
- * A dialog that is a bottom sheet below the tablet breakpoint and a centred card above it. It traps focus, closes on Esc and the Android back button, and tells assistive technology it is a (alert)dialog and when it is busy.
- * Every sheet, form and confirmation. A bottom sheet below 768 wide, a centred 480 panel from
+ * A dialog that is a bottom sheet below the tablet breakpoint and a centerd card above it. It traps focus, closes on Esc and the Android back button, and tells assistive technology it is a (alert)dialog and when it is busy.
+ * Every sheet, form and confirmation. A bottom sheet below 768 wide, a centerd 480 panel from
  * there up; identical content on web and app. The web build traps focus inside, closes on Esc
  * and returns focus to the trigger; native closes on the Android back button.
  * @returns The native modal host with its sheet or card.
@@ -186,9 +186,9 @@ export const Modal = ({
   title,
   tone = 'content',
   visible = true,
-}: ModalProps): ReactElement => {
+}: IModalProps): ReactElement => {
   const { width } = useWindowDimensions()
-  const titleRef = useRef<TitleElement>(null)
+  const titleRef = useRef<TTitleElement>(null)
   const sheet = breakpointFor(width) === 'phone'
   const confirm = tone === 'confirm'
   const showClose = !confirm && !busy && closable
@@ -216,7 +216,7 @@ export const Modal = ({
       {/* iOS draws the keyboard over the window, so a field in the sheet would sit behind it;
           padding by the keyboard's height lifts the sheet. Android resizes the window itself. */}
       <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        behavior={Platform.select({ ios: 'padding' })}
         className={cn('flex-1 bg-scrim', sheet ? 'justify-end' : 'items-center justify-center p-6')}
       >
         <Surface

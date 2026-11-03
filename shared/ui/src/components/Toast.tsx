@@ -2,32 +2,32 @@ import type { ReactElement, ReactNode } from 'react'
 
 import { View } from 'react-native'
 
-import type { IconName } from '../lib/icons.ts'
+import type { TIconName } from '../lib/icons'
 
-import { cn } from '../lib/cn.ts'
-import { Button } from './Button.tsx'
-import { Icon } from './Icon.tsx'
-import { Surface } from './Surface.tsx'
-import { Text } from './Text.tsx'
+import { cn } from '../lib/cn'
+import { Button } from './Button'
+import { Icon } from './Icon'
+import { Surface } from './Surface'
+import { Text } from './Text'
 
 /** How one toast tone looks. */
-interface ToneStyle {
-  /** Role colour for the icon. */
+interface IToneStyle {
+  /** Role color for the icon. */
   color: 'danger' | 'info' | 'success'
   /** Soft background class. */
   fill: string
-  /** Icon that backs the colour with a shape. */
-  icon: IconName
+  /** Icon that backs the color with a shape. */
+  icon: TIconName
 }
 
 const TONES = {
   success: { icon: 'check', fill: 'bg-success-soft', color: 'success' },
   error: { icon: 'alert', fill: 'bg-danger-soft', color: 'danger' },
   info: { icon: 'info', fill: 'bg-info-soft', color: 'info' },
-} as const satisfies Record<string, ToneStyle>
+} as const satisfies Record<string, IToneStyle>
 
 /** Props for Toast. */
-export interface ToastProps {
+export interface IToastProps {
   /** success, error or info. Errors interrupt screen readers; the others wait. Defaults to info. */
   tone?: keyof typeof TONES
   /** Label of an action button, such as Undo. */
@@ -42,7 +42,7 @@ export interface ToastProps {
  * A toast is a live region: errors interrupt, the rest wait for a pause.
  * @returns The message strip.
  */
-export const Toast = ({ action, children, onAction, tone = 'info' }: ToastProps): ReactElement => {
+export const Toast = ({ action, children, onAction, tone = 'info' }: IToastProps): ReactElement => {
   const { color, fill, icon } = TONES[tone]
   const urgent = tone === 'error'
 

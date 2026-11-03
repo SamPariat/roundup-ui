@@ -5,9 +5,9 @@ import { View } from 'react-native'
 
 import { Button, Text } from '@roundup/ui'
 
-import { Specimen } from '../components/Specimen.tsx'
+import { Specimen } from '../components/Specimen'
 
-/** The button colour treatments. */
+/** The button color treatments. */
 const VARIANTS = ['primary', 'secondary', 'ghost', 'destructive'] as const
 
 /** The button height steps. */

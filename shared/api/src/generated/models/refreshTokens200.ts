@@ -22,8 +22,8 @@
  *
  * OpenAPI spec version: 1.0.0
  */
-import type { SuccessEnvelope } from './successEnvelope.ts'
-import type { TokenPair } from './tokenPair.ts'
+import type { SuccessEnvelope } from './successEnvelope'
+import type { TokenPair } from './tokenPair'
 
 export type RefreshTokens200 = SuccessEnvelope & {
   data: TokenPair

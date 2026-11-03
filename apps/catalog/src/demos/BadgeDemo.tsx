@@ -4,7 +4,7 @@ import { View } from 'react-native'
 
 import { Badge } from '@roundup/ui'
 
-import { Specimen } from '../components/Specimen.tsx'
+import { Specimen } from '../components/Specimen'
 
 /** The seven tones. */
 const TONES = ['neutral', 'accent', 'highlight', 'success', 'warning', 'danger', 'info'] as const

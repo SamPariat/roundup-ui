@@ -22,9 +22,9 @@
  *
  * OpenAPI spec version: 1.0.0
  */
-import type { Role } from './role.ts'
-import type { Squad } from './squad.ts'
-import type { SquadMember } from './squadMember.ts'
+import type { Role } from './role'
+import type { Squad } from './squad'
+import type { SquadMember } from './squadMember'
 
 export type SquadSummary = Squad & {
   role: Role

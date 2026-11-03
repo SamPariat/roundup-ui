@@ -1,11 +1,11 @@
-import type { SessionStore } from './types.ts'
+import type { ISessionStore } from './types'
 
 /**
  * The web session store. It keeps nothing: the browser holds the refresh token in an httpOnly
  * cookie, and the access token lives only in memory (session.ts).
  * @returns A store whose methods do nothing.
  */
-export const createSessionStore = (): SessionStore => ({
+export const createSessionStore = (): ISessionStore => ({
   /**
    * Nothing is saved, so there is nothing to forget.
    * @returns A resolved promise.

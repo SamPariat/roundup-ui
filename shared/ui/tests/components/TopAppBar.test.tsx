@@ -1,7 +1,7 @@
 import { fireEvent, screen } from '@testing-library/react-native'
 
-import { TopAppBar } from '../../src/components/TopAppBar.tsx'
-import { renderWithTheme } from '../helpers/render.tsx'
+import { TopAppBar } from '../../src/components/TopAppBar'
+import { renderWithTheme } from '../helpers/render'
 
 describe('TopAppBar', () => {
   it('titles the screen with a heading', async () => {

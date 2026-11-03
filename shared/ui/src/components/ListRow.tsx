@@ -4,12 +4,12 @@ import { Pressable, View } from 'react-native'
 
 import { useT } from '@roundup/i18n'
 
-import { cn } from '../lib/cn.ts'
-import { Icon } from './Icon.tsx'
-import { Text } from './Text.tsx'
+import { cn } from '../lib/cn'
+import { Icon } from './Icon'
+import { Text } from './Text'
 
 /** Props for ListRow. */
-export interface ListRowProps {
+export interface IListRowProps {
   /** The row's main text. */
   title: string
   /** Secondary line under the title. */
@@ -20,7 +20,7 @@ export interface ListRowProps {
   trailing?: ReactNode
   /** Shows a chevron to say the row opens something. */
   chevron?: boolean
-  /** Draws the title in the danger colour (sign out, delete). */
+  /** Draws the title in the danger color (sign out, delete). */
   destructive?: boolean
   /** Makes the row a button. Without it the row is plain content. */
   onPress?: () => void
@@ -41,7 +41,7 @@ export const ListRow = ({
   subtitle,
   title,
   trailing,
-}: ListRowProps): ReactElement => {
+}: IListRowProps): ReactElement => {
   const { t } = useT()
 
   const content = (

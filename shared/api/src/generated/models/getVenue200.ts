@@ -22,8 +22,8 @@
  *
  * OpenAPI spec version: 1.0.0
  */
-import type { SuccessEnvelope } from './successEnvelope.ts'
-import type { VenueDetail } from './venueDetail.ts'
+import type { SuccessEnvelope } from './successEnvelope'
+import type { VenueDetail } from './venueDetail'
 
 export type GetVenue200 = SuccessEnvelope & {
   data: VenueDetail

@@ -2,31 +2,31 @@ import type { QueryClient } from '@tanstack/react-query'
 
 import type { TokenPair } from '@roundup/api'
 
-import { isApiError, logout, refreshTokens } from '@roundup/api'
+import { ApiError, logout, refreshTokens } from '@roundup/api'
 
-import type { SessionState, SessionStore } from './types.ts'
+import type { ISessionState, ISessionStore } from './types'
 
 /** The statuses from the refresh route that mean the refresh token is no good. */
 const REJECTED = new Set([400, 401])
 
 /** The body of an auth request that carries the refresh token. */
-interface RefreshBody {
+interface IRefreshBody {
   /** The saved refresh token. */
   refreshToken: string
 }
 
 /** What the session needs from the outside. */
-export interface SessionDeps {
+export interface ISessionDeps {
   /** Where the refresh token is kept between launches. */
-  store: SessionStore
+  store: ISessionStore
   /** Emptied on sign-out so the next person never sees the last one's data. */
   queryClient: Pick<QueryClient, 'clear'>
 }
 
 /** The session state machine: in-memory access token, persisted refresh token, one status. */
-export interface Session {
+export interface ISession {
   /** The current state; a new object on every change, so it suits useSyncExternalStore. */
-  getState: () => SessionState
+  getState: () => ISessionState
   /** Calls the listener after every change; returns the unsubscribe function. */
   subscribe: (listener: () => void) => () => void
   /** The access token, kept in memory only. */
@@ -49,9 +49,9 @@ export interface Session {
  * @param deps.store - Where the refresh token is kept.
  * @returns The state machine, ready to restore.
  */
-export const createSession = ({ queryClient, store }: SessionDeps): Session => {
+export const createSession = ({ queryClient, store }: ISessionDeps): ISession => {
   const listeners = new Set<() => void>()
-  let state: SessionState = { status: 'restoring' }
+  let state: ISessionState = { status: 'restoring' }
   let accessToken: string | undefined
   let restoring: Promise<void> | undefined
   let refreshing: Promise<boolean> | undefined
@@ -60,7 +60,7 @@ export const createSession = ({ queryClient, store }: SessionDeps): Session => {
    * Moves to a new status and tells the listeners, unless nothing changed.
    * @param status - The status to move to.
    */
-  const setStatus = (status: SessionState['status']): void => {
+  const setStatus = (status: ISessionState['status']): void => {
     if (state.status === status) return
 
     state = { status }
@@ -72,7 +72,7 @@ export const createSession = ({ queryClient, store }: SessionDeps): Session => {
    * The request body that carries the refresh token. Web sends none, because its cookie does.
    * @returns The body, or undefined where the cookie holds the token.
    */
-  const bodyFor = (): RefreshBody | undefined => {
+  const bodyFor = (): IRefreshBody | undefined => {
     const token = store.refreshToken()
 
     return token === undefined ? undefined : { refreshToken: token }
@@ -112,7 +112,7 @@ export const createSession = ({ queryClient, store }: SessionDeps): Session => {
 
       return true
     } catch (error) {
-      if (isApiError(error) && REJECTED.has(error.status)) {
+      if (ApiError.is(error) && REJECTED.has(error.status)) {
         await forget()
         setStatus('signedOut')
       }

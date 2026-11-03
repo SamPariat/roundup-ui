@@ -1,10 +1,10 @@
 import { createContext } from 'react'
 
-import type { Session } from '../session/session.ts'
-import type { Deps } from './deps.ts'
+import type { ISession } from '../session/session'
+import type { IDeps } from './deps'
 
 /** The dependencies, provided by CoreProvider. */
-export const DepsContext = createContext<Deps | null>(null)
+export const DepsContext = createContext<IDeps | null>(null)
 
 /** The session built from those dependencies, provided by CoreProvider. */
-export const SessionContext = createContext<null | Session>(null)
+export const SessionContext = createContext<ISession | null>(null)

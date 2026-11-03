@@ -22,9 +22,9 @@
  *
  * OpenAPI spec version: 1.0.0
  */
-import type { Review } from './review.ts'
-import type { SavedIn } from './savedIn.ts'
-import type { Venue } from './venue.ts'
+import type { Review } from './review'
+import type { SavedIn } from './savedIn'
+import type { Venue } from './venue'
 
 export type VenueDetail = Venue & {
   phoneNumber: string

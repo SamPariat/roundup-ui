@@ -5,18 +5,18 @@ import { useEffect, useState } from 'react'
 
 import { setAuthBridge } from '@roundup/api'
 
-import type { Deps } from './deps.ts'
+import type { IDeps } from './deps'
 
-import { createSession } from '../session/session.ts'
-import { DepsContext, SessionContext } from './context.ts'
-import { createDeps } from './deps.ts'
+import { createSession } from '../session/session'
+import { DepsContext, SessionContext } from './context'
+import { createDeps } from './deps'
 
 /** Props for CoreProvider. */
-export interface CoreProviderProps {
+export interface ICoreProviderProps {
   /** The app below. */
   children: ReactNode
   /** Replaces any of the real dependencies, which tests use to pass fakes. */
-  deps?: Partial<Deps>
+  deps?: Partial<IDeps>
 }
 
 /**
@@ -24,9 +24,9 @@ export interface CoreProviderProps {
  * the saved session, and provides all of it, plus the query client, to the app.
  * @returns The providers around the children.
  */
-export const CoreProvider = ({ children, deps }: CoreProviderProps): ReactElement => {
+export const CoreProvider = ({ children, deps }: ICoreProviderProps): ReactElement => {
   const [built] = useState(() => {
-    const merged: Deps = { ...createDeps(), ...deps }
+    const merged: IDeps = { ...createDeps(), ...deps }
 
     return {
       deps: merged,

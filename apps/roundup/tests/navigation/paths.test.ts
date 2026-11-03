@@ -1,37 +1,35 @@
-import { paths } from '../../src/navigation/paths.ts'
+import { Paths } from '../../src/navigation/paths'
 
-describe('paths', () => {
-  it.each([
-    ['welcome', paths.welcome, '/'],
-    ['signIn.phone', paths.signIn.phone, '/sign-in'],
-    ['signIn.name', paths.signIn.name, '/sign-in/name'],
-    ['tabs.squads', paths.tabs.squads, '/squads'],
-    ['tabs.explore', paths.tabs.explore, '/explore'],
-    ['tabs.profile', paths.tabs.profile, '/profile'],
-  ] as const)('%s is a plain string without a query', (_name, build, expected) => {
-    expect(build()).toBe(expected)
+describe('Paths', () => {
+  it('returns the plain path when there is no query', () => {
+    expect(Paths.welcome()).toBe('/')
+    expect(Paths.signInPhone()).toBe('/sign-in')
+    expect(Paths.signInName()).toBe('/sign-in/name')
+    expect(Paths.tabsSquads()).toBe('/squads')
+    expect(Paths.tabsExplore()).toBe('/explore')
+    expect(Paths.tabsProfile()).toBe('/profile')
   })
 
-  it.each([
-    ['welcome', paths.welcome, '/'],
-    ['signIn.phone', paths.signIn.phone, '/sign-in'],
-    ['signIn.name', paths.signIn.name, '/sign-in/name'],
-    ['tabs.squads', paths.tabs.squads, '/squads'],
-    ['tabs.explore', paths.tabs.explore, '/explore'],
-    ['tabs.profile', paths.tabs.profile, '/profile'],
-  ] as const)('%s carries extra query parameters', (_name, build, expected) => {
-    expect(build({ ref: 'invite' })).toEqual({ params: { ref: 'invite' }, pathname: expected })
+  it('carries extra query parameters', () => {
+    const query = { ref: 'invite' }
+
+    expect(Paths.welcome(query)).toEqual({ params: query, pathname: '/' })
+    expect(Paths.signInPhone(query)).toEqual({ params: query, pathname: '/sign-in' })
+    expect(Paths.signInName(query)).toEqual({ params: query, pathname: '/sign-in/name' })
+    expect(Paths.tabsSquads(query)).toEqual({ params: query, pathname: '/squads' })
+    expect(Paths.tabsExplore(query)).toEqual({ params: query, pathname: '/explore' })
+    expect(Paths.tabsProfile(query)).toEqual({ params: query, pathname: '/profile' })
   })
 
   it('builds the code path with the phone it needs', () => {
-    expect(paths.signIn.code({ phone: '+919876543210' })).toEqual({
+    expect(Paths.signInCode({ phone: '+919876543210' })).toEqual({
       params: { phone: '+919876543210' },
       pathname: '/sign-in/code',
     })
   })
 
   it('builds the code path with the phone and extra parameters', () => {
-    expect(paths.signIn.code({ phone: '+919876543210', ref: 'invite' })).toEqual({
+    expect(Paths.signInCode({ phone: '+919876543210', ref: 'invite' })).toEqual({
       params: { phone: '+919876543210', ref: 'invite' },
       pathname: '/sign-in/code',
     })

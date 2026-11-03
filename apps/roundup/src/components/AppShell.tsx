@@ -4,15 +4,15 @@ import { View } from 'react-native'
 
 import { BottomNav, cn, PageHeader, SideNav, TopAppBar } from '@roundup/ui'
 
-import type { TabItem } from '../hooks/useTabItems.ts'
+import type { ITabItem } from '../hooks/useTabItems'
 
-import { useLayout } from '../hooks/useLayout.ts'
-import { useTabItems } from '../hooks/useTabItems.ts'
+import { useLayout } from '../hooks/useLayout'
+import { useTabItems } from '../hooks/useTabItems'
 
 /** Props for AppShell. */
-export interface AppShellProps {
+export interface IAppShellProps {
   /** Which tab is showing. */
-  current: TabItem['id']
+  current: ITabItem['id']
   /** The routed screen. */
   children: ReactNode
 }
@@ -22,7 +22,7 @@ export interface AppShellProps {
  * same everywhere, only the chrome changes.
  * @returns The page frame: nav, title and content.
  */
-export const AppShell = ({ children, current }: AppShellProps): ReactElement => {
+export const AppShell = ({ children, current }: IAppShellProps): ReactElement => {
   const { gutter, nav } = useLayout()
   const items = useTabItems()
   const navItems = items.map(({ href, icon, id, label }) => ({ href, icon, id, label }))

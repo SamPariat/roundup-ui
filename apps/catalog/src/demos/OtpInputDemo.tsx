@@ -4,7 +4,7 @@ import { useCallback, useState } from 'react'
 
 import { OtpInput } from '@roundup/ui'
 
-import { Specimen } from '../components/Specimen.tsx'
+import { Specimen } from '../components/Specimen'
 
 /** The code that the interactive specimen accepts. */
 const RIGHT_CODE = '123456'

@@ -1,7 +1,7 @@
 import { renderHook, waitFor } from '@testing-library/react-native'
 import { AccessibilityInfo, Platform } from 'react-native'
 
-import { useGlass } from '../../src/lib/useGlass.ts'
+import { useGlass } from '../../src/lib/useGlass'
 
 jest.mock('expo-glass-effect', () => ({
   isLiquidGlassAvailable: jest.fn(() => true),
@@ -25,7 +25,7 @@ describe('useGlass', () => {
     expect(result.current).toEqual({ available: true, reduced: false })
   })
 
-  it('reports reduced transparency so surfaces fall back to solid colours', async () => {
+  it('reports reduced transparency so surfaces fall back to solid colors', async () => {
     Platform.OS = 'ios'
     jest.spyOn(AccessibilityInfo, 'isReduceTransparencyEnabled').mockResolvedValue(true)
 

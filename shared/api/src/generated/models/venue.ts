@@ -22,7 +22,7 @@
  *
  * OpenAPI spec version: 1.0.0
  */
-import type { Photo } from './photo.ts'
+import type { Photo } from './photo'
 
 export interface Venue {
   placeID: string

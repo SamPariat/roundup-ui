@@ -1,10 +1,10 @@
-import type { AvatarGroupProps, IconName, NavUser } from '@roundup/ui'
+import type { IAvatarGroupProps, INavUser, TIconName } from '@roundup/ui'
 
 /** A sample person for the avatars, lists and squads in the demos. */
-export type Member = AvatarGroupProps['people'][number]
+export type TMember = IAvatarGroupProps['people'][number]
 
 /** A sample squad. */
-export interface SquadFixture {
+export interface ISquadFixture {
   /** Stable ID, which picks the avatar tint. */
   id: string
   /** The viewer's role in the squad. */
@@ -12,13 +12,13 @@ export interface SquadFixture {
   /** How many people are in the squad in all. */
   memberCount: number
   /** The people drawn on the card. */
-  members: Member[]
+  members: TMember[]
   /** The squad's name. */
   name: string
 }
 
 /** A sample venue. */
-export interface VenueFixture {
+export interface IVenueFixture {
   /** Street address. */
   address: string
   /** Whether it is open now. */
@@ -36,7 +36,7 @@ export interface VenueFixture {
 }
 
 /** The people the demos draw. */
-export const PEOPLE: Member[] = [
+export const PEOPLE: TMember[] = [
   { id: 'p1', name: 'Aarav Shah' },
   { id: 'p2', name: 'Diya Mehta' },
   { id: 'p3', name: 'Kabir Rao' },
@@ -48,10 +48,10 @@ export const PEOPLE: Member[] = [
 ]
 
 /** The signed-in person the side navigation pins to its bottom. */
-export const NAV_USER: NavUser = { id: 'p1', name: 'Aarav Shah', phone: '+91 98765 43210' }
+export const NAV_USER: INavUser = { id: 'p1', name: 'Aarav Shah', phone: '+91 98765 43210' }
 
 /** A squad the viewer runs. */
-export const FRIDAY_FOOTY: SquadFixture = {
+export const FRIDAY_FOOTY: ISquadFixture = {
   id: 's1',
   name: 'Friday Footy',
   role: 'ADMIN',
@@ -60,7 +60,7 @@ export const FRIDAY_FOOTY: SquadFixture = {
 }
 
 /** A squad the viewer only belongs to. */
-export const BOOK_CLUB: SquadFixture = {
+export const BOOK_CLUB: ISquadFixture = {
   id: 's2',
   name: 'Book Club',
   role: 'MEMBER',
@@ -69,7 +69,7 @@ export const BOOK_CLUB: SquadFixture = {
 }
 
 /** A venue that is open. */
-export const OPEN_VENUE: VenueFixture = {
+export const OPEN_VENUE: IVenueFixture = {
   name: 'Blue Tokai Coffee Roasters',
   address: '12 Church Street, Bengaluru',
   rating: 4.6,
@@ -80,7 +80,7 @@ export const OPEN_VENUE: VenueFixture = {
 }
 
 /** A venue that is closed. */
-export const CLOSED_VENUE: VenueFixture = {
+export const CLOSED_VENUE: IVenueFixture = {
   name: 'Toit Brewpub',
   address: '298 100 Feet Road, Indiranagar',
   rating: 4.4,
@@ -91,7 +91,7 @@ export const CLOSED_VENUE: VenueFixture = {
 }
 
 /** Every icon of the set, in the order of the set. */
-export const ICON_NAMES: readonly IconName[] = [
+export const ICON_NAMES: readonly TIconName[] = [
   'alert',
   'back',
   'bookmark',

@@ -1,7 +1,7 @@
 import { Platform } from 'react-native'
 
-import { ApiError } from './api-error.ts'
-import { getAuthBridge } from './auth-bridge.ts'
+import { ApiError } from './api-error'
+import { getAuthBridge } from './auth-bridge'
 
 /** The paths that sign in, refresh and sign out: a 401 from these is an answer, not an expired token. */
 const AUTH_PATH = '/api/v1/auth/'
@@ -19,11 +19,8 @@ let refreshing: Promise<boolean> | undefined
  * The client kind the backend sees in X-Client. Web gets its refresh token as a cookie.
  * @returns web, ios or android.
  */
-const clientKind = (): 'android' | 'ios' | 'web' => {
-  if (Platform.OS === 'ios' || Platform.OS === 'android') return Platform.OS
-
-  return 'web'
-}
+const clientKind = (): 'android' | 'ios' | 'web' =>
+  Platform.select({ android: 'android', default: 'web', ios: 'ios' })
 
 /**
  * Whether a url is one of the auth routes.
@@ -54,7 +51,7 @@ const send = async (url: string, init: RequestInit | undefined): Promise<Respons
     return await fetch(`${process.env.EXPO_PUBLIC_API_URL}${url}`, {
       ...init,
       headers,
-      ...(Platform.OS === 'web' ? { credentials: 'include' as const } : {}),
+      ...Platform.select({ default: {}, web: { credentials: 'include' as const } }),
     })
   } catch {
     throw new ApiError(0, 'Network request failed')

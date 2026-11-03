@@ -1,17 +1,17 @@
 import { Platform } from 'react-native'
 
-import { ApiError } from '../src/api-error.ts'
-import { setAuthBridge } from '../src/auth-bridge.ts'
-import { fetcher } from '../src/fetcher.ts'
+import { ApiError } from '../src/api-error'
+import { setAuthBridge } from '../src/auth-bridge'
+import { fetcher } from '../src/fetcher'
 
 /** The envelope tests read back. */
-interface Envelope<T> {
+interface IEnvelope<T> {
   /** The payload. */
   data: T
 }
 
 /** A payload with an id. */
-interface Identified {
+interface IIdentified {
   /** The id. */
   id: string
 }
@@ -28,7 +28,7 @@ let refresh: jest.Mock<Promise<boolean>, []>
 /**
  * Builds a JSON response the way the gateway sends one.
  * @param status - The HTTP status.
- * @param body - The value to serialise as the body.
+ * @param body - The value to serialize as the body.
  * @param headers - Extra response headers.
  * @returns The response.
  */
@@ -41,6 +41,13 @@ const json = (status: number, body: unknown, headers: Record<string, string> = {
  * @returns The response.
  */
 const empty = (status: number): Response => new Response(null, { status })
+
+/**
+ * A stand-in for Platform.select that answers as the web would.
+ * @param spec - The per-platform values.
+ * @returns The web value, or the default.
+ */
+const selectWeb = (spec: Record<string, unknown>): unknown => spec['web'] ?? spec['default']
 
 /**
  * Reads the headers of one request the stub received.
@@ -86,7 +93,7 @@ describe('fetcher', () => {
   it('returns the parsed envelope from the configured base url', async () => {
     fetchMock.mockResolvedValue(json(200, { data: { id: 'u1' }, success: true }))
 
-    const result = await fetcher<Envelope<Identified>>('/api/v1/users/me', { method: 'GET' })
+    const result = await fetcher<IEnvelope<IIdentified>>('/api/v1/users/me', { method: 'GET' })
 
     expect(result.data.id).toBe('u1')
     expect(fetchMock.mock.calls[0]?.[0]).toBe('http://localhost:8080/api/v1/users/me')
@@ -129,7 +136,7 @@ describe('fetcher', () => {
   })
 
   it('sends X-Client web and includes cookies on web', async () => {
-    jest.replaceProperty(Platform, 'OS', 'web')
+    jest.spyOn(Platform, 'select').mockImplementation(selectWeb)
     fetchMock.mockResolvedValue(json(200, { success: true }))
 
     await fetcher('/api/v1/users/me')
@@ -151,7 +158,7 @@ describe('fetcher', () => {
       .mockResolvedValueOnce(json(401, { error: 'expired', success: false }))
       .mockResolvedValueOnce(json(200, { data: 7, success: true }))
 
-    const result = await fetcher<Envelope<number>>('/api/v1/users/me')
+    const result = await fetcher<IEnvelope<number>>('/api/v1/users/me')
 
     expect(result.data).toBe(7)
     expect(refresh).toHaveBeenCalledTimes(1)

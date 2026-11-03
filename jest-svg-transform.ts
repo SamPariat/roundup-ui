@@ -7,7 +7,7 @@ import jsx from '@svgr/plugin-jsx'
 import babelJest from 'babel-jest'
 
 /** The synchronous part of babel-jest that this transformer calls. */
-interface SyncBabelTransformer {
+interface ISyncBabelTransformer {
   /** Compiles a source file. */
   process: (source: string, filename: string, options: unknown) => unknown
 }
@@ -17,7 +17,7 @@ const babel = babelJest.createTransformer({
   babelrc: false,
   configFile: false,
   presets: ['babel-preset-expo'],
-}) as unknown as SyncBabelTransformer
+}) as unknown as ISyncBabelTransformer
 
 /**
  * Turns an imported .svg into a component module.

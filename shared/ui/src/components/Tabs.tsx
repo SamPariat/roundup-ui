@@ -5,11 +5,11 @@ import { Pressable, View } from 'react-native'
 
 import { useT } from '@roundup/i18n'
 
-import { cn } from '../lib/cn.ts'
-import { Text } from './Text.tsx'
+import { cn } from '../lib/cn'
+import { Text } from './Text'
 
 /** One segment of Tabs. */
-export interface TabItem {
+export interface ITabItem {
   /** A number shown after the label, such as how many items are in the tab. */
   count?: number
   /** Stable ID passed to `onChange`. */
@@ -19,9 +19,9 @@ export interface TabItem {
 }
 
 /** Props for Tabs. */
-export interface TabsProps {
+export interface ITabsProps {
   /** The segments, in order. */
-  items: TabItem[]
+  items: ITabItem[]
   /** The id of the selected segment. */
   value: string
   /** Called with the id of the segment that was pressed. */
@@ -29,11 +29,11 @@ export interface TabsProps {
 }
 
 /** Props for one segment. */
-interface TabButtonProps {
+interface ITabButtonProps {
   /** Whether this segment is selected. */
   active: boolean
   /** The segment to draw. */
-  item: TabItem
+  item: ITabItem
   /** Called with the segment's id when pressed. */
   onChange?: ((id: string) => void) | undefined
 }
@@ -42,7 +42,7 @@ interface TabButtonProps {
  * One segment of the tab bar: label, optional count, selected state.
  * @returns The pressable segment.
  */
-const TabButton = ({ active, item, onChange }: TabButtonProps): ReactElement => {
+const TabButton = ({ active, item, onChange }: ITabButtonProps): ReactElement => {
   const { t } = useT()
 
   const press = useCallback(() => {
@@ -80,7 +80,7 @@ const TabButton = ({ active, item, onChange }: TabButtonProps): ReactElement => 
  * A segmented control that switches between views, announced as a tablist whose tabs are selected or not.
  * @returns The segmented bar.
  */
-export const Tabs = ({ items, onChange, value }: TabsProps): ReactElement => (
+export const Tabs = ({ items, onChange, value }: ITabsProps): ReactElement => (
   <View className="flex-row gap-1 rounded-xl bg-bg-sunken p-1" role="tablist">
     {items.map((item) => (
       <TabButton active={item.id === value} item={item} key={item.id} onChange={onChange} />

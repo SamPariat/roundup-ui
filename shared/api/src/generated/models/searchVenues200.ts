@@ -22,8 +22,8 @@
  *
  * OpenAPI spec version: 1.0.0
  */
-import type { SearchResponse } from './searchResponse.ts'
-import type { SuccessEnvelope } from './successEnvelope.ts'
+import type { SearchResponse } from './searchResponse'
+import type { SuccessEnvelope } from './successEnvelope'
 
 export type SearchVenues200 = SuccessEnvelope & {
   data: SearchResponse

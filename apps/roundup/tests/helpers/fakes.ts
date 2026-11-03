@@ -1,17 +1,17 @@
 import { QueryClient } from '@tanstack/react-query'
 
-import type { Deps } from '@roundup/core'
+import type { IDeps } from '@roundup/core'
 
 /** The user the stubbed profile route returns. */
-interface StubUser {
+interface IStubUser {
   /** The name; empty until the person sets one. */
   name: string
 }
 
 /** What a test says the backend does. */
-export interface Backend {
+export interface IBackend {
   /** The profile route's user. */
-  user: StubUser
+  user: IStubUser
   /** True to make the refresh route hang, so the session stays in "restoring". */
   hang?: boolean
   /** The status the request-code route answers with. Defaults to 202. */
@@ -133,7 +133,7 @@ const tokens = (refreshToken: string, extra: Record<string, unknown> = {}): Resp
  * @param backend - What the backend is told to do.
  * @returns The response, or undefined when the path is not a sign-in route.
  */
-const signInAnswer = async (path: string, backend: Backend): Promise<Response | undefined> => {
+const signInAnswer = async (path: string, backend: IBackend): Promise<Response | undefined> => {
   if (path === '/api/v1/auth/otp/request') {
     if (backend.hangOtp === true) await hang()
 
@@ -160,7 +160,7 @@ const signInAnswer = async (path: string, backend: Backend): Promise<Response | 
  * Replaces global fetch with a backend that knows sign-in, refresh, the profile and logout.
  * @param backend - What the backend answers and where requests are recorded.
  */
-export const stubBackend = (backend: Backend): void => {
+export const stubBackend = (backend: IBackend): void => {
   globalThis.fetch = (async (input: string, init?: RequestInit) => {
     const path = input.replace('http://localhost:8080', '')
     const method = init?.method ?? 'GET'
@@ -189,9 +189,9 @@ export const stubBackend = (backend: Backend): void => {
  * Builds the dependencies of a test: a store with or without a saved session, and a query client
  * that never garbage-collects, whose timer would keep Jest alive.
  * @param token - The saved refresh token; none means a signed-out launch.
- * @returns Deps to pass to CoreProvider.
+ * @returns IDeps to pass to CoreProvider.
  */
-export const testDeps = (token?: string): Partial<Deps> => ({
+export const testDeps = (token?: string): Partial<IDeps> => ({
   queryClient: new QueryClient({ defaultOptions: { queries: { gcTime: Infinity, retry: false } } }),
   session: new MemoryStore(token),
 })

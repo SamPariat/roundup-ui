@@ -2,7 +2,7 @@ import type { ReactElement } from 'react'
 
 import { Price } from '@roundup/ui'
 
-import { Specimen } from '../components/Specimen.tsx'
+import { Specimen } from '../components/Specimen'
 
 /** The price levels: 0 is unknown, 1 to 4 light that many marks. */
 const LEVELS = [1, 2, 3, 4] as const

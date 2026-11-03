@@ -7,10 +7,10 @@ import { cn, Text } from '@roundup/ui'
 // Tailwind sets border-style through --tw-border-style, which the web keeps to the element that
 // declares it. react-native-css lets it inherit, so on iOS and Android a dashed box would turn
 // every bordered component inside it (a TextField, a Chip) dashed too. Native draws it solid.
-const DASHED = Platform.OS === 'web' ? 'border-dashed' : ''
+const DASHED = Platform.select({ default: '', web: 'border-dashed' })
 
 /** Props for Specimen. */
-export interface SpecimenProps {
+export interface ISpecimenProps {
   /** The component or state on show. */
   children: ReactNode
   /** One line on what to look for. */
@@ -20,10 +20,10 @@ export interface SpecimenProps {
 }
 
 /**
- * A labelled block of a demo: a heading, an optional note and the rendered component on a bordered stage.
+ * A labeled block of a demo: a heading, an optional note and the rendered component on a bordered stage.
  * @returns The block.
  */
-export const Specimen = ({ children, note, title }: SpecimenProps): ReactElement => (
+export const Specimen = ({ children, note, title }: ISpecimenProps): ReactElement => (
   <View className="gap-2" role="group">
     <Text heading={3} tone="muted" variant="label">
       {title}

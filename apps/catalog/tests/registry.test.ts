@@ -1,6 +1,6 @@
 import * as ui from '@roundup/ui'
 
-import { entriesIn, findEntry, GROUPS, REGISTRY } from '../src/registry.ts'
+import { entriesIn, findEntry, GROUPS, REGISTRY } from '../src/registry'
 
 /** Exports that start with a capital letter but are not components to show. */
 const NOT_COMPONENTS: ReadonlySet<string> = new Set([

@@ -22,7 +22,7 @@
  *
  * OpenAPI spec version: 1.0.0
  */
-import type { EventType } from './eventType.ts'
+import type { EventType } from './eventType'
 
 export interface CreateEventRequest {
   name: string

@@ -5,16 +5,16 @@ import { Pressable, View } from 'react-native'
 
 import { useT } from '@roundup/i18n'
 
-import type { IconName } from '../lib/icons.ts'
+import type { TIconName } from '../lib/icons'
 
-import { cn } from '../lib/cn.ts'
-import { Icon } from './Icon.tsx'
-import { Text } from './Text.tsx'
+import { cn } from '../lib/cn'
+import { Icon } from './Icon'
+import { Text } from './Text'
 
 /** Shape of one theme option. */
-interface OptionShape {
+interface IOptionShape {
   /** Icon drawn before the label. */
-  icon: IconName
+  icon: TIconName
   /** The preference this option sets. */
   id: string
 }
@@ -23,27 +23,27 @@ const OPTIONS = [
   { id: 'system', icon: 'device' },
   { id: 'light', icon: 'sun' },
   { id: 'dark', icon: 'moon' },
-] as const satisfies readonly OptionShape[]
+] as const satisfies readonly IOptionShape[]
 
 /** The three theme preferences a person can pick. */
-export type ThemeChoice = (typeof OPTIONS)[number]['id']
+export type TThemeChoice = (typeof OPTIONS)[number]['id']
 
 /** Props for ThemeSwitch. */
-export interface ThemeSwitchProps {
+export interface IThemeSwitchProps {
   /** system follows the device; light is Latte, dark is Mocha. */
-  value?: ThemeChoice
+  value?: TThemeChoice
   /** Called with the preference that was chosen. */
-  onChange?: (value: ThemeChoice) => void
+  onChange?: (value: TThemeChoice) => void
   /** Accessible name of the group. Defaults to "Theme". */
   label?: string
 }
 
 /** Props for one theme radio. */
-interface ThemeOptionProps {
+interface IThemeOptionProps {
   /** Whether this is the chosen preference. */
   checked: boolean
   /** Called with this option's id when pressed. */
-  onChange?: ((id: ThemeChoice) => void) | undefined
+  onChange?: ((id: TThemeChoice) => void) | undefined
   /** The option to draw. */
   option: (typeof OPTIONS)[number]
 }
@@ -52,7 +52,7 @@ interface ThemeOptionProps {
  * One radio of the theme switch: icon, translated label, checked state.
  * @returns The pressable radio.
  */
-const ThemeOption = ({ checked, onChange, option }: ThemeOptionProps): ReactElement => {
+const ThemeOption = ({ checked, onChange, option }: IThemeOptionProps): ReactElement => {
   const { t } = useT()
   const label = t(`themeSwitch.${option.id}`)
 
@@ -87,7 +87,7 @@ export const ThemeSwitch = ({
   label,
   onChange,
   value = 'system',
-}: ThemeSwitchProps): ReactElement => {
+}: IThemeSwitchProps): ReactElement => {
   const { t } = useT()
 
   return (

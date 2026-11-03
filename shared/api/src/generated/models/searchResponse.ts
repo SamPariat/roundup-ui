@@ -22,7 +22,7 @@
  *
  * OpenAPI spec version: 1.0.0
  */
-import type { Venue } from './venue.ts'
+import type { Venue } from './venue'
 
 export interface SearchResponse {
   venues: Venue[]

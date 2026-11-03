@@ -22,8 +22,8 @@
  *
  * OpenAPI spec version: 1.0.0
  */
-import type { DueResponse } from './dueResponse.ts'
-import type { SuccessEnvelope } from './successEnvelope.ts'
+import type { DueResponse } from './dueResponse'
+import type { SuccessEnvelope } from './successEnvelope'
 
 export type ConfirmDueEvents200 = SuccessEnvelope & {
   data: DueResponse

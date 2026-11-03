@@ -22,8 +22,8 @@
  *
  * OpenAPI spec version: 1.0.0
  */
-import type { Member } from './member.ts'
-import type { RSVPStatus } from './rSVPStatus.ts'
+import type { Member } from './member'
+import type { RSVPStatus } from './rSVPStatus'
 
 export type EventMember = Member & {
   rsvp?: RSVPStatus | null

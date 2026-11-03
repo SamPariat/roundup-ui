@@ -7,13 +7,13 @@ import { SafeAreaProvider } from 'react-native-safe-area-context'
 
 import { ThemeProvider } from '@roundup/ui'
 
-import { AppShell } from '../../src/components/AppShell.tsx'
+import { AppShell } from '../../src/components/AppShell'
 
 const mockWindow = { width: 390, height: 800, scale: 2, fontScale: 1 }
 
 /**
  * Stand-in for useWindowDimensions that returns the width a test chose. A function declaration so
- * the jest.mock factory can reach it before this file's constants are initialised.
+ * the jest.mock factory can reach it before this file's constants are initialized.
  * @returns The mocked window.
  */
 function mockUseWindowDimensions(): typeof mockWindow {
@@ -26,7 +26,7 @@ jest.mock('react-native/Libraries/Utilities/useWindowDimensions', () => ({
 }))
 
 /** Safe-area insets of the simulated device. */
-interface Insets {
+interface IInsets {
   /** Space taken by the status bar or notch. */
   top: number
   /** Space taken on the right edge, such as a hinge. */
@@ -37,8 +37,8 @@ interface Insets {
   left: number
 }
 
-const NO_INSETS: Insets = { top: 0, right: 0, bottom: 0, left: 0 }
-const insets: Insets = { top: 47, right: 3, bottom: 34, left: 11 }
+const NO_INSETS: IInsets = { top: 0, right: 0, bottom: 0, left: 0 }
+const insets: IInsets = { top: 47, right: 3, bottom: 34, left: 11 }
 
 /**
  * Renders the shell inside a router at a given window width.
@@ -50,7 +50,7 @@ const insets: Insets = { top: 47, right: 3, bottom: 34, left: 11 }
 const renderShellAt = (
   width: number,
   current: 'explore' | 'profile' | 'squads' = 'squads',
-  edgeInsets: Insets = NO_INSETS,
+  edgeInsets: IInsets = NO_INSETS,
 ) => {
   mockWindow.width = width
 

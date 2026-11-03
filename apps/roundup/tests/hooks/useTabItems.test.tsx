@@ -1,6 +1,6 @@
 import { renderHook } from '@testing-library/react-native'
 
-import { tabIdForPath, useTabItems } from '../../src/hooks/useTabItems.ts'
+import { tabIdForPath, useTabItems } from '../../src/hooks/useTabItems'
 
 describe('tabIdForPath', () => {
   it.each([

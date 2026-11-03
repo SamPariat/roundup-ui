@@ -22,7 +22,7 @@
  *
  * OpenAPI spec version: 1.0.0
  */
-import type { TokenPair } from './tokenPair.ts'
+import type { TokenPair } from './tokenPair'
 
 export type LoginResponse = TokenPair & {
   userID: string

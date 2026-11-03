@@ -22,10 +22,10 @@
  *
  * OpenAPI spec version: 1.0.0
  */
-import type { Event } from './event.ts'
-import type { Member } from './member.ts'
-import type { RSVPCounts } from './rSVPCounts.ts'
-import type { RSVPStatus } from './rSVPStatus.ts'
+import type { Event } from './event'
+import type { Member } from './member'
+import type { RSVPCounts } from './rSVPCounts'
+import type { RSVPStatus } from './rSVPStatus'
 
 export type EventSummary = Event & {
   rsvpCounts?: RSVPCounts

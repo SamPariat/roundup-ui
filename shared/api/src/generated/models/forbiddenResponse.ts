@@ -22,7 +22,7 @@
  *
  * OpenAPI spec version: 1.0.0
  */
-import type { ErrorResponse } from './errorResponse.ts'
+import type { ErrorResponse } from './errorResponse'
 
 /**
  * My role in the squad may not take this action. The rules are in

@@ -2,7 +2,7 @@
  * Where the refresh token lives between launches. Native keeps it in the Keychain/Keystore; the
  * web keeps nothing, because the browser holds it in an httpOnly cookie that scripts cannot read.
  */
-export interface SessionStore {
+export interface ISessionStore {
   /** True when the refresh token travels as a cookie, so a refresh needs no stored token. */
   readonly cookie: boolean
   /** Loads the saved refresh token into memory. Call once at launch, before reading it. */
@@ -16,10 +16,10 @@ export interface SessionStore {
 }
 
 /** Where the person is in signing in. */
-export type SessionStatus = 'restoring' | 'signedIn' | 'signedOut'
+export type TSessionStatus = 'restoring' | 'signedIn' | 'signedOut'
 
 /** What a screen can learn about the session. */
-export interface SessionState {
+export interface ISessionState {
   /** restoring until the launch refresh has settled, then signedIn or signedOut. */
-  status: SessionStatus
+  status: TSessionStatus
 }

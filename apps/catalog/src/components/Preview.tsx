@@ -7,7 +7,7 @@ import { SafeAreaInsetsContext } from 'react-native-safe-area-context'
 import { cn } from '@roundup/ui'
 
 /** Props for Preview. */
-export interface PreviewProps {
+export interface IPreviewProps {
   /** The component on show. */
   children: ReactNode
   /** Size and border classes for the box, such as a fixed height. */
@@ -29,7 +29,7 @@ export const Preview = ({
   children,
   className,
   insets = NO_INSETS,
-}: PreviewProps): ReactElement => (
+}: IPreviewProps): ReactElement => (
   <SafeAreaInsetsContext value={insets}>
     <View className={cn('overflow-hidden rounded-lg', className)}>{children}</View>
   </SafeAreaInsetsContext>

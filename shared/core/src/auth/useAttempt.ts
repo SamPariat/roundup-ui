@@ -1,35 +1,36 @@
 import { useCallback, useState } from 'react'
 
-import type { ErrorContext, ErrorKey } from './errors.ts'
+import type { TErrorContext, TErrorKey } from '../helpers/error-helper'
 
-import { toErrorMessage } from './errors.ts'
+import { useDeps } from '../di/useDeps'
 
 /** The state and runner every sign-in step shares. */
-export interface Attempt {
+export interface IAttempt {
   /** True while a request is in flight. */
   busy: boolean
   /** The message to show, or undefined when there is none. */
-  error: ErrorKey | undefined
+  error: TErrorKey | undefined
   /** The request ID to quote in the generic message, when there is one. */
   requestId: string | undefined
   /** Shows a message without a request having failed, such as an invalid phone number. */
-  fail: (key: ErrorKey) => void
+  fail: (key: TErrorKey) => void
   /** Hides the message. */
   clear: () => void
   /**
    * Runs a request: sets busy, clears the old message, and turns a failure into a message.
    * Resolves the request's value, or undefined when it failed or one is already running.
    */
-  run: <T>(context: ErrorContext, request: () => Promise<T>) => Promise<T | undefined>
+  run: <T>(context: TErrorContext, request: () => Promise<T>) => Promise<T | undefined>
 }
 
 /**
  * Tracks one request at a time with its busy flag and error message.
  * @returns The state and the runner.
  */
-export const useAttempt = (): Attempt => {
+export const useAttempt = (): IAttempt => {
+  const { helpers } = useDeps()
   const [busy, setBusy] = useState(false)
-  const [error, setError] = useState<ErrorKey | undefined>()
+  const [error, setError] = useState<TErrorKey | undefined>()
   const [requestId, setRequestId] = useState<string | undefined>()
 
   const clear = useCallback(() => {
@@ -37,13 +38,13 @@ export const useAttempt = (): Attempt => {
     setRequestId(undefined)
   }, [])
 
-  const fail = useCallback((key: ErrorKey) => {
+  const fail = useCallback((key: TErrorKey) => {
     setError(key)
     setRequestId(undefined)
   }, [])
 
   const run = useCallback(
-    async <T>(context: ErrorContext, request: () => Promise<T>): Promise<T | undefined> => {
+    async <T>(context: TErrorContext, request: () => Promise<T>): Promise<T | undefined> => {
       if (busy) return undefined
 
       setBusy(true)
@@ -52,7 +53,7 @@ export const useAttempt = (): Attempt => {
       try {
         return await request()
       } catch (error_) {
-        const message = toErrorMessage(error_, context)
+        const message = helpers.errors.toMessage(error_, context)
 
         setError(message.key)
         setRequestId(message.requestId)
@@ -62,7 +63,7 @@ export const useAttempt = (): Attempt => {
         setBusy(false)
       }
     },
-    [busy, clear],
+    [busy, clear, helpers],
   )
 
   return { busy, clear, error, fail, requestId, run }

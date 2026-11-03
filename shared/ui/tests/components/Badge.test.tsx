@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react-native'
 
-import { Badge } from '../../src/components/Badge.tsx'
+import { Badge } from '../../src/components/Badge'
 
 describe('Badge', () => {
   it('shows its words', async () => {

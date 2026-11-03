@@ -22,7 +22,7 @@
  *
  * OpenAPI spec version: 1.0.0
  */
-import type { VisitSummary } from './visitSummary.ts'
+import type { VisitSummary } from './visitSummary'
 
 export interface VisitHistoryResponse {
   history: VisitSummary[]

@@ -2,25 +2,25 @@ import type { ReactElement, ReactNode } from 'react'
 
 import { QueryClient } from '@tanstack/react-query'
 
-import type { Deps } from '../../src/di/deps.ts'
+import type { IDeps } from '../../src/di/deps'
 
-import { CoreProvider } from '../../src/di/core-provider.tsx'
-import { FakeStore } from './fakes.ts'
+import { CoreProvider } from '../../src/di/core-provider'
+import { FakeStore } from './fakes'
 
 /** The props of the wrapper component. */
-interface WrapperProps {
+interface IWrapperProps {
   /** What the test renders. */
   children: ReactNode
 }
 
 /** What a test gets back with its wrapper. */
-export interface TestCore {
+export interface ITestCore {
   /** The store the wrapper uses. */
   store: FakeStore
   /** The query client the wrapper uses. */
   queryClient: QueryClient
   /** Wrap renderHook or render with this. */
-  wrapper: (props: WrapperProps) => ReactElement
+  wrapper: (props: IWrapperProps) => ReactElement
 }
 
 /**
@@ -29,7 +29,7 @@ export interface TestCore {
  * @param overrides - Any dependency to replace, such as the clock.
  * @returns The wrapper and the fakes behind it.
  */
-export const createTestCore = (overrides: Partial<Deps> = {}): TestCore => {
+export const createTestCore = (overrides: Partial<IDeps> = {}): ITestCore => {
   const store = new FakeStore()
 
   // gcTime Infinity: the default 5 minute garbage-collection timer would keep Jest alive.
@@ -37,13 +37,13 @@ export const createTestCore = (overrides: Partial<Deps> = {}): TestCore => {
     defaultOptions: { queries: { gcTime: Infinity, retry: false } },
   })
 
-  const deps: Partial<Deps> = { queryClient, session: store, ...overrides }
+  const deps: Partial<IDeps> = { queryClient, session: store, ...overrides }
 
   /**
    * The provider with the fakes.
    * @returns The test's content, inside CoreProvider.
    */
-  const wrapper = ({ children }: WrapperProps): ReactElement => (
+  const wrapper = ({ children }: IWrapperProps): ReactElement => (
     <CoreProvider deps={deps}>{children}</CoreProvider>
   )
 

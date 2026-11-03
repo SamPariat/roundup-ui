@@ -1,22 +1,22 @@
 import { act, renderHook } from '@testing-library/react-native'
 
-import type { NameViewModel } from '../../src/auth/useNameViewModel.ts'
-import type { TestCore } from '../helpers/wrapper.tsx'
+import type { INameViewModel } from '../../src/auth/useNameViewModel'
+import type { ITestCore } from '../helpers/wrapper'
 
-import { useNameViewModel } from '../../src/auth/useNameViewModel.ts'
-import { failure, goOffline, ok, stubNetwork } from '../helpers/fakes.ts'
-import { createTestCore } from '../helpers/wrapper.tsx'
+import { useNameViewModel } from '../../src/auth/useNameViewModel'
+import { failure, goOffline, ok, stubNetwork } from '../helpers/fakes'
+import { createTestCore } from '../helpers/wrapper'
 
 /** The latest value of a hook under test. */
-interface Current {
+interface ICurrent {
   /** The view model as of the last render. */
-  current: NameViewModel
+  current: INameViewModel
 }
 
 /** What renderHook hands back for this view model. */
-interface Rendered {
+interface IRendered {
   /** Holds the latest view model. */
-  result: Current
+  result: ICurrent
 }
 
 /**
@@ -24,7 +24,7 @@ interface Rendered {
  * @param core - The fakes to render in.
  * @returns The rendered hook.
  */
-const setup = (core: TestCore = createTestCore()): Promise<Rendered> =>
+const setup = (core: ITestCore = createTestCore()): Promise<IRendered> =>
   renderHook(() => useNameViewModel(), { wrapper: core.wrapper })
 
 describe('useNameViewModel', () => {

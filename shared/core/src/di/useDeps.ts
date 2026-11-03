@@ -1,14 +1,14 @@
 import { use } from 'react'
 
-import type { Deps } from './deps.ts'
+import type { IDeps } from './deps'
 
-import { DepsContext } from './context.ts'
+import { DepsContext } from './context'
 
 /**
  * Reads the dependencies of the nearest CoreProvider.
  * @returns The dependencies.
  */
-export const useDeps = (): Deps => {
+export const useDeps = (): IDeps => {
   const deps = use(DepsContext)
 
   if (deps === null) throw new Error('useDeps needs a CoreProvider above it')

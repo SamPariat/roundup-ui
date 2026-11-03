@@ -22,8 +22,8 @@
  *
  * OpenAPI spec version: 1.0.0
  */
-import type { Event } from './event.ts'
-import type { SuccessEnvelope } from './successEnvelope.ts'
+import type { Event } from './event'
+import type { SuccessEnvelope } from './successEnvelope'
 
 export type CreateEvent201 = SuccessEnvelope & {
   data: Event

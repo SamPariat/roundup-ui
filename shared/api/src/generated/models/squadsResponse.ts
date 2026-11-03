@@ -22,7 +22,7 @@
  *
  * OpenAPI spec version: 1.0.0
  */
-import type { SquadSummary } from './squadSummary.ts'
+import type { SquadSummary } from './squadSummary'
 
 export interface SquadsResponse {
   squads: SquadSummary[]

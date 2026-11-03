@@ -22,7 +22,7 @@
  *
  * OpenAPI spec version: 1.0.0
  */
-import type { ErrorResponse } from './errorResponse.ts'
+import type { ErrorResponse } from './errorResponse'
 
 /**
  * The squad does not exist or the caller is not a member.

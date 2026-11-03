@@ -6,7 +6,7 @@ import { View } from 'react-native'
 import { useT } from '@roundup/i18n'
 import { EmptyState, Text } from '@roundup/ui'
 
-import { paths } from '../navigation/paths.ts'
+import { Paths } from '../navigation/paths'
 
 /**
  * Expo Router's fallback for any URL that matches no route, with a link back to the squads.
@@ -21,7 +21,7 @@ export default function NotFoundScreen(): ReactElement {
       <View className="flex-1 items-center justify-center bg-bg px-4">
         <EmptyState
           action={
-            <Link href={paths.tabs.squads()}>
+            <Link href={Paths.tabsSquads()}>
               <Text tone="accent" variant="label">
                 {t('screens.notFound.action')}
               </Text>
