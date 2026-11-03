@@ -83,6 +83,25 @@ export const en = {
       },
     },
   },
+  signIn: {
+    phone: {
+      title: 'Sign in',
+      body: 'Use your mobile number to get back to your squads.',
+      label: 'Phone number',
+      helper: "We'll text you a 6-digit code.",
+      submit: 'Send code',
+      submitting: 'Sending code…',
+      newHere: 'New here? The same code creates your account.',
+    },
+    code: {
+      title: 'Enter the code',
+      body: 'We sent it to {{phone}}.',
+      label: '6-digit code',
+      submit: 'Verify',
+      submitting: 'Checking code…',
+      changeNumber: 'Change number',
+    },
+  },
   errors: {
     invalidPhone: 'Enter a 10-digit mobile number that starts with 6, 7, 8 or 9.',
     invalidName: 'Enter a name between 1 and 50 characters.',

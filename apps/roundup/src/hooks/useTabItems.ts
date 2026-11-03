@@ -4,6 +4,8 @@ import type { IconName } from '@roundup/ui'
 
 import { useT } from '@roundup/i18n'
 
+import { paths } from '../navigation/paths.ts'
+
 /** One tab of the app. */
 export interface TabItem {
   /** Route name and translation key suffix. */
@@ -23,9 +25,9 @@ type TabDefinition = Omit<TabItem, 'label'>
 
 /** The one list every layout reads, so the iOS system tab bar and the web/Android shell cannot drift. */
 const TAB_DEFINITIONS: readonly TabDefinition[] = [
-  { id: 'squads', icon: 'squads', symbol: 'person.2', href: '/squads' },
-  { id: 'explore', icon: 'explore', symbol: 'magnifyingglass', href: '/explore' },
-  { id: 'profile', icon: 'profile', symbol: 'person.crop.circle', href: '/profile' },
+  { id: 'squads', icon: 'squads', symbol: 'person.2', href: paths.tabs.squads() },
+  { id: 'explore', icon: 'explore', symbol: 'magnifyingglass', href: paths.tabs.explore() },
+  { id: 'profile', icon: 'profile', symbol: 'person.crop.circle', href: paths.tabs.profile() },
 ]
 
 /**

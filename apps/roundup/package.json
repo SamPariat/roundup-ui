@@ -6,6 +6,7 @@
   "dependencies": {
     "@expo/metro-runtime": "catalog:",
     "@react-native-async-storage/async-storage": "catalog:",
+    "@roundup/core": "workspace:*",
     "@roundup/i18n": "workspace:*",
     "@roundup/ui": "workspace:*",
     "babel-preset-expo": "catalog:",
@@ -17,6 +18,7 @@
     "expo-linking": "catalog:",
     "expo-localization": "catalog:",
     "expo-router": "catalog:",
+    "expo-secure-store": "catalog:",
     "expo-splash-screen": "catalog:",
     "expo-status-bar": "catalog:",
     "expo-system-ui": "catalog:",
@@ -34,6 +36,7 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "catalog:",
+    "@tanstack/react-query": "catalog:",
     "@testing-library/react-native": "catalog:",
     "@types/jest": "catalog:",
     "@types/node": "catalog:",

@@ -471,6 +471,7 @@ export default [
         { type: 'routes', pattern: 'apps/roundup/src/app/**', partialMatch: false },
         { type: 'components', pattern: 'apps/roundup/src/components/**', partialMatch: false },
         { type: 'hooks', pattern: 'apps/roundup/src/hooks/**', partialMatch: false },
+        { type: 'navigation', pattern: 'apps/roundup/src/navigation/**', partialMatch: false },
         { type: 'app-other', pattern: 'apps/roundup/**', partialMatch: false },
         { type: 'api', pattern: 'shared/api/**', partialMatch: false },
         { type: 'core', pattern: 'shared/core/**', partialMatch: false },
@@ -489,7 +490,16 @@ export default [
               allow: {
                 to: {
                   element: {
-                    type: ['routes', 'components', 'hooks', 'app-other', 'core', 'ui', 'i18n'],
+                    type: [
+                      'routes',
+                      'components',
+                      'hooks',
+                      'navigation',
+                      'app-other',
+                      'core',
+                      'ui',
+                      'i18n',
+                    ],
                   },
                 },
               },
@@ -498,13 +508,18 @@ export default [
               from: { element: { type: 'components' } },
               allow: {
                 to: {
-                  element: { type: ['components', 'hooks', 'core', 'ui', 'i18n'] },
+                  element: { type: ['components', 'hooks', 'navigation', 'core', 'ui', 'i18n'] },
                 },
               },
             },
             {
               from: { element: { type: 'hooks' } },
-              allow: { to: { element: { type: ['hooks', 'core', 'ui', 'i18n'] } } },
+              allow: { to: { element: { type: ['hooks', 'navigation', 'core', 'ui', 'i18n'] } } },
+            },
+            {
+              // Path builders know route names and nothing else.
+              from: { element: { type: 'navigation' } },
+              allow: { to: { element: { type: ['navigation'] } } },
             },
             {
               // Tests and tool configs at the app root (global.css is imported by routes) may reach anything in the app.
@@ -512,7 +527,16 @@ export default [
               allow: {
                 to: {
                   element: {
-                    type: ['app-other', 'routes', 'components', 'hooks', 'core', 'ui', 'i18n'],
+                    type: [
+                      'app-other',
+                      'routes',
+                      'components',
+                      'hooks',
+                      'navigation',
+                      'core',
+                      'ui',
+                      'i18n',
+                    ],
                   },
                 },
               },

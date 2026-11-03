@@ -1,7 +1,6 @@
 import type { ReactElement } from 'react'
 
 import { useFonts } from 'expo-font'
-import { Stack } from 'expo-router'
 import Head from 'expo-router/head'
 import { preventAutoHideAsync } from 'expo-splash-screen'
 import { StatusBar } from 'expo-status-bar'
@@ -10,12 +9,15 @@ import { SafeAreaProvider } from 'react-native-safe-area-context'
 
 import '../../global.css'
 
-import { ThemeProvider, useRoleColor, useTheme } from '@roundup/ui'
+import { CoreProvider } from '@roundup/core'
+import { ThemeProvider, useTheme } from '@roundup/ui'
 
 import OnestBold from '../../../../assets/fonts/Onest-Bold.ttf'
 import OnestMedium from '../../../../assets/fonts/Onest-Medium.ttf'
 import OnestRegular from '../../../../assets/fonts/Onest-Regular.ttf'
 import OnestSemiBold from '../../../../assets/fonts/Onest-SemiBold.ttf'
+import { AuthStack } from '../components/AuthStack.tsx'
+import { useRouteGate } from '../hooks/useRouteGate.ts'
 import { useSplash } from '../hooks/useSplash.ts'
 
 void preventAutoHideAsync()
@@ -40,14 +42,14 @@ interface ThemedProps {
 
 /**
  * The part of the root layout that needs the theme: page background, status bar style and the stack.
- * It also lifts the splash screen once the fonts and the saved theme are both ready.
+ * It also lifts the splash screen once the fonts, the saved theme and the saved session are all ready.
  * @returns The themed root view.
  */
 const Themed = ({ fontsReady }: ThemedProps): ReactElement => {
   const { loaded, name } = useTheme()
-  const background = useRoleColor('bg')
+  const gate = useRouteGate()
 
-  useSplash(fontsReady && loaded)
+  useSplash(fontsReady && loaded && gate !== 'loading')
 
   return (
     <View className="flex-1 bg-bg">
@@ -61,15 +63,13 @@ const Themed = ({ fontsReady }: ThemedProps): ReactElement => {
         </Head>
       )}
       <StatusBar style={name === 'mocha' ? 'light' : 'dark'} />
-      <Stack
-        screenOptions={{ headerShown: false, contentStyle: { backgroundColor: background } }}
-      />
+      <AuthStack />
     </View>
   )
 }
 
 /**
- * The root layout. On native the splash screen stays up until the fonts and the saved theme are ready; on web it renders at once so the static export has content, and the splash drawn by +html.tsx is lifted at the same point.
+ * The root layout. On native the splash screen stays up until the fonts, the saved theme and the saved session are ready; on web it renders at once so the static export has content, and the splash drawn by +html.tsx is lifted at the same point.
  * @returns The providers around the stack, or null while fonts load on native.
  */
 export default function RootLayout(): null | ReactElement {
@@ -84,7 +84,9 @@ export default function RootLayout(): null | ReactElement {
   return (
     <SafeAreaProvider>
       <ThemeProvider>
-        <Themed fontsReady={ready} />
+        <CoreProvider>
+          <Themed fontsReady={ready} />
+        </CoreProvider>
       </ThemeProvider>
     </SafeAreaProvider>
   )
