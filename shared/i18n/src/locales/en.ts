@@ -132,8 +132,7 @@ export const en = {
     },
     profile: {
       themeHeading: 'Theme',
-      emptyTitle: 'Your profile is empty',
-      emptyBody: 'Your name and photo show up here once you sign in.',
+      logOut: 'Log out',
     },
     notFound: {
       windowTitle: 'Not found',

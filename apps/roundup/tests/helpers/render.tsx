@@ -9,6 +9,7 @@ import { ThemeProvider } from '@roundup/ui'
 
 import type { Backend } from './fakes.ts'
 
+import { AuthStack } from '../../src/components/AuthStack.tsx'
 import { stubBackend, testDeps } from './fakes.ts'
 
 /** Insets and frame of a phone, so the safe-area hooks have values. */
@@ -25,6 +26,8 @@ export interface AppOptions {
   saved?: string
   /** What the stubbed backend answers. */
   backend: Backend
+  /** True to render the real AuthStack guards instead of a plain slot. */
+  guarded?: boolean
 }
 
 /**
@@ -37,7 +40,7 @@ export const renderApp = async (
   routes: Record<string, ComponentType>,
   options: AppOptions,
 ): Promise<void> => {
-  const { backend, saved, url } = options
+  const { backend, guarded = false, saved, url } = options
 
   stubBackend(backend)
 
@@ -50,9 +53,7 @@ export const renderApp = async (
   const Layout = (): ReactElement => (
     <SafeAreaProvider initialMetrics={METRICS}>
       <ThemeProvider>
-        <CoreProvider deps={deps}>
-          <Slot />
-        </CoreProvider>
+        <CoreProvider deps={deps}>{guarded ? <AuthStack /> : <Slot />}</CoreProvider>
       </ThemeProvider>
     </SafeAreaProvider>
   )
