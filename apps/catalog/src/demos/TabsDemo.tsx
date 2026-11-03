@@ -2,20 +2,20 @@ import type { ReactElement } from 'react'
 
 import { useState } from 'react'
 
-import type { TabItem } from '@roundup/ui'
+import type { ITabItem } from '@roundup/ui'
 
 import { Tabs, Text } from '@roundup/ui'
 
-import { Specimen } from '../components/Specimen.tsx'
+import { Specimen } from '../components/Specimen'
 
 /** Tabs without counts. */
-const PLAIN: TabItem[] = [
+const PLAIN: ITabItem[] = [
   { id: 'upcoming', label: 'Upcoming' },
   { id: 'past', label: 'Past' },
 ]
 
 /** Tabs with counts. */
-const COUNTED: TabItem[] = [
+const COUNTED: ITabItem[] = [
   { id: 'members', label: 'Members', count: 12 },
   { id: 'plans', label: 'Plans', count: 3 },
   { id: 'bills', label: 'Bills', count: 0 },

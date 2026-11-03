@@ -5,13 +5,13 @@ import { View } from 'react-native'
 
 import { Chip } from '@roundup/ui'
 
-import { Specimen } from '../components/Specimen.tsx'
+import { Specimen } from '../components/Specimen'
 
 /** The filters of the interactive group. */
 const FILTERS = ['Cafes', 'Bars', 'Open now', 'Under ₹500'] as const
 
 /** Props for FilterChip. */
-interface FilterChipProps {
+interface IFilterChipProps {
   /** The filter's text, which is also its ID. */
   label: string
   /** Called with the label when the chip is pressed. */
@@ -24,7 +24,7 @@ interface FilterChipProps {
  * A Chip that reports which filter was pressed, so the group needs no inline handler.
  * @returns The chip, filled when its filter is on.
  */
-const FilterChip = ({ label, onToggle, selected }: FilterChipProps): ReactElement => {
+const FilterChip = ({ label, onToggle, selected }: IFilterChipProps): ReactElement => {
   const toggle = useCallback(() => {
     onToggle(label)
   }, [label, onToggle])

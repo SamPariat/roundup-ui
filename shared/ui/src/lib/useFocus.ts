@@ -1,7 +1,7 @@
 import { useCallback, useState } from 'react'
 
 /** Focus state and the handlers that keep it current. */
-export interface FocusState {
+export interface IFocusState {
   /** Whether the input has focus. */
   focused: boolean
   /** Handler for the input's onBlur. */
@@ -14,7 +14,7 @@ export interface FocusState {
  * Focus state for an input, with stable handlers to spread onto it.
  * @returns The focus flag with stable handlers.
  */
-export const useFocus = (): FocusState => {
+export const useFocus = (): IFocusState => {
   const [focused, setFocused] = useState(false)
 
   const onFocus = useCallback(() => {

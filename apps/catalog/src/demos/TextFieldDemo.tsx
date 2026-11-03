@@ -4,7 +4,7 @@ import { useState } from 'react'
 
 import { TextField } from '@roundup/ui'
 
-import { Specimen } from '../components/Specimen.tsx'
+import { Specimen } from '../components/Specimen'
 
 /**
  * TextField in its resting, helper, error, disabled and icon states and its four keyboard presets.

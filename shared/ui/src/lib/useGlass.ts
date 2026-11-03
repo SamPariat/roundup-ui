@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 import { AccessibilityInfo, Platform } from 'react-native'
 
 /** Whether Liquid Glass can be drawn right now. */
-export interface GlassState {
+export interface IGlassState {
   /** iOS 26+ with the glass API present. */
   available: boolean
   /** The person turned on Reduce Transparency, so surfaces must be solid. */
@@ -21,7 +21,7 @@ const glassAvailable = (): boolean =>
  * Reports Liquid Glass support and tracks the Reduce Transparency setting, which must force solid surfaces.
  * @returns The glass availability and the reduced flag.
  */
-export const useGlass = (): GlassState => {
+export const useGlass = (): IGlassState => {
   const [reduced, setReduced] = useState(false)
 
   useEffect(() => {

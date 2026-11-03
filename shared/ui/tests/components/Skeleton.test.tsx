@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react-native'
 
-import { Skeleton } from '../../src/components/Skeleton.tsx'
+import { Skeleton } from '../../src/components/Skeleton'
 
 describe('Skeleton', () => {
   it('is one busy region named Loading', async () => {

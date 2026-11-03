@@ -6,7 +6,7 @@ import { AccessibilityInfo, Platform } from 'react-native'
 const WEB_SPLASH_ID = 'splash'
 
 /** The part of a DOM element that hideWebSplash uses. */
-export interface SplashElement {
+export interface ISplashElement {
   /** The element's classes, to start the fade. */
   classList: Pick<DOMTokenList, 'add'>
   /** Takes the element out of the page. */
@@ -30,7 +30,7 @@ export interface SplashElement {
  * @param element - The splash element, or null when the page has none (a client-side render).
  * @param reduced - Whether the person asked for less motion.
  */
-export const hideWebSplash = (element: null | SplashElement, reduced: boolean): void => {
+export const hideWebSplash = (element: ISplashElement | null, reduced: boolean): void => {
   if (element === null) return
 
   if (reduced) {

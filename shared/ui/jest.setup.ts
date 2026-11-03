@@ -1,6 +1,6 @@
 import '@testing-library/react-native'
 
-// Importing the package initialises i18next with the bundled English strings, so tests query the
+// Importing the package initializes i18next with the bundled English strings, so tests query the
 // real copy.
 import '@roundup/i18n'
 

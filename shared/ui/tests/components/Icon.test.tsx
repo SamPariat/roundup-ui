@@ -1,8 +1,8 @@
 import { screen } from '@testing-library/react-native'
 
-import { Icon } from '../../src/components/Icon.tsx'
-import { ICONS } from '../../src/lib/icons.ts'
-import { renderWithTheme } from '../helpers/render.tsx'
+import { Icon } from '../../src/components/Icon'
+import { ICONS } from '../../src/lib/icons'
+import { renderWithTheme } from '../helpers/render'
 
 describe('Icon', () => {
   it('is announced as an image when it has a label', async () => {

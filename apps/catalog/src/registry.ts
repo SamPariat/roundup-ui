@@ -1,38 +1,38 @@
 import type { ComponentType } from 'react'
 
-import { AvatarDemo } from './demos/AvatarDemo.tsx'
-import { AvatarGroupDemo } from './demos/AvatarGroupDemo.tsx'
-import { BadgeDemo } from './demos/BadgeDemo.tsx'
-import { BottomNavDemo } from './demos/BottomNavDemo.tsx'
-import { ButtonDemo } from './demos/ButtonDemo.tsx'
-import { ChipDemo } from './demos/ChipDemo.tsx'
-import { ColoursDemo } from './demos/ColoursDemo.tsx'
-import { EmptyStateDemo } from './demos/EmptyStateDemo.tsx'
-import { IconDemo } from './demos/IconDemo.tsx'
-import { ListDemo } from './demos/ListDemo.tsx'
-import { ListRowDemo } from './demos/ListRowDemo.tsx'
-import { LogoDemo } from './demos/LogoDemo.tsx'
-import { ModalDemo } from './demos/ModalDemo.tsx'
-import { OtpInputDemo } from './demos/OtpInputDemo.tsx'
-import { PageHeaderDemo } from './demos/PageHeaderDemo.tsx'
-import { PhoneInputDemo } from './demos/PhoneInputDemo.tsx'
-import { PriceDemo } from './demos/PriceDemo.tsx'
-import { RatingDemo } from './demos/RatingDemo.tsx'
-import { SafeAreaDemo } from './demos/SafeAreaDemo.tsx'
-import { ScreenDemo } from './demos/ScreenDemo.tsx'
-import { SideNavDemo } from './demos/SideNavDemo.tsx'
-import { SkeletonDemo } from './demos/SkeletonDemo.tsx'
-import { SquadCardDemo } from './demos/SquadCardDemo.tsx'
-import { SurfaceDemo } from './demos/SurfaceDemo.tsx'
-import { TabsDemo } from './demos/TabsDemo.tsx'
-import { TextDemo } from './demos/TextDemo.tsx'
-import { TextFieldDemo } from './demos/TextFieldDemo.tsx'
-import { ThemeSwitchDemo } from './demos/ThemeSwitchDemo.tsx'
-import { ToastDemo } from './demos/ToastDemo.tsx'
-import { TopAppBarDemo } from './demos/TopAppBarDemo.tsx'
-import { TypeDemo } from './demos/TypeDemo.tsx'
-import { VenueCardDemo } from './demos/VenueCardDemo.tsx'
-import { WelcomeDemo } from './demos/WelcomeDemo.tsx'
+import { AvatarDemo } from './demos/AvatarDemo'
+import { AvatarGroupDemo } from './demos/AvatarGroupDemo'
+import { BadgeDemo } from './demos/BadgeDemo'
+import { BottomNavDemo } from './demos/BottomNavDemo'
+import { ButtonDemo } from './demos/ButtonDemo'
+import { ChipDemo } from './demos/ChipDemo'
+import { ColorsDemo } from './demos/ColorsDemo'
+import { EmptyStateDemo } from './demos/EmptyStateDemo'
+import { IconDemo } from './demos/IconDemo'
+import { ListDemo } from './demos/ListDemo'
+import { ListRowDemo } from './demos/ListRowDemo'
+import { LogoDemo } from './demos/LogoDemo'
+import { ModalDemo } from './demos/ModalDemo'
+import { OtpInputDemo } from './demos/OtpInputDemo'
+import { PageHeaderDemo } from './demos/PageHeaderDemo'
+import { PhoneInputDemo } from './demos/PhoneInputDemo'
+import { PriceDemo } from './demos/PriceDemo'
+import { RatingDemo } from './demos/RatingDemo'
+import { SafeAreaDemo } from './demos/SafeAreaDemo'
+import { ScreenDemo } from './demos/ScreenDemo'
+import { SideNavDemo } from './demos/SideNavDemo'
+import { SkeletonDemo } from './demos/SkeletonDemo'
+import { SquadCardDemo } from './demos/SquadCardDemo'
+import { SurfaceDemo } from './demos/SurfaceDemo'
+import { TabsDemo } from './demos/TabsDemo'
+import { TextDemo } from './demos/TextDemo'
+import { TextFieldDemo } from './demos/TextFieldDemo'
+import { ThemeSwitchDemo } from './demos/ThemeSwitchDemo'
+import { ToastDemo } from './demos/ToastDemo'
+import { TopAppBarDemo } from './demos/TopAppBarDemo'
+import { TypeDemo } from './demos/TypeDemo'
+import { VenueCardDemo } from './demos/VenueCardDemo'
+import { WelcomeDemo } from './demos/WelcomeDemo'
 
 /** The sections of the component index, in the order they are listed. */
 export const GROUPS = [
@@ -47,14 +47,14 @@ export const GROUPS = [
 ] as const
 
 /** One section of the component index. */
-export type Group = (typeof GROUPS)[number]
+export type TGroup = (typeof GROUPS)[number]
 
 /** What the catalog knows about one page. */
-export interface CatalogEntry {
+export interface ICatalogEntry {
   /** The page that shows the variants, sizes and states. */
   Demo: ComponentType
   /** The section of the index it is listed under. */
-  group: Group
+  group: TGroup
   /** The URL segment: the title in kebab case. */
   slug: string
   /** One line on what the component is for. */
@@ -64,7 +64,7 @@ export interface CatalogEntry {
 }
 
 /** An entry as written below; the slug is derived from the title. */
-type EntryInput = Omit<CatalogEntry, 'slug'>
+type TEntryInput = Omit<ICatalogEntry, 'slug'>
 
 /**
  * Turns a title into its URL segment: AvatarGroup becomes avatar-group.
@@ -76,7 +76,7 @@ const slugOf = (title: string): string => title.replaceAll(/([a-z])([A-Z])/g, '$
 // Every value export of @roundup/ui that renders has an entry here, and tests/registry.test.ts
 // fails when one does not. Spinner and NavTab are internal to the package (index.ts does not
 // export them), so they are shown inside the components that use them.
-const ENTRIES: readonly EntryInput[] = [
+const ENTRIES: readonly TEntryInput[] = [
   {
     title: 'Button',
     group: 'Actions',
@@ -92,7 +92,7 @@ const ENTRIES: readonly EntryInput[] = [
   {
     title: 'TextField',
     group: 'Inputs',
-    summary: 'A labelled single-line input with helper and error text.',
+    summary: 'A labeled single-line input with helper and error text.',
     Demo: TextFieldDemo,
   },
   {
@@ -116,19 +116,19 @@ const ENTRIES: readonly EntryInput[] = [
   {
     title: 'Text',
     group: 'Display',
-    summary: 'Text in a type style and a role colour.',
+    summary: 'Text in a type style and a role color.',
     Demo: TextDemo,
   },
   {
     title: 'Icon',
     group: 'Display',
-    summary: 'The icon set, tinted by role colour.',
+    summary: 'The icon set, tinted by role color.',
     Demo: IconDemo,
   },
   {
     title: 'Logo',
     group: 'Display',
-    summary: 'The mark, the wordmark and the lockup, in brand or mono colour.',
+    summary: 'The mark, the wordmark and the lockup, in brand or mono color.',
     Demo: LogoDemo,
   },
   {
@@ -264,10 +264,10 @@ const ENTRIES: readonly EntryInput[] = [
     Demo: WelcomeDemo,
   },
   {
-    title: 'Colours',
+    title: 'Colors',
     group: 'Foundations',
-    summary: 'Every role colour of the theme, in Mocha and Latte.',
-    Demo: ColoursDemo,
+    summary: 'Every role color of the theme, in Mocha and Latte.',
+    Demo: ColorsDemo,
   },
   {
     title: 'Type',
@@ -278,7 +278,7 @@ const ENTRIES: readonly EntryInput[] = [
 ]
 
 /** Every page of the catalog, in index order. */
-export const REGISTRY: readonly CatalogEntry[] = ENTRIES.map((entry) => ({
+export const REGISTRY: readonly ICatalogEntry[] = ENTRIES.map((entry) => ({
   ...entry,
   slug: slugOf(entry.title),
 }))
@@ -288,7 +288,7 @@ export const REGISTRY: readonly CatalogEntry[] = ENTRIES.map((entry) => ({
  * @param slug - The URL segment.
  * @returns The entry, or undefined when no page has that slug.
  */
-export const findEntry = (slug?: string): CatalogEntry | undefined =>
+export const findEntry = (slug?: string): ICatalogEntry | undefined =>
   REGISTRY.find((entry) => entry.slug === slug)
 
 /**
@@ -296,5 +296,5 @@ export const findEntry = (slug?: string): CatalogEntry | undefined =>
  * @param group - The section.
  * @returns Its entries, in index order.
  */
-export const entriesIn = (group: Group): readonly CatalogEntry[] =>
+export const entriesIn = (group: TGroup): readonly ICatalogEntry[] =>
   REGISTRY.filter((entry) => entry.group === group)

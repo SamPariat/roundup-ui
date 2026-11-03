@@ -6,15 +6,15 @@ import Svg, { Rect } from 'react-native-svg'
 import { useT } from '@roundup/i18n'
 
 import { styleSvg } from '../lib/svg'
-import { Badge } from './Badge.tsx'
-import { Button } from './Button.tsx'
-import { Icon } from './Icon.tsx'
-import { Price } from './Price.tsx'
-import { Rating } from './Rating.tsx'
-import { Text } from './Text.tsx'
+import { Badge } from './Badge'
+import { Button } from './Button'
+import { Icon } from './Icon'
+import { Price } from './Price'
+import { Rating } from './Rating'
+import { Text } from './Text'
 
 /** Props for VenueCard. */
-export interface VenueCardProps {
+export interface IVenueCardProps {
   /** The venue's name. */
   name: string
   /** Street address shown under the name. */
@@ -37,7 +37,7 @@ export interface VenueCardProps {
   onSave?: () => void
 }
 
-// react-native-svg shapes that take Tailwind classes: fill-* picks a role colour.
+// react-native-svg shapes that take Tailwind classes: fill-* picks a role color.
 const StyledSvg = styleSvg(Svg)
 const StyledRect = styleSvg(Rect)
 
@@ -61,7 +61,7 @@ const VenuePattern = (): ReactElement => (
 )
 
 /** Optional props that callers may pass as undefined, which exactOptionalPropertyTypes otherwise rejects. */
-type Loose<T> = { [K in keyof T]?: T[K] | undefined }
+type TLoose<T> = { [K in keyof T]?: T[K] | undefined }
 
 const NO_TYPES: string[] = []
 
@@ -73,7 +73,7 @@ const VenueMedia = ({
   onSave,
   photo,
   saved,
-}: Loose<Pick<VenueCardProps, 'onSave' | 'photo' | 'saved'>>): ReactElement => {
+}: TLoose<Pick<IVenueCardProps, 'onSave' | 'photo' | 'saved'>>): ReactElement => {
   const showSave = onSave !== undefined || saved !== undefined
   const isSaved = saved === true
   const { t } = useT()
@@ -106,7 +106,7 @@ const VenueMedia = ({
 }
 
 /** Props for the open/closed badge. */
-interface OpenBadgeProps {
+interface IOpenBadgeProps {
   /** Whether the venue is open now. */
   isOpen: boolean
 }
@@ -115,7 +115,7 @@ interface OpenBadgeProps {
  * A success or danger badge that says Open or Closed.
  * @returns A status pill worded Open or Closed.
  */
-const OpenBadge = ({ isOpen }: OpenBadgeProps): ReactElement => {
+const OpenBadge = ({ isOpen }: IOpenBadgeProps): ReactElement => {
   const { t } = useT()
 
   if (isOpen) return <Badge tone="success">{t('venueCard.open')}</Badge>
@@ -132,8 +132,8 @@ const VenueFacts = ({
   priceLevel,
   rating,
   reviews,
-}: Loose<
-  Pick<VenueCardProps, 'isOpen' | 'priceLevel' | 'rating' | 'reviews'>
+}: TLoose<
+  Pick<IVenueCardProps, 'isOpen' | 'priceLevel' | 'rating' | 'reviews'>
 >): null | ReactElement => {
   if (rating === undefined && priceLevel === undefined && isOpen === undefined) return null
 
@@ -163,7 +163,7 @@ export const VenueCard = ({
   reviews,
   saved,
   types = NO_TYPES,
-}: VenueCardProps): ReactElement => (
+}: IVenueCardProps): ReactElement => (
   <View className="overflow-hidden rounded-2xl border border-border bg-bg-raised">
     <VenueMedia onSave={onSave} photo={photo} saved={saved} />
     <View className="gap-1 px-4 pt-3 pb-4">

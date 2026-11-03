@@ -1,4 +1,4 @@
-import { declared, forcedDark, forcedLight, latte, mocha } from '../helpers/theme-css.ts'
+import { declared, forcedDark, forcedLight, latte, mocha } from '../helpers/theme-css'
 
 describe('theme.css', () => {
   it('gives Mocha and Latte the same roles', () => {

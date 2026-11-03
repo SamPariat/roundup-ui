@@ -4,10 +4,10 @@ import { View } from 'react-native'
 import Svg, { Circle, Path, Rect } from 'react-native-svg'
 
 import { styleSvg } from '../lib/svg'
-import { Text } from './Text.tsx'
+import { Text } from './Text'
 
 /** Props for EmptyState. */
-export interface EmptyStateProps {
+export interface IEmptyStateProps {
   /** Headline saying what is missing. */
   title: string
   /** One sentence on what will appear here or what to do. */
@@ -19,12 +19,12 @@ export interface EmptyStateProps {
 }
 
 /** Props for the illustration frame. */
-interface EmptyArtProps {
+interface IEmptyArtProps {
   /** Which illustration to draw. */
-  kind: NonNullable<EmptyStateProps['art']>
+  kind: NonNullable<IEmptyStateProps['art']>
 }
 
-// react-native-svg shapes that take Tailwind classes: fill-* and stroke-* pick a role colour.
+// react-native-svg shapes that take Tailwind classes: fill-* and stroke-* pick a role color.
 const StyledSvg = styleSvg(Svg)
 const StyledCircle = styleSvg(Circle)
 const StyledPath = styleSvg(Path)
@@ -32,7 +32,7 @@ const StyledRect = styleSvg(Rect)
 
 /**
  * Magnifying-glass illustration. All three illustrations are shapes only: discs and pills from the
- * radius scale, in role colours.
+ * radius scale, in role colors.
  * @returns The SVG shapes.
  */
 const SearchArt = (): ReactElement => (
@@ -94,7 +94,7 @@ const ART = { favorites: FavoritesArt, search: SearchArt, squads: SquadsArt } as
  * Draws the chosen illustration on its round wash. Decorative, so hidden from assistive technology.
  * @returns The SVG.
  */
-const EmptyArt = ({ kind }: EmptyArtProps): ReactElement => {
+const EmptyArt = ({ kind }: IEmptyArtProps): ReactElement => {
   const Art = ART[kind]
 
   return (
@@ -106,7 +106,7 @@ const EmptyArt = ({ kind }: EmptyArtProps): ReactElement => {
 }
 
 /**
- * A centred placeholder for a screen or list with nothing in it yet: an illustration, a headline, an explanation and an optional action.
+ * A centerd placeholder for a screen or list with nothing in it yet: an illustration, a headline, an explanation and an optional action.
  * @returns The placeholder.
  */
 export const EmptyState = ({
@@ -114,7 +114,7 @@ export const EmptyState = ({
   art = 'squads',
   body,
   title,
-}: EmptyStateProps): ReactElement => (
+}: IEmptyStateProps): ReactElement => (
   <View className="items-center gap-2 px-6 pt-12 pb-8">
     <View className="mb-4">
       <EmptyArt kind={art} />

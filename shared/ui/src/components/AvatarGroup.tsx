@@ -4,22 +4,22 @@ import { View } from 'react-native'
 
 import { useT } from '@roundup/i18n'
 
-import type { Person } from '../lib/person.ts'
-import type { AvatarSize } from './Avatar.tsx'
+import type { IPerson } from '../lib/person'
+import type { TAvatarSize } from './Avatar'
 
-import { Avatar } from './Avatar.tsx'
-import { Text } from './Text.tsx'
+import { Avatar } from './Avatar'
+import { Text } from './Text'
 
 /** Props for AvatarGroup. */
-export interface AvatarGroupProps {
+export interface IAvatarGroupProps {
   /** The people to draw, in order; only the first `max` are shown. */
-  people: Person[]
+  people: IPerson[]
   /** Real member count when `people` is only a sample. */
   total?: number
   /** How many avatars to draw before collapsing the rest into a +N chip. Defaults to 4. */
   max?: number
   /** Avatar size for every member. Defaults to 32. */
-  size?: AvatarSize
+  size?: TAvatarSize
 }
 
 /**
@@ -31,7 +31,7 @@ export const AvatarGroup = ({
   people,
   size = 32,
   total,
-}: AvatarGroupProps): ReactElement => {
+}: IAvatarGroupProps): ReactElement => {
   const { t } = useT()
   const shown = people.slice(0, max)
   const count = total ?? people.length

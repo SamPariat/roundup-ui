@@ -1,7 +1,7 @@
 import type { FC } from 'react'
 import type { SvgProps } from 'react-native-svg'
 
-import type { Styled } from './svg'
+import type { TStyled } from './svg'
 
 import Alert from '../../../../assets/svg/icons/alert.svg'
 import Back from '../../../../assets/svg/icons/back.svg'
@@ -64,7 +64,7 @@ export const ICONS = {
   star: styleSvg(Star),
   sun: styleSvg(Sun),
   trash: styleSvg(Trash),
-} as const satisfies Record<string, FC<Styled<SvgProps>>>
+} as const satisfies Record<string, FC<TStyled<SvgProps>>>
 
 /** The name of every icon in assets/svg/icons. */
-export type IconName = keyof typeof ICONS
+export type TIconName = keyof typeof ICONS

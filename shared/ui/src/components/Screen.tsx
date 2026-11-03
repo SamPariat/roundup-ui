@@ -2,11 +2,11 @@ import type { ReactElement, ReactNode } from 'react'
 
 import { View } from 'react-native'
 
-import { cn } from '../lib/cn.ts'
-import { SafeArea } from './SafeArea.tsx'
+import { cn } from '../lib/cn'
+import { SafeArea } from './SafeArea'
 
 /** Props for Screen. */
-export interface ScreenProps {
+export interface IScreenProps {
   /**
    * Chrome above the content, usually a TopAppBar. The header keeps clear of the status bar itself
    * (so its surface can run under it), which is why the body then skips the top inset.
@@ -30,7 +30,7 @@ const ALL_EDGES = ['top', 'right', 'bottom', 'left'] as const
  * Screens inside the shell get the same from AppShell or the iOS tab layout, so they do not use it.
  * @returns The page with its header and body.
  */
-export const Screen = ({ children, className, header }: ScreenProps): ReactElement => (
+export const Screen = ({ children, className, header }: IScreenProps): ReactElement => (
   <View className="flex-1 bg-bg">
     {header}
     <SafeArea

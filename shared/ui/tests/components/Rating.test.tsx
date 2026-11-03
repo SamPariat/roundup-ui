@@ -1,7 +1,7 @@
 import { screen } from '@testing-library/react-native'
 
-import { Rating } from '../../src/components/Rating.tsx'
-import { renderWithTheme } from '../helpers/render.tsx'
+import { Rating } from '../../src/components/Rating'
+import { renderWithTheme } from '../helpers/render'
 
 describe('Rating', () => {
   it('speaks the score and the review count', async () => {

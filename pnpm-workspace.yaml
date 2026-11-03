@@ -4,9 +4,11 @@ packages:
 
 # Build scripts are blocked by default in pnpm 12. Only these two may run one:
 # @parcel/watcher compiles the file watcher Metro uses, and unrs-resolver is the
-# native resolver behind eslint-plugin-import-x and knip.
+# native resolver behind eslint-plugin-import-x and knip. esbuild (orval bundles its config with
+# it) only runs a postinstall that checks its binary, which already arrives as a prebuilt package.
 allowBuilds:
   '@parcel/watcher': true
+  esbuild: false
   unrs-resolver: true
 
 # eslint-plugin-react-native-a11y declares eslint ^3 to ^8, but it runs on ESLint 9 (every one of its
@@ -31,6 +33,7 @@ catalog:
   '@svgr/core': '8.1.0'
   '@svgr/plugin-jsx': '8.1.0'
   '@tailwindcss/postcss': '4.3.3'
+  '@tanstack/react-query': '5.105.1'
   '@testing-library/react-native': '14.1.0'
   '@types/jest': '30.0.0'
   '@types/node': '26.6.6'
@@ -65,6 +68,7 @@ catalog:
   'expo-glass-effect': '58.0.5'
   'expo-localization': '58.0.5'
   'expo-linking': '58.0.15'
+  'expo-secure-store': '58.0.2'
   'expo-router': '58.0.29'
   'expo-splash-screen': '58.0.12'
   'expo-status-bar': '58.0.4'
@@ -78,6 +82,7 @@ catalog:
   'lightningcss': '1.30.1'
   'lint-staged': '17.6.0'
   'nativewind': '5.0.0-rc.0'
+  'orval': '8.46.0'
   'postcss': '8.5.32'
   'prettier': '3.9.10'
   'prettier-plugin-tailwindcss': '0.8.1'

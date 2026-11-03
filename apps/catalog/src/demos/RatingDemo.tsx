@@ -2,7 +2,7 @@ import type { ReactElement } from 'react'
 
 import { Rating } from '@roundup/ui'
 
-import { Specimen } from '../components/Specimen.tsx'
+import { Specimen } from '../components/Specimen'
 
 /**
  * Rating with and without a review count, at the top and the bottom of the scale.

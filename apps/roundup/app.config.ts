@@ -14,7 +14,7 @@ export default {
   icon: './assets/icon/icon-light.png',
   android: {
     package: process.env.APP_ENV === 'prod' ? 'app.roundup.client' : 'app.roundup.client.beta',
-    // The mark on the Latte background. Android 13+ recolours the monochrome layer when the
+    // The mark on the Latte background. Android 13+ recolors the monochrome layer when the
     // person turns on themed icons.
     adaptiveIcon: {
       foregroundImage: './assets/icon/adaptive-foreground.png',
@@ -25,7 +25,7 @@ export default {
   ios: {
     supportsTablet: true,
     // iOS 18+ follows the home screen appearance: Latte when light, the Mocha mark on the system's
-    // dark backdrop when dark, and a greyscale mark the system tints when tinted.
+    // dark backdrop when dark, and a grayscale mark the system tints when tinted.
     icon: {
       light: './assets/icon/icon-light.png',
       dark: './assets/icon/icon-dark.png',

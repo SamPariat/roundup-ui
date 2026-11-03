@@ -4,13 +4,13 @@ import { TextInput, View } from 'react-native'
 
 import { useT } from '@roundup/i18n'
 
-import { useFocus } from '../lib/useFocus.ts'
+import { useFocus } from '../lib/useFocus'
 import { useRoleColor } from '../lib/useRoleColor'
-import { FieldFrame } from './Field.tsx'
-import { Text } from './Text.tsx'
+import { FieldFrame } from './Field'
+import { Text } from './Text'
 
 /** Props for PhoneInput. */
-export interface PhoneInputProps {
+export interface IPhoneInputProps {
   /** Required: for example "Phone number". */
   label: string
   /** The national number typed so far. */
@@ -19,7 +19,7 @@ export interface PhoneInputProps {
   helper?: string
   /** Error message that replaces the helper and turns the field red. */
   error?: string
-  /** Makes the field read-only and greyed out. */
+  /** Makes the field read-only and grayed out. */
   disabled?: boolean
   /** Called with the digits as they change. */
   onChangeText?: (text: string) => void
@@ -27,7 +27,7 @@ export interface PhoneInputProps {
 
 /**
  * A phone number field with a fixed country prefix, a numeric keyboard and one-tap autofill of the device number.
- * @returns The labelled field.
+ * @returns The labeled field.
  */
 export const PhoneInput = ({
   disabled = false,
@@ -36,7 +36,7 @@ export const PhoneInput = ({
   label,
   onChangeText,
   value,
-}: PhoneInputProps): ReactElement => {
+}: IPhoneInputProps): ReactElement => {
   const { focused, onBlur, onFocus } = useFocus()
   const placeholderColor = useRoleColor('fg-subtle')
   const { t } = useT()

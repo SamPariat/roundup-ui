@@ -1,7 +1,7 @@
 import { fireEvent, screen } from '@testing-library/react-native'
 
-import { VenueCard } from '../../src/components/VenueCard.tsx'
-import { renderWithTheme } from '../helpers/render.tsx'
+import { VenueCard } from '../../src/components/VenueCard'
+import { renderWithTheme } from '../helpers/render'
 
 describe('VenueCard', () => {
   it('shows the name as a heading', async () => {

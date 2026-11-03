@@ -31,7 +31,7 @@
 
 This is the foundation: the workspace, the strictest lint and type setup, the NativeWind theme, every design-system component rebuilt in React Native, and an empty routed shell. There is no API client and there are no screens wired to the backend yet; sign-in comes next.
 
-- **One hand-written theme** (`shared/ui/theme.css`): the Roundup design system's role colours, text styles and shadows as a Tailwind 4 stylesheet. Mocha is the dark theme, Latte the light one.
+- **One hand-written theme** (`shared/ui/theme.css`): the Roundup design system's role colors, text styles and shadows as a Tailwind 4 stylesheet. Mocha is the dark theme, Latte the light one.
 - **One place for every string**: `@roundup/i18n` holds the English copy as typed resources; components and screens never contain user-facing text.
 - **27 components** with the design system's prop names (`Button`, `TextField`, `Modal`, `SquadCard`…), each with accessibility built into its types and tests.
 - **A routed shell**: `/` is Welcome, `/squads`, `/explore` and `/profile` sit behind a side nav on wide screens and a bottom nav on narrow ones. iOS uses the system tab bar with Liquid Glass.
@@ -65,7 +65,7 @@ To use the backend, start the Go services from [roundup-monorepo](https://github
 
 ### Component catalog
 
-`apps/catalog` (`@roundup/catalog`) is a living reference for the design system and the place to check native-only behaviour (Liquid Glass `Surface`, Onest, safe areas) without touching the real app. It is its own Expo Router app with its own bundle id (`app.roundup.catalog`), so a development build installs as **Roundup Catalog** next to Roundup Beta instead of replacing it. It talks to no API: there is no `APP_ENV` and no `.env`.
+`apps/catalog` (`@roundup/catalog`) is a living reference for the design system and the place to check native-only behavior (Liquid Glass `Surface`, Onest, safe areas) without touching the real app. It is its own Expo Router app with its own bundle id (`app.roundup.catalog`), so a development build installs as **Roundup Catalog** next to Roundup Beta instead of replacing it. It talks to no API: there is no `APP_ENV` and no `.env`.
 
 ```sh
 make catalog                  # web, on http://localhost:8081 (stop `make web` first)
@@ -73,7 +73,7 @@ make catalog-ios DEVICE=...   # clean prebuild, then a development build on a si
 make catalog-android          # the same on an emulator
 ```
 
-The index lists every group (Actions, Inputs, Display, Feedback, Lists and cards, Navigation, Layout, Foundations); each component has a page of `Specimen` blocks, one per variant, size or state, named by the prop values (`variant=secondary · size=sm`). Loading, disabled, error and empty states are always shown, and interactive pieces keep local state so they really work. The toolbar above a demo switches System, Latte and Mocha, and on the web sets the preview width (360, 768, 1024 or full). From 1024 wide a list of components sits beside the page, like `SideNav`; below that the index is a screen of its own and each page has a back button. Foundations has the role colours and every `Text` variant.
+The index lists every group (Actions, Inputs, Display, Feedback, Lists and cards, Navigation, Layout, Foundations); each component has a page of `Specimen` blocks, one per variant, size or state, named by the prop values (`variant=secondary · size=sm`). Loading, disabled, error and empty states are always shown, and interactive pieces keep local state so they really work. The toolbar above a demo switches System, Latte and Mocha, and on the web sets the preview width (360, 768, 1024 or full). From 1024 wide a list of components sits beside the page, like `SideNav`; below that the index is a screen of its own and each page has a back button. Foundations has the role colors and every `Text` variant.
 
 Every renderable value export of `@roundup/ui` must have a page: `apps/catalog/tests/registry.test.ts` lists the PascalCase exports (leaving out `ThemeProvider` and the `*Variants` recipes) and fails for any that `src/registry.ts` does not know. A new component cannot skip the catalog. Add a demo in `src/demos/<Component>Demo.tsx` and an entry in the registry. The catalog's text (specimen labels, sample data) is not localized, so `i18next/no-literal-string` is off there; the strings inside the components still come from `@roundup/i18n`.
 
@@ -94,6 +94,8 @@ Every `make` target calls a root pnpm script.
 | `make test`                                        | Jest in every package                                                                        |
 | `make splash`                                      | Rasterise the logo mark into the native splash screen PNGs                                   |
 | `make icons`                                       | Rasterise the app icon sources into the icon PNGs                                            |
+| `make api`                                         | Regenerate `shared/api/src/generated` from the sibling roundup-monorepo spec                 |
+| `make api-check`                                   | Regenerate and fail on any diff; prints `skipped: no spec` without a spec                    |
 | `make knip`                                        | Unused files, exports and dependencies                                                       |
 | `make syncpack`                                    | Every dependency version comes from the pnpm catalog                                         |
 | `make files`                                       | Fail on JavaScript files, bad script names and non-kebab-case assets                         |
@@ -108,22 +110,36 @@ After any dependency change run `make doctor` and fix what it reports with `npx 
 
 <p align="center"><img src="assets/svg/brand/divider.svg" width="100%" alt=""></p>
 
+## The API client
+
+`@roundup/api` is generated by [orval](https://orval.dev) from the gateway's OpenAPI file, which lives in the Go repo ([roundup-monorepo](https://github.com/SamPariat/roundup), `shared/api/openapi.yaml`). Clone that repo next to this one and run:
+
+```sh
+make api               # regenerate shared/api/src/generated, then commit the result
+make api-check         # regenerate and fail on any diff (skipped when there is no spec)
+```
+
+The default spec path is `../roundup-monorepo/shared/api/openapi.yaml`; set `ROUNDUP_API_SPEC=/path/to/openapi.yaml` (absolute, or relative to `shared/api`) for another location. A missing spec fails `make api` with a hint. The generated client is committed, so CI and Docker builds never need the Go repo, and `make api-check` is a local check that CI does not run. `src/generated` is excluded from ESLint and knip because it is machine output; `tsc` still checks it. Every call goes through `shared/api/src/fetcher.ts`, which sends `X-Client`, attaches the access token, throws a typed `ApiError`, and on a 401 refreshes once (shared between concurrent calls) and retries once. The session lives in `@roundup/core`: the refresh token is kept in the Keychain or Keystore on iOS and Android, and in an httpOnly cookie on the web, where the access token stays in memory only.
+
 ## Repository structure
 
 ```
 roundup-ui/
 ├── apps/
 │   ├── roundup/        # @roundup/roundup: Expo SDK 58, Expo Router (routes in src/app = web URLs)
-│   │                   #   src/components (app-only components), src/hooks (useTabItems, useLayout)
+│   │                   #   src/components (app-only components), src/hooks (useTabItems, useLayout, useRouteGate),
+│   │                   #   src/navigation/paths.ts (every path the app navigates to)
 │   └── catalog/        # @roundup/catalog: every ui component in every state, on web, iOS and Android
 │                       #   src/registry.ts (slug → demo), src/demos/<Component>Demo.tsx, src/fixtures.ts
 ├── shared/
+│   ├── api/            # @roundup/api: the orval client (src/generated) and the fetch mutator (src/fetcher.ts)
+│   ├── core/           # @roundup/core: session, DI container (CoreProvider) and the sign-in view models
 │   ├── i18n/           # @roundup/i18n: i18next + react-i18next, typed English resources, useT
 │   └── ui/             # @roundup/ui: the design-system components, ThemeProvider and useTheme
 ├── assets/
 │   ├── svg/            # every SVG: brand/ (README banner, divider), logo/, illustrations/, icons/
 │   ├── brand/          # notes on the logo files
-│   └── fonts/          # Onest, embedded by the expo-font plugin, and its licence
+│   └── fonts/          # Onest, embedded by the expo-font plugin, and its license
 ├── eslint.config.ts, prettier.config.ts, knip.ts, commitlint.config.ts, lint-staged.config.ts
 │                       # each tool's settings, self-contained in its own file
 ├── tsconfig.base.json, jest-svg-transform.ts, types.d.ts  # shared TypeScript base, SVG Jest transform, plugin typings
@@ -131,7 +147,7 @@ roundup-ui/
 ├── .githooks/          # pre-commit (lint-staged, tsc, expo-doctor) and commit-msg (commitlint)
 ├── .github/            # CI workflow and the pull request template
 ├── infra/sws.toml      # static-web-server settings: clean URLs, 404 page, headers, health
-├── scripts/            # bash: docker-smoke, check-files, check-updates, copy-favicon, with-env, setup
+├── scripts/            # bash: api-check, docker-smoke, check-files, check-updates, copy-favicon, with-env, setup
 ├── Dockerfile          # deps → web export → static-web-server runtime
 ├── docker-compose.yml  # the web service on :8081
 └── Makefile            # the front door
@@ -139,7 +155,7 @@ roundup-ui/
 
 Every package has the same shape: `src/` for code and `tests/` beside it, mirroring `src/`'s paths (`shared/ui/src/components/Button.tsx` is tested by `shared/ui/tests/components/Button.test.tsx`). Test helpers live in `tests/helpers`. The tests folder mirrors `src/` in the app too (`tests/components`, `tests/hooks`). Hook files are named after the hook in camel case (`useTabItems.ts`). In `shared/ui`, each component is one flat file in `src/components`; helpers go in `src/lib` and the theme in `src/theme`.
 
-Imports run one way: `app → ui → i18n`; inside the app, routes may import components and hooks, components may import hooks and `@roundup/ui`, and hooks import no components. `i18n` imports nothing internal, and `shared/*` never imports from `apps/*`; ESLint's boundaries rule enforces it.
+Imports run one way: the app reaches `core`, `ui` and `i18n` (never `api` directly); `core` reaches `api` and `i18n` (never `ui`); `ui` reaches `i18n`; `api` and `i18n` import nothing internal. Inside the app, routes may import components and hooks, components may import hooks and `@roundup/ui`, and hooks import no components. Screens are dumb: they read a view model from `@roundup/core` and render `@roundup/ui`, and every path they navigate to comes from `src/navigation/paths.ts`. `i18n` imports nothing internal, and `shared/*` never imports from `apps/*`; ESLint's boundaries rule enforces it.
 
 ### Strings and i18n
 
@@ -147,21 +163,21 @@ Every user-visible string, including accessibility labels and hints, is a key in
 
 ### SVG assets
 
-SVG files live in `assets/svg` and are imported as components: `import MarkDark from '…/assets/svg/logo/mark-dark.svg'`. Metro compiles them with `react-native-svg-transformer` (configured in `apps/roundup/metro.config.ts`), Jest with a matching SVGR transform (`jest-svg-transform.ts` at the root), and `shared/ui/src/svg.d.ts` types the import. Icons and the `mono` logo files use `currentColor`, so a `text-*` class (`text-accent`) tints them; shapes drawn in code use `fill-*` and `stroke-*` classes. `lib/svg.ts` lets an SVG component take a className (on native, `lib/svg.native.ts` maps it to react-native-svg's `color`, `fill` and `stroke` props). The few props that cannot take a class (a placeholder colour, the glass tint, the navigator background) read a role through `useRoleColor`. The `dark` and `light` logo files carry the `logo-*` role colours as literals, and `Logo.test.tsx` fails if they drift from `theme.css`. The logo is a mark, a wordmark of outlined paths (no font), or a lockup of both. `apps/roundup/public/favicon.svg` is generated from `logo/mark-dark.svg` by `scripts/copy-favicon.sh` before every dev, web and export run; it is git-ignored.
+SVG files live in `assets/svg` and are imported as components: `import MarkDark from '…/assets/svg/logo/mark-dark.svg'`. Metro compiles them with `react-native-svg-transformer` (configured in `apps/roundup/metro.config.ts`), Jest with a matching SVGR transform (`jest-svg-transform.ts` at the root), and `shared/ui/src/svg.d.ts` types the import. Icons and the `mono` logo files use `currentColor`, so a `text-*` class (`text-accent`) tints them; shapes drawn in code use `fill-*` and `stroke-*` classes. `lib/svg.ts` lets an SVG component take a className (on native, `lib/svg.native.ts` maps it to react-native-svg's `color`, `fill` and `stroke` props). The few props that cannot take a class (a placeholder color, the glass tint, the navigator background) read a role through `useRoleColor`. The `dark` and `light` logo files carry the `logo-*` role colors as literals, and `Logo.test.tsx` fails if they drift from `theme.css`. The logo is a mark, a wordmark of outlined paths (no font), or a lockup of both. `apps/roundup/public/favicon.svg` is generated from `logo/mark-dark.svg` by `scripts/copy-favicon.sh` before every dev, web and export run; it is git-ignored.
 
 ### Splash screen
 
 Native: the `expo-splash-screen` plugin in `apps/roundup/app.config.ts` shows the Roundup mark (96 pt wide) on the Latte background (`#f2e9e1`) with the light mark, or on the Mocha background (`#1e1e2e`) with the dark mark when the device is dark. The plugin needs PNGs, so `make splash` (`scripts/make-splash.sh`, rsvg-convert or macOS sips) rasterises `assets/svg/logo/mark-dark.svg` and `mark-light.svg` into `apps/roundup/assets/splash/` (and a copy in `apps/catalog/assets/splash/`). Those PNGs are committed, not generated at build time: the plugin reads them on every prebuild and EAS build, and a build machine may have no SVG rasteriser. Run `make splash` and commit after changing the mark. The root layout calls `preventAutoHideAsync`, and `useSplash` hides the screen once the fonts and the saved theme are ready, with a 200 ms fade or none when the device asks for reduced motion.
 
-Web: `src/app/+html.tsx` puts the same mark, centred on the theme background, over the static page. It is fixed to the viewport, so nothing moves, and `useSplash` fades it out (or removes it at once with reduced motion) after hydration. A small inline script applies a saved manual theme before the first paint.
+Web: `src/app/+html.tsx` puts the same mark, centerd on the theme background, over the static page. It is fixed to the viewport, so nothing moves, and `useSplash` fades it out (or removes it at once with reduced motion) after hydration. A small inline script applies a saved manual theme before the first paint.
 
 ### App icon
 
-The icon follows the device. On iOS 18+ it has three variants that the home screen picks from its appearance setting: light (the Latte mark on the Latte background), dark (the Mocha mark on transparency, over the system's dark backdrop) and tinted (a greyscale mark the system colours). On Android it is an adaptive icon (the Latte mark on `#f2e9e1`) with a monochrome layer that Android 13+ recolours when themed icons are on. The sources are `assets/svg/app-icon/*.svg`; `make icons` (`scripts/make-icons.sh`) rasterises them to 1024 px PNGs in `apps/roundup/assets/icon/` (and a copy in `apps/catalog/assets/icon/`), committed for the same reason as the splash PNGs. A new icon needs a new native build (`make ios`).
+The icon follows the device. On iOS 18+ it has three variants that the home screen picks from its appearance setting: light (the Latte mark on the Latte background), dark (the Mocha mark on transparency, over the system's dark backdrop) and tinted (a grayscale mark the system colors). On Android it is an adaptive icon (the Latte mark on `#f2e9e1`) with a monochrome layer that Android 13+ recolors when themed icons are on. The sources are `assets/svg/app-icon/*.svg`; `make icons` (`scripts/make-icons.sh`) rasterises them to 1024 px PNGs in `apps/roundup/assets/icon/` (and a copy in `apps/catalog/assets/icon/`), committed for the same reason as the splash PNGs. A new icon needs a new native build (`make ios`).
 
 ### Tailwind classes
 
-Components use Tailwind's default scale: `h-12`, `size-10`, `w-3/5`, `rounded-xl`, `md:flex`. `shared/ui/theme.css` (imported by `apps/roundup/global.css`) replaces only the colour palette with the role colours, adds the `type-*` text styles, the `shadow-sheet` and `shadow-toast` shadows and the 1200px `max-w-content`, and resets nothing else. Mocha is the default; Latte applies through `prefers-color-scheme` (the theme switch calls `Appearance.setColorScheme` on native and sets `data-theme` on the web). Breakpoints are Tailwind's `md` 768 and `lg` 1024, which `useBreakpoint` repeats in code. An arbitrary value (`text-[15px]`) is allowed only where no default step exists; `better-tailwindcss/enforce-canonical-classes` rewrites the rest. Tailwind sizes in rem, so `apps/roundup/metro.config.ts` sets `inlineRem: 16` and a class is the same size on native as on web.
+Components use Tailwind's default scale: `h-12`, `size-10`, `w-3/5`, `rounded-xl`, `md:flex`. `shared/ui/theme.css` (imported by `apps/roundup/global.css`) replaces only the color palette with the role colors, adds the `type-*` text styles, the `shadow-sheet` and `shadow-toast` shadows and the 1200px `max-w-content`, and resets nothing else. Mocha is the default; Latte applies through `prefers-color-scheme` (the theme switch calls `Appearance.setColorScheme` on native and sets `data-theme` on the web). Breakpoints are Tailwind's `md` 768 and `lg` 1024, which `useBreakpoint` repeats in code. An arbitrary value (`text-[15px]`) is allowed only where no default step exists; `better-tailwindcss/enforce-canonical-classes` rewrites the rest. Tailwind sizes in rem, so `apps/roundup/metro.config.ts` sets `inlineRem: 16` and a class is the same size on native as on web.
 
 <p align="center"><img src="assets/svg/brand/divider.svg" width="100%" alt=""></p>
 
@@ -172,7 +188,7 @@ Each rule in `eslint.config.ts` carries a comment saying why it is on.
 - **Strict types**: `strict`, `noUncheckedIndexedAccess`, `exactOptionalPropertyTypes`, and the typescript-eslint strict presets.
 - **No semicolons**, 100 columns, single quotes, trailing commas (Prettier).
 - **`Pressable` only**: `Touchable*` and React Native's `Button` are banned.
-- **No `StyleSheet` and no inline style objects**: style with `className` and `cva`. Colours are roles (`bg-accent`), never primitives (`bg-ctp-mauve`) or `bg-[#fff]`.
+- **No `StyleSheet` and no inline style objects**: style with `className` and `cva`. Colors are roles (`bg-accent`), never primitives (`bg-ctp-mauve`) or `bg-[#fff]`.
 - **Accessibility**: the a11y lint rules, role-and-label test queries (`getByTestId` is banned), types that force a `label` on icon-only buttons and inputs.
 - **Conventional commits with a scope**: `feat(ui): add toast`, subject in lower case. Scopes: `app`, `ui`, `i18n`, `config`, `infra`, `deps`.
 - **Named exports**, PascalCase component files, kebab-case everything else. Default exports only for Expo Router routes and tool configs.
@@ -214,4 +230,4 @@ The image is built in stages: install from the lockfile, `expo export --platform
 
 ## Not here yet
 
-The API client (TanStack Query and orval), sign-in screens, view models, deploying the image, and end-to-end tests. See the pull request for the full list.
+Deploying the image and end-to-end tests. See the pull request for the full list.

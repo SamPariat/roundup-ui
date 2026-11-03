@@ -3,7 +3,7 @@ import type { ReactElement } from 'react'
 import { ScrollViewStyleReset, useServerDocumentContext } from 'expo-router/html'
 
 // Shown over the static page until the client takes over (useSplash removes it). It is fixed to
-// the viewport, so it never moves the page underneath: no layout shift. The colours are the
+// the viewport, so it never moves the page underneath: no layout shift. The colors are the
 // theme's own variables, so it follows prefers-color-scheme and the saved manual choice.
 const SPLASH_CSS = `
 #splash {
@@ -33,7 +33,7 @@ const SPLASH_CSS = `
 // on the web).
 const THEME_SCRIPT = `
 try {
-  var theme = localStorage.getItem('roundup.theme')
+  const theme = localStorage.getItem('roundup.theme')
   if (theme === 'light' || theme === 'dark') {
     document.documentElement.dataset.theme = theme
     document.documentElement.style.colorScheme = theme
@@ -42,7 +42,7 @@ try {
 `
 
 /** Props of the root HTML document. */
-interface RootProps {
+interface IRootProps {
   /** The rendered app. */
   children: ReactElement
 }
@@ -53,7 +53,7 @@ interface RootProps {
  * hands over (headNodes, bodyNodes). Server-only: it never runs in the browser.
  * @returns The html element.
  */
-export default function Root({ children }: Readonly<RootProps>): ReactElement {
+export default function Root({ children }: Readonly<IRootProps>): ReactElement {
   const { bodyAttributes, bodyNodes, headNodes, htmlAttributes } = useServerDocumentContext()
 
   return (

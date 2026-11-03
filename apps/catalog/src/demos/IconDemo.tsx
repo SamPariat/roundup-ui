@@ -4,10 +4,10 @@ import { View } from 'react-native'
 
 import { Icon, Text } from '@roundup/ui'
 
-import { Specimen } from '../components/Specimen.tsx'
-import { ICON_NAMES } from '../fixtures.ts'
+import { Specimen } from '../components/Specimen'
+import { ICON_NAMES } from '../fixtures'
 
-/** The role colours an icon can take. */
+/** The role colors an icon can take. */
 const TONES = [
   'fg',
   'fg-muted',
@@ -69,7 +69,7 @@ export const IconDemo = (): ReactElement => (
         </Text>
       </View>
     </Specimen>
-    <Specimen note="A labelled icon is announced as an image." title="label=Warning">
+    <Specimen note="A labeled icon is announced as an image." title="label=Warning">
       <Icon label="Warning" name="alert" size={24} tone="warning" />
     </Specimen>
   </>

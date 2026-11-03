@@ -3,7 +3,7 @@ import type { ReactElement } from 'react'
 import { render, screen } from '@testing-library/react-native'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 
-import { SafeArea } from '../../src/components/SafeArea.tsx'
+import { SafeArea } from '../../src/components/SafeArea'
 
 // The Duo's hinge side and the gesture bar give each edge a different inset.
 const insets = { top: 47, right: 3, bottom: 34, left: 11 }

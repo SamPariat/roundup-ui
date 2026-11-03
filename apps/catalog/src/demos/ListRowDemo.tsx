@@ -4,7 +4,7 @@ import { useCallback, useState } from 'react'
 
 import { Avatar, Badge, Icon, List, ListRow, Text } from '@roundup/ui'
 
-import { Specimen } from '../components/Specimen.tsx'
+import { Specimen } from '../components/Specimen'
 
 /**
  * ListRow with each slot filled and each state: plain, pressable, destructive and busy.

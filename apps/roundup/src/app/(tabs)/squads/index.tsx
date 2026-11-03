@@ -7,7 +7,7 @@ import { EmptyState } from '@roundup/ui'
 
 /**
  * The Squads tab. Squads arrive with the backend work; for now it shows an empty state.
- * @returns The empty state, centred.
+ * @returns The empty state, centerd.
  */
 export default function SquadsScreen(): ReactElement {
   const { t } = useT()

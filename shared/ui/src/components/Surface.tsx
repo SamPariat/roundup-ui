@@ -4,28 +4,28 @@ import type { ViewProps } from 'react-native'
 import { GlassView } from 'expo-glass-effect'
 import { View } from 'react-native'
 
-import type { RoleColor } from '../lib/useRoleColor'
+import type { TRoleColor } from '../lib/useRoleColor'
 
-import { cn } from '../lib/cn.ts'
-import { useGlass } from '../lib/useGlass.ts'
+import { cn } from '../lib/cn'
+import { useGlass } from '../lib/useGlass'
 import { useRoleColor } from '../lib/useRoleColor'
-import { useTheme } from '../theme/theme.tsx'
+import { useTheme } from '../theme/theme'
 
 /** How one surface tone looks. */
-interface ToneStyle {
+interface IToneStyle {
   /** Solid background class used when glass is off. */
   className: string
-  /** Role colour the glass layer is tinted with. */
-  tint: RoleColor
+  /** Role color the glass layer is tinted with. */
+  tint: TRoleColor
 }
 
 const TONES = {
   raised: { className: 'bg-bg-raised', tint: 'bg-raised' },
   sunken: { className: 'bg-bg-sunken', tint: 'bg-sunken' },
-} as const satisfies Record<string, ToneStyle>
+} as const satisfies Record<string, IToneStyle>
 
 /** Props for Surface: the usual View props plus a tone. */
-export type SurfaceProps = ViewProps & {
+export type TSurfaceProps = ViewProps & {
   /** What to draw on the surface. */
   children?: ReactNode
   /** Extra classes for the wrapper. */
@@ -38,8 +38,8 @@ export type SurfaceProps = ViewProps & {
 const FILL = { position: 'absolute', top: 0, right: 0, bottom: 0, left: 0 } as const
 
 /**
- * The one surface primitive. On iOS 26+ it is Liquid Glass tinted with the role colour;
- * everywhere else, and whenever Reduce Transparency is on, it is the solid role colour.
+ * The one surface primitive. On iOS 26+ it is Liquid Glass tinted with the role color;
+ * everywhere else, and whenever Reduce Transparency is on, it is the solid role color.
  * Never put opacity on a Surface: glass does not render below opacity 1. Dim its content instead.
  * @returns The surface view, with the glass layer behind its children when available.
  */
@@ -48,7 +48,7 @@ export const Surface = ({
   className,
   tone = 'raised',
   ...props
-}: SurfaceProps): ReactElement => {
+}: TSurfaceProps): ReactElement => {
   const { available, reduced } = useGlass()
   const { name } = useTheme()
   const glass = available && !reduced

@@ -4,24 +4,24 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 import { createContext, use, useCallback, useEffect, useMemo, useState } from 'react'
 import { Appearance, Platform, useColorScheme } from 'react-native'
 
-import { useHydrated } from '../lib/useHydrated.ts'
+import { useHydrated } from '../lib/useHydrated'
 
 /** What the person chose: follow the device, or force light or dark. */
-export type ThemePreference = 'dark' | 'light' | 'system'
+export type TThemePreference = 'dark' | 'light' | 'system'
 
 /** The two themes: Mocha is the dark one and Latte the light one. */
-export type ThemeName = 'latte' | 'mocha'
+export type TThemeName = 'latte' | 'mocha'
 
 /** What useTheme returns. */
-export interface Theme {
+export interface ITheme {
   /** Mocha is dark, Latte is light. */
-  name: ThemeName
+  name: TThemeName
   /** The stored choice, which may be "system". */
-  preference: ThemePreference
+  preference: TThemePreference
   /** False until the saved choice has been read (or storage failed), so a splash can wait for it. */
   loaded: boolean
   /** Saves a new choice and applies it at once. */
-  setPreference: (preference: ThemePreference) => void
+  setPreference: (preference: TThemePreference) => void
 }
 
 /** AsyncStorage key that holds the chosen preference. */
@@ -34,7 +34,7 @@ const PREFERENCES: ReadonlySet<unknown> = new Set(['system', 'light', 'dark'])
  * @param value - The raw value read from storage.
  * @returns Whether the value is one of the three preferences.
  */
-const isPreference = (value: unknown): value is ThemePreference => PREFERENCES.has(value)
+const isPreference = (value: unknown): value is TThemePreference => PREFERENCES.has(value)
 
 /**
  * Resolves a preference and the device appearance to a theme. Dark (Mocha) is the fallback while the device is unknown, which is also what static HTML is built with.
@@ -43,19 +43,19 @@ const isPreference = (value: unknown): value is ThemePreference => PREFERENCES.h
  * @returns The theme to apply.
  */
 export const themeNameFor = (
-  preference: ThemePreference,
+  preference: TThemePreference,
   device: 'dark' | 'light' | null | undefined,
-): ThemeName => {
+): TThemeName => {
   if (preference === 'light') return 'latte'
   if (preference === 'dark') return 'mocha'
 
   return device === 'light' ? 'latte' : 'mocha'
 }
 
-const ThemeContext = createContext<null | Theme>(null)
+const ThemeContext = createContext<ITheme | null>(null)
 
 /** Props for ThemeProvider. */
-interface ThemeProviderProps {
+interface IThemeProviderProps {
   /** The app to theme. */
   children: ReactNode
 }
@@ -64,9 +64,9 @@ interface ThemeProviderProps {
  * Owns the theme: reads the saved preference, follows the device appearance, tells the stylesheet which theme to use, and saves changes.
  * @returns The provider wrapping its children.
  */
-export const ThemeProvider = ({ children }: ThemeProviderProps): ReactElement => {
+export const ThemeProvider = ({ children }: IThemeProviderProps): ReactElement => {
   const device = useColorScheme()
-  const [preference, setPreference] = useState<ThemePreference>('system')
+  const [preference, setPreference] = useState<TThemePreference>('system')
   const [loaded, setLoaded] = useState(false)
 
   useEffect(() => {
@@ -108,7 +108,7 @@ export const ThemeProvider = ({ children }: ThemeProviderProps): ReactElement =>
     } else Appearance.setColorScheme(override)
   }, [preference])
 
-  const choosePreference = useCallback((next: ThemePreference) => {
+  const choosePreference = useCallback((next: TThemePreference) => {
     setPreference(next)
 
     AsyncStorage.setItem(THEME_STORAGE_KEY, next).catch(() => {
@@ -120,7 +120,7 @@ export const ThemeProvider = ({ children }: ThemeProviderProps): ReactElement =>
   const hydrated = useHydrated()
   const name = themeNameFor(preference, hydrated ? device : null)
 
-  const value = useMemo<Theme>(
+  const value = useMemo<ITheme>(
     () => ({
       name,
       preference,
@@ -137,7 +137,7 @@ export const ThemeProvider = ({ children }: ThemeProviderProps): ReactElement =>
  * Reads the current theme and its setter. Throws outside a ThemeProvider so a missing provider fails loudly.
  * @returns The current theme name, preference and setter.
  */
-export const useTheme = (): Theme => {
+export const useTheme = (): ITheme => {
   const theme = use(ThemeContext)
 
   if (theme === null) throw new Error('useTheme must be used inside <ThemeProvider>')

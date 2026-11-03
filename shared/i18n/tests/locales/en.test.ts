@@ -1,7 +1,7 @@
 import { readdirSync, readFileSync, statSync } from 'node:fs'
 import path from 'node:path'
 
-import { en, i18n } from '../../src/index.ts'
+import { en, i18n } from '../../src/index'
 
 // Jest runs this file as CommonJS, where __dirname is the way to find the repo root.
 

@@ -4,12 +4,12 @@ import { Pressable, TextInput, View } from 'react-native'
 
 import { useT } from '@roundup/i18n'
 
-import { cn } from '../lib/cn.ts'
-import { Icon } from './Icon.tsx'
-import { Text } from './Text.tsx'
+import { cn } from '../lib/cn'
+import { Icon } from './Icon'
+import { Text } from './Text'
 
 /** Props for OtpInput. */
-export interface OtpInputProps {
+export interface IOtpInputProps {
   /** Required: for example "6-digit code". */
   label: string
   /** Digits entered so far. Complete when its length equals `length`. */
@@ -51,7 +51,7 @@ export const OtpInput = ({
   onResend,
   resendIn = 0,
   value = '',
-}: OtpInputProps): ReactElement => {
+}: IOtpInputProps): ReactElement => {
   const { t } = useT()
   const digits = value.slice(0, length)
   const complete = digits.length === length

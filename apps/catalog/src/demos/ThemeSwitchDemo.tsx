@@ -2,11 +2,11 @@ import type { ReactElement } from 'react'
 
 import { useState } from 'react'
 
-import type { ThemeChoice } from '@roundup/ui'
+import type { TThemeChoice } from '@roundup/ui'
 
 import { Text, ThemeSwitch, useTheme } from '@roundup/ui'
 
-import { Specimen } from '../components/Specimen.tsx'
+import { Specimen } from '../components/Specimen'
 
 /**
  * ThemeSwitch with each choice selected, and a live one that is the real theme of this catalog.
@@ -14,7 +14,7 @@ import { Specimen } from '../components/Specimen.tsx'
  */
 export const ThemeSwitchDemo = (): ReactElement => {
   const { name, preference, setPreference } = useTheme()
-  const [local, setLocal] = useState<ThemeChoice>('system')
+  const [local, setLocal] = useState<TThemeChoice>('system')
 
   return (
     <>

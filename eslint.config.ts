@@ -28,7 +28,7 @@ import path from 'node:path'
 import tseslint from 'typescript-eslint'
 
 /** The shape of a plugin that ships no types: just its rules by name. */
-interface RuleSet {
+interface IRuleSet {
   /** The rules the plugin defines. */
   rules: Record<string, unknown>
 }
@@ -36,7 +36,15 @@ interface RuleSet {
 export default [
   {
     // Build output, generated code and native folders are not ours to lint.
-    ignores: ['**/node_modules/**', '**/dist/**', '**/.expo/**', '**/ios/**', '**/android/**'],
+    ignores: [
+      '**/node_modules/**',
+      '**/dist/**',
+      '**/.expo/**',
+      '**/ios/**',
+      '**/android/**',
+      // Machine output of `make api` (orval); it is regenerated, never edited, so style rules have nothing to say. tsc still checks it.
+      'shared/api/src/generated/**',
+    ],
   },
   {
     // A disable comment that no longer suppresses anything is dead weight.
@@ -145,6 +153,9 @@ export default [
         { selector: 'function', format: ['camelCase', 'PascalCase'] },
         { selector: 'parameter', format: ['camelCase', 'PascalCase'], leadingUnderscore: 'allow' },
         { selector: 'typeLike', format: ['PascalCase'] },
+        // Visual consistency: every interface starts with I (IMe) and every type alias with T (TMe).
+        { selector: 'interface', format: ['PascalCase'], prefix: ['I'] },
+        { selector: 'typeAlias', format: ['PascalCase'], prefix: ['T'] },
         { selector: 'enumMember', format: ['PascalCase', 'UPPER_CASE'] },
         // CSS variables, headers, hyphenated token names and route params are data keys, not identifiers.
         {
@@ -196,7 +207,7 @@ export default [
     },
   },
   {
-    // react-native: text must sit inside <Text>, and styles must not use raw colours.
+    // react-native: text must sit inside <Text>, and styles must not use raw colors.
     // The plugin predates flat config, so fixupPluginRules adapts it.
     files: ['**/*.{ts,tsx}'],
     plugins: {
@@ -218,7 +229,7 @@ export default [
     },
     rules: {
       ...Object.fromEntries(
-        Object.keys((reactNativeA11y as RuleSet).rules).map((name) => [
+        Object.keys((reactNativeA11y as IRuleSet).rules).map((name) => [
           `react-native-a11y/${name}`,
           'error',
         ]),
@@ -254,6 +265,11 @@ export default [
           ],
           patterns: [
             {
+              // The extension is dropped from every relative import; assets (svg, ttf, css) keep theirs.
+              regex: String.raw`^\.{1,2}/.*\.(?:tsx?|jsx?)$`,
+              message: 'Import without the file extension (../lib/cn, not ../lib/cn.ts).',
+            },
+            {
               // Metro picks svg.native.ts / useRoleColor.native.ts only for an extensionless
               // import; with `.ts` it loads the web file on iOS and Android too.
               regex: String.raw`/(svg|useRoleColor)\.ts$`,
@@ -268,7 +284,7 @@ export default [
         {
           selector: "JSXAttribute[name.name='style'] > JSXExpressionContainer > ObjectExpression",
           message:
-            'No inline style objects. Use className; colours and shadows come from theme.css classes.',
+            'No inline style objects. Use className; colors and shadows come from theme.css classes.',
         },
         {
           selector: "Literal[value='inactive']",
@@ -319,6 +335,21 @@ export default [
           property: 'env',
           message:
             'Shared packages take configuration as arguments; only the app reads process.env.',
+        },
+      ],
+    },
+  },
+  {
+    // The API client is the one shared package that reads the environment: Expo inlines
+    // EXPO_PUBLIC_API_URL only where it is written out literally, and the mutator needs it per call.
+    files: ['shared/api/src/fetcher.ts'],
+    rules: {
+      'no-restricted-properties': [
+        'error',
+        {
+          object: 'Dimensions',
+          property: 'get',
+          message: 'Use useWindowDimensions(): window size changes on fold, rotate and Split View.',
         },
       ],
     },
@@ -435,8 +466,9 @@ export default [
   // ── Architecture ────────────────────────────────────────────
   {
     // Inside the app: routes may import components and hooks; components may import hooks and
-    // @roundup/ui; hooks import no components. Across packages: app -> ui -> i18n, one
-    // direction only. i18n imports nothing internal shared/* never imports apps/*.
+    // @roundup/ui; hooks import no components. Across packages, one direction only: the app
+    // reaches core, ui and i18n (never api directly); core reaches api and i18n (never ui); ui
+    // reaches i18n; api and i18n import nothing internal. shared/* never imports apps/*.
     // The first matching element wins, so the specific app folders come before the catch-all.
     files: ['**/*.{ts,tsx}'],
     plugins: { boundaries },
@@ -447,7 +479,10 @@ export default [
         { type: 'routes', pattern: 'apps/roundup/src/app/**', partialMatch: false },
         { type: 'components', pattern: 'apps/roundup/src/components/**', partialMatch: false },
         { type: 'hooks', pattern: 'apps/roundup/src/hooks/**', partialMatch: false },
+        { type: 'navigation', pattern: 'apps/roundup/src/navigation/**', partialMatch: false },
         { type: 'app-other', pattern: 'apps/roundup/**', partialMatch: false },
+        { type: 'api', pattern: 'shared/api/**', partialMatch: false },
+        { type: 'core', pattern: 'shared/core/**', partialMatch: false },
         { type: 'ui', pattern: 'shared/ui/**', partialMatch: false },
         { type: 'i18n', pattern: 'shared/i18n/**', partialMatch: false },
       ],
@@ -463,7 +498,16 @@ export default [
               allow: {
                 to: {
                   element: {
-                    type: ['routes', 'components', 'hooks', 'app-other', 'ui', 'i18n'],
+                    type: [
+                      'routes',
+                      'components',
+                      'hooks',
+                      'navigation',
+                      'app-other',
+                      'core',
+                      'ui',
+                      'i18n',
+                    ],
                   },
                 },
               },
@@ -472,13 +516,18 @@ export default [
               from: { element: { type: 'components' } },
               allow: {
                 to: {
-                  element: { type: ['components', 'hooks', 'ui', 'i18n'] },
+                  element: { type: ['components', 'hooks', 'navigation', 'core', 'ui', 'i18n'] },
                 },
               },
             },
             {
               from: { element: { type: 'hooks' } },
-              allow: { to: { element: { type: ['hooks', 'ui', 'i18n'] } } },
+              allow: { to: { element: { type: ['hooks', 'navigation', 'core', 'ui', 'i18n'] } } },
+            },
+            {
+              // Path builders know route names and nothing else.
+              from: { element: { type: 'navigation' } },
+              allow: { to: { element: { type: ['navigation'] } } },
             },
             {
               // Tests and tool configs at the app root (global.css is imported by routes) may reach anything in the app.
@@ -486,7 +535,16 @@ export default [
               allow: {
                 to: {
                   element: {
-                    type: ['app-other', 'routes', 'components', 'hooks', 'ui', 'i18n'],
+                    type: [
+                      'app-other',
+                      'routes',
+                      'components',
+                      'hooks',
+                      'navigation',
+                      'core',
+                      'ui',
+                      'i18n',
+                    ],
                   },
                 },
               },
@@ -495,6 +553,14 @@ export default [
               // Not apps/roundup: the two apps share nothing but the packages under shared/.
               from: { element: { type: 'catalog' } },
               allow: { to: { element: { type: ['catalog', 'ui', 'i18n'] } } },
+            },
+            {
+              from: { element: { type: 'core' } },
+              allow: { to: { element: { type: ['core', 'api', 'i18n'] } } },
+            },
+            {
+              from: { element: { type: 'api' } },
+              allow: { to: { element: { type: ['api'] } } },
             },
             {
               from: { element: { type: 'ui' } },
@@ -593,6 +659,10 @@ export default [
       'unicorn/filename-case': ['error', { cases: { kebabCase: true } }],
       // null is part of React Native APIs (refs, style, children).
       'unicorn/no-null': 'off',
+      // Helpers are classes of static methods (the NestJS/Java style) by project convention, so a
+      // class with only static members is intended, and the dependency container holds the class.
+      'unicorn/no-static-only-class': 'off',
+      '@typescript-eslint/no-extraneous-class': ['error', { allowStaticOnly: true }],
       // Array#reduce is fine when typed; the rule only pushes people toward worse loops here.
       'unicorn/no-array-reduce': 'off',
       // Route files use the Expo Router default export and sibling index files.
@@ -651,14 +721,14 @@ export default [
       'better-tailwindcss/enforce-canonical-classes': 'error',
       'better-tailwindcss/enforce-shorthand-classes': 'error',
       'better-tailwindcss/no-deprecated-classes': 'error',
-      // Colour comes from roles only: no hex, rgb or hsl arbitrary values.
+      // Color comes from roles only: no hex, rgb or hsl arbitrary values.
       'better-tailwindcss/no-restricted-classes': [
         'error',
         {
           restrict: [
             {
               pattern: String.raw`^(?:[\w-]+:)*[\w-]+-\[(?:#|rgb|hsl|oklch|oklab|color).*\]$`,
-              message: 'Use a role class such as bg-accent, not a raw colour.',
+              message: 'Use a role class such as bg-accent, not a raw color.',
             },
           ],
         },

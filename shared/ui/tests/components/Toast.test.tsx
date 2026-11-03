@@ -1,7 +1,7 @@
 import { fireEvent, screen } from '@testing-library/react-native'
 
-import { Toast } from '../../src/components/Toast.tsx'
-import { renderWithTheme } from '../helpers/render.tsx'
+import { Toast } from '../../src/components/Toast'
+import { renderWithTheme } from '../helpers/render'
 
 describe('Toast', () => {
   it('is a status message by default', async () => {

@@ -1,7 +1,7 @@
 import { fireEvent, screen } from '@testing-library/react-native'
 
-import { ListRow } from '../../src/components/ListRow.tsx'
-import { renderWithTheme } from '../helpers/render.tsx'
+import { ListRow } from '../../src/components/ListRow'
+import { renderWithTheme } from '../helpers/render'
 
 describe('ListRow', () => {
   it('is plain content without onPress', async () => {

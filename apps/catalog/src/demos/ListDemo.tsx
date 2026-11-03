@@ -2,8 +2,8 @@ import type { ReactElement } from 'react'
 
 import { Avatar, Badge, List, ListRow } from '@roundup/ui'
 
-import { Specimen } from '../components/Specimen.tsx'
-import { PEOPLE } from '../fixtures.ts'
+import { Specimen } from '../components/Specimen'
+import { PEOPLE } from '../fixtures'
 
 /**
  * List around a few rows, and around one, to show where the dividers go.

@@ -1,7 +1,7 @@
 import { fireEvent, screen } from '@testing-library/react-native'
 
-import { SideNav } from '../../src/components/SideNav.tsx'
-import { renderWithTheme } from '../helpers/render.tsx'
+import { SideNav } from '../../src/components/SideNav'
+import { renderWithTheme } from '../helpers/render'
 
 describe('SideNav', () => {
   it('has one tab per destination with the current one selected', async () => {

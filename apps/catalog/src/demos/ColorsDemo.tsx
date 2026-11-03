@@ -4,10 +4,10 @@ import { View } from 'react-native'
 
 import { Text } from '@roundup/ui'
 
-import { Specimen } from '../components/Specimen.tsx'
+import { Specimen } from '../components/Specimen'
 
-/** One role colour and the class that paints it. */
-interface Swatch {
+/** One role color and the class that paints it. */
+interface ISwatch {
   /** The Tailwind class that fills a box with the role. Spelled out so Tailwind can see it. */
   fill: string
   /** The role's name, as in the class names (bg-*, text-*, border-*). */
@@ -15,21 +15,21 @@ interface Swatch {
 }
 
 /** A group of related roles. */
-interface Family {
+interface IFamily {
   /** What to look for. */
   note: string
   /** The roles of the group. */
-  swatches: Swatch[]
+  swatches: ISwatch[]
   /** The group's name. */
   title: string
 }
 
 /**
- * Every role colour of shared/ui/theme.css, in the order the file lists them. Each swatch is a
+ * Every role color of shared/ui/theme.css, in the order the file lists them. Each swatch is a
  * class, so it follows the theme the toolbar picks: switch between Mocha and Latte to compare.
  * The useRoleColor hook is not used here: it only reads the five roles that props (not classes) need.
  */
-const FAMILIES: Family[] = [
+const FAMILIES: IFamily[] = [
   {
     title: 'Surfaces',
     note: 'Page, raised cards and dialogs, bars and tracks, and the hover and pressed fill.',
@@ -72,7 +72,7 @@ const FAMILIES: Family[] = [
   },
   {
     title: 'Status',
-    note: 'Each status has a solid colour and a soft fill.',
+    note: 'Each status has a solid color and a soft fill.',
     swatches: [
       { role: 'success', fill: 'bg-success' },
       { role: 'success-soft', fill: 'bg-success-soft' },
@@ -109,10 +109,10 @@ const FAMILIES: Family[] = [
 ]
 
 /**
- * Every role colour as a swatch with its name, grouped by use.
+ * Every role color as a swatch with its name, grouped by use.
  * @returns The specimens.
  */
-export const ColoursDemo = (): ReactElement => (
+export const ColorsDemo = (): ReactElement => (
   <>
     {FAMILIES.map(({ note, swatches, title }) => (
       <Specimen key={title} note={note} title={title}>

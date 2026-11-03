@@ -4,8 +4,8 @@ import { useCallback, useState } from 'react'
 
 import { VenueCard } from '@roundup/ui'
 
-import { Specimen } from '../components/Specimen.tsx'
-import { CLOSED_VENUE, OPEN_VENUE } from '../fixtures.ts'
+import { Specimen } from '../components/Specimen'
+import { CLOSED_VENUE, OPEN_VENUE } from '../fixtures'
 
 /**
  * VenueCard open and closed, with the least it can show, with price unknown, and with a save button that works.

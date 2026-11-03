@@ -3,7 +3,7 @@ import { getDefaultConfig } from 'expo/metro-config'
 import { withNativewind } from 'nativewind/metro'
 
 /** The file extension lists of Metro's resolver. */
-interface Extensions {
+interface IExtensions {
   /** Extensions Metro copies as assets. */
   assetExts: string[]
   /** Extensions Metro compiles as code. */
@@ -11,9 +11,9 @@ interface Extensions {
 }
 
 /** The parts of Expo's Metro config that this file reads. */
-interface TouchedConfig {
+interface ITouchedConfig {
   /** Resolution settings, of which the file extension lists are changed. */
-  resolver: Extensions
+  resolver: IExtensions
   /** Transform settings, spread through unchanged except for the Babel transformer. */
   transformer: object
 }
@@ -29,16 +29,16 @@ export default withNativewind(
   {
     ...getDefaultConfig(__dirname),
     transformer: {
-      ...(getDefaultConfig(__dirname) as unknown as TouchedConfig).transformer,
+      ...(getDefaultConfig(__dirname) as unknown as ITouchedConfig).transformer,
       babelTransformerPath: require.resolve('react-native-svg-transformer/expo'),
     },
     resolver: {
-      ...(getDefaultConfig(__dirname) as unknown as TouchedConfig).resolver,
+      ...(getDefaultConfig(__dirname) as unknown as ITouchedConfig).resolver,
       assetExts: (
-        getDefaultConfig(__dirname) as unknown as TouchedConfig
+        getDefaultConfig(__dirname) as unknown as ITouchedConfig
       ).resolver.assetExts.filter((extension) => extension !== 'svg'),
       sourceExts: [
-        ...(getDefaultConfig(__dirname) as unknown as TouchedConfig).resolver.sourceExts,
+        ...(getDefaultConfig(__dirname) as unknown as ITouchedConfig).resolver.sourceExts,
         'svg',
       ],
     },
@@ -48,7 +48,7 @@ export default withNativewind(
     // native unless told otherwise, which would make every default class 12.5% smaller than on web,
     // where 1rem is 16px. Pin it so a class is the same size on every platform.
     inlineRem: 16,
-    // Role colours change with the theme (prefers-color-scheme), so no variable may be inlined at
+    // Role colors change with the theme (prefers-color-scheme), so no variable may be inlined at
     // build time.
     inlineVariables: false,
   },

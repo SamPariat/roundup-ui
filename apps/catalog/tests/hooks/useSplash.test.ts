@@ -2,20 +2,20 @@ import { renderHook, waitFor } from '@testing-library/react-native'
 import { hideAsync, setOptions } from 'expo-splash-screen'
 import { AccessibilityInfo } from 'react-native'
 
-import type { SplashElement } from '../../src/hooks/useSplash.ts'
+import type { ISplashElement } from '../../src/hooks/useSplash'
 
-import { hideWebSplash, useSplash } from '../../src/hooks/useSplash.ts'
+import { hideWebSplash, useSplash } from '../../src/hooks/useSplash'
 
 /** Props of the hook under test. */
-interface ReadyProps {
+interface IReadyProps {
   /** Whether the app is ready. */
   ready: boolean
 }
 
 /** A stand-in splash element and what was done to it. */
-interface FakeSplash {
+interface IFakeSplash {
   /** The element to pass to hideWebSplash. */
-  element: SplashElement
+  element: ISplashElement
   /** The calls made on it, in order. */
   log: string[]
 }
@@ -39,7 +39,7 @@ describe('useSplash', () => {
 
   it('hides the splash screen with a quick fade once the app is ready', async () => {
     const { rerender } = await renderHook(
-      ({ ready }: ReadyProps) => {
+      ({ ready }: IReadyProps) => {
         useSplash(ready)
       },
       { initialProps: { ready: false } },
@@ -73,7 +73,7 @@ describe('useSplash', () => {
  * Builds a stand-in for the splash element that records what was done to it.
  * @returns The element and the log of its calls.
  */
-const fakeElement = (): FakeSplash => {
+const fakeElement = (): IFakeSplash => {
   const log: string[] = []
 
   /**
@@ -99,7 +99,7 @@ const fakeElement = (): FakeSplash => {
     listener()
   }
 
-  const element: SplashElement = { classList: { add }, remove, addEventListener }
+  const element: ISplashElement = { classList: { add }, remove, addEventListener }
 
   return { element, log }
 }

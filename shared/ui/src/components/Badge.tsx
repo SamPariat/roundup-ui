@@ -4,7 +4,7 @@ import type { ReactElement, ReactNode } from 'react'
 import { cva } from 'class-variance-authority'
 import { View } from 'react-native'
 
-import { Text } from './Text.tsx'
+import { Text } from './Text'
 
 const badgeVariants = cva('h-6 flex-row items-center gap-1 self-start rounded-full px-2', {
   variants: {
@@ -37,7 +37,7 @@ const dotVariants = cva('size-2 rounded-full', {
 })
 
 /** Props for Badge: the tone variant plus its text. */
-export type BadgeProps = VariantProps<typeof badgeVariants> & {
+export type TBadgeProps = VariantProps<typeof badgeVariants> & {
   /** The badge text. The word carries the meaning, the dot only backs it up. */
   children?: ReactNode
   /** Hide the leading dot (plain tags such as venue types). */
@@ -45,10 +45,10 @@ export type BadgeProps = VariantProps<typeof badgeVariants> & {
 }
 
 /**
- * A small status pill (admin, open, closed) whose tone sets its background and dot colour.
+ * A small status pill (admin, open, closed) whose tone sets its background and dot color.
  * @returns The pill.
  */
-export const Badge = ({ children, dot = true, tone }: BadgeProps): ReactElement => (
+export const Badge = ({ children, dot = true, tone }: TBadgeProps): ReactElement => (
   <View className={badgeVariants({ tone })}>
     {dot ? <View aria-hidden className={dotVariants({ tone })} /> : null}
     {/* Capped at 1.3x so a large system font does not break the pill. */}

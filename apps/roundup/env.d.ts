@@ -1,6 +1,7 @@
 // Every environment variable the app and its config read. A typo anywhere else fails to compile.
 declare namespace NodeJS {
   /** The environment variables the app and its config read. */
+  // eslint-disable-next-line @typescript-eslint/naming-convention -- ProcessEnv is Node's own interface name, extended here
   interface ProcessEnv {
     /** beta or prod; app.config.ts validates it. */
     APP_ENV: string

@@ -1,6 +1,6 @@
 // Metro turns every imported .svg into a component through react-native-svg-transformer, and
 // Jest does the same through jest-svg-transform.ts. `currentColor` in a file follows
-// the `color` prop, so a tone becomes a colour without touching the file.
+// the `color` prop, so a tone becomes a color without touching the file.
 declare module '*.svg' {
   import type { FC } from 'react'
   import type { SvgProps } from 'react-native-svg'

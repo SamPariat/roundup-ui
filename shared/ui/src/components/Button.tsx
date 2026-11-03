@@ -5,18 +5,18 @@ import { cva } from 'class-variance-authority'
 import { use, useEffect } from 'react'
 import { AccessibilityInfo, Pressable, View } from 'react-native'
 
-import type { IconName } from '../lib/icons.ts'
-import type { IconProps } from './Icon.tsx'
-import type { TextProps } from './Text.tsx'
+import type { TIconName } from '../lib/icons'
+import type { TIconProps } from './Icon'
+import type { TTextProps } from './Text'
 
-import { ActionContext } from '../lib/action-context.ts'
-import { cn } from '../lib/cn.ts'
-import { Icon } from './Icon.tsx'
-import { Spinner } from './Spinner.tsx'
-import { Text } from './Text.tsx'
+import { ActionContext } from '../lib/action-context'
+import { cn } from '../lib/cn'
+import { Icon } from './Icon'
+import { Spinner } from './Spinner'
+import { Text } from './Text'
 
 /**
- * Class recipe for every button: variant (colour), size, full width, icon-only and inactive states. Exported so link-like elements can borrow the look.
+ * Class recipe for every button: variant (color), size, full width, icon-only and inactive states. Exported so link-like elements can borrow the look.
  */
 export const buttonVariants = cva(
   'flex-row items-center justify-center gap-2 rounded-xl border border-transparent focus:outline-2 focus:outline-offset-2 focus:outline-focus-ring active:scale-98',
@@ -54,26 +54,26 @@ export const buttonVariants = cva(
 )
 
 /** The four button variants: primary, secondary, ghost and destructive. */
-type Variant = NonNullable<VariantProps<typeof buttonVariants>['variant']>
+type TVariant = NonNullable<VariantProps<typeof buttonVariants>['variant']>
 
 const LABEL_TONE = {
   primary: 'on-accent',
   secondary: 'fg',
   ghost: 'accent',
   destructive: 'on-accent',
-} as const satisfies Record<Variant, 'accent' | 'fg' | 'on-accent'>
+} as const satisfies Record<TVariant, 'accent' | 'fg' | 'on-accent'>
 
 /** Props every button has, whatever it shows. */
-interface ButtonBase {
-  /** Colour treatment. Defaults to primary. */
-  variant?: Variant
+interface IButtonBase {
+  /** Color treatment. Defaults to primary. */
+  variant?: TVariant
   /** Height step: sm 36, md 48 (the tap target), lg 56. Defaults to md. */
   size?: 'lg' | 'md' | 'sm'
   /** A request is in flight: shows a spinner, disables the button and never makes it narrower. */
   loading?: boolean
   /** What the button says while loading, e.g. "Sending code…". Two or three words. */
   loadingLabel?: string
-  /** Turns the button inert and greys it out. */
+  /** Turns the button inert and grays it out. */
   disabled?: boolean
   /** Stretch to the container width (bottom-of-screen actions). */
   block?: boolean
@@ -84,32 +84,32 @@ interface ButtonBase {
 }
 
 /** A button with content: its text (or custom children) is its accessible name. */
-interface WithContent {
+interface IWithContent {
   /** The button's text, or custom content. */
   children: ReactNode
   /** Leading icon. */
-  icon?: IconName
+  icon?: TIconName
   /** Overrides the accessible name taken from the text. */
   label?: string
 }
 
 /** An icon-only button, which must name itself with `label`. */
-interface IconOnly {
+interface IIconOnly {
   /** Icon-only buttons have no content. */
   children?: undefined
   /** The only thing drawn. */
-  icon: IconName
+  icon: TIconName
   /** The accessible name, since there is no text. */
   label: string
 }
 
 /** An icon-only button must name itself; a button with text names itself from the text. */
-export type ButtonProps = ButtonBase &
+export type TButtonProps = IButtonBase &
   /** A button with content: its text (or custom children) is its accessible name. */
-  (IconOnly | WithContent)
+  (IIconOnly | IWithContent)
 
 /** The button size steps. */
-type Size = NonNullable<ButtonProps['size']>
+type TSize = NonNullable<TButtonProps['size']>
 
 /**
  * The resting content of a button: an optional icon, then the text or custom children.
@@ -125,13 +125,13 @@ const RestingContent = ({
   /** What the button shows besides its icon. */
   children?: ReactNode
   /** Leading icon, if any. */
-  icon?: IconName | undefined
-  /** Role colour for the icon, already adjusted for the inactive state. */
-  iconTone: NonNullable<IconProps['tone']>
+  icon?: TIconName | undefined
+  /** Role color for the icon, already adjusted for the inactive state. */
+  iconTone: NonNullable<TIconProps['tone']>
   /** The button size, which picks the icon and text sizes. */
-  size: Size
-  /** Role colour for the text, already adjusted for the inactive state. */
-  textTone: NonNullable<TextProps['tone']>
+  size: TSize
+  /** Role color for the text, already adjusted for the inactive state. */
+  textTone: NonNullable<TTextProps['tone']>
 }): ReactElement => (
   <>
     {icon === undefined ? null : (
@@ -161,7 +161,7 @@ const LoadingContent = ({
   /** Text announced and shown next to the spinner. */
   loadingLabel?: string | undefined
   /** The button size, which picks the label size. */
-  size: Size
+  size: TSize
 }): ReactElement => (
   <View className="items-center">
     {/* The resting content stays in layout at no height, so the button never gets narrower than
@@ -206,7 +206,7 @@ export const Button = ({
   onPress,
   size = 'md',
   variant = 'primary',
-}: ButtonProps): ReactElement => {
+}: TButtonProps): ReactElement => {
   const action = use(ActionContext)
   const block = blockProp ?? action.block
   const iconOnly = icon !== undefined && children === undefined

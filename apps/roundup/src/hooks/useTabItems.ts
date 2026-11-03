@@ -1,15 +1,17 @@
 import { usePathname } from 'expo-router'
 
-import type { IconName } from '@roundup/ui'
+import type { TIconName } from '@roundup/ui'
 
 import { useT } from '@roundup/i18n'
 
+import { Paths } from '../navigation/paths'
+
 /** One tab of the app. */
-export interface TabItem {
+export interface ITabItem {
   /** Route name and translation key suffix. */
   id: 'explore' | 'profile' | 'squads'
   /** Icon in the web and Android navs. */
-  icon: IconName
+  icon: TIconName
   /** SF Symbol for the iOS system tab bar. */
   symbol: 'magnifyingglass' | 'person.2' | 'person.crop.circle'
   /** Route the tab opens. */
@@ -19,13 +21,13 @@ export interface TabItem {
 }
 
 /** A tab before its label is translated. */
-type TabDefinition = Omit<TabItem, 'label'>
+type TTabDefinition = Omit<ITabItem, 'label'>
 
 /** The one list every layout reads, so the iOS system tab bar and the web/Android shell cannot drift. */
-const TAB_DEFINITIONS: readonly TabDefinition[] = [
-  { id: 'squads', icon: 'squads', symbol: 'person.2', href: '/squads' },
-  { id: 'explore', icon: 'explore', symbol: 'magnifyingglass', href: '/explore' },
-  { id: 'profile', icon: 'profile', symbol: 'person.crop.circle', href: '/profile' },
+const TAB_DEFINITIONS: readonly TTabDefinition[] = [
+  { id: 'squads', icon: 'squads', symbol: 'person.2', href: Paths.tabsSquads() },
+  { id: 'explore', icon: 'explore', symbol: 'magnifyingglass', href: Paths.tabsExplore() },
+  { id: 'profile', icon: 'profile', symbol: 'person.crop.circle', href: Paths.tabsProfile() },
 ]
 
 /**
@@ -33,14 +35,14 @@ const TAB_DEFINITIONS: readonly TabDefinition[] = [
  * @param pathname - The current URL path.
  * @returns The id of the tab whose route the path is under.
  */
-export const tabIdForPath = (pathname: string): TabItem['id'] =>
+export const tabIdForPath = (pathname: string): ITabItem['id'] =>
   TAB_DEFINITIONS.find((item) => pathname.startsWith(item.href))?.id ?? 'squads'
 
 /**
  * The tabs in display order with their labels in the current language.
  * @returns One item per destination.
  */
-export const useTabItems = (): readonly TabItem[] => {
+export const useTabItems = (): readonly ITabItem[] => {
   const { t } = useT()
 
   return TAB_DEFINITIONS.map((item) => ({ ...item, label: t(`nav.tabs.${item.id}`) }))
@@ -50,4 +52,4 @@ export const useTabItems = (): readonly TabItem[] => {
  * The tab the current route belongs to.
  * @returns The id of the active tab.
  */
-export const useCurrentTab = (): TabItem['id'] => tabIdForPath(usePathname())
+export const useCurrentTab = (): ITabItem['id'] => tabIdForPath(usePathname())

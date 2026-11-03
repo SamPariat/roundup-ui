@@ -1,21 +1,21 @@
 import type { ReactElement } from 'react'
 
-import type { TextProps } from '@roundup/ui'
+import type { TTextProps } from '@roundup/ui'
 
 import { Text } from '@roundup/ui'
 
-import { Specimen } from '../components/Specimen.tsx'
+import { Specimen } from '../components/Specimen'
 
 /** One type style. */
-interface Style {
+interface IStyle {
   /** The sample line. */
   sample: string
   /** The Text variant. */
-  variant: NonNullable<TextProps['variant']>
+  variant: NonNullable<TTextProps['variant']>
 }
 
 /** Every Text variant, from the largest to the smallest. */
-const STYLES: readonly Style[] = [
+const STYLES: readonly IStyle[] = [
   { variant: 'display', sample: 'Round up the squad' },
   { variant: 'title', sample: 'Friday Footy' },
   { variant: 'heading', sample: 'Upcoming plans' },

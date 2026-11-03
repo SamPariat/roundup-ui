@@ -2,10 +2,10 @@ import type { ReactElement } from 'react'
 
 import { View } from 'react-native'
 
-import type { IconName } from '../lib/icons.ts'
+import type { TIconName } from '../lib/icons'
 
-import { cn } from '../lib/cn.ts'
-import { ICONS } from '../lib/icons.ts'
+import { cn } from '../lib/cn'
+import { ICONS } from '../lib/icons'
 
 /** Tailwind needs each class spelled out, so a tone is looked up rather than built. */
 const TONE_CLASS = {
@@ -23,19 +23,19 @@ const TONE_CLASS = {
 } as const
 
 /** Props every icon has. */
-interface IconBase {
+interface IIconBase {
   /** Which icon of the set to draw. */
-  name: IconName
+  name: TIconName
   /** Grid size in points. 20 in controls, 22 in the bottom nav, 16 inline with small text. */
   size?: number
-  /** Role colour for the strokes. Defaults to fg; React Native has no currentColor to inherit. */
+  /** Role color for the strokes. Defaults to fg; React Native has no currentColor to inherit. */
   tone?: keyof typeof TONE_CLASS
   /** Extra classes for placement. */
   className?: string
 }
 
 /** A purely decorative icon: hidden from screen readers. */
-interface Decorative {
+interface IDecorative {
   /** Marks the icon as decoration. */
   decorative: true
   /** Decorative icons are not announced, so they have no label. */
@@ -43,20 +43,20 @@ interface Decorative {
 }
 
 /** An icon that carries meaning: announced as an image with this label. */
-interface Labelled {
-  /** A labelled icon is not decoration. */
+interface ILabeled {
+  /** A labeled icon is not decoration. */
   decorative?: undefined
   /** What the icon means, such as "Back". */
   label: string
 }
 
 /** An icon says what it is, or says it is decoration. Never neither. */
-export type IconProps = IconBase &
-  /** Either decorative (hidden from screen readers) or labelled (announced as an image). */
-  (Decorative | Labelled)
+export type TIconProps = IIconBase &
+  /** Either decorative (hidden from screen readers) or labeled (announced as an image). */
+  (IDecorative | ILabeled)
 
 /**
- * Draws one icon of the set from its SVG file, tinted with a role colour through `color`/currentColor.
+ * Draws one icon of the set from its SVG file, tinted with a role color through `color`/currentColor.
  * @returns A square view holding the tinted artwork.
  */
 export const Icon = ({
@@ -66,7 +66,7 @@ export const Icon = ({
   name,
   size = 20,
   tone = 'fg',
-}: IconProps): ReactElement => {
+}: TIconProps): ReactElement => {
   const Glyph = ICONS[name]
 
   return (

@@ -2,19 +2,19 @@ import type { ReactElement, ReactNode } from 'react'
 
 import { View } from 'react-native'
 
-import { cn } from '../lib/cn.ts'
-import { Icon } from './Icon.tsx'
-import { Text } from './Text.tsx'
+import { cn } from '../lib/cn'
+import { Icon } from './Icon'
+import { Text } from './Text'
 
 /** Props for FieldFrame. */
-export interface FieldFrameProps {
+export interface IFieldFrameProps {
   /** The visible label above the box. */
   label: string
   /** Hint shown below the box until there is an error. */
   helper?: string
   /** Replaces the helper text and turns the field red. */
   error?: string
-  /** Greys the box out. */
+  /** Grays the box out. */
   disabled: boolean
   /** Whether the input inside has focus, which draws the focus ring. */
   focused: boolean
@@ -25,7 +25,7 @@ export interface FieldFrameProps {
 /**
  * The shared frame of TextField and PhoneInput: label above, box, then helper or error below.
  * An error is a live region, so it is announced when it appears.
- * @returns The labelled box with its helper or error line.
+ * @returns The labeled box with its helper or error line.
  */
 export const FieldFrame = ({
   children,
@@ -34,7 +34,7 @@ export const FieldFrame = ({
   focused,
   helper,
   label,
-}: FieldFrameProps): ReactElement => {
+}: IFieldFrameProps): ReactElement => {
   const message = error ?? helper
 
   return (

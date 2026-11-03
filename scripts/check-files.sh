@@ -48,7 +48,7 @@ if [ -n "$bad_scripts" ]; then
 fi
 
 # --- asset names -----------------------------------------------------------------------------
-# Everything under assets/svg, plus images and fonts anywhere. Licence and notes files in
+# Everything under assets/svg, plus images and fonts anywhere. License and notes files in
 # assets/brand keep their conventional names, and the fonts in assets/fonts keep their PostScript
 # names (Onest-Regular.ttf): Android takes a font's family name from its file name and iOS from
 # the PostScript name, so the two must match for one font-family to work on both.

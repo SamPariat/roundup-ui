@@ -4,7 +4,7 @@ import { render, screen } from '@testing-library/react-native'
 import { Text } from 'react-native'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 
-import { Screen } from '../../src/components/Screen.tsx'
+import { Screen } from '../../src/components/Screen'
 
 // A notched phone held in landscape: every edge has its own inset.
 const insets = { top: 47, right: 3, bottom: 34, left: 11 }

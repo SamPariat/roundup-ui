@@ -5,13 +5,13 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
 import { SafeArea, Text } from '@roundup/ui'
 
-import { Specimen } from '../components/Specimen.tsx'
+import { Specimen } from '../components/Specimen'
 
 /** An edge of the screen. */
-type Edge = 'bottom' | 'left' | 'right' | 'top'
+type TEdge = 'bottom' | 'left' | 'right' | 'top'
 
 /** The edge sets the specimens pad. */
-const SETS: readonly (readonly Edge[])[] = [
+const SETS: readonly (readonly TEdge[])[] = [
   ['top', 'right', 'bottom', 'left'],
   ['top'],
   ['bottom'],

@@ -4,11 +4,11 @@ import { View } from 'react-native'
 
 import { useT } from '@roundup/i18n'
 
-import { Icon } from './Icon.tsx'
-import { Text } from './Text.tsx'
+import { Icon } from './Icon'
+import { Text } from './Text'
 
 /** Props for Rating. */
-export interface RatingProps {
+export interface IRatingProps {
   /** The average rating out of 5. */
   value: number
   /** How many reviews it is based on. */
@@ -21,7 +21,7 @@ const countFormat = new Intl.NumberFormat('en-IN')
  * A star, the rating and the review count, spoken as one phrase such as "4.5 out of 5, 1,200 reviews".
  * @returns The rating row.
  */
-export const Rating = ({ count, value }: RatingProps): ReactElement => {
+export const Rating = ({ count, value }: IRatingProps): ReactElement => {
   const { t } = useT()
 
   const spoken =

@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react-native'
 
-import { Price } from '../../src/components/Price.tsx'
+import { Price } from '../../src/components/Price'
 
 describe('Price', () => {
   it('speaks the price level', async () => {

@@ -4,15 +4,15 @@ import { View } from 'react-native'
 
 import { useT } from '@roundup/i18n'
 
-import { cn } from '../lib/cn.ts'
-import { Button } from './Button.tsx'
-import { Logo } from './Logo.tsx'
-import { SafeArea } from './SafeArea.tsx'
-import { Surface } from './Surface.tsx'
-import { Text } from './Text.tsx'
+import { cn } from '../lib/cn'
+import { Button } from './Button'
+import { Logo } from './Logo'
+import { SafeArea } from './SafeArea'
+import { Surface } from './Surface'
+import { Text } from './Text'
 
 /** Props for TopAppBar. */
-export interface TopAppBarProps {
+export interface ITopAppBarProps {
   /** The screen title, the page's level-1 heading. */
   title: string
   /** Shows the back button even without an `onBack` handler. */
@@ -38,13 +38,13 @@ export const TopAppBar = ({
   logo = false,
   onBack,
   title,
-}: TopAppBarProps): ReactElement => {
+}: ITopAppBarProps): ReactElement => {
   const { t } = useT()
   const hasBack = back || onBack !== undefined
 
   // Button sits at the start of the cross axis (self-start) so it never stretches in a column. In
   // this row that would pin it to the top of the bar, so the back button and the actions each sit
-  // in a View, which the row centres.
+  // in a View, which the row centers.
   const leading = (
     <>
       {hasBack ? (

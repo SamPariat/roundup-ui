@@ -1,8 +1,8 @@
 import { screen } from '@testing-library/react-native'
 
-import { Avatar } from '../../src/components/Avatar.tsx'
-import { initialsOf, tintOf } from '../../src/lib/avatar-tint.ts'
-import { renderWithTheme } from '../helpers/render.tsx'
+import { Avatar } from '../../src/components/Avatar'
+import { initialsOf, tintOf } from '../../src/lib/avatar-tint'
+import { renderWithTheme } from '../helpers/render'
 
 describe('initialsOf', () => {
   it('uses the first and last name', () => {

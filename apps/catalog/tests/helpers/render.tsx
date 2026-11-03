@@ -5,7 +5,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context'
 
 import { ThemeProvider } from '@roundup/ui'
 
-import { FrameProvider } from '../../src/components/FrameProvider.tsx'
+import { FrameProvider } from '../../src/components/FrameProvider'
 
 /**
  * Renders an element inside the providers the catalog's root layout supplies: safe areas, the

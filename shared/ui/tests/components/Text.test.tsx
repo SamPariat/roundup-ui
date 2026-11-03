@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react-native'
 
-import { Text } from '../../src/components/Text.tsx'
+import { Text } from '../../src/components/Text'
 
 describe('Text', () => {
   it('is exposed as a heading when given a level', async () => {

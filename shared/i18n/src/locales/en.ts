@@ -83,6 +83,44 @@ export const en = {
       },
     },
   },
+  signIn: {
+    phone: {
+      title: 'Sign in',
+      body: 'Use your mobile number to get back to your squads.',
+      label: 'Phone number',
+      helper: "We'll text you a 6-digit code.",
+      submit: 'Send code',
+      submitting: 'Sending code…',
+      newHere: 'New here? The same code creates your account.',
+    },
+    code: {
+      title: 'Enter the code',
+      body: 'We sent it to {{phone}}.',
+      label: '6-digit code',
+      submit: 'Verify',
+      submitting: 'Checking code…',
+      changeNumber: 'Change number',
+    },
+    name: {
+      title: 'What should your squad call you?',
+      body: 'Your squads see this name instead of your number.',
+      label: 'Name',
+      helper: 'Your squads see this name.',
+      submit: 'Continue',
+      submitting: 'Saving…',
+    },
+  },
+  errors: {
+    invalidPhone: 'Enter a 10-digit mobile number that starts with 6, 7, 8 or 9.',
+    invalidName: 'Enter a name between 1 and 50 characters.',
+    wrongCode: "That code isn't right. Check it and try again.",
+    codeExpired: 'That code has expired or was tried too many times. Ask for a new one.',
+    tooManyRequests: 'Too many tries. Wait a few minutes and try again.',
+    offline: "You're offline. Check your connection and try again.",
+    generic: 'Something went wrong. Try again.',
+    genericWithId:
+      'Something went wrong. Try again. If it keeps happening, quote this reference: {{requestId}}',
+  },
   screens: {
     squads: {
       emptyTitle: 'No squads yet',
@@ -94,8 +132,7 @@ export const en = {
     },
     profile: {
       themeHeading: 'Theme',
-      emptyTitle: 'Your profile is empty',
-      emptyBody: 'Your name and photo show up here once you sign in.',
+      logOut: 'Log out',
     },
     notFound: {
       windowTitle: 'Not found',

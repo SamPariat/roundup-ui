@@ -2,7 +2,7 @@ import type { ReactElement } from 'react'
 
 import { Stack } from 'expo-router'
 
-import { NotFound } from '../components/NotFound.tsx'
+import { NotFound } from '../components/NotFound'
 
 /**
  * Expo Router's fallback for any URL that matches no route.

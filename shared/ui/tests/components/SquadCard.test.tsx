@@ -1,7 +1,7 @@
 import { fireEvent, screen } from '@testing-library/react-native'
 
-import { SquadCard } from '../../src/components/SquadCard.tsx'
-import { renderWithTheme } from '../helpers/render.tsx'
+import { SquadCard } from '../../src/components/SquadCard'
+import { renderWithTheme } from '../helpers/render'
 
 describe('SquadCard', () => {
   it('is a button that names the squad and its size', async () => {

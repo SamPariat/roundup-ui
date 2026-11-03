@@ -4,16 +4,16 @@ import { Pressable, View } from 'react-native'
 
 import { useT } from '@roundup/i18n'
 
-import type { Person } from '../lib/person.ts'
+import type { IPerson } from '../lib/person'
 
-import { Avatar } from './Avatar.tsx'
-import { AvatarGroup } from './AvatarGroup.tsx'
-import { Badge } from './Badge.tsx'
-import { Icon } from './Icon.tsx'
-import { Text } from './Text.tsx'
+import { Avatar } from './Avatar'
+import { AvatarGroup } from './AvatarGroup'
+import { Badge } from './Badge'
+import { Icon } from './Icon'
+import { Text } from './Text'
 
 /** Props for SquadCard. */
-export interface SquadCardProps {
+export interface ISquadCardProps {
   /** Squad ID; picks the avatar tint. */
   id?: string
   /** The squad's name. */
@@ -25,12 +25,12 @@ export interface SquadCardProps {
   /** Real member count when `members` is only a sample. Defaults to the sample length. */
   memberCount?: number
   /** A few members for the avatar stack. */
-  members?: Person[]
+  members?: IPerson[]
   /** Called when the card is pressed; the card is a button. */
   onPress?: () => void
 }
 
-const NO_MEMBERS: NonNullable<SquadCardProps['members']> = []
+const NO_MEMBERS: NonNullable<ISquadCardProps['members']> = []
 
 /**
  * A tappable card summarising a squad: name, avatar, stacked member avatars, count and role, spoken as one phrase.
@@ -44,7 +44,7 @@ export const SquadCard = ({
   name,
   onPress,
   role,
-}: SquadCardProps): ReactElement => {
+}: ISquadCardProps): ReactElement => {
   const { t } = useT()
   const count = memberCount ?? members.length
   const countText = t('common.members', { count })

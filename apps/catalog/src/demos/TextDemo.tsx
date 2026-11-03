@@ -2,9 +2,9 @@ import type { ReactElement } from 'react'
 
 import { Text } from '@roundup/ui'
 
-import { Specimen } from '../components/Specimen.tsx'
+import { Specimen } from '../components/Specimen'
 
-/** The role colours a Text can take. */
+/** The role colors a Text can take. */
 const TONES = ['fg', 'muted', 'subtle', 'accent', 'danger'] as const
 
 /**

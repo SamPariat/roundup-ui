@@ -7,7 +7,7 @@ import { EmptyState, Text } from '@roundup/ui'
 
 /**
  * What both the 404 route and a component page with an unknown slug show: an empty state with a link to the index.
- * @returns The empty state, centred.
+ * @returns The empty state, centerd.
  */
 export const NotFound = (): ReactElement => (
   <View className="flex-1 items-center justify-center bg-bg px-4">

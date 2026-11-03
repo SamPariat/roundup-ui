@@ -1,4 +1,4 @@
-import { i18n } from '../src/index.ts'
+import { i18n } from '../src/index'
 
 describe('i18n', () => {
   it('is ready synchronously, with English bundled', () => {

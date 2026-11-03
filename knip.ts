@@ -31,6 +31,8 @@ export default {
         // (pnpm does not hoist them from shared/ui), even though only shared/ui imports them.
         'expo-glass-effect',
         'expo-localization',
+        // Imported only by shared/core's session store.
+        'expo-secure-store',
         // Named in app.config.ts plugins or loaded by Expo itself, never imported.
         // expo-dev-client is linked natively by expo run:ios / run:android and never imported.
         'expo-dev-client',
@@ -58,6 +60,14 @@ export default {
         'babel-plugin-react-compiler',
         'expo-system-ui',
       ],
+    },
+    'shared/api': {
+      project: ['src/**/*.ts', 'tests/**/*.ts', '*.ts'],
+    },
+    'shared/core': {
+      // Metro picks the .native.ts twin of a file on iOS and Android; nothing imports it by name.
+      entry: ['src/**/*.native.ts'],
+      project: ['src/**/*.{ts,tsx}', 'tests/**/*.{ts,tsx}', '*.ts'],
     },
     'shared/i18n': {
       project: ['src/**/*.ts', 'tests/**/*.ts', '*.ts'],

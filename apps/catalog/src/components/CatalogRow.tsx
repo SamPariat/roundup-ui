@@ -5,19 +5,19 @@ import { useCallback } from 'react'
 
 import { ListRow } from '@roundup/ui'
 
-import type { CatalogEntry } from '../registry.ts'
+import type { ICatalogEntry } from '../registry'
 
 /** Props for CatalogRow. */
-export interface CatalogRowProps {
+export interface ICatalogRowProps {
   /** The page this row opens. */
-  entry: CatalogEntry
+  entry: ICatalogEntry
 }
 
 /**
  * A row of the component index: the title and summary, opening the component's page.
  * @returns The pressable row.
  */
-export const CatalogRow = ({ entry }: CatalogRowProps): ReactElement => {
+export const CatalogRow = ({ entry }: ICatalogRowProps): ReactElement => {
   const router = useRouter()
 
   const open = useCallback((): void => {

@@ -5,8 +5,8 @@ import { View } from 'react-native'
 
 import { useT } from '@roundup/i18n'
 
-import type { Styled } from '../lib/svg'
-import type { Theme } from '../theme/theme.tsx'
+import type { TStyled } from '../lib/svg'
+import type { ITheme } from '../theme/theme'
 
 import LockupDark from '../../../../assets/svg/logo/lockup-dark.svg'
 import LockupLight from '../../../../assets/svg/logo/lockup-light.svg'
@@ -17,19 +17,19 @@ import MarkMono from '../../../../assets/svg/logo/mark-mono.svg'
 import WordmarkDark from '../../../../assets/svg/logo/wordmark-dark.svg'
 import WordmarkLight from '../../../../assets/svg/logo/wordmark-light.svg'
 import WordmarkMono from '../../../../assets/svg/logo/wordmark-mono.svg'
-import { cn } from '../lib/cn.ts'
+import { cn } from '../lib/cn'
 import { styleSvg } from '../lib/svg'
-import { useTheme } from '../theme/theme.tsx'
+import { useTheme } from '../theme/theme'
 
 const SIZES = { sm: 24, md: 32, lg: 48, xl: 96 } as const
 
 /** Props for Logo. */
-export interface LogoProps {
+export interface ILogoProps {
   /** lockup = mark + wordmark (default). */
   type?: 'lockup' | 'mark' | 'wordmark'
   /** sm 24 · md 32 · lg 48 · xl 96, or a pixel size for the mark. */
   size?: keyof typeof SIZES | number
-  /** brand uses the logo-* token colours of the current theme; mono draws everything in the text colour. */
+  /** brand uses the logo-* token colors of the current theme; mono draws everything in the text color. */
   tone?: 'brand' | 'mono'
   /** Accessible name. Defaults to the app name. */
   label?: string
@@ -37,13 +37,13 @@ export interface LogoProps {
   className?: string
 }
 
-/** Which file of each artwork set to draw: Mocha colours, Latte colours, or currentColor. */
-type Variant = 'dark' | 'light' | 'mono'
+/** Which file of each artwork set to draw: Mocha colors, Latte colors, or currentColor. */
+type TVariant = 'dark' | 'light' | 'mono'
 
-/** One kind of logo artwork (mark, wordmark or lockup) in its three colour variants. */
-interface Artwork {
-  /** The SVG component for each colour variant. */
-  files: Record<Variant, FC<Styled<SvgProps>>>
+/** One kind of logo artwork (mark, wordmark or lockup) in its three color variants. */
+interface IArtwork {
+  /** The SVG component for each color variant. */
+  files: Record<TVariant, FC<TStyled<SvgProps>>>
   /** Width over height of the file's viewBox. */
   aspect: number
   /** Height as a share of the mark size the caller asked for. */
@@ -53,7 +53,7 @@ interface Artwork {
 // The viewBox sizes below are those of the files in assets/svg/logo; Logo.test.tsx checks them.
 // A lockup is as tall as the mark. The wordmark file is cropped to its glyphs, so it is drawn at
 // the height that keeps its letters the size they have inside the lockup (65.16 of 96 units).
-const ARTWORK: Record<NonNullable<LogoProps['type']>, Artwork> = {
+const ARTWORK: Record<NonNullable<ILogoProps['type']>, IArtwork> = {
   lockup: {
     files: { dark: styleSvg(LockupDark), light: styleSvg(LockupLight), mono: styleSvg(LockupMono) },
     aspect: 417.26 / 96,
@@ -77,12 +77,12 @@ const ARTWORK: Record<NonNullable<LogoProps['type']>, Artwork> = {
 
 /**
  * Chooses the artwork variant from the tone and the active theme. Mocha is the dark theme and
- * Latte the light one; the files carry that theme's logo-* colours.
- * @param tone - Brand colours or one colour.
+ * Latte the light one; the files carry that theme's logo-* colors.
+ * @param tone - Brand colors or one color.
  * @param themeName - The active theme.
  * @returns dark for Mocha, light for Latte, mono when the tone says so.
  */
-const variantFor = (tone: NonNullable<LogoProps['tone']>, themeName: Theme['name']): Variant => {
+const variantFor = (tone: NonNullable<ILogoProps['tone']>, themeName: ITheme['name']): TVariant => {
   if (tone === 'mono') return 'mono'
 
   return themeName === 'mocha' ? 'dark' : 'light'
@@ -99,7 +99,7 @@ export const Logo = ({
   size = 'md',
   tone = 'brand',
   type = 'lockup',
-}: LogoProps): ReactElement => {
+}: ILogoProps): ReactElement => {
   const { t } = useT()
   const { name } = useTheme()
   const mark = typeof size === 'number' ? size : SIZES[size]

@@ -2,11 +2,11 @@ import type { ReactElement, ReactNode } from 'react'
 
 import { View } from 'react-native'
 
-import { Button } from './Button.tsx'
-import { Text } from './Text.tsx'
+import { Button } from './Button'
+import { Text } from './Text'
 
 /** Props for PageHeader. */
-export interface PageHeaderProps {
+export interface IPageHeaderProps {
   /** The page title, the one level-1 heading of the page. */
   title: string
   /** A muted line under the title. */
@@ -32,7 +32,7 @@ export const PageHeader = ({
   onBack,
   subtitle,
   title,
-}: PageHeaderProps): ReactElement => (
+}: IPageHeaderProps): ReactElement => (
   <View className="gap-2">
     {back === undefined ? null : (
       <Button icon="back" onPress={onBack} size="sm" variant="ghost">

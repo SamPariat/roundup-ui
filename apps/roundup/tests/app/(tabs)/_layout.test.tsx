@@ -3,29 +3,38 @@ import type { ReactNode } from 'react'
 import { render } from '@testing-library/react-native'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 
-import Ios from '../../../src/app/(tabs)/_layout.ios.tsx'
-import Shared from '../../../src/app/(tabs)/_layout.tsx'
+import Ios from '../../../src/app/(tabs)/_layout.ios'
+
+/** The shape of the layout module. */
+interface ILayoutModule {
+  /** The layout component. */
+  default: () => ReactNode
+}
+
+// Jest resolves an extensionless path to the .ios file, so the headless (web and Android) layout is
+// loaded by its full name.
+const Shared = jest.requireActual<ILayoutModule>('../../../src/app/(tabs)/_layout.tsx').default
 
 const mockTriggers: string[] = []
 
 /** Props of the stand-ins for navigator containers. */
-interface ChildrenProps {
+interface IChildrenProps {
   /** What the container wraps. */
   children: ReactNode
 }
 
 /** Props of the stand-ins for tab triggers. */
-interface NameProps {
+interface INameProps {
   /** The route the trigger is for. */
   name: string
 }
 
 /**
  * Stand-in for a navigator container: renders what it wraps. A function declaration so jest.mock
- * factories can use it before this file's constants are initialised.
+ * factories can use it before this file's constants are initialized.
  * @returns The children, unchanged.
  */
-function mockContainer({ children }: ChildrenProps): ReactNode {
+function mockContainer({ children }: IChildrenProps): ReactNode {
   return children
 }
 
@@ -41,7 +50,7 @@ function mockEmpty(): null {
  * Records a system tab bar trigger so the test can compare routes and order.
  * @returns Nothing.
  */
-function mockNativeTrigger({ name }: NameProps): null {
+function mockNativeTrigger({ name }: INameProps): null {
   mockTriggers.push(`native:${name}`)
 
   return null
@@ -51,7 +60,7 @@ function mockNativeTrigger({ name }: NameProps): null {
  * Records a headless tab trigger so the test can compare routes and order.
  * @returns Nothing.
  */
-function mockHeadlessTrigger({ name }: NameProps): null {
+function mockHeadlessTrigger({ name }: INameProps): null {
   mockTriggers.push(`headless:${name}`)
 
   return null
@@ -80,7 +89,7 @@ jest.mock('expo-router/ui', () => ({
 
 jest.mock('expo-router', () => ({ usePathname: mockPathname }))
 
-jest.mock('../../../src/components/AppShell.tsx', () => ({ AppShell: mockContainer }))
+jest.mock('../../../src/components/AppShell', () => ({ AppShell: mockContainer }))
 
 /**
  * Lists the trigger routes recorded under a prefix, in render order.

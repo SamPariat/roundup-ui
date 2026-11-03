@@ -5,12 +5,12 @@ import { Pressable } from 'react-native'
 
 import { cn, Text } from '@roundup/ui'
 
-import type { CatalogEntry } from '../registry.ts'
+import type { ICatalogEntry } from '../registry'
 
 /** Props for NavEntry. */
-export interface NavEntryProps {
+export interface INavEntryProps {
   /** The page this link opens. */
-  entry: CatalogEntry
+  entry: ICatalogEntry
   /** Whether it is the page on show. */
   current: boolean
 }
@@ -19,7 +19,7 @@ export interface NavEntryProps {
  * One link of the side list. It is a real link: an anchor on the web, a router push on native.
  * @returns The link, highlighted when it is the current page.
  */
-export const NavEntry = ({ current, entry }: NavEntryProps): ReactElement => (
+export const NavEntry = ({ current, entry }: INavEntryProps): ReactElement => (
   <Link asChild href={{ pathname: '/[component]', params: { component: entry.slug } }}>
     <Pressable
       accessibilityLabel={entry.title}

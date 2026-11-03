@@ -1,7 +1,7 @@
 import { fireEvent, screen } from '@testing-library/react-native'
 
-import { Tabs } from '../../src/components/Tabs.tsx'
-import { renderWithTheme } from '../helpers/render.tsx'
+import { Tabs } from '../../src/components/Tabs'
+import { renderWithTheme } from '../helpers/render'
 
 const items = [
   { id: 'members', label: 'Members', count: 12 },

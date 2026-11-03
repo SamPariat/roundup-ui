@@ -5,23 +5,23 @@ import { View } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
 /** A screen edge that can carry a safe-area inset. */
-type Edge = 'bottom' | 'left' | 'right' | 'top'
+type TEdge = 'bottom' | 'left' | 'right' | 'top'
 
 /** Props for SafeArea: the usual View props plus which edges to pad. */
-export type SafeAreaProps = ViewProps & {
+export type TSafeAreaProps = ViewProps & {
   /** What to keep inside the safe area. */
   children?: ReactNode
   /** Extra classes for the wrapper. */
   className?: string
   /** Which edges to pad. Each edge reads its own inset, so a notch, a hinge or a gesture bar on one side never affects the others. */
-  edges: readonly Edge[]
+  edges: readonly TEdge[]
 }
 
 /**
  * Insets are runtime numbers, which a class cannot express, so this is the one place they become padding.
  * @returns The padded wrapper.
  */
-export const SafeArea = ({ children, edges, ...props }: SafeAreaProps): ReactElement => {
+export const SafeArea = ({ children, edges, ...props }: TSafeAreaProps): ReactElement => {
   const insets = useSafeAreaInsets()
 
   return (

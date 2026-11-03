@@ -1,7 +1,7 @@
 import { fireEvent, screen } from '@testing-library/react-native'
 
-import { PhoneInput } from '../../src/components/PhoneInput.tsx'
-import { renderWithTheme } from '../helpers/render.tsx'
+import { PhoneInput } from '../../src/components/PhoneInput'
+import { renderWithTheme } from '../helpers/render'
 
 describe('PhoneInput', () => {
   it('is named by its label', async () => {
