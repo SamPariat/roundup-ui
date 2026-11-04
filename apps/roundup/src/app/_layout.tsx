@@ -17,6 +17,7 @@ import OnestMedium from '../../../../assets/fonts/Onest-Medium.ttf'
 import OnestRegular from '../../../../assets/fonts/Onest-Regular.ttf'
 import OnestSemiBold from '../../../../assets/fonts/Onest-SemiBold.ttf'
 import { AuthStack } from '../components/AuthStack'
+import { OfflineNotice } from '../components/OfflineNotice'
 import { useRouteGate } from '../hooks/useRouteGate'
 import { useSplash } from '../hooks/useSplash'
 
@@ -64,6 +65,7 @@ const Themed = ({ fontsReady }: IThemedProps): ReactElement => {
       )}
       <StatusBar style={name === 'mocha' ? 'light' : 'dark'} />
       <AuthStack />
+      <OfflineNotice />
     </View>
   )
 }

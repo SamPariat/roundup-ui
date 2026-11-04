@@ -82,6 +82,68 @@ class MemoryStore {
   }
 }
 
+/** The network source core takes. */
+type TNetworkSource = IDeps['network']
+
+/** A network source a test switches by hand. It starts online. */
+export class FakeNetwork implements TNetworkSource {
+  /** Whether the device is "online". */
+  private online = true
+
+  /** Everyone listening. */
+  private readonly listeners = new Set<
+    (state: {
+      /**
+       *
+       */
+      online: boolean
+    }) => void
+  >()
+
+  /**
+   * Reads the current state.
+   * @returns Whether the device is online.
+   */
+  getState(): Promise<{
+    /**
+     *
+     */
+    online: boolean
+  }> {
+    return Promise.resolve({ online: this.online })
+  }
+
+  /**
+   * Changes the state and tells the listeners.
+   * @param online - Whether the device is now online.
+   */
+  set(online: boolean): void {
+    this.online = online
+
+    for (const listener of this.listeners) listener({ online })
+  }
+
+  /**
+   * Starts listening.
+   * @param listener - Called on every change.
+   * @returns The function that stops listening.
+   */
+  subscribe(
+    listener: (state: {
+      /**
+       *
+       */
+      online: boolean
+    }) => void,
+  ): () => void {
+    this.listeners.add(listener)
+
+    return () => {
+      this.listeners.delete(listener)
+    }
+  }
+}
+
 /**
  * A request that never answers.
  * @returns A promise that stays pending.
@@ -186,12 +248,14 @@ export const stubBackend = (backend: IBackend): void => {
 }
 
 /**
- * Builds the dependencies of a test: a store with or without a saved session, and a query client
+ * Builds the dependencies of a test: a store with or without a saved session, a network source and a query client
  * that never garbage-collects, whose timer would keep Jest alive.
  * @param token - The saved refresh token; none means a signed-out launch.
+ * @param network - The fake network source; defaults to one that stays online.
  * @returns IDeps to pass to CoreProvider.
  */
-export const testDeps = (token?: string): Partial<IDeps> => ({
+export const testDeps = (token?: string, network = new FakeNetwork()): Partial<IDeps> => ({
+  network,
   queryClient: new QueryClient({ defaultOptions: { queries: { gcTime: Infinity, retry: false } } }),
   session: new MemoryStore(token),
 })
