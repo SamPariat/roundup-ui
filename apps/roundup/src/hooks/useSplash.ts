@@ -5,7 +5,7 @@ import { AccessibilityInfo, Platform } from 'react-native'
 /** The id of the splash element that src/app/+html.tsx puts in the static page. */
 const WEB_SPLASH_ID = 'splash'
 
-/** The part of a DOM element that hideWebSplash uses. */
+/** The part of a DOM element that SplashHelper.hideWeb uses. */
 export interface ISplashElement {
   /** The element's classes, to start the fade. */
   classList: Pick<DOMTokenList, 'add'>
@@ -25,29 +25,34 @@ export interface ISplashElement {
 }
 
 /**
- * Takes the web splash away. With reduced motion it disappears at once; otherwise the page adds
- * the splash-hidden class, which fades it out, and the element is removed when the fade ends.
- * @param element - The splash element, or null when the page has none (a client-side render).
- * @param reduced - Whether the person asked for less motion.
+ * Splash helpers. Static methods only.
  */
-export const hideWebSplash = (element: ISplashElement | null, reduced: boolean): void => {
-  if (element === null) return
+export class SplashHelper {
+  /**
+   * Takes the web splash away. With reduced motion it disappears at once; otherwise the page adds
+   * the splash-hidden class, which fades it out, and the element is removed when the fade ends.
+   * @param element - The splash element, or null when the page has none (a client-side render).
+   * @param reduced - Whether the person asked for less motion.
+   */
+  static hideWeb(element: ISplashElement | null, reduced: boolean): void {
+    if (element === null) return
 
-  if (reduced) {
-    element.remove()
-
-    return
-  }
-
-  element.addEventListener(
-    'transitionend',
-    () => {
+    if (reduced) {
       element.remove()
-    },
-    { once: true },
-  )
 
-  element.classList.add('splash-hidden')
+      return
+    }
+
+    element.addEventListener(
+      'transitionend',
+      () => {
+        element.remove()
+      },
+      { once: true },
+    )
+
+    element.classList.add('splash-hidden')
+  }
 }
 
 /**
@@ -66,7 +71,7 @@ export const useSplash = (ready: boolean): void => {
         if (!active) return
 
         if (Platform.OS === 'web') {
-          hideWebSplash(document.querySelector<HTMLElement>(`#${WEB_SPLASH_ID}`), reduced)
+          SplashHelper.hideWeb(document.querySelector<HTMLElement>(`#${WEB_SPLASH_ID}`), reduced)
 
           return
         }

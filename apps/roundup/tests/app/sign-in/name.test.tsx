@@ -3,17 +3,26 @@ import { fireEvent, screen, waitFor } from 'expo-router/testing-library'
 import type { IBackend } from '../../helpers/fakes'
 
 import NameScreen from '../../../src/app/sign-in/name'
-import { renderApp } from '../../helpers/render'
+import { RenderHelper } from '../../helpers/render'
 
 /** The backend of the current test. */
 let backend: IBackend
 
 /**
- * Opens the name screen, signed in.
- * @returns A promise that resolves once it has rendered.
+ * Name screen test helpers. Static methods only.
  */
-const open = (): Promise<void> =>
-  renderApp({ 'sign-in/name': NameScreen }, { backend, saved: 'r1', url: '/sign-in/name' })
+class NameTestHelper {
+  /**
+   * Opens the name screen, signed in.
+   * @returns A promise that resolves once it has rendered.
+   */
+  static open(): Promise<void> {
+    return RenderHelper.app(
+      { 'sign-in/name': NameScreen },
+      { backend, saved: 'r1', url: '/sign-in/name' },
+    )
+  }
+}
 
 describe('name screen', () => {
   beforeEach(() => {
@@ -21,7 +30,7 @@ describe('name screen', () => {
   })
 
   it('shows the question, the labeled field with its helper, and Continue without a back button', async () => {
-    await open()
+    await NameTestHelper.open()
 
     expect(
       await screen.findByRole('heading', { name: 'What should your squad call you?' }),
@@ -33,7 +42,7 @@ describe('name screen', () => {
   })
 
   it('asks for a name before saving', async () => {
-    await open()
+    await NameTestHelper.open()
     await fireEvent.press(await screen.findByRole('button', { name: 'Continue' }))
 
     expect(await screen.findByText('Enter a name between 1 and 50 characters.')).toBeOnTheScreen()
@@ -41,7 +50,7 @@ describe('name screen', () => {
   })
 
   it('saves the name', async () => {
-    await open()
+    await NameTestHelper.open()
     await fireEvent.changeText(await screen.findByLabelText('Name'), 'Asha')
     await fireEvent.press(screen.getByRole('button', { name: 'Continue' }))
 

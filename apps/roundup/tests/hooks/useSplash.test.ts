@@ -4,7 +4,7 @@ import { AccessibilityInfo } from 'react-native'
 
 import type { ISplashElement } from '../../src/hooks/useSplash'
 
-import { hideWebSplash, useSplash } from '../../src/hooks/useSplash'
+import { SplashHelper, useSplash } from '../../src/hooks/useSplash'
 
 /** Props of the hook under test. */
 interface IReadyProps {
@@ -14,7 +14,7 @@ interface IReadyProps {
 
 /** A stand-in splash element and what was done to it. */
 interface IFakeSplash {
-  /** The element to pass to hideWebSplash. */
+  /** The element to pass to SplashHelper.hideWeb. */
   element: ISplashElement
   /** The calls made on it, in order. */
   log: string[]
@@ -70,59 +70,64 @@ describe('useSplash', () => {
 })
 
 /**
- * Builds a stand-in for the splash element that records what was done to it.
- * @returns The element and the log of its calls.
+ * Splash test helpers. Static methods only.
  */
-const fakeElement = (): IFakeSplash => {
-  const log: string[] = []
-
+class SplashTestHelper {
   /**
-   * Records a class being added.
-   * @param name - The class.
+   * Builds a stand-in for the splash element that records what was done to it.
+   * @returns The element and the log of its calls.
    */
-  const add = (name: string): void => {
-    log.push(`add ${name}`)
+  static fakeElement(): IFakeSplash {
+    const log: string[] = []
+
+    /**
+     * Records a class being added.
+     * @param name - The class.
+     */
+    const add = (name: string): void => {
+      log.push(`add ${name}`)
+    }
+
+    /** Records the element being removed. */
+    const remove = (): void => {
+      log.push('remove')
+    }
+
+    /**
+     * Records a listener and runs it at once, as if the fade had ended.
+     * @param type - The event name.
+     * @param listener - The callback.
+     */
+    const addEventListener = (type: 'transitionend', listener: () => void): void => {
+      log.push(`listen ${type}`)
+      listener()
+    }
+
+    const element: ISplashElement = { classList: { add }, remove, addEventListener }
+
+    return { element, log }
   }
-
-  /** Records the element being removed. */
-  const remove = (): void => {
-    log.push('remove')
-  }
-
-  /**
-   * Records a listener and runs it at once, as if the fade had ended.
-   * @param type - The event name.
-   * @param listener - The callback.
-   */
-  const addEventListener = (type: 'transitionend', listener: () => void): void => {
-    log.push(`listen ${type}`)
-    listener()
-  }
-
-  const element: ISplashElement = { classList: { add }, remove, addEventListener }
-
-  return { element, log }
 }
 
-describe('hideWebSplash', () => {
+describe('SplashHelper.hideWeb', () => {
   it('does nothing when the page has no splash', () => {
     expect(() => {
-      hideWebSplash(null, false)
+      SplashHelper.hideWeb(null, false)
     }).not.toThrow()
   })
 
   it('removes the splash at once with reduced motion', () => {
-    const { element, log } = fakeElement()
+    const { element, log } = SplashTestHelper.fakeElement()
 
-    hideWebSplash(element, true)
+    SplashHelper.hideWeb(element, true)
 
     expect(log).toEqual(['remove'])
   })
 
   it('fades the splash out and removes it when the fade ends', () => {
-    const { element, log } = fakeElement()
+    const { element, log } = SplashTestHelper.fakeElement()
 
-    hideWebSplash(element, false)
+    SplashHelper.hideWeb(element, false)
 
     expect(log).toEqual(['listen transitionend', 'remove', 'add splash-hidden'])
   })

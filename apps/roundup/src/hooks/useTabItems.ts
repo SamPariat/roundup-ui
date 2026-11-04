@@ -31,12 +31,18 @@ const TAB_DEFINITIONS: readonly TTabDefinition[] = [
 ]
 
 /**
- * Finds which tab a pathname belongs to, so nested routes keep their tab highlighted. Falls back to Squads.
- * @param pathname - The current URL path.
- * @returns The id of the tab whose route the path is under.
+ * Tab helpers. Static methods only.
  */
-export const tabIdForPath = (pathname: string): ITabItem['id'] =>
-  TAB_DEFINITIONS.find((item) => pathname.startsWith(item.href))?.id ?? 'squads'
+export class TabHelper {
+  /**
+   * Finds which tab a pathname belongs to, so nested routes keep their tab highlighted. Falls back to Squads.
+   * @param pathname - The current URL path.
+   * @returns The id of the tab whose route the path is under.
+   */
+  static idForPath(pathname: string): ITabItem['id'] {
+    return TAB_DEFINITIONS.find((item) => pathname.startsWith(item.href))?.id ?? 'squads'
+  }
+}
 
 /**
  * The tabs in display order with their labels in the current language.
@@ -52,4 +58,4 @@ export const useTabItems = (): readonly ITabItem[] => {
  * The tab the current route belongs to.
  * @returns The id of the active tab.
  */
-export const useCurrentTab = (): ITabItem['id'] => tabIdForPath(usePathname())
+export const useCurrentTab = (): ITabItem['id'] => TabHelper.idForPath(usePathname())

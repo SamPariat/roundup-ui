@@ -41,41 +41,46 @@ const NO_INSETS: IInsets = { top: 0, right: 0, bottom: 0, left: 0 }
 const insets: IInsets = { top: 47, right: 3, bottom: 34, left: 11 }
 
 /**
- * Renders the shell inside a router at a given window width.
- * @param width - The window width in points.
- * @param current - Which tab is showing.
- * @param edgeInsets - The simulated safe-area insets.
- * @returns The router test renderer's result.
+ * Shell test helpers. Static methods only.
  */
-const renderShellAt = (
-  width: number,
-  current: 'explore' | 'profile' | 'squads' = 'squads',
-  edgeInsets: IInsets = NO_INSETS,
-) => {
-  mockWindow.width = width
-
+class ShellTestHelper {
   /**
-   * The route component that wraps the shell in the providers it needs.
-   * @returns The shell around a line of page content.
+   * Renders the shell inside a router at a given window width.
+   * @param width - The window width in points.
+   * @param current - Which tab is showing.
+   * @param edgeInsets - The simulated safe-area insets.
+   * @returns The router test renderer's result.
    */
-  const Page = (): ReactElement => (
-    <SafeAreaProvider
-      initialMetrics={{ insets: edgeInsets, frame: { x: 0, y: 0, width, height: 800 } }}
-    >
-      <ThemeProvider>
-        <AppShell current={current}>
-          <Text>Page content</Text>
-        </AppShell>
-      </ThemeProvider>
-    </SafeAreaProvider>
-  )
+  static renderShellAt(
+    width: number,
+    current: 'explore' | 'profile' | 'squads' = 'squads',
+    edgeInsets: IInsets = NO_INSETS,
+  ) {
+    mockWindow.width = width
 
-  return renderRouter({ index: Page }, { initialUrl: '/' })
+    /**
+     * The route component that wraps the shell in the providers it needs.
+     * @returns The shell around a line of page content.
+     */
+    const Page = (): ReactElement => (
+      <SafeAreaProvider
+        initialMetrics={{ insets: edgeInsets, frame: { x: 0, y: 0, width, height: 800 } }}
+      >
+        <ThemeProvider>
+          <AppShell current={current}>
+            <Text>Page content</Text>
+          </AppShell>
+        </ThemeProvider>
+      </SafeAreaProvider>
+    )
+
+    return renderRouter({ index: Page }, { initialUrl: '/' })
+  }
 }
 
 describe('AppShell', () => {
   it.each([360, 466, 626, 768, 890])('uses the bottom nav at %i wide', async (width) => {
-    await renderShellAt(width)
+    await ShellTestHelper.renderShellAt(width)
 
     expect(screen.getByLabelText('Main')).toBeOnTheScreen()
     expect(screen.queryByLabelText('Sidebar')).not.toBeOnTheScreen()
@@ -83,7 +88,7 @@ describe('AppShell', () => {
   })
 
   it.each([1024, 1440])('uses the side nav at %i wide', async (width) => {
-    await renderShellAt(width)
+    await ShellTestHelper.renderShellAt(width)
 
     expect(screen.getByLabelText('Sidebar')).toBeOnTheScreen()
     expect(screen.queryByLabelText('Main')).not.toBeOnTheScreen()
@@ -91,7 +96,7 @@ describe('AppShell', () => {
   })
 
   it('offers the same three destinations on every width', async () => {
-    await renderShellAt(360)
+    await ShellTestHelper.renderShellAt(360)
 
     const phoneTabs = screen
       .getAllByRole('tab')
@@ -101,19 +106,19 @@ describe('AppShell', () => {
   })
 
   it('selects the destination of the current route', async () => {
-    await renderShellAt(1440, 'profile')
+    await ShellTestHelper.renderShellAt(1440, 'profile')
 
     expect(screen.getByRole('tab', { name: 'Profile' })).toBeSelected()
   })
 
   it('shows the page content', async () => {
-    await renderShellAt(360)
+    await ShellTestHelper.renderShellAt(360)
 
     expect(screen.getByText('Page content')).toBeOnTheScreen()
   })
 
   it('reads each safe-area edge on its own', async () => {
-    await renderShellAt(466, 'squads', insets)
+    await ShellTestHelper.renderShellAt(466, 'squads', insets)
     const bar = screen.getByLabelText('Main').parent
 
     expect(bar).toHaveStyle({

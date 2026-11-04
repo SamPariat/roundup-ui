@@ -8,7 +8,7 @@ import type { IBackend } from '../helpers/fakes'
 
 import WelcomeScreen from '../../src/app/index'
 import { FakeNetwork } from '../helpers/fakes'
-import { renderApp } from '../helpers/render'
+import { RenderHelper } from '../helpers/render'
 
 /**
  * Stand-in for the tabs layout: renders the active tab.
@@ -38,14 +38,14 @@ describe('offline notice', () => {
   })
 
   it('shows nothing while online', async () => {
-    await renderApp({ index: WelcomeScreen }, { backend, network, url: '/' })
+    await RenderHelper.app({ index: WelcomeScreen }, { backend, network, url: '/' })
 
     expect(await screen.findByText('Continue with phone')).toBeOnTheScreen()
     expect(screen.queryByRole('alert')).toBeNull()
   })
 
   it('tells a signed-out visitor they are offline, then that they are back', async () => {
-    await renderApp({ index: WelcomeScreen }, { backend, network, url: '/' })
+    await RenderHelper.app({ index: WelcomeScreen }, { backend, network, url: '/' })
     await screen.findByText('Continue with phone')
 
     await act(() => {
@@ -62,7 +62,7 @@ describe('offline notice', () => {
   })
 
   it('tells a signed-in person they are offline too', async () => {
-    await renderApp(
+    await RenderHelper.app(
       { '(tabs)/_layout': TabsLayout, '(tabs)/squads': Squads, index: WelcomeScreen },
       { backend, guarded: true, network, saved: 'r1', url: '/squads' },
     )
