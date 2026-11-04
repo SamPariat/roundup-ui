@@ -84,7 +84,7 @@ describe('AppShell', () => {
 
     expect(screen.getByLabelText('Main')).toBeOnTheScreen()
     expect(screen.queryByLabelText('Sidebar')).not.toBeOnTheScreen()
-    expect(screen.getByRole('heading', { name: 'Squads' })).toBeOnTheScreen()
+    expect(screen.getByRole('heading', { name: 'Your squads' })).toBeOnTheScreen()
   })
 
   it.each([1024, 1440])('uses the side nav at %i wide', async (width) => {
@@ -92,7 +92,7 @@ describe('AppShell', () => {
 
     expect(screen.getByLabelText('Sidebar')).toBeOnTheScreen()
     expect(screen.queryByLabelText('Main')).not.toBeOnTheScreen()
-    expect(screen.getByRole('heading', { name: 'Squads' })).toBeOnTheScreen()
+    expect(screen.getByRole('heading', { name: 'Your squads' })).toBeOnTheScreen()
   })
 
   it('offers the same three destinations on every width', async () => {

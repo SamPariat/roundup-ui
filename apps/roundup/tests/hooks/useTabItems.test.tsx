@@ -15,13 +15,13 @@ describe('TabHelper.idForPath', () => {
 })
 
 describe('useTabItems', () => {
-  it('lists the destinations in order with their English labels', async () => {
+  it('lists the destinations in order with their English labels and page titles', async () => {
     const { result } = await renderHook(() => useTabItems())
 
-    expect(result.current.map((item) => [item.id, item.label, item.href])).toEqual([
-      ['squads', 'Squads', '/squads'],
-      ['explore', 'Explore', '/explore'],
-      ['profile', 'Profile', '/profile'],
+    expect(result.current.map((item) => [item.id, item.label, item.title, item.href])).toEqual([
+      ['squads', 'Squads', 'Your squads', '/squads'],
+      ['explore', 'Explore', 'Explore', '/explore'],
+      ['profile', 'Profile', 'Profile', '/profile'],
     ])
   })
 })

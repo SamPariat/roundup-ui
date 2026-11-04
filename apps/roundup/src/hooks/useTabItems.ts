@@ -1,14 +1,21 @@
 import { usePathname } from 'expo-router'
 
+import type { en } from '@roundup/i18n'
 import type { TIconName } from '@roundup/ui'
 
 import { useT } from '@roundup/i18n'
 
 import { Paths } from '../navigation/paths'
 
+/** The i18n key of a tab's name in the nav. */
+type TLabelKey = `nav.tabs.${keyof typeof en.nav.tabs}`
+
+/** The i18n key of a tab's page title. */
+type TTitleKey = `titles.${keyof typeof en.titles}`
+
 /** One tab of the app. */
 export interface ITabItem {
-  /** Route name and translation key suffix. */
+  /** Route name. */
   id: 'explore' | 'profile' | 'squads'
   /** Icon in the web and Android navs. */
   icon: TIconName
@@ -16,18 +23,46 @@ export interface ITabItem {
   symbol: 'magnifyingglass' | 'person.2' | 'person.crop.circle'
   /** Route the tab opens. */
   href: '/explore' | '/profile' | '/squads'
-  /** The translated name, for the nav, the title and the accessibility label. */
+  /** The translated name, for the nav and the accessibility label. */
   label: string
+  /** The translated page title, shown in the top app bar and the page header. */
+  title: string
 }
 
-/** A tab before its label is translated. */
-type TTabDefinition = Omit<ITabItem, 'label'>
+/** A tab before it is translated: the exact keys of its name and title, never built from its id. */
+interface ITabDefinition extends Omit<ITabItem, 'label' | 'title'> {
+  /** The key of its name in the nav. */
+  labelKey: TLabelKey
+  /** The key of its page title. */
+  titleKey: TTitleKey
+}
 
 /** The one list every layout reads, so the iOS system tab bar and the web/Android shell cannot drift. */
-const TAB_DEFINITIONS: readonly TTabDefinition[] = [
-  { id: 'squads', icon: 'squads', symbol: 'person.2', href: Paths.tabsSquads() },
-  { id: 'explore', icon: 'explore', symbol: 'magnifyingglass', href: Paths.tabsExplore() },
-  { id: 'profile', icon: 'profile', symbol: 'person.crop.circle', href: Paths.tabsProfile() },
+const TAB_DEFINITIONS: readonly ITabDefinition[] = [
+  {
+    id: 'squads',
+    icon: 'squads',
+    symbol: 'person.2',
+    href: Paths.tabsSquads(),
+    labelKey: 'nav.tabs.squads',
+    titleKey: 'titles.squads',
+  },
+  {
+    id: 'explore',
+    icon: 'explore',
+    symbol: 'magnifyingglass',
+    href: Paths.tabsExplore(),
+    labelKey: 'nav.tabs.explore',
+    titleKey: 'titles.explore',
+  },
+  {
+    id: 'profile',
+    icon: 'profile',
+    symbol: 'person.crop.circle',
+    href: Paths.tabsProfile(),
+    labelKey: 'nav.tabs.profile',
+    titleKey: 'titles.profile',
+  },
 ]
 
 /**
@@ -45,13 +80,17 @@ export class TabHelper {
 }
 
 /**
- * The tabs in display order with their labels in the current language.
+ * The tabs in display order with their names and page titles in the current language.
  * @returns One item per destination.
  */
 export const useTabItems = (): readonly ITabItem[] => {
   const { t } = useT()
 
-  return TAB_DEFINITIONS.map((item) => ({ ...item, label: t(`nav.tabs.${item.id}`) }))
+  return TAB_DEFINITIONS.map(({ labelKey, titleKey, ...item }) => ({
+    ...item,
+    label: t(labelKey),
+    title: t(titleKey),
+  }))
 }
 
 /**
