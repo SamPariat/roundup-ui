@@ -4,7 +4,7 @@ import { Pressable } from 'react-native'
 
 import type { TIconName } from '../lib/icons'
 
-import { ClassHelper } from '../lib/class-helper'
+import { cn } from '../lib/cn'
 import { Icon } from './Icon'
 import { Text } from './Text'
 
@@ -48,7 +48,7 @@ export const Chip = ({ children, icon, onPress, selected = false }: IChipProps):
   <Pressable
     accessibilityRole="button"
     aria-selected={selected}
-    className={ClassHelper.cn(
+    className={cn(
       'h-9 flex-row items-center gap-1 self-start rounded-lg border border-border-strong px-3 focus:outline-2 focus:outline-offset-2 focus:outline-focus-ring active:bg-bg-hover',
       selected && 'border-accent bg-accent-soft',
     )}

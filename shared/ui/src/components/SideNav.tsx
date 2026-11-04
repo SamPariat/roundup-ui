@@ -7,7 +7,7 @@ import { useT } from '@roundup/i18n'
 import type { INavItemData } from '../lib/nav-items'
 import type { IPerson } from '../lib/person'
 
-import { ClassHelper } from '../lib/class-helper'
+import { cn } from '../lib/cn'
 import { useDefaultNavItems } from '../lib/nav-items'
 import { Avatar } from './Avatar'
 import { Icon } from './Icon'
@@ -94,7 +94,7 @@ export const SideNav = ({
           return (
             <NavTab
               active={active}
-              className={ClassHelper.cn(
+              className={cn(
                 'h-11 w-full flex-row items-center gap-3 rounded-xl px-3 hover:bg-bg-hover focus:outline-2 focus:outline-offset-2 focus:outline-focus-ring',
                 active && 'bg-accent-soft',
               )}

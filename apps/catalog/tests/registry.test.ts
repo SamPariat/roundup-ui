@@ -15,7 +15,7 @@ class RegistryTestHelper {
   /**
    * Whether an export of the ui package is a component that needs a catalog page. Components are the
    * PascalCase value exports; types do not exist at runtime, hooks and helpers are camelCase, and
-   * the `*Variants` objects (class recipes such as buttonVariants) and the `*Helper` static classes (such as ClassHelper) are not components.
+   * the `*Variants` objects (class recipes such as buttonVariants) and the `*Helper` static classes are not components.
    * @param name - The export name.
    * @returns True when the catalog must show it.
    */

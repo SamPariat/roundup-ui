@@ -2,7 +2,7 @@ import type { ReactElement, ReactNode } from 'react'
 
 import { View } from 'react-native'
 
-import { BottomNav, ClassHelper, PageHeader, SideNav, TopAppBar } from '@roundup/ui'
+import { BottomNav, cn, PageHeader, SideNav, TopAppBar } from '@roundup/ui'
 
 import type { ITabItem } from '../hooks/useTabItems'
 
@@ -29,15 +29,12 @@ export const AppShell = ({ children, current }: IAppShellProps): ReactElement =>
   const title = items.find((item) => item.id === current)?.label ?? ''
 
   return (
-    <View className={ClassHelper.cn('flex-1 bg-bg', nav === 'side' && 'flex-row')}>
+    <View className={cn('flex-1 bg-bg', nav === 'side' && 'flex-row')}>
       {nav === 'side' ? <SideNav items={navItems} value={current} /> : null}
       <View className="min-w-0 flex-1">
         {nav === 'bottom' ? <TopAppBar logo title={title} /> : null}
         <View
-          className={ClassHelper.cn(
-            'mx-auto w-full max-w-content flex-1',
-            gutter === 32 ? 'px-8' : 'px-4',
-          )}
+          className={cn('mx-auto w-full max-w-content flex-1', gutter === 32 ? 'px-8' : 'px-4')}
         >
           {nav === 'side' ? (
             <View className="pt-8 pb-6">

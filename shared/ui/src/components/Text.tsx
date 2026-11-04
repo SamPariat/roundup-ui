@@ -5,7 +5,7 @@ import type { TextProps as NativeTextProps } from 'react-native'
 import { cva } from 'class-variance-authority'
 import { Text as NativeText } from 'react-native'
 
-import { ClassHelper } from '../lib/class-helper'
+import { cn } from '../lib/cn'
 
 const textVariants = cva('', {
   variants: {
@@ -48,7 +48,7 @@ export type TTextProps = NativeTextProps &
 export const Text = ({ className, heading, tone, variant, ...props }: TTextProps): ReactElement => (
   <NativeText
     aria-level={heading}
-    className={ClassHelper.cn(textVariants({ tone, variant }), className)}
+    className={cn(textVariants({ tone, variant }), className)}
     role={heading === undefined ? undefined : 'heading'}
     {...props}
   />

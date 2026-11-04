@@ -3,7 +3,7 @@ import type { ReactElement } from 'react'
 import { Link } from 'expo-router'
 import { Pressable } from 'react-native'
 
-import { ClassHelper, Text } from '@roundup/ui'
+import { cn, Text } from '@roundup/ui'
 
 import type { ICatalogEntry } from '../registry'
 
@@ -25,7 +25,7 @@ export const NavEntry = ({ current, entry }: INavEntryProps): ReactElement => (
       accessibilityLabel={entry.title}
       accessibilityRole="link"
       accessibilityState={{ selected: current }}
-      className={ClassHelper.cn(
+      className={cn(
         'min-h-9 justify-center rounded-lg px-3 hover:bg-bg-hover focus:outline-2 focus:-outline-offset-2 focus:outline-focus-ring active:bg-bg-hover',
         current && 'bg-accent-soft',
       )}

@@ -10,7 +10,7 @@ import type { TIconName } from '../lib/icons'
 
 import ArtDark from '../../../../assets/svg/illustrations/welcome-dark.svg'
 import ArtLight from '../../../../assets/svg/illustrations/welcome-light.svg'
-import { ClassHelper } from '../lib/class-helper'
+import { cn } from '../lib/cn'
 import { BreakpointHelper } from '../lib/useBreakpoint'
 import { useTheme } from '../theme/theme'
 import { Button } from './Button'
@@ -81,30 +81,30 @@ export const Welcome = ({ body, onStart, startLabel, title }: IWelcomeProps): Re
       onLayout={handleLayout}
     >
       <View
-        className={ClassHelper.cn(
+        className={cn(
           'mx-auto w-full max-w-content grow px-4 pt-6 pb-8',
           wide ? 'gap-12 px-8 pt-8 pb-12' : 'gap-8',
         )}
       >
         <Logo size="md" />
         <View
-          className={ClassHelper.cn(
+          className={cn(
             'grow justify-center',
             wide ? 'flex-row items-center gap-12' : 'flex-col-reverse gap-6',
           )}
         >
-          <View className={ClassHelper.cn('gap-4', wide && 'min-w-0 flex-1')}>
+          <View className={cn('gap-4', wide && 'min-w-0 flex-1')}>
             <NativeText
               accessibilityRole="header"
               aria-level={1}
-              className={ClassHelper.cn('text-fg', wide ? 'type-hero-wide' : 'type-hero')}
+              className={cn('text-fg', wide ? 'type-hero-wide' : 'type-hero')}
             >
               {title ?? t('welcome.title')}
             </NativeText>
             <Text className="max-w-130" tone="muted" variant="body">
               {body ?? t('welcome.body')}
             </Text>
-            <View className={ClassHelper.cn('mt-2 gap-2', wide && 'flex-row items-center gap-4')}>
+            <View className={cn('mt-2 gap-2', wide && 'flex-row items-center gap-4')}>
               <Button block={!wide} onPress={onStart} size="lg">
                 {startLabel ?? t('welcome.start')}
               </Button>
@@ -117,14 +117,9 @@ export const Welcome = ({ body, onStart, startLabel, title }: IWelcomeProps): Re
             <WelcomeArt />
           </View>
         </View>
-        <View
-          className={ClassHelper.cn('gap-4', wide && 'flex-row gap-6 border-t border-border pt-8')}
-        >
+        <View className={cn('gap-4', wide && 'flex-row gap-6 border-t border-border pt-8')}>
           {POINTS.map((point) => (
-            <View
-              className={ClassHelper.cn('flex-row items-start gap-3', wide && 'flex-1')}
-              key={point.id}
-            >
+            <View className={cn('flex-row items-start gap-3', wide && 'flex-1')} key={point.id}>
               <View className="size-10 items-center justify-center rounded-xl bg-accent-soft">
                 <Icon decorative name={point.icon} tone="accent" />
               </View>

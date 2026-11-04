@@ -5,7 +5,7 @@ import { Pressable, TextInput, View } from 'react-native'
 
 import { useT } from '@roundup/i18n'
 
-import { ClassHelper } from '../lib/class-helper'
+import { cn } from '../lib/cn'
 import { Icon } from './Icon'
 import { Text } from './Text'
 
@@ -82,7 +82,7 @@ export const OtpInput = ({
         <View aria-hidden className="flex-row gap-2">
           {boxes.map((position) => (
             <View
-              className={ClassHelper.cn(
+              className={cn(
                 'h-14 w-11 items-center justify-center rounded-lg border border-border-strong bg-bg-raised',
                 error === undefined && !complete && position === digits.length && 'border-accent',
                 error !== undefined && 'border-danger bg-danger-soft',

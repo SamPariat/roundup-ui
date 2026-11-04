@@ -7,7 +7,7 @@ import { Image, View } from 'react-native'
 import type { TAvatarTint } from '../lib/avatar-helper'
 
 import { AvatarHelper } from '../lib/avatar-helper'
-import { ClassHelper } from '../lib/class-helper'
+import { cn } from '../lib/cn'
 import { Text } from './Text'
 
 const avatarVariants = cva('shrink-0 items-center justify-center overflow-hidden rounded-full', {
@@ -75,7 +75,7 @@ export const Avatar = ({
   <View
     accessibilityLabel={name}
     accessible
-    className={ClassHelper.cn(
+    className={cn(
       avatarVariants({ size, tint: tint ?? AvatarHelper.tintOf(id ?? name) }),
       className,
     )}

@@ -10,7 +10,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context'
 
 import '../../global.css'
 
-import { ClassHelper, ThemeProvider, useRoleColor, useTheme } from '@roundup/ui'
+import { cn, ThemeProvider, useRoleColor, useTheme } from '@roundup/ui'
 
 import OnestBold from '../../../../assets/fonts/Onest-Bold.ttf'
 import OnestMedium from '../../../../assets/fonts/Onest-Medium.ttf'
@@ -56,7 +56,7 @@ const Themed = ({ fontsReady }: IThemedProps): ReactElement => {
   useSplash(fontsReady && loaded)
 
   return (
-    <View className={ClassHelper.cn('flex-1 bg-bg', wide && 'flex-row')}>
+    <View className={cn('flex-1 bg-bg', wide && 'flex-row')}>
       {/* Web only: the color-scheme hint means nothing on native, where expo-router's Head turns
           into Apple Handoff and demands a hosted origin we do not have. */}
       {Platform.OS === 'web' && (

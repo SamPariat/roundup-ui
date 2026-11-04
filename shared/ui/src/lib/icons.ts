@@ -30,40 +30,40 @@ import Squads from '../../../../assets/svg/icons/squads.svg'
 import Star from '../../../../assets/svg/icons/star.svg'
 import Sun from '../../../../assets/svg/icons/sun.svg'
 import Trash from '../../../../assets/svg/icons/trash.svg'
-import { SvgHelper } from './svg'
+import { styleSvg } from './svg'
 
 /**
  * Each icon is an SVG file in assets/svg/icons (24-unit grid, 2px round strokes, currentColor),
  * turned into a component by react-native-svg-transformer. A `text-*` class tints it.
  */
 export const ICONS = {
-  alert: SvgHelper.style(Alert),
-  back: SvgHelper.style(Back),
-  bookmark: SvgHelper.style(Bookmark),
-  'bookmark-filled': SvgHelper.style(BookmarkFilled),
-  check: SvgHelper.style(Check),
-  chevron: SvgHelper.style(Chevron),
-  clock: SvgHelper.style(Clock),
-  close: SvgHelper.style(Close),
-  contacts: SvgHelper.style(Contacts),
-  device: SvgHelper.style(Device),
-  edit: SvgHelper.style(Edit),
-  explore: SvgHelper.style(Explore),
-  history: SvgHelper.style(History),
-  info: SvgHelper.style(Info),
-  logout: SvgHelper.style(Logout),
-  moon: SvgHelper.style(Moon),
-  more: SvgHelper.style(More),
-  phone: SvgHelper.style(Phone),
-  pin: SvgHelper.style(Pin),
-  plus: SvgHelper.style(Plus),
-  profile: SvgHelper.style(Profile),
-  search: SvgHelper.style(Search),
-  shield: SvgHelper.style(Shield),
-  squads: SvgHelper.style(Squads),
-  star: SvgHelper.style(Star),
-  sun: SvgHelper.style(Sun),
-  trash: SvgHelper.style(Trash),
+  alert: styleSvg(Alert),
+  back: styleSvg(Back),
+  bookmark: styleSvg(Bookmark),
+  'bookmark-filled': styleSvg(BookmarkFilled),
+  check: styleSvg(Check),
+  chevron: styleSvg(Chevron),
+  clock: styleSvg(Clock),
+  close: styleSvg(Close),
+  contacts: styleSvg(Contacts),
+  device: styleSvg(Device),
+  edit: styleSvg(Edit),
+  explore: styleSvg(Explore),
+  history: styleSvg(History),
+  info: styleSvg(Info),
+  logout: styleSvg(Logout),
+  moon: styleSvg(Moon),
+  more: styleSvg(More),
+  phone: styleSvg(Phone),
+  pin: styleSvg(Pin),
+  plus: styleSvg(Plus),
+  profile: styleSvg(Profile),
+  search: styleSvg(Search),
+  shield: styleSvg(Shield),
+  squads: styleSvg(Squads),
+  star: styleSvg(Star),
+  sun: styleSvg(Sun),
+  trash: styleSvg(Trash),
 } as const satisfies Record<string, FC<TStyled<SvgProps>>>
 
 /** The name of every icon in assets/svg/icons. */

@@ -3,7 +3,7 @@ import type { ReactElement, ReactNode } from 'react'
 import { View } from 'react-native'
 import Svg, { Circle, Path, Rect } from 'react-native-svg'
 
-import { SvgHelper } from '../lib/svg'
+import { styleSvg } from '../lib/svg'
 import { Text } from './Text'
 
 /** Props for EmptyState. */
@@ -25,10 +25,10 @@ interface IEmptyArtProps {
 }
 
 // react-native-svg shapes that take Tailwind classes: fill-* and stroke-* pick a role color.
-const StyledSvg = SvgHelper.style(Svg)
-const StyledCircle = SvgHelper.style(Circle)
-const StyledPath = SvgHelper.style(Path)
-const StyledRect = SvgHelper.style(Rect)
+const StyledSvg = styleSvg(Svg)
+const StyledCircle = styleSvg(Circle)
+const StyledPath = styleSvg(Path)
+const StyledRect = styleSvg(Rect)
 
 /**
  * Magnifying-glass illustration. All three illustrations are shapes only: discs and pills from the

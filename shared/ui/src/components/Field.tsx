@@ -2,7 +2,7 @@ import type { ReactElement, ReactNode } from 'react'
 
 import { View } from 'react-native'
 
-import { ClassHelper } from '../lib/class-helper'
+import { cn } from '../lib/cn'
 import { Icon } from './Icon'
 import { Text } from './Text'
 
@@ -41,7 +41,7 @@ export const FieldFrame = ({
     <View className="min-w-0 gap-1">
       <Text variant="label">{label}</Text>
       <View
-        className={ClassHelper.cn(
+        className={cn(
           'h-13 flex-row items-center gap-2 rounded-xl border border-border-strong bg-bg-raised px-3',
           focused && 'border-accent',
           error !== undefined && 'border-danger bg-danger-soft',

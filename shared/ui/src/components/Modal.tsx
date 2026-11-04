@@ -14,7 +14,7 @@ import {
 import { useT } from '@roundup/i18n'
 
 import { ActionContext } from '../lib/action-context'
-import { ClassHelper } from '../lib/class-helper'
+import { cn } from '../lib/cn'
 import { BreakpointHelper } from '../lib/useBreakpoint'
 import { Button } from './Button'
 import { Surface } from './Surface'
@@ -158,7 +158,7 @@ const ModalContent = ({
   // Dimming goes on the content, never on the Surface: glass does not render below opacity 1.
   return (
     <ScrollView
-      className={ClassHelper.cn('mt-4 shrink', busy && 'opacity-60')}
+      className={cn('mt-4 shrink', busy && 'opacity-60')}
       contentContainerClassName="gap-3"
       pointerEvents={busy ? 'none' : 'auto'}
     >
@@ -222,17 +222,14 @@ export const Modal = ({
           padding by the keyboard's height lifts the sheet. Android resizes the window itself. */}
       <KeyboardAvoidingView
         behavior={Platform.select({ ios: 'padding' })}
-        className={ClassHelper.cn(
-          'flex-1 bg-scrim',
-          sheet ? 'justify-end' : 'items-center justify-center p-6',
-        )}
+        className={cn('flex-1 bg-scrim', sheet ? 'justify-end' : 'items-center justify-center p-6')}
       >
         <Surface
           accessibilityLabel={title}
           accessibilityViewIsModal
           aria-busy={busy}
           aria-modal
-          className={ClassHelper.cn(
+          className={cn(
             'max-h-[85%] p-6',
             sheet
               ? 'w-full rounded-t-3xl shadow-sheet'
@@ -259,9 +256,7 @@ export const Modal = ({
           </ModalContent>
           {actions !== undefined && actions.length > 0 ? (
             <ActionContext value={actionContext}>
-              <View
-                className={ClassHelper.cn('mt-6 gap-2', !sheet && 'flex-row-reverse justify-start')}
-              >
+              <View className={cn('mt-6 gap-2', !sheet && 'flex-row-reverse justify-start')}>
                 {actions}
               </View>
             </ActionContext>

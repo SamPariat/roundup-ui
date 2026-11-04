@@ -4,7 +4,7 @@ import type { ReactElement } from 'react'
 import { cva } from 'class-variance-authority'
 import { View } from 'react-native'
 
-import { ClassHelper } from '../lib/class-helper'
+import { cn } from '../lib/cn'
 import { useReducedMotion } from '../lib/useReducedMotion'
 
 const spinnerVariants = cva('size-4.5 rounded-full border-2', {
@@ -42,7 +42,7 @@ export const Spinner = ({ className, tone }: TSpinnerProps): ReactElement => {
       aria-hidden
       // The gap that shows the turn comes after the tone: tailwind-merge drops a border-r color
       // that an all-sides border color follows, which left a closed ring that looked still.
-      className={ClassHelper.cn(
+      className={cn(
         spinnerVariants({ tone }),
         'border-r-transparent',
         reduced ? 'animate-spin-slow' : 'animate-spin',

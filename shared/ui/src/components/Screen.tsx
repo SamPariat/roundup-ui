@@ -2,7 +2,7 @@ import type { ReactElement, ReactNode } from 'react'
 
 import { View } from 'react-native'
 
-import { ClassHelper } from '../lib/class-helper'
+import { cn } from '../lib/cn'
 import { SafeArea } from './SafeArea'
 
 /** Props for Screen. */
@@ -34,7 +34,7 @@ export const Screen = ({ children, className, header }: IScreenProps): ReactElem
   <View className="flex-1 bg-bg">
     {header}
     <SafeArea
-      className={ClassHelper.cn('flex-1', className)}
+      className={cn('flex-1', className)}
       edges={header === undefined ? ALL_EDGES : BELOW_HEADER}
     >
       {children}

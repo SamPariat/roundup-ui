@@ -17,8 +17,8 @@ import MarkMono from '../../../../assets/svg/logo/mark-mono.svg'
 import WordmarkDark from '../../../../assets/svg/logo/wordmark-dark.svg'
 import WordmarkLight from '../../../../assets/svg/logo/wordmark-light.svg'
 import WordmarkMono from '../../../../assets/svg/logo/wordmark-mono.svg'
-import { ClassHelper } from '../lib/class-helper'
-import { SvgHelper } from '../lib/svg'
+import { cn } from '../lib/cn'
+import { styleSvg } from '../lib/svg'
 import { useTheme } from '../theme/theme'
 
 const SIZES = { sm: 24, md: 32, lg: 48, xl: 96 } as const
@@ -56,27 +56,27 @@ interface IArtwork {
 const ARTWORK: Record<NonNullable<ILogoProps['type']>, IArtwork> = {
   lockup: {
     files: {
-      dark: SvgHelper.style(LockupDark),
-      light: SvgHelper.style(LockupLight),
-      mono: SvgHelper.style(LockupMono),
+      dark: styleSvg(LockupDark),
+      light: styleSvg(LockupLight),
+      mono: styleSvg(LockupMono),
     },
     aspect: 417.26 / 96,
     height: 1,
   },
   mark: {
     files: {
-      dark: SvgHelper.style(MarkDark),
-      light: SvgHelper.style(MarkLight),
-      mono: SvgHelper.style(MarkMono),
+      dark: styleSvg(MarkDark),
+      light: styleSvg(MarkLight),
+      mono: styleSvg(MarkMono),
     },
     aspect: 1,
     height: 1,
   },
   wordmark: {
     files: {
-      dark: SvgHelper.style(WordmarkDark),
-      light: SvgHelper.style(WordmarkLight),
-      mono: SvgHelper.style(WordmarkMono),
+      dark: styleSvg(WordmarkDark),
+      light: styleSvg(WordmarkLight),
+      mono: styleSvg(WordmarkMono),
     },
     aspect: 288.86 / 65.16,
     height: 65.16 / 96,
@@ -124,7 +124,7 @@ export const Logo = ({
     <View
       accessibilityLabel={label ?? t('common.appName')}
       accessible
-      className={ClassHelper.cn('shrink-0 flex-row items-center', className)}
+      className={cn('shrink-0 flex-row items-center', className)}
       role="img"
     >
       <Artwork aria-hidden className="text-fg" height={height} width={height * aspect} />

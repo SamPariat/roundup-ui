@@ -10,7 +10,7 @@ const css = readFileSync(path.resolve(__dirname, '../../theme.css'), 'utf8')
 /**
  * Readers for theme.css. Static methods only.
  */
-export class ThemeCssHelper {
+class ThemeCssHelper {
   /**
    * Reads the `--color-*` declarations out of a block of CSS.
    * @param block - The text between the braces of a rule.

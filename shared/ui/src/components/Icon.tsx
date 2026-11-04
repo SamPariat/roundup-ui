@@ -4,7 +4,7 @@ import { View } from 'react-native'
 
 import type { TIconName } from '../lib/icons'
 
-import { ClassHelper } from '../lib/class-helper'
+import { cn } from '../lib/cn'
 import { ICONS } from '../lib/icons'
 
 /** Tailwind needs each class spelled out, so a tone is looked up rather than built. */
@@ -75,7 +75,7 @@ export const Icon = ({
       accessibilityRole={decorative === true ? undefined : 'image'}
       accessible={decorative !== true}
       aria-hidden={decorative}
-      className={ClassHelper.cn('shrink-0', className)}
+      className={cn('shrink-0', className)}
       importantForAccessibility={decorative === true ? 'no-hide-descendants' : 'auto'}
     >
       <Glyph aria-hidden className={TONE_CLASS[tone]} height={size} width={size} />

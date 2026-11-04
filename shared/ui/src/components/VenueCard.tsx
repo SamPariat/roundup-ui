@@ -5,7 +5,7 @@ import Svg, { Rect } from 'react-native-svg'
 
 import { useT } from '@roundup/i18n'
 
-import { SvgHelper } from '../lib/svg'
+import { styleSvg } from '../lib/svg'
 import { Badge } from './Badge'
 import { Button } from './Button'
 import { Icon } from './Icon'
@@ -38,8 +38,8 @@ export interface IVenueCardProps {
 }
 
 // react-native-svg shapes that take Tailwind classes: fill-* picks a role color.
-const StyledSvg = SvgHelper.style(Svg)
-const StyledRect = SvgHelper.style(Rect)
+const StyledSvg = styleSvg(Svg)
+const StyledRect = styleSvg(Rect)
 
 /**
  * Placeholder when a venue has no photo: tiles cut from the radius scale.

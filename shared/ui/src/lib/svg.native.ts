@@ -17,18 +17,9 @@ const MAPPING = {
 } as const
 
 /**
- * SVG helpers. Static methods only. The web version of this file (svg.ts) has the same class and
- * API.
+ * Lets an SVG component take a className, resolved by react-native-css into the color props.
+ * @param component - A react-native-svg component or an imported .svg file.
+ * @returns A component that reads `text-*`, `fill-*` and `stroke-*` classes.
  */
-export class SvgHelper {
-  /**
-   * Lets an SVG component take a className, resolved by react-native-css into the color props.
-   * @param component - A react-native-svg component or an imported .svg file.
-   * @returns A component that reads `text-*`, `fill-*` and `stroke-*` classes.
-   */
-  static style<P extends object>(component: ComponentType<P>): FC<TStyled<P>> {
-    return styled(component as ComponentType<Record<string, unknown>>, MAPPING) as unknown as FC<
-      TStyled<P>
-    >
-  }
-}
+export const styleSvg = <P extends object>(component: ComponentType<P>): FC<TStyled<P>> =>
+  styled(component as ComponentType<Record<string, unknown>>, MAPPING) as unknown as FC<TStyled<P>>
