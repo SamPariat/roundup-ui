@@ -1,15 +1,23 @@
 import { useSyncExternalStore } from 'react'
 
 /**
- * A no-op unsubscribe: hydration state never changes after render.
- * @returns Nothing.
+ * Hydration subscription helpers. Static members only; they are arrow functions because React
+ * takes them as bare callbacks.
  */
-const unsubscribe = (): void => undefined
-/**
- * A subscription that never fires, which is all useSyncExternalStore needs here.
- * @returns The no-op unsubscribe.
- */
-const subscribe = (): (() => void) => unsubscribe
+class HydrationHelper {
+  /**
+   * A no-op unsubscribe: hydration state never changes after render.
+   */
+  private static readonly unsubscribe = (): void => {
+    // Hydration state never changes after render, so there is nothing to undo.
+  }
+
+  /**
+   * A subscription that never fires, which is all useSyncExternalStore needs here.
+   * @returns The no-op unsubscribe.
+   */
+  static readonly subscribe = (): (() => void) => HydrationHelper.unsubscribe
+}
 
 /**
  * False while the static export is rendered and during the first client pass that hydrates it,
@@ -19,7 +27,7 @@ const subscribe = (): (() => void) => unsubscribe
  */
 export const useHydrated = (): boolean =>
   useSyncExternalStore(
-    subscribe,
+    HydrationHelper.subscribe,
     () => true,
     () => false,
   )

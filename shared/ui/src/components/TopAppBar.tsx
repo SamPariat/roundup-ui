@@ -4,7 +4,7 @@ import { View } from 'react-native'
 
 import { useT } from '@roundup/i18n'
 
-import { cn } from '../lib/cn'
+import { ClassHelper } from '../lib/class-helper'
 import { Button } from './Button'
 import { Logo } from './Logo'
 import { SafeArea } from './SafeArea'
@@ -80,7 +80,7 @@ export const TopAppBar = ({
             {leading}
             {/* The title starts 12 in from the bar's edge, or right after the back button. */}
             <Text
-              className={cn('min-w-0 flex-1 pr-2', hasBack ? 'pl-0' : 'pl-3')}
+              className={ClassHelper.cn('min-w-0 flex-1 pr-2', hasBack ? 'pl-0' : 'pl-3')}
               heading={1}
               numberOfLines={1}
               variant="body-strong"

@@ -4,7 +4,7 @@ import type { EdgeInsets } from 'react-native-safe-area-context'
 import { View } from 'react-native'
 import { SafeAreaInsetsContext } from 'react-native-safe-area-context'
 
-import { cn } from '@roundup/ui'
+import { ClassHelper } from '@roundup/ui'
 
 /** Props for Preview. */
 export interface IPreviewProps {
@@ -31,6 +31,6 @@ export const Preview = ({
   insets = NO_INSETS,
 }: IPreviewProps): ReactElement => (
   <SafeAreaInsetsContext value={insets}>
-    <View className={cn('overflow-hidden rounded-lg', className)}>{children}</View>
+    <View className={ClassHelper.cn('overflow-hidden rounded-lg', className)}>{children}</View>
   </SafeAreaInsetsContext>
 )

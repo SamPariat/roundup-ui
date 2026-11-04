@@ -4,7 +4,7 @@ import { Pressable, View } from 'react-native'
 
 import { useT } from '@roundup/i18n'
 
-import { cn } from '../lib/cn'
+import { ClassHelper } from '../lib/class-helper'
 import { Icon } from './Icon'
 import { Text } from './Text'
 
@@ -75,7 +75,7 @@ export const ListRow = ({
       accessibilityLabel={subtitle === undefined ? title : t('listRow.spoken', { subtitle, title })}
       accessibilityRole="button"
       aria-busy={busy}
-      className={cn(
+      className={ClassHelper.cn(
         layout,
         'hover:bg-bg-hover focus:outline-2 focus:-outline-offset-2 focus:outline-focus-ring active:bg-bg-hover',
       )}

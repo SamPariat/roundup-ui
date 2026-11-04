@@ -10,7 +10,7 @@ import type { TIconProps } from './Icon'
 import type { TTextProps } from './Text'
 
 import { ActionContext } from '../lib/action-context'
-import { cn } from '../lib/cn'
+import { ClassHelper } from '../lib/class-helper'
 import { Icon } from './Icon'
 import { Spinner } from './Spinner'
 import { Text } from './Text'
@@ -229,7 +229,10 @@ export const Button = ({
       accessibilityRole="button"
       aria-busy={loading}
       aria-disabled={inactive}
-      className={cn(buttonVariants({ variant, size, block, iconOnly, inactive }), className)}
+      className={ClassHelper.cn(
+        buttonVariants({ variant, size, block, iconOnly, inactive }),
+        className,
+      )}
       disabled={inactive}
       hitSlop={size === 'sm' ? 6 : 0}
       onPress={onPress}

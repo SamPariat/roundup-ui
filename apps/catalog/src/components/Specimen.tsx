@@ -2,7 +2,7 @@ import type { ReactElement, ReactNode } from 'react'
 
 import { Platform, View } from 'react-native'
 
-import { cn, Text } from '@roundup/ui'
+import { ClassHelper, Text } from '@roundup/ui'
 
 // Tailwind sets border-style through --tw-border-style, which the web keeps to the element that
 // declares it. react-native-css lets it inherit, so on iOS and Android a dashed box would turn
@@ -33,6 +33,8 @@ export const Specimen = ({ children, note, title }: ISpecimenProps): ReactElemen
         {note}
       </Text>
     )}
-    <View className={cn('gap-3 rounded-xl border border-border p-4', DASHED)}>{children}</View>
+    <View className={ClassHelper.cn('gap-3 rounded-xl border border-border p-4', DASHED)}>
+      {children}
+    </View>
   </View>
 )

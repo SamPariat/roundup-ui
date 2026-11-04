@@ -1,11 +1,11 @@
 import { fireEvent, screen } from '@testing-library/react-native'
 
 import { SideNav } from '../../src/components/SideNav'
-import { renderWithTheme } from '../helpers/render'
+import { RenderHelper } from '../helpers/render'
 
 describe('SideNav', () => {
   it('has one tab per destination with the current one selected', async () => {
-    await renderWithTheme(<SideNav value="profile" />)
+    await RenderHelper.withTheme(<SideNav value="profile" />)
 
     expect(screen.getAllByRole('tab')).toHaveLength(3)
     expect(screen.getByRole('tab', { name: 'Profile' })).toBeSelected()
@@ -15,7 +15,7 @@ describe('SideNav', () => {
   it('reports which destination was picked', async () => {
     const onChange = jest.fn()
 
-    await renderWithTheme(<SideNav onChange={onChange} />)
+    await RenderHelper.withTheme(<SideNav onChange={onChange} />)
 
     await fireEvent.press(screen.getByRole('tab', { name: 'Explore' }))
 
@@ -23,7 +23,9 @@ describe('SideNav', () => {
   })
 
   it('shows the signed-in person', async () => {
-    await renderWithTheme(<SideNav user={{ name: 'Meera Krishnan', phone: '+91 98765 43210' }} />)
+    await RenderHelper.withTheme(
+      <SideNav user={{ name: 'Meera Krishnan', phone: '+91 98765 43210' }} />,
+    )
 
     expect(screen.getByText('+91 98765 43210')).toBeOnTheScreen()
   })

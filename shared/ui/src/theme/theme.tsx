@@ -30,26 +30,33 @@ export const THEME_STORAGE_KEY = 'roundup.theme'
 const PREFERENCES: ReadonlySet<unknown> = new Set(['system', 'light', 'dark'])
 
 /**
- * Narrows a stored value to a known preference, so a corrupted entry is ignored.
- * @param value - The raw value read from storage.
- * @returns Whether the value is one of the three preferences.
+ * Theme helpers. Static methods only.
  */
-const isPreference = (value: unknown): value is TThemePreference => PREFERENCES.has(value)
+export class ThemeHelper {
+  /**
+   * Narrows a stored value to a known preference, so a corrupted entry is ignored.
+   * @param value - The raw value read from storage.
+   * @returns Whether the value is one of the three preferences.
+   */
+  static isPreference(value: unknown): value is TThemePreference {
+    return PREFERENCES.has(value)
+  }
 
-/**
- * Resolves a preference and the device appearance to a theme. Dark (Mocha) is the fallback while the device is unknown, which is also what static HTML is built with.
- * @param preference - The stored choice.
- * @param device - The device appearance, if known.
- * @returns The theme to apply.
- */
-export const themeNameFor = (
-  preference: TThemePreference,
-  device: 'dark' | 'light' | null | undefined,
-): TThemeName => {
-  if (preference === 'light') return 'latte'
-  if (preference === 'dark') return 'mocha'
+  /**
+   * Resolves a preference and the device appearance to a theme. Dark (Mocha) is the fallback while the device is unknown, which is also what static HTML is built with.
+   * @param preference - The stored choice.
+   * @param device - The device appearance, if known.
+   * @returns The theme to apply.
+   */
+  static nameFor(
+    preference: TThemePreference,
+    device: 'dark' | 'light' | null | undefined,
+  ): TThemeName {
+    if (preference === 'light') return 'latte'
+    if (preference === 'dark') return 'mocha'
 
-  return device === 'light' ? 'latte' : 'mocha'
+    return device === 'light' ? 'latte' : 'mocha'
+  }
 }
 
 const ThemeContext = createContext<ITheme | null>(null)
@@ -74,7 +81,7 @@ export const ThemeProvider = ({ children }: IThemeProviderProps): ReactElement =
 
     AsyncStorage.getItem(THEME_STORAGE_KEY)
       .then((stored) => {
-        if (active && isPreference(stored)) setPreference(stored)
+        if (active && ThemeHelper.isPreference(stored)) setPreference(stored)
       })
       .catch(() => {
         // Storage can be unavailable (private windows); the device default still works.
@@ -118,7 +125,7 @@ export const ThemeProvider = ({ children }: IThemeProviderProps): ReactElement =
 
   // The static HTML is rendered as Mocha; the device's real scheme is applied one pass later.
   const hydrated = useHydrated()
-  const name = themeNameFor(preference, hydrated ? device : null)
+  const name = ThemeHelper.nameFor(preference, hydrated ? device : null)
 
   const value = useMemo<ITheme>(
     () => ({

@@ -1,8 +1,8 @@
 import { fireEvent, screen } from '@testing-library/react-native'
 import { TextInput } from 'react-native'
 
-import { formatCountdown, OtpInput } from '../../src/components/OtpInput'
-import { renderWithTheme } from '../helpers/render'
+import { CountdownHelper, OtpInput } from '../../src/components/OtpInput'
+import { RenderHelper } from '../helpers/render'
 
 describe('formatCountdown', () => {
   it.each([
@@ -11,13 +11,13 @@ describe('formatCountdown', () => {
     [60, '1:00'],
     [125, '2:05'],
   ] as const)('formats %i seconds as %s', (seconds, expected) => {
-    expect(formatCountdown(seconds)).toBe(expected)
+    expect(CountdownHelper.format(seconds)).toBe(expected)
   })
 })
 
 describe('OtpInput', () => {
   it('is one field named by its label', async () => {
-    await renderWithTheme(<OtpInput label="6-digit code" />)
+    await RenderHelper.withTheme(<OtpInput label="6-digit code" />)
 
     expect(screen.getByLabelText('6-digit code')).toBeOnTheScreen()
   })
@@ -25,7 +25,7 @@ describe('OtpInput', () => {
   it('reports the digits typed', async () => {
     const onChangeText = jest.fn()
 
-    await renderWithTheme(<OtpInput label="6-digit code" onChangeText={onChangeText} />)
+    await RenderHelper.withTheme(<OtpInput label="6-digit code" onChangeText={onChangeText} />)
 
     await fireEvent.changeText(screen.getByLabelText('6-digit code'), '482917')
 
@@ -33,7 +33,7 @@ describe('OtpInput', () => {
   })
 
   it('focuses the field on mount when asked, so the keyboard opens', async () => {
-    await renderWithTheme(<OtpInput autoFocus label="6-digit code" />)
+    await RenderHelper.withTheme(<OtpInput autoFocus label="6-digit code" />)
 
     expect(screen.getByLabelText('6-digit code')).toHaveProp('autoFocus', true)
   })
@@ -41,7 +41,7 @@ describe('OtpInput', () => {
   it('focuses the field when the boxes are pressed', async () => {
     const focus = jest.spyOn(TextInput.prototype, 'focus')
 
-    await renderWithTheme(<OtpInput label="6-digit code" value="4" />)
+    await RenderHelper.withTheme(<OtpInput label="6-digit code" value="4" />)
 
     await fireEvent.press(screen.getByText('4', { includeHiddenElements: true }))
 
@@ -51,7 +51,7 @@ describe('OtpInput', () => {
   })
 
   it('shows the countdown while the code cannot be resent', async () => {
-    await renderWithTheme(<OtpInput label="6-digit code" resendIn={42} />)
+    await RenderHelper.withTheme(<OtpInput label="6-digit code" resendIn={42} />)
 
     expect(screen.getByText('0:42')).toBeOnTheScreen()
     expect(screen.queryByRole('link', { name: 'Resend code' })).not.toBeOnTheScreen()
@@ -60,7 +60,7 @@ describe('OtpInput', () => {
   it('offers Resend code once the countdown ends', async () => {
     const onResend = jest.fn()
 
-    await renderWithTheme(<OtpInput label="6-digit code" onResend={onResend} resendIn={0} />)
+    await RenderHelper.withTheme(<OtpInput label="6-digit code" onResend={onResend} resendIn={0} />)
 
     await fireEvent.press(screen.getByRole('link', { name: 'Resend code' }))
 
@@ -68,7 +68,7 @@ describe('OtpInput', () => {
   })
 
   it('announces an error as an alert', async () => {
-    await renderWithTheme(
+    await RenderHelper.withTheme(
       <OtpInput error="That code didn't work. Check it and try again." label="6-digit code" />,
     )
 

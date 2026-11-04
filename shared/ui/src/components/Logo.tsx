@@ -17,8 +17,8 @@ import MarkMono from '../../../../assets/svg/logo/mark-mono.svg'
 import WordmarkDark from '../../../../assets/svg/logo/wordmark-dark.svg'
 import WordmarkLight from '../../../../assets/svg/logo/wordmark-light.svg'
 import WordmarkMono from '../../../../assets/svg/logo/wordmark-mono.svg'
-import { cn } from '../lib/cn'
-import { styleSvg } from '../lib/svg'
+import { ClassHelper } from '../lib/class-helper'
+import { SvgHelper } from '../lib/svg'
 import { useTheme } from '../theme/theme'
 
 const SIZES = { sm: 24, md: 32, lg: 48, xl: 96 } as const
@@ -55,20 +55,28 @@ interface IArtwork {
 // the height that keeps its letters the size they have inside the lockup (65.16 of 96 units).
 const ARTWORK: Record<NonNullable<ILogoProps['type']>, IArtwork> = {
   lockup: {
-    files: { dark: styleSvg(LockupDark), light: styleSvg(LockupLight), mono: styleSvg(LockupMono) },
+    files: {
+      dark: SvgHelper.style(LockupDark),
+      light: SvgHelper.style(LockupLight),
+      mono: SvgHelper.style(LockupMono),
+    },
     aspect: 417.26 / 96,
     height: 1,
   },
   mark: {
-    files: { dark: styleSvg(MarkDark), light: styleSvg(MarkLight), mono: styleSvg(MarkMono) },
+    files: {
+      dark: SvgHelper.style(MarkDark),
+      light: SvgHelper.style(MarkLight),
+      mono: SvgHelper.style(MarkMono),
+    },
     aspect: 1,
     height: 1,
   },
   wordmark: {
     files: {
-      dark: styleSvg(WordmarkDark),
-      light: styleSvg(WordmarkLight),
-      mono: styleSvg(WordmarkMono),
+      dark: SvgHelper.style(WordmarkDark),
+      light: SvgHelper.style(WordmarkLight),
+      mono: SvgHelper.style(WordmarkMono),
     },
     aspect: 288.86 / 65.16,
     height: 65.16 / 96,
@@ -76,16 +84,21 @@ const ARTWORK: Record<NonNullable<ILogoProps['type']>, IArtwork> = {
 }
 
 /**
- * Chooses the artwork variant from the tone and the active theme. Mocha is the dark theme and
- * Latte the light one; the files carry that theme's logo-* colors.
- * @param tone - Brand colors or one color.
- * @param themeName - The active theme.
- * @returns dark for Mocha, light for Latte, mono when the tone says so.
+ * Logo helpers. Static methods only.
  */
-const variantFor = (tone: NonNullable<ILogoProps['tone']>, themeName: ITheme['name']): TVariant => {
-  if (tone === 'mono') return 'mono'
+class LogoHelper {
+  /**
+   * Chooses the artwork variant from the tone and the active theme. Mocha is the dark theme and
+   * Latte the light one; the files carry that theme's logo-* colors.
+   * @param tone - Brand colors or one color.
+   * @param themeName - The active theme.
+   * @returns dark for Mocha, light for Latte, mono when the tone says so.
+   */
+  static variantFor(tone: NonNullable<ILogoProps['tone']>, themeName: ITheme['name']): TVariant {
+    if (tone === 'mono') return 'mono'
 
-  return themeName === 'mocha' ? 'dark' : 'light'
+    return themeName === 'mocha' ? 'dark' : 'light'
+  }
 }
 
 /**
@@ -104,14 +117,14 @@ export const Logo = ({
   const { name } = useTheme()
   const mark = typeof size === 'number' ? size : SIZES[size]
   const { aspect, files, height: share } = ARTWORK[type]
-  const Artwork = files[variantFor(tone, name)]
+  const Artwork = files[LogoHelper.variantFor(tone, name)]
   const height = mark * share
 
   return (
     <View
       accessibilityLabel={label ?? t('common.appName')}
       accessible
-      className={cn('shrink-0 flex-row items-center', className)}
+      className={ClassHelper.cn('shrink-0 flex-row items-center', className)}
       role="img"
     >
       <Artwork aria-hidden className="text-fg" height={height} width={height * aspect} />

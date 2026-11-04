@@ -3,23 +3,28 @@ import { fireEvent, screen } from '@testing-library/react-native'
 import { Button } from '../../src/components/Button'
 import { Modal } from '../../src/components/Modal'
 import { Text } from '../../src/components/Text'
-import { renderWithTheme } from '../helpers/render'
+import { RenderHelper } from '../helpers/render'
 
 /**
- * onRequestClose lives on the native Modal, the ancestor of the dialog Surface; fireEvent wants that element.
- * @returns The native modal's host element.
+ * Modal test helpers. Static methods only.
  */
-const modalHost = () => {
-  let node = screen.getByLabelText('Add member')
+class ModalTestHelper {
+  /**
+   * onRequestClose lives on the native Modal, the ancestor of the dialog Surface; fireEvent wants that element.
+   * @returns The native modal's host element.
+   */
+  static modalHost() {
+    let node = screen.getByLabelText('Add member')
 
-  while (node.props['onRequestClose'] === undefined && node.parent !== null) node = node.parent
+    while (node.props['onRequestClose'] === undefined && node.parent !== null) node = node.parent
 
-  return node
+    return node
+  }
 }
 
 describe('Modal', () => {
   it('is a dialog named by its title', async () => {
-    await renderWithTheme(
+    await RenderHelper.withTheme(
       <Modal title="Add member">
         <Text>Body</Text>
       </Modal>,
@@ -32,13 +37,13 @@ describe('Modal', () => {
   it('closes when the system asks it to (Esc or the Android back button)', async () => {
     const onClose = jest.fn()
 
-    await renderWithTheme(
+    await RenderHelper.withTheme(
       <Modal onClose={onClose} title="Add member">
         <Text>Body</Text>
       </Modal>,
     )
 
-    await fireEvent(modalHost(), 'requestClose')
+    await fireEvent(ModalTestHelper.modalHost(), 'requestClose')
 
     expect(onClose).toHaveBeenCalledTimes(1)
   })
@@ -46,7 +51,7 @@ describe('Modal', () => {
   it('closes from its Close button', async () => {
     const onClose = jest.fn()
 
-    await renderWithTheme(
+    await RenderHelper.withTheme(
       <Modal onClose={onClose} title="Add member">
         <Text>Body</Text>
       </Modal>,
@@ -58,7 +63,7 @@ describe('Modal', () => {
   })
 
   it('has no Close button on a confirmation', async () => {
-    await renderWithTheme(
+    await RenderHelper.withTheme(
       <Modal
         actions={[<Button key="leave">Leave</Button>]}
         body="You can rejoin later."
@@ -72,7 +77,7 @@ describe('Modal', () => {
   })
 
   it('can hide its Close button', async () => {
-    await renderWithTheme(
+    await RenderHelper.withTheme(
       <Modal closable={false} title="Add member">
         <Text>Body</Text>
       </Modal>,
@@ -82,7 +87,7 @@ describe('Modal', () => {
   })
 
   it('shows nothing while not visible', async () => {
-    await renderWithTheme(<Modal title="Add member" visible={false} />)
+    await RenderHelper.withTheme(<Modal title="Add member" visible={false} />)
 
     expect(screen.queryByRole('heading', { name: 'Add member' })).not.toBeOnTheScreen()
   })
@@ -107,13 +112,13 @@ describe('Modal', () => {
     )
 
     it('hides the close button', async () => {
-      await renderWithTheme(busyModal)
+      await RenderHelper.withTheme(busyModal)
 
       expect(screen.queryByRole('button', { name: 'Close' })).not.toBeOnTheScreen()
     })
 
     it('disables every action except the one that is loading', async () => {
-      await renderWithTheme(busyModal)
+      await RenderHelper.withTheme(busyModal)
 
       expect(screen.getByRole('button', { name: 'Cancel' })).toBeDisabled()
       expect(screen.getByRole('button', { name: 'Send invite' })).toBeBusy()
@@ -122,13 +127,13 @@ describe('Modal', () => {
     it('ignores the back button', async () => {
       const onClose = jest.fn()
 
-      await renderWithTheme(
+      await RenderHelper.withTheme(
         <Modal busy onClose={onClose} title="Add member">
           <Text>Body</Text>
         </Modal>,
       )
 
-      await fireEvent(modalHost(), 'requestClose')
+      await fireEvent(ModalTestHelper.modalHost(), 'requestClose')
 
       expect(onClose).not.toHaveBeenCalled()
     })

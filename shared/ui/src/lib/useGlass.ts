@@ -11,11 +11,17 @@ export interface IGlassState {
 }
 
 /**
- * True on iOS 26+, where the glass view exists.
- * @returns Whether both glass APIs are present.
+ * Glass helpers. Static methods only.
  */
-const glassAvailable = (): boolean =>
-  Platform.OS === 'ios' && isLiquidGlassAvailable() && isGlassEffectAPIAvailable()
+class GlassHelper {
+  /**
+   * True on iOS 26+, where the glass view exists.
+   * @returns Whether both glass APIs are present.
+   */
+  static isAvailable(): boolean {
+    return Platform.OS === 'ios' && isLiquidGlassAvailable() && isGlassEffectAPIAvailable()
+  }
+}
 
 /**
  * Reports Liquid Glass support and tracks the Reduce Transparency setting, which must force solid surfaces.
@@ -40,5 +46,5 @@ export const useGlass = (): IGlassState => {
     }
   }, [])
 
-  return { available: glassAvailable(), reduced }
+  return { available: GlassHelper.isAvailable(), reduced }
 }

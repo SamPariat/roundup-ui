@@ -14,8 +14,8 @@ import {
 import { useT } from '@roundup/i18n'
 
 import { ActionContext } from '../lib/action-context'
-import { cn } from '../lib/cn'
-import { breakpointFor } from '../lib/useBreakpoint'
+import { ClassHelper } from '../lib/class-helper'
+import { BreakpointHelper } from '../lib/useBreakpoint'
 import { Button } from './Button'
 import { Surface } from './Surface'
 import { Text } from './Text'
@@ -59,19 +59,24 @@ interface IFocusable {
 }
 
 /**
- * Moves focus to the dialog title so assistive technology starts reading at the top of the dialog.
- * @param title - The title element, or null before it has mounted.
+ * Modal helpers. Static methods only.
  */
-const moveFocusTo = (title: null | TTitleElement): void => {
-  if (title === null) return
+class ModalHelper {
+  /**
+   * Moves focus to the dialog title so assistive technology starts reading at the top of the dialog.
+   * @param title - The title element, or null before it has mounted.
+   */
+  static moveFocusTo(title: null | TTitleElement): void {
+    if (title === null) return
 
-  if (Platform.OS === 'web') {
-    ;(title as unknown as IFocusable).focus?.()
+    if (Platform.OS === 'web') {
+      ;(title as unknown as IFocusable).focus?.()
 
-    return
+      return
+    }
+
+    AccessibilityInfo.sendAccessibilityEvent(title, 'focus')
   }
-
-  AccessibilityInfo.sendAccessibilityEvent(title, 'focus')
 }
 
 /** Props for the header row of the modal. */
@@ -153,7 +158,7 @@ const ModalContent = ({
   // Dimming goes on the content, never on the Surface: glass does not render below opacity 1.
   return (
     <ScrollView
-      className={cn('mt-4 shrink', busy && 'opacity-60')}
+      className={ClassHelper.cn('mt-4 shrink', busy && 'opacity-60')}
       contentContainerClassName="gap-3"
       pointerEvents={busy ? 'none' : 'auto'}
     >
@@ -189,7 +194,7 @@ export const Modal = ({
 }: IModalProps): ReactElement => {
   const { width } = useWindowDimensions()
   const titleRef = useRef<TTitleElement>(null)
-  const sheet = breakpointFor(width) === 'phone'
+  const sheet = BreakpointHelper.of(width) === 'phone'
   const confirm = tone === 'confirm'
   const showClose = !confirm && !busy && closable
 
@@ -201,7 +206,7 @@ export const Modal = ({
   }, [busy, onClose])
 
   const focusTitle = useCallback(() => {
-    moveFocusTo(titleRef.current)
+    ModalHelper.moveFocusTo(titleRef.current)
   }, [])
 
   return (
@@ -217,14 +222,17 @@ export const Modal = ({
           padding by the keyboard's height lifts the sheet. Android resizes the window itself. */}
       <KeyboardAvoidingView
         behavior={Platform.select({ ios: 'padding' })}
-        className={cn('flex-1 bg-scrim', sheet ? 'justify-end' : 'items-center justify-center p-6')}
+        className={ClassHelper.cn(
+          'flex-1 bg-scrim',
+          sheet ? 'justify-end' : 'items-center justify-center p-6',
+        )}
       >
         <Surface
           accessibilityLabel={title}
           accessibilityViewIsModal
           aria-busy={busy}
           aria-modal
-          className={cn(
+          className={ClassHelper.cn(
             'max-h-[85%] p-6',
             sheet
               ? 'w-full rounded-t-3xl shadow-sheet'
@@ -251,7 +259,9 @@ export const Modal = ({
           </ModalContent>
           {actions !== undefined && actions.length > 0 ? (
             <ActionContext value={actionContext}>
-              <View className={cn('mt-6 gap-2', !sheet && 'flex-row-reverse justify-start')}>
+              <View
+                className={ClassHelper.cn('mt-6 gap-2', !sheet && 'flex-row-reverse justify-start')}
+              >
                 {actions}
               </View>
             </ActionContext>

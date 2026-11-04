@@ -5,7 +5,7 @@ import { Pressable, View } from 'react-native'
 
 import { useT } from '@roundup/i18n'
 
-import { cn } from '../lib/cn'
+import { ClassHelper } from '../lib/class-helper'
 import { Text } from './Text'
 
 /** One segment of Tabs. */
@@ -58,7 +58,7 @@ const TabButton = ({ active, item, onChange }: ITabButtonProps): ReactElement =>
       }
       accessibilityRole="tab"
       aria-selected={active}
-      className={cn(
+      className={ClassHelper.cn(
         'min-h-12 flex-1 flex-row items-center justify-center gap-1 rounded-lg focus:outline-2 focus:outline-offset-2 focus:outline-focus-ring',
         active ? 'border border-border bg-bg-raised' : 'hover:bg-bg-hover',
       )}

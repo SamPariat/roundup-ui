@@ -1,23 +1,23 @@
 import { fireEvent, screen } from '@testing-library/react-native'
 
 import { Chip } from '../../src/components/Chip'
-import { renderWithTheme } from '../helpers/render'
+import { RenderHelper } from '../helpers/render'
 
 describe('Chip', () => {
   it('is a button named by its text', async () => {
-    await renderWithTheme(<Chip>Bars</Chip>)
+    await RenderHelper.withTheme(<Chip>Bars</Chip>)
 
     expect(screen.getByRole('button', { name: 'Bars' })).toBeOnTheScreen()
   })
 
   it('tells assistive tech when it is selected', async () => {
-    await renderWithTheme(<Chip selected>Bars</Chip>)
+    await RenderHelper.withTheme(<Chip selected>Bars</Chip>)
 
     expect(screen.getByRole('button', { name: 'Bars' })).toBeSelected()
   })
 
   it('is not selected by default', async () => {
-    await renderWithTheme(<Chip>Bars</Chip>)
+    await RenderHelper.withTheme(<Chip>Bars</Chip>)
 
     expect(screen.getByRole('button', { name: 'Bars' })).not.toBeSelected()
   })
@@ -25,7 +25,7 @@ describe('Chip', () => {
   it('calls onPress', async () => {
     const onPress = jest.fn()
 
-    await renderWithTheme(<Chip onPress={onPress}>Bars</Chip>)
+    await RenderHelper.withTheme(<Chip onPress={onPress}>Bars</Chip>)
 
     await fireEvent.press(screen.getByRole('button', { name: 'Bars' }))
 

@@ -6,7 +6,7 @@ import { View } from 'react-native'
 
 import type { TRoleColor } from '../lib/useRoleColor'
 
-import { cn } from '../lib/cn'
+import { ClassHelper } from '../lib/class-helper'
 import { useGlass } from '../lib/useGlass'
 import { useRoleColor } from '../lib/useRoleColor'
 import { useTheme } from '../theme/theme'
@@ -56,7 +56,7 @@ export const Surface = ({
   const tintColor = useRoleColor(tint)
 
   return (
-    <View className={cn(glass ? 'overflow-hidden' : solid, className)} {...props}>
+    <View className={ClassHelper.cn(glass ? 'overflow-hidden' : solid, className)} {...props}>
       {glass ? (
         <GlassView
           colorScheme={name === 'mocha' ? 'dark' : 'light'}

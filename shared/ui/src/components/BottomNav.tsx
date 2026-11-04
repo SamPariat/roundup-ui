@@ -6,7 +6,7 @@ import { useT } from '@roundup/i18n'
 
 import type { INavItemData } from '../lib/nav-items'
 
-import { cn } from '../lib/cn'
+import { ClassHelper } from '../lib/class-helper'
 import { useDefaultNavItems } from '../lib/nav-items'
 import { Icon } from './Icon'
 import { NavTab } from './NavTab'
@@ -48,7 +48,7 @@ export const BottomNav = ({ items, onChange, value = 'squads' }: IBottomNavProps
               onChange={onChange}
             >
               <View
-                className={cn(
+                className={ClassHelper.cn(
                   'h-8 w-14 items-center justify-center rounded-full',
                   active && 'bg-accent-soft',
                 )}

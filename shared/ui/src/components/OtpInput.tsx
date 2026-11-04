@@ -5,7 +5,7 @@ import { Pressable, TextInput, View } from 'react-native'
 
 import { useT } from '@roundup/i18n'
 
-import { cn } from '../lib/cn'
+import { ClassHelper } from '../lib/class-helper'
 import { Icon } from './Icon'
 import { Text } from './Text'
 
@@ -33,15 +33,20 @@ export interface IOtpInputProps {
 }
 
 /**
- * Formats a number of seconds as m:ss for the resend countdown.
- * @param seconds - Whole seconds remaining.
- * @returns The time as minutes, a colon and two-digit seconds.
+ * Resend countdown helpers. Static methods only.
  */
-export const formatCountdown = (seconds: number): string => {
-  const minutes = Math.floor(seconds / 60)
-  const rest = seconds % 60
+export class CountdownHelper {
+  /**
+   * Formats a number of seconds as m:ss for the resend countdown.
+   * @param seconds - Whole seconds remaining.
+   * @returns The time as minutes, a colon and two-digit seconds.
+   */
+  static format(seconds: number): string {
+    const minutes = Math.floor(seconds / 60)
+    const rest = seconds % 60
 
-  return `${String(minutes)}:${rest < 10 ? '0' : ''}${String(rest)}`
+    return `${String(minutes)}:${rest < 10 ? '0' : ''}${String(rest)}`
+  }
 }
 
 /**
@@ -77,7 +82,7 @@ export const OtpInput = ({
         <View aria-hidden className="flex-row gap-2">
           {boxes.map((position) => (
             <View
-              className={cn(
+              className={ClassHelper.cn(
                 'h-14 w-11 items-center justify-center rounded-lg border border-border-strong bg-bg-raised',
                 error === undefined && !complete && position === digits.length && 'border-accent',
                 error !== undefined && 'border-danger bg-danger-soft',
@@ -113,7 +118,7 @@ export const OtpInput = ({
               <Text tone="muted" variant="body-sm">
                 {t('otpInput.resendIn')}
               </Text>
-              <Text variant="numeric">{formatCountdown(resendIn)}</Text>
+              <Text variant="numeric">{CountdownHelper.format(resendIn)}</Text>
             </>
           ) : (
             <>

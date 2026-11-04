@@ -4,7 +4,7 @@ import { View } from 'react-native'
 
 import type { TIconName } from '../lib/icons'
 
-import { cn } from '../lib/cn'
+import { ClassHelper } from '../lib/class-helper'
 import { Button } from './Button'
 import { Icon } from './Icon'
 import { Surface } from './Surface'
@@ -54,7 +54,12 @@ export const Toast = ({ action, children, onAction, tone = 'info' }: IToastProps
       className="rounded-xl border border-border shadow-toast"
       role={urgent ? 'alert' : 'status'}
     >
-      <View className={cn('min-h-13 flex-row items-center gap-3 rounded-xl py-2 pr-2 pl-4', fill)}>
+      <View
+        className={ClassHelper.cn(
+          'min-h-13 flex-row items-center gap-3 rounded-xl py-2 pr-2 pl-4',
+          fill,
+        )}
+      >
         <Icon decorative name={icon} tone={color} />
         <Text className="min-w-0 flex-1" variant="body-sm">
           {children}

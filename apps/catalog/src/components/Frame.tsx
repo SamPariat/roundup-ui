@@ -2,7 +2,7 @@ import type { ReactElement, ReactNode } from 'react'
 
 import { Platform, View } from 'react-native'
 
-import { cn } from '@roundup/ui'
+import { ClassHelper } from '@roundup/ui'
 
 import { FRAME_OPTIONS, useFrame } from '../hooks/useFrame'
 
@@ -26,7 +26,7 @@ export const Frame = ({ children }: IFrameProps): ReactElement => {
 
   return (
     <View
-      className={cn(
+      className={ClassHelper.cn(
         'w-full self-center',
         capped && ['border border-dashed border-border-strong', option.className],
       )}

@@ -4,7 +4,7 @@ import { View } from 'react-native'
 
 import { useT } from '@roundup/i18n'
 
-import { cn } from '../lib/cn'
+import { ClassHelper } from '../lib/class-helper'
 import { useReducedMotion } from '../lib/useReducedMotion'
 
 /** Props for Skeleton. */
@@ -30,7 +30,7 @@ const Block = ({ className }: IBlockProps): ReactElement => {
 
   return (
     <View
-      className={cn(
+      className={ClassHelper.cn(
         'rounded-lg bg-bg-sunken',
         reduced ? 'animate-none' : 'animate-pulse',
         className,

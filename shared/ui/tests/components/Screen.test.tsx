@@ -11,31 +11,38 @@ const insets = { top: 47, right: 3, bottom: 34, left: 11 }
 const frame = { x: 0, y: 0, width: 466, height: 800 }
 
 /**
- * Wraps an element in a safe-area provider with the insets above.
- * @param ui - The element under test.
- * @returns The wrapped element.
+ * Screen test helpers. Static methods only.
  */
-const inProvider = (ui: ReactElement) => (
-  <SafeAreaProvider initialMetrics={{ insets, frame }}>{ui}</SafeAreaProvider>
-)
+class ScreenTestHelper {
+  /**
+   * Wraps an element in a safe-area provider with the insets above.
+   * @param ui - The element under test.
+   * @returns The wrapped element.
+   */
+  static inProvider(ui: ReactElement) {
+    return <SafeAreaProvider initialMetrics={{ insets, frame }}>{ui}</SafeAreaProvider>
+  }
 
-/**
- * The view that pads the body: the host parent of the body text.
- * @returns The padded body view.
- */
-const body = () => screen.getByText('Body').parent
+  /**
+   * The view that pads the body: the host parent of the body text.
+   * @returns The padded body view.
+   */
+  static body() {
+    return screen.getByText('Body').parent
+  }
+}
 
 describe('Screen', () => {
   it('keeps the body clear of every edge when there is no header', async () => {
     await render(
-      inProvider(
+      ScreenTestHelper.inProvider(
         <Screen>
           <Text>Body</Text>
         </Screen>,
       ),
     )
 
-    expect(body()).toHaveStyle({
+    expect(ScreenTestHelper.body()).toHaveStyle({
       paddingTop: 47,
       paddingRight: 3,
       paddingBottom: 34,
@@ -45,7 +52,7 @@ describe('Screen', () => {
 
   it('leaves the top to the header and renders it above the body', async () => {
     await render(
-      inProvider(
+      ScreenTestHelper.inProvider(
         <Screen header={<Text>Header</Text>}>
           <Text>Body</Text>
         </Screen>,
@@ -54,7 +61,7 @@ describe('Screen', () => {
 
     expect(screen.getByText('Header')).toBeOnTheScreen()
 
-    expect(body()).toHaveStyle({
+    expect(ScreenTestHelper.body()).toHaveStyle({
       paddingTop: 0,
       paddingRight: 3,
       paddingBottom: 34,

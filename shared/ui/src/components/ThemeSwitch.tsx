@@ -7,7 +7,7 @@ import { useT } from '@roundup/i18n'
 
 import type { TIconName } from '../lib/icons'
 
-import { cn } from '../lib/cn'
+import { ClassHelper } from '../lib/class-helper'
 import { Icon } from './Icon'
 import { Text } from './Text'
 
@@ -65,7 +65,7 @@ const ThemeOption = ({ checked, onChange, option }: IThemeOptionProps): ReactEle
       accessibilityLabel={label}
       accessibilityRole="radio"
       aria-checked={checked}
-      className={cn(
+      className={ClassHelper.cn(
         'min-h-12 flex-1 flex-row items-center justify-center gap-2 rounded-lg px-3 focus:outline-2 focus:outline-offset-2 focus:outline-focus-ring',
         checked ? 'border border-border bg-bg-raised' : 'hover:bg-bg-hover',
       )}

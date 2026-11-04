@@ -10,18 +10,23 @@ const insets = { top: 47, right: 3, bottom: 34, left: 11 }
 const frame = { x: 0, y: 0, width: 466, height: 800 }
 
 /**
- * Wraps an element in a safe-area provider with the Duo-like insets above.
- * @param ui - The element under test.
- * @returns The wrapped element.
+ * SafeArea test helpers. Static methods only.
  */
-const inProvider = (ui: ReactElement) => (
-  <SafeAreaProvider initialMetrics={{ insets, frame }}>{ui}</SafeAreaProvider>
-)
+class SafeAreaTestHelper {
+  /**
+   * Wraps an element in a safe-area provider with the insets above.
+   * @param ui - The element under test.
+   * @returns The wrapped element.
+   */
+  static inProvider(ui: ReactElement) {
+    return <SafeAreaProvider initialMetrics={{ insets, frame }}>{ui}</SafeAreaProvider>
+  }
+}
 
 describe('SafeArea', () => {
   it('applies each requested edge from its own inset', async () => {
     await render(
-      inProvider(
+      SafeAreaTestHelper.inProvider(
         <SafeArea
           accessibilityLabel="area"
           accessible
@@ -39,7 +44,11 @@ describe('SafeArea', () => {
   })
 
   it('leaves edges that were not requested at zero', async () => {
-    await render(inProvider(<SafeArea accessibilityLabel="area" accessible edges={['bottom']} />))
+    await render(
+      SafeAreaTestHelper.inProvider(
+        <SafeArea accessibilityLabel="area" accessible edges={['bottom']} />,
+      ),
+    )
 
     expect(screen.getByLabelText('area')).toHaveStyle({
       paddingTop: 0,
