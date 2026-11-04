@@ -3,7 +3,7 @@ import type { ReactElement, ReactNode } from 'react'
 import { onlineManager, QueryClientProvider } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
 
-import { setAuthBridge } from '@roundup/api'
+import { AuthBridge } from '@roundup/api'
 
 import type { IDeps } from './deps'
 
@@ -35,7 +35,7 @@ export const CoreProvider = ({ children, deps }: ICoreProviderProps): ReactEleme
   })
 
   useEffect(() => {
-    setAuthBridge({
+    AuthBridge.set({
       getAccessToken: built.session.getAccessToken,
       refresh: built.session.refresh,
     })
@@ -54,7 +54,7 @@ export const CoreProvider = ({ children, deps }: ICoreProviderProps): ReactEleme
     })
 
     return () => {
-      setAuthBridge(undefined)
+      AuthBridge.set(undefined)
     }
   }, [built])
 

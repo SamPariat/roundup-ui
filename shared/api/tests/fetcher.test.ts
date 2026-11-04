@@ -1,7 +1,7 @@
 import { Platform } from 'react-native'
 
 import { ApiError } from '../src/api-error'
-import { setAuthBridge } from '../src/auth-bridge'
+import { AuthBridge } from '../src/auth-bridge'
 import { fetcher } from '../src/fetcher'
 
 /** The envelope tests read back. */
@@ -26,56 +26,73 @@ let token = 'access-1'
 let refresh: jest.Mock<Promise<boolean>, []>
 
 /**
- * Builds a JSON response the way the gateway sends one.
- * @param status - The HTTP status.
- * @param body - The value to serialize as the body.
- * @param headers - Extra response headers.
- * @returns The response.
+ * Fetcher test helpers. Static methods only.
  */
-const json = (status: number, body: unknown, headers: Record<string, string> = {}): Response =>
-  Response.json(body, { headers, status })
+class FetcherTestHelper {
+  /**
+   * Builds a JSON response the way the gateway sends one.
+   * @param status - The HTTP status.
+   * @param body - The value to serialize as the body.
+   * @param headers - Extra response headers.
+   * @returns The response.
+   */
+  static json(status: number, body: unknown, headers: Record<string, string> = {}): Response {
+    return Response.json(body, { headers, status })
+  }
 
-/**
- * Builds a response with no body.
- * @param status - The HTTP status.
- * @returns The response.
- */
-const empty = (status: number): Response => new Response(null, { status })
+  /**
+   * Builds a response with no body.
+   * @param status - The HTTP status.
+   * @returns The response.
+   */
+  static empty(status: number): Response {
+    return new Response(null, { status })
+  }
 
-/**
- * A stand-in for Platform.select that answers as the web would.
- * @param spec - The per-platform values.
- * @returns The web value, or the default.
- */
-const selectWeb = (spec: Record<string, unknown>): unknown => spec['web'] ?? spec['default']
+  /**
+   * A stand-in for Platform.select that answers as the web would.
+   * @param spec - The per-platform values.
+   * @returns The web value, or the default.
+   */
+  static selectWeb(spec: Record<string, unknown>): unknown {
+    return spec['web'] ?? spec['default']
+  }
 
-/**
- * Reads the headers of one request the stub received.
- * @param call - The zero-based index of the request.
- * @returns Its headers.
- */
-const sentHeaders = (call: number): Headers => new Headers(fetchMock.mock.calls[call]?.[1].headers)
+  /**
+   * Reads the headers of one request the stub received.
+   * @param call - The zero-based index of the request.
+   * @returns Its headers.
+   */
+  static sentHeaders(call: number): Headers {
+    return new Headers(fetchMock.mock.calls[call]?.[1].headers)
+  }
 
-/**
- * Hands out the current test token.
- * @returns The bearer token string.
- */
-const currentToken = (): string => token
+  /**
+   * Hands out the current test token.
+   * @returns The bearer token string.
+   */
+  static currentToken(): string {
+    return token
+  }
 
-/**
- * Runs the current refresh mock.
- * @returns What the mock resolves.
- */
-const runRefresh = (): Promise<boolean> => refresh()
+  /**
+   * Runs the current refresh mock.
+   * @returns What the mock resolves.
+   */
+  static runRefresh(): Promise<boolean> {
+    return refresh()
+  }
 
-/**
- * Waits one macrotask, so every pending request has reached its refresh.
- * @returns A promise that resolves on the next tick of the event loop.
- */
-const tick = (): Promise<void> =>
-  new Promise((resolve) => {
-    setTimeout(resolve, 0)
-  })
+  /**
+   * Waits one macrotask, so every pending request has reached its refresh.
+   * @returns A promise that resolves on the next tick of the event loop.
+   */
+  static tick(): Promise<void> {
+    return new Promise((resolve) => {
+      setTimeout(resolve, 0)
+    })
+  }
+}
 
 describe('fetcher', () => {
   beforeEach(() => {
@@ -83,7 +100,19 @@ describe('fetcher', () => {
     globalThis.fetch = fetchMock as unknown as typeof fetch
     token = 'access-1'
     refresh = jest.fn(() => Promise.resolve(false))
-    setAuthBridge({ getAccessToken: currentToken, refresh: runRefresh })
+
+    AuthBridge.set({
+      /**
+       * Hands out the current test token.
+       * @returns The bearer token string.
+       */
+      getAccessToken: () => FetcherTestHelper.currentToken(),
+      /**
+       * Runs the current refresh mock.
+       * @returns What the mock resolves.
+       */
+      refresh: () => FetcherTestHelper.runRefresh(),
+    })
   })
 
   afterEach(() => {
@@ -91,7 +120,7 @@ describe('fetcher', () => {
   })
 
   it('returns the parsed envelope from the configured base url', async () => {
-    fetchMock.mockResolvedValue(json(200, { data: { id: 'u1' }, success: true }))
+    fetchMock.mockResolvedValue(FetcherTestHelper.json(200, { data: { id: 'u1' }, success: true }))
 
     const result = await fetcher<IEnvelope<IIdentified>>('/api/v1/users/me', { method: 'GET' })
 
@@ -100,14 +129,18 @@ describe('fetcher', () => {
   })
 
   it.each([202, 204])('resolves undefined for a %i', async (status) => {
-    fetchMock.mockResolvedValue(empty(status))
+    fetchMock.mockResolvedValue(FetcherTestHelper.empty(status))
 
     await expect(fetcher('/api/v1/auth/logout', { method: 'POST' })).resolves.toBeUndefined()
   })
 
   it('throws an ApiError with status, message and request id', async () => {
     fetchMock.mockResolvedValue(
-      json(429, { error: 'too many requests', success: false }, { 'X-Request-ID': 'req-9' }),
+      FetcherTestHelper.json(
+        429,
+        { error: 'too many requests', success: false },
+        { 'X-Request-ID': 'req-9' },
+      ),
     )
 
     const failure = await fetcher('/api/v1/auth/otp/request', { method: 'POST' }).catch(
@@ -125,23 +158,23 @@ describe('fetcher', () => {
   })
 
   it('sends the client kind, JSON accept and the bearer token on native', async () => {
-    fetchMock.mockResolvedValue(json(200, { success: true }))
+    fetchMock.mockResolvedValue(FetcherTestHelper.json(200, { success: true }))
 
     await fetcher('/api/v1/users/me')
 
-    expect(sentHeaders(0).get('X-Client')).toBe('ios')
-    expect(sentHeaders(0).get('Accept')).toBe('application/json')
-    expect(sentHeaders(0).get('Authorization')).toBe('Bearer access-1')
+    expect(FetcherTestHelper.sentHeaders(0).get('X-Client')).toBe('ios')
+    expect(FetcherTestHelper.sentHeaders(0).get('Accept')).toBe('application/json')
+    expect(FetcherTestHelper.sentHeaders(0).get('Authorization')).toBe('Bearer access-1')
     expect(fetchMock.mock.calls[0]?.[1].credentials).toBeUndefined()
   })
 
   it('sends X-Client web and includes cookies on web', async () => {
-    jest.spyOn(Platform, 'select').mockImplementation(selectWeb)
-    fetchMock.mockResolvedValue(json(200, { success: true }))
+    jest.spyOn(Platform, 'select').mockImplementation((spec) => FetcherTestHelper.selectWeb(spec))
+    fetchMock.mockResolvedValue(FetcherTestHelper.json(200, { success: true }))
 
     await fetcher('/api/v1/users/me')
 
-    expect(sentHeaders(0).get('X-Client')).toBe('web')
+    expect(FetcherTestHelper.sentHeaders(0).get('X-Client')).toBe('web')
     expect(fetchMock.mock.calls[0]?.[1].credentials).toBe('include')
   })
 
@@ -155,14 +188,14 @@ describe('fetcher', () => {
     })
 
     fetchMock
-      .mockResolvedValueOnce(json(401, { error: 'expired', success: false }))
-      .mockResolvedValueOnce(json(200, { data: 7, success: true }))
+      .mockResolvedValueOnce(FetcherTestHelper.json(401, { error: 'expired', success: false }))
+      .mockResolvedValueOnce(FetcherTestHelper.json(200, { data: 7, success: true }))
 
     const result = await fetcher<IEnvelope<number>>('/api/v1/users/me')
 
     expect(result.data).toBe(7)
     expect(refresh).toHaveBeenCalledTimes(1)
-    expect(sentHeaders(1).get('Authorization')).toBe('Bearer new')
+    expect(FetcherTestHelper.sentHeaders(1).get('Authorization')).toBe('Bearer new')
   })
 
   it('shares one refresh between concurrent 401s', async () => {
@@ -184,13 +217,15 @@ describe('fetcher', () => {
       const stale = new Headers(init.headers).get('Authorization') === 'Bearer old'
 
       return Promise.resolve(
-        stale ? json(401, { error: 'expired', success: false }) : json(200, { success: true }),
+        stale
+          ? FetcherTestHelper.json(401, { error: 'expired', success: false })
+          : FetcherTestHelper.json(200, { success: true }),
       )
     })
 
     const calls = Promise.all([fetcher('/api/v1/a'), fetcher('/api/v1/b'), fetcher('/api/v1/c')])
 
-    await tick()
+    await FetcherTestHelper.tick()
 
     expect(refresh).toHaveBeenCalledTimes(1)
 
@@ -202,7 +237,7 @@ describe('fetcher', () => {
   })
 
   it('does not loop when the refresh fails', async () => {
-    fetchMock.mockResolvedValue(json(401, { error: 'expired', success: false }))
+    fetchMock.mockResolvedValue(FetcherTestHelper.json(401, { error: 'expired', success: false }))
 
     await expect(fetcher('/api/v1/users/me')).rejects.toMatchObject({ status: 401 })
     expect(refresh).toHaveBeenCalledTimes(1)
@@ -211,7 +246,10 @@ describe('fetcher', () => {
 
   it('does not refresh when an auth route answers 401', async () => {
     refresh.mockResolvedValue(true)
-    fetchMock.mockResolvedValue(json(401, { error: 'invalid code', success: false }))
+
+    fetchMock.mockResolvedValue(
+      FetcherTestHelper.json(401, { error: 'invalid code', success: false }),
+    )
 
     await expect(fetcher('/api/v1/auth/otp/verify', { method: 'POST' })).rejects.toMatchObject({
       status: 401,
@@ -222,7 +260,7 @@ describe('fetcher', () => {
 
   it('retries only once when the retry also gets a 401', async () => {
     refresh.mockResolvedValue(true)
-    fetchMock.mockResolvedValue(json(401, { error: 'expired', success: false }))
+    fetchMock.mockResolvedValue(FetcherTestHelper.json(401, { error: 'expired', success: false }))
 
     await expect(fetcher('/api/v1/users/me')).rejects.toMatchObject({ status: 401 })
     expect(fetchMock).toHaveBeenCalledTimes(2)
