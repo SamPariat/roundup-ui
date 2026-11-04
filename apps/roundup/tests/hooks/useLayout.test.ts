@@ -28,4 +28,10 @@ describe('Layout.forWidth', () => {
   it('caps the content column at 1200', () => {
     expect(Layout.forWidth(2560).contentWidth).toBe(1200)
   })
+
+  it('works the content width out from the 1600 app, not the whole window', () => {
+    const { contentWidth, gutter, nav } = Layout.forWidth(1600)
+
+    expect(Layout.forWidth(3440)).toMatchObject({ contentWidth, gutter, nav })
+  })
 })

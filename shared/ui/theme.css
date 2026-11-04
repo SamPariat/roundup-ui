@@ -56,6 +56,10 @@
 
   /* The 1200px content column has no default max-w-* class. */
   --container-content: 1200px;
+  /* The whole app, side nav and content together, is centered at 1600px on wider screens. */
+  --container-app: 1600px;
+  /* From the app width up there is page background beside the app, so app: variants frame it. */
+  --breakpoint-app: 100rem;
 
   /* Reduced motion keeps the spinner turning, only slower. */
   --animate-spin-slow: spin 2.4s linear infinite;
