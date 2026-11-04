@@ -68,11 +68,18 @@ export interface ICatalogEntry {
 type TEntryInput = Omit<ICatalogEntry, 'slug'>
 
 /**
- * Turns a title into its URL segment: AvatarGroup becomes avatar-group.
- * @param title - The component's export name.
- * @returns The title in lower-case kebab form.
+ * URL segment helpers. Static methods only.
  */
-const slugOf = (title: string): string => title.replaceAll(/([a-z])([A-Z])/g, '$1-$2').toLowerCase()
+class Slug {
+  /**
+   * Turns a title into its URL segment: AvatarGroup becomes avatar-group.
+   * @param title - The component's export name.
+   * @returns The title in lower-case kebab form.
+   */
+  static of(title: string): string {
+    return title.replaceAll(/([a-z])([A-Z])/g, '$1-$2').toLowerCase()
+  }
+}
 
 // Every value export of @roundup/ui that renders has an entry here, and tests/registry.test.ts
 // fails when one does not. Spinner and NavTab are internal to the package (index.ts does not
@@ -287,21 +294,28 @@ const ENTRIES: readonly TEntryInput[] = [
 /** Every page of the catalog, in index order. */
 export const REGISTRY: readonly ICatalogEntry[] = ENTRIES.map((entry) => ({
   ...entry,
-  slug: slugOf(entry.title),
+  slug: Slug.of(entry.title),
 }))
 
 /**
- * Looks a page up by its URL segment.
- * @param slug - The URL segment.
- * @returns The entry, or undefined when no page has that slug.
+ * Lookups over the registry. Static methods only.
  */
-export const findEntry = (slug?: string): ICatalogEntry | undefined =>
-  REGISTRY.find((entry) => entry.slug === slug)
+export class Registry {
+  /**
+   * Looks a page up by its URL segment.
+   * @param slug - The URL segment.
+   * @returns The entry, or undefined when no page has that slug.
+   */
+  static find(slug?: string): ICatalogEntry | undefined {
+    return REGISTRY.find((entry) => entry.slug === slug)
+  }
 
-/**
- * The pages of one section of the index.
- * @param group - The section.
- * @returns Its entries, in index order.
- */
-export const entriesIn = (group: TGroup): readonly ICatalogEntry[] =>
-  REGISTRY.filter((entry) => entry.group === group)
+  /**
+   * The pages of one section of the index.
+   * @param group - The section.
+   * @returns Its entries, in index order.
+   */
+  static entriesIn(group: TGroup): readonly ICatalogEntry[] {
+    return REGISTRY.filter((entry) => entry.group === group)
+  }
+}

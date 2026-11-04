@@ -1,29 +1,29 @@
 import { ApiError } from '@roundup/api'
 
-import { createDeps } from '../../src/di/deps'
-import { QueryHelper } from '../../src/helpers/query-helper'
+import { Deps } from '../../src/di/deps'
+import { Query } from '../../src/helpers/query'
 
-describe('QueryHelper.shouldRetry', () => {
+describe('Query.shouldRetry', () => {
   it.each([0, 500, 502])('retries a status %i', (status) => {
-    expect(QueryHelper.shouldRetry(0, new ApiError(status, 'failed'))).toBe(true)
+    expect(Query.shouldRetry(0, new ApiError(status, 'failed'))).toBe(true)
   })
 
   it.each([400, 401, 404, 429])('does not retry a status %i', (status) => {
-    expect(QueryHelper.shouldRetry(0, new ApiError(status, 'failed'))).toBe(false)
+    expect(Query.shouldRetry(0, new ApiError(status, 'failed'))).toBe(false)
   })
 
   it('retries an error that is not an ApiError', () => {
-    expect(QueryHelper.shouldRetry(0, new TypeError('boom'))).toBe(true)
+    expect(Query.shouldRetry(0, new TypeError('boom'))).toBe(true)
   })
 
   it('gives up after two retries', () => {
-    expect(QueryHelper.shouldRetry(2, new ApiError(500, 'failed'))).toBe(false)
+    expect(Query.shouldRetry(2, new ApiError(500, 'failed'))).toBe(false)
   })
 })
 
-describe('createDeps', () => {
+describe('Deps.create', () => {
   it('builds the platform store, the network source, a query client and the clock', () => {
-    const deps = createDeps()
+    const deps = Deps.create()
 
     const retry = deps.queryClient.getDefaultOptions().queries?.retry
 

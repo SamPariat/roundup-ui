@@ -12,42 +12,6 @@ interface IConfigModule {
   default: TAppConfig
 }
 
-/**
- * Loads app.config.ts fresh with an APP_ENV, since the file reads it when it is first imported.
- * @param appEnv - The value of APP_ENV.
- * @returns The Expo config.
- */
-const loadConfig = (appEnv: string): TAppConfig => {
-  process.env.APP_ENV = appEnv
-  jest.resetModules()
-
-  return jest.requireActual<IConfigModule>('../app.config').default
-}
-
-describe('app.config', () => {
-  it('names the beta app and gives it the beta bundle id', () => {
-    const config = loadConfig('beta')
-
-    expect(config.name).toBe('Roundup Beta')
-    expect(config.ios.bundleIdentifier).toBe('app.roundup.client.beta')
-    expect(config.android.package).toBe('app.roundup.client.beta')
-  })
-
-  it('names the production app and gives it the production bundle id', () => {
-    const config = loadConfig('prod')
-
-    expect(config.name).toBe('Roundup')
-    expect(config.ios.bundleIdentifier).toBe('app.roundup.client')
-    expect(config.android.package).toBe('app.roundup.client')
-  })
-
-  it('turns on typed routes', () => {
-    const config = loadConfig('beta')
-
-    expect(config.experiments.typedRoutes).toBe(true)
-  })
-})
-
 /** The dark variant of the splash options. */
 interface IDarkSplash {
   /** The background color. */
@@ -67,20 +31,61 @@ interface ISplashOptions {
 }
 
 /**
- * Finds the splash plugin options.
- * @returns The options given to expo-splash-screen.
+ * Config test helpers. Static methods only.
  */
-const splashOptions = (): ISplashOptions => {
-  const entry = loadConfig('beta').plugins.find(
-    (plugin) => Array.isArray(plugin) && plugin[0] === 'expo-splash-screen',
-  )
+class ConfigFixtures {
+  /**
+   * Loads app.config.ts fresh with an APP_ENV, since the file reads it when it is first imported.
+   * @param appEnv - The value of APP_ENV.
+   * @returns The Expo config.
+   */
+  static loadConfig(appEnv: string): TAppConfig {
+    process.env.APP_ENV = appEnv
+    jest.resetModules()
 
-  return (entry as [string, ISplashOptions])[1]
+    return jest.requireActual<IConfigModule>('../app.config').default
+  }
+
+  /**
+   * Finds the splash plugin options.
+   * @returns The options given to expo-splash-screen.
+   */
+  static splashOptions(): ISplashOptions {
+    const entry = ConfigFixtures.loadConfig('beta').plugins.find(
+      (plugin) => Array.isArray(plugin) && plugin[0] === 'expo-splash-screen',
+    )
+
+    return (entry as [string, ISplashOptions])[1]
+  }
 }
+
+describe('app.config', () => {
+  it('names the beta app and gives it the beta bundle id', () => {
+    const config = ConfigFixtures.loadConfig('beta')
+
+    expect(config.name).toBe('Roundup Beta')
+    expect(config.ios.bundleIdentifier).toBe('app.roundup.client.beta')
+    expect(config.android.package).toBe('app.roundup.client.beta')
+  })
+
+  it('names the production app and gives it the production bundle id', () => {
+    const config = ConfigFixtures.loadConfig('prod')
+
+    expect(config.name).toBe('Roundup')
+    expect(config.ios.bundleIdentifier).toBe('app.roundup.client')
+    expect(config.android.package).toBe('app.roundup.client')
+  })
+
+  it('turns on typed routes', () => {
+    const config = ConfigFixtures.loadConfig('beta')
+
+    expect(config.experiments.typedRoutes).toBe(true)
+  })
+})
 
 describe('app.config splash screen', () => {
   it('uses the Latte background with the light mark and Mocha with the dark mark', () => {
-    const options = splashOptions()
+    const options = ConfigFixtures.splashOptions()
 
     expect(options.backgroundColor).toBe('#f2e9e1')
     expect(options.dark.backgroundColor).toBe('#1e1e2e')
@@ -89,7 +94,7 @@ describe('app.config splash screen', () => {
   })
 
   it('points at PNG files that exist', () => {
-    const options = splashOptions()
+    const options = ConfigFixtures.splashOptions()
 
     for (const image of [options.image, options.dark.image]) {
       expect(existsSync(path.resolve(__dirname, '..', image))).toBe(true)

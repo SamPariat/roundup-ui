@@ -2,14 +2,12 @@ import { useCallback, useEffect, useState } from 'react'
 
 import { requestOTP, verifyOTP } from '@roundup/api'
 
-import type { TErrorKey } from '../helpers/error-helper'
+import type { TErrorKey } from '../helpers/error-key'
 
 import { useDeps } from '../di/useDeps'
+import { CODE_LENGTH } from '../helpers/otp-code'
 import { useSession } from '../session/useSession'
 import { useAttempt } from './useAttempt'
-
-/** How many digits the code has. */
-const CODE_LENGTH = 6
 
 /** How many seconds before another code may be asked for. */
 const RESEND_SECONDS = 30
@@ -38,20 +36,14 @@ export interface ICodeViewModel {
 }
 
 /**
- * Keeps only digits, at most the code length.
- * @param text - Whatever the field now holds.
- * @returns Up to six digits.
- */
-const toCodeDigits = (text: string): string => text.replaceAll(/\D/g, '').slice(0, CODE_LENGTH)
-
-/**
  * The view model of the code step: collects six digits, checks them, signs in, and runs the
  * resend countdown.
  * @param phone - The E.164 number the code was sent to.
  * @returns The state and the actions.
  */
 export const useCodeViewModel = (phone: string): ICodeViewModel => {
-  const { now } = useDeps()
+  const { helpers, now } = useDeps()
+  const codeHelper = helpers.code
   const { signIn } = useSession()
   const { busy, clear, error, fail, requestId, run } = useAttempt()
   const [typed, setTyped] = useState('')
@@ -88,14 +80,14 @@ export const useCodeViewModel = (phone: string): ICodeViewModel => {
 
   const setCode = useCallback(
     (text: string) => {
-      const digits = toCodeDigits(text)
+      const digits = codeHelper.toDigits(text)
 
       setTyped(digits)
       clear()
 
       if (digits.length === CODE_LENGTH) void verify(digits)
     },
-    [clear, verify],
+    [clear, codeHelper, verify],
   )
 
   const submit = useCallback((): Promise<boolean | undefined> => {

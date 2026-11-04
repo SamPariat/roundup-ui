@@ -1,11 +1,11 @@
 import { fireEvent, screen } from '@testing-library/react-native'
 
 import { Button } from '../../src/components/Button'
-import { renderWithTheme } from '../helpers/render'
+import { Render } from '../helpers/render'
 
 describe('Button', () => {
   it('is a button named by its text', async () => {
-    await renderWithTheme(<Button>Create squad</Button>)
+    await Render.withTheme(<Button>Create squad</Button>)
 
     expect(screen.getByRole('button', { name: 'Create squad' })).toBeEnabled()
   })
@@ -13,7 +13,7 @@ describe('Button', () => {
   it('calls onPress when pressed', async () => {
     const onPress = jest.fn()
 
-    await renderWithTheme(<Button onPress={onPress}>Add member</Button>)
+    await Render.withTheme(<Button onPress={onPress}>Add member</Button>)
 
     await fireEvent.press(screen.getByRole('button', { name: 'Add member' }))
 
@@ -21,7 +21,7 @@ describe('Button', () => {
   })
 
   it('is named by its label when it only has an icon', async () => {
-    await renderWithTheme(<Button icon="close" label="Close" />)
+    await Render.withTheme(<Button icon="close" label="Close" />)
 
     expect(screen.getByRole('button', { name: 'Close' })).toBeOnTheScreen()
   })
@@ -29,7 +29,7 @@ describe('Button', () => {
   it('does not fire when disabled', async () => {
     const onPress = jest.fn()
 
-    await renderWithTheme(
+    await Render.withTheme(
       <Button disabled onPress={onPress}>
         Leave
       </Button>,
@@ -44,7 +44,7 @@ describe('Button', () => {
   it('is busy, disabled and announces its loading label while loading', async () => {
     const onPress = jest.fn()
 
-    await renderWithTheme(
+    await Render.withTheme(
       <Button loading loadingLabel="Sending code…" onPress={onPress}>
         Send code
       </Button>,

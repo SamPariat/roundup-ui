@@ -7,7 +7,7 @@ import { AccessibilityInfo, Pressable, Text } from 'react-native'
 import type { INotice } from '../../src/components/Notifier'
 
 import { Notifier } from '../../src/components/Notifier'
-import { renderWithTheme } from '../helpers/render'
+import { Render } from '../helpers/render'
 
 /** An offline notice. */
 const OFFLINE: INotice = { id: 'offline', message: 'You are offline', tone: 'error' }
@@ -51,26 +51,26 @@ describe('Notifier', () => {
   })
 
   it('renders nothing without a notice', async () => {
-    await renderWithTheme(<Notifier />)
+    await Render.withTheme(<Notifier />)
 
     expect(screen.queryByRole('alert')).toBeNull()
     expect(screen.queryByRole('status')).toBeNull()
   })
 
   it('shows an error notice as an alert', async () => {
-    await renderWithTheme(<Notifier notice={OFFLINE} />)
+    await Render.withTheme(<Notifier notice={OFFLINE} />)
 
     expect(screen.getByRole('alert')).toHaveTextContent('You are offline')
   })
 
   it('shows a success notice as a status', async () => {
-    await renderWithTheme(<Notifier notice={BACK} />)
+    await Render.withTheme(<Notifier notice={BACK} />)
 
     expect(screen.getByRole('status')).toHaveTextContent('Back online')
   })
 
   it('replaces the message when the notice changes', async () => {
-    await renderWithTheme(<Host first={OFFLINE} next={BACK} />)
+    await Render.withTheme(<Host first={OFFLINE} next={BACK} />)
     await fireEvent.press(screen.getByRole('button', { name: 'change' }))
 
     expect(screen.getByRole('status')).toHaveTextContent('Back online')
@@ -78,7 +78,7 @@ describe('Notifier', () => {
   })
 
   it('lets touches through everywhere but the toast', async () => {
-    const { toJSON } = await renderWithTheme(<Notifier notice={OFFLINE} />)
+    const { toJSON } = await Render.withTheme(<Notifier notice={OFFLINE} />)
 
     expect(JSON.stringify(toJSON())).toContain('"pointerEvents":"box-none"')
   })
@@ -86,7 +86,7 @@ describe('Notifier', () => {
   it('stays until it has slid out, then unmounts', async () => {
     jest.useFakeTimers()
 
-    await renderWithTheme(<Host first={OFFLINE} />)
+    await Render.withTheme(<Host first={OFFLINE} />)
     await fireEvent.press(screen.getByRole('button', { name: 'change' }))
 
     expect(screen.getByRole('alert')).toBeOnTheScreen()
@@ -102,7 +102,7 @@ describe('Notifier', () => {
     jest.spyOn(AccessibilityInfo, 'isReduceMotionEnabled').mockResolvedValue(true)
     jest.useFakeTimers()
 
-    await renderWithTheme(<Host first={OFFLINE} />)
+    await Render.withTheme(<Host first={OFFLINE} />)
 
     await act(async () => {
       await jest.advanceTimersByTimeAsync(0)

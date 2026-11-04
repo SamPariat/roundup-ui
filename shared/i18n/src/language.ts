@@ -8,18 +8,21 @@ export type TSupportedLanguage = (typeof SUPPORTED_LANGUAGES)[number]
 export const FALLBACK_LANGUAGE: TSupportedLanguage = 'en'
 
 /**
- * Picks the first device language we ship, in the person's order of preference, else English.
- * @param deviceLanguages - Language codes from the device, most preferred first.
- * @returns The language to use.
+ * Language helpers. Static methods only.
  */
-export const resolveLanguage = (
-  deviceLanguages: readonly (null | string)[],
-): TSupportedLanguage => {
-  for (const code of deviceLanguages) {
-    const match = SUPPORTED_LANGUAGES.find((language) => language === code)
+export class Language {
+  /**
+   * Picks the first device language we ship, in the person's order of preference, else English.
+   * @param deviceLanguages - Language codes from the device, most preferred first.
+   * @returns The language to use.
+   */
+  static resolve(deviceLanguages: readonly (null | string)[]): TSupportedLanguage {
+    for (const code of deviceLanguages) {
+      const match = SUPPORTED_LANGUAGES.find((language) => language === code)
 
-    if (match !== undefined) return match
+      if (match !== undefined) return match
+    }
+
+    return FALLBACK_LANGUAGE
   }
-
-  return FALLBACK_LANGUAGE
 }

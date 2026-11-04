@@ -17,21 +17,26 @@ interface IRenderOptions {
 }
 
 /**
- * Components read colors through useTheme() and safe areas through the provider, so every
- * test renders inside both. Pass insets and a frame width to test a particular device.
- * @param ui - The element under test.
- * @param options - The simulated device.
- * @returns The Testing Library render result.
+ * Rendering helpers for the ui tests. Static methods only.
  */
-export const renderWithTheme = async (
-  ui: ReactElement,
-  options: IRenderOptions = {},
-): ReturnType<typeof render> => {
-  const { insets = NO_INSETS, width = 390 } = options
+export class Render {
+  /**
+   * Components read colors through useTheme() and safe areas through the provider, so every
+   * test renders inside both. Pass insets and a frame width to test a particular device.
+   * @param ui - The element under test.
+   * @param options - The simulated device.
+   * @returns The Testing Library render result.
+   */
+  static async withTheme(
+    ui: ReactElement,
+    options: IRenderOptions = {},
+  ): ReturnType<typeof render> {
+    const { insets = NO_INSETS, width = 390 } = options
 
-  return render(
-    <SafeAreaProvider initialMetrics={{ insets, frame: { x: 0, y: 0, width, height: 800 } }}>
-      <ThemeProvider>{ui}</ThemeProvider>
-    </SafeAreaProvider>,
-  )
+    return render(
+      <SafeAreaProvider initialMetrics={{ insets, frame: { x: 0, y: 0, width, height: 800 } }}>
+        <ThemeProvider>{ui}</ThemeProvider>
+      </SafeAreaProvider>,
+    )
+  }
 }

@@ -14,7 +14,7 @@ const COUNTRY = '91'
  * Phone number helpers for Indian mobile numbers. Static methods only; the dependency container
  * holds the class, so a test can swap it.
  */
-export class PhoneHelper {
+export class Phone {
   /**
    * Keeps only what a person can type in the phone field: digits, at most ten. A pasted number with
    * the country code (+91 98765 43210) loses the prefix.

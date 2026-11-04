@@ -5,7 +5,7 @@ import { Pressable, ScrollView, View } from 'react-native'
 
 import { Logo, SafeArea, Text } from '@roundup/ui'
 
-import { entriesIn, GROUPS } from '../registry'
+import { GROUPS, Registry } from '../registry'
 import { NavEntry } from './NavEntry'
 
 /** Props for ComponentNav. */
@@ -42,7 +42,7 @@ export const ComponentNav = ({ current }: IComponentNavProps): ReactElement => (
           <Text className="px-3" heading={2} tone="subtle" variant="caption">
             {group}
           </Text>
-          {entriesIn(group).map((entry) => (
+          {Registry.entriesIn(group).map((entry) => (
             <NavEntry current={entry.slug === current} entry={entry} key={entry.slug} />
           ))}
         </View>

@@ -4,39 +4,46 @@ import type { ITestCore } from '../helpers/wrapper'
 
 import { useMe } from '../../src/auth/useMe'
 import { useProfileViewModel } from '../../src/auth/useProfileViewModel'
-import { empty, failure, ok, pair, stubNetwork } from '../helpers/fakes'
-import { createTestCore } from '../helpers/wrapper'
+import { Fakes } from '../helpers/fakes'
+import { TestCore } from '../helpers/wrapper'
 
 /**
- * Builds the profile of a signed-in user.
- * @param name - The user's name; empty until they set one.
- * @returns The profile as the API sends it.
+ * Profile test helpers. Static methods only.
  */
-const user = (name: string): Record<string, unknown> => ({
-  avatarURL: '',
-  createdAt: '2026-01-01T00:00:00Z',
-  id: 'u1',
-  name,
-  phone: '+919876543210',
-  updatedAt: '2026-01-01T00:00:00Z',
-})
+class MeFixtures {
+  /**
+   * Builds the profile of a signed-in user.
+   * @param name - The user's name; empty until they set one.
+   * @returns The profile as the API sends it.
+   */
+  static user(name: string): Record<string, unknown> {
+    return {
+      avatarURL: '',
+      createdAt: '2026-01-01T00:00:00Z',
+      id: 'u1',
+      name,
+      phone: '+919876543210',
+      updatedAt: '2026-01-01T00:00:00Z',
+    }
+  }
 
-/**
- * Starts a core that has a saved refresh token, so it restores into a signed-in session.
- * @returns The fakes behind a provider that will restore a session.
- */
-const signedInCore = async (): Promise<ITestCore> => {
-  const core = createTestCore()
+  /**
+   * Starts a core that has a saved refresh token, so it restores into a signed-in session.
+   * @returns The fakes behind a provider that will restore a session.
+   */
+  static async signedInCore(): Promise<ITestCore> {
+    const core = TestCore.create()
 
-  await core.store.save('r1')
+    await core.store.save('r1')
 
-  return core
+    return core
+  }
 }
 
 describe('useMe', () => {
   it('does not load the profile while signed out', async () => {
-    const network = stubNetwork({})
-    const { result } = await renderHook(() => useMe(), { wrapper: createTestCore().wrapper })
+    const network = Fakes.stubNetwork({})
+    const { result } = await renderHook(() => useMe(), { wrapper: TestCore.create().wrapper })
 
     await waitFor(() => {
       expect(result.current.loading).toBe(false)
@@ -48,12 +55,12 @@ describe('useMe', () => {
   })
 
   it('loads the profile once signed in', async () => {
-    stubNetwork({
-      'GET /api/v1/users/me': ok(user('Asha')),
-      'POST /api/v1/auth/refresh': ok(pair('a2', 'r2')),
+    Fakes.stubNetwork({
+      'GET /api/v1/users/me': Fakes.ok(MeFixtures.user('Asha')),
+      'POST /api/v1/auth/refresh': Fakes.ok(Fakes.pair('a2', 'r2')),
     })
 
-    const { wrapper } = await signedInCore()
+    const { wrapper } = await MeFixtures.signedInCore()
     const { result } = await renderHook(() => useMe(), { wrapper })
 
     await waitFor(() => {
@@ -64,12 +71,12 @@ describe('useMe', () => {
   })
 
   it('needs a name when the profile has none', async () => {
-    stubNetwork({
-      'GET /api/v1/users/me': ok(user('')),
-      'POST /api/v1/auth/refresh': ok(pair('a2', 'r2')),
+    Fakes.stubNetwork({
+      'GET /api/v1/users/me': Fakes.ok(MeFixtures.user('')),
+      'POST /api/v1/auth/refresh': Fakes.ok(Fakes.pair('a2', 'r2')),
     })
 
-    const { wrapper } = await signedInCore()
+    const { wrapper } = await MeFixtures.signedInCore()
     const { result } = await renderHook(() => useMe(), { wrapper })
 
     await waitFor(() => {
@@ -78,12 +85,12 @@ describe('useMe', () => {
   })
 
   it('does not ask for a name when the profile failed to load', async () => {
-    stubNetwork({
-      'GET /api/v1/users/me': failure(502, 'bad gateway'),
-      'POST /api/v1/auth/refresh': ok(pair('a2', 'r2')),
+    Fakes.stubNetwork({
+      'GET /api/v1/users/me': Fakes.failure(502, 'bad gateway'),
+      'POST /api/v1/auth/refresh': Fakes.ok(Fakes.pair('a2', 'r2')),
     })
 
-    const { wrapper } = await signedInCore()
+    const { wrapper } = await MeFixtures.signedInCore()
     const { result } = await renderHook(() => useMe(), { wrapper })
 
     await waitFor(() => {
@@ -96,13 +103,13 @@ describe('useMe', () => {
 
 describe('useProfileViewModel', () => {
   it('signs out through the session', async () => {
-    const network = stubNetwork({
-      'GET /api/v1/users/me': ok(user('Asha')),
-      'POST /api/v1/auth/logout': empty(204),
-      'POST /api/v1/auth/refresh': ok(pair('a2', 'r2')),
+    const network = Fakes.stubNetwork({
+      'GET /api/v1/users/me': Fakes.ok(MeFixtures.user('Asha')),
+      'POST /api/v1/auth/logout': Fakes.empty(204),
+      'POST /api/v1/auth/refresh': Fakes.ok(Fakes.pair('a2', 'r2')),
     })
 
-    const { wrapper } = await signedInCore()
+    const { wrapper } = await MeFixtures.signedInCore()
     const { result } = await renderHook(() => useProfileViewModel(), { wrapper })
 
     await waitFor(() => {

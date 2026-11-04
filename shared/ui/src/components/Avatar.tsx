@@ -6,7 +6,7 @@ import { Image, View } from 'react-native'
 
 import type { TAvatarTint } from '../lib/avatar-tint'
 
-import { initialsOf, tintOf } from '../lib/avatar-tint'
+import { AvatarTint } from '../lib/avatar-tint'
 import { cn } from '../lib/cn'
 import { Text } from './Text'
 
@@ -75,12 +75,12 @@ export const Avatar = ({
   <View
     accessibilityLabel={name}
     accessible
-    className={cn(avatarVariants({ size, tint: tint ?? tintOf(id ?? name) }), className)}
+    className={cn(avatarVariants({ size, tint: tint ?? AvatarTint.tintOf(id ?? name) }), className)}
     role="img"
   >
     {src === undefined ? (
       <Text aria-hidden className={INITIALS_TEXT[size]} maxFontSizeMultiplier={1.2} variant="label">
-        {initialsOf(name)}
+        {AvatarTint.initialsOf(name)}
       </Text>
     ) : (
       <Image accessibilityIgnoresInvertColors alt="" className="size-full" source={{ uri: src }} />

@@ -11,7 +11,7 @@ import type { FakeNetwork, IBackend } from './fakes'
 
 import { AuthStack } from '../../src/components/AuthStack'
 import { OfflineNotice } from '../../src/components/OfflineNotice'
-import { stubBackend, testDeps } from './fakes'
+import { Fakes } from './fakes'
 
 /** Insets and frame of a phone, so the safe-area hooks have values. */
 const METRICS = {
@@ -34,35 +34,37 @@ export interface IAppOptions {
 }
 
 /**
- * Renders routes inside the providers and the offline notice the real root layout supplies, against a stubbed backend.
- * @param routes - The route files, by their path under src/app.
- * @param options - The start url, the saved session and the backend.
- * @returns A promise that resolves once the app has rendered.
+ * Rendering helpers for the app tests. Static methods only.
  */
-export const renderApp = async (
-  routes: Record<string, ComponentType>,
-  options: IAppOptions,
-): Promise<void> => {
-  const { backend, guarded = false, network, saved, url } = options
-
-  stubBackend(backend)
-
-  const deps = testDeps(saved, network)
-
+export class Render {
   /**
-   * The root layout of the test app.
-   * @returns The providers around the current route.
+   * Renders routes inside the providers and the offline notice the real root layout supplies, against a stubbed backend.
+   * @param routes - The route files, by their path under src/app.
+   * @param options - The start url, the saved session and the backend.
+   * @returns A promise that resolves once the app has rendered.
    */
-  const Layout = (): ReactElement => (
-    <SafeAreaProvider initialMetrics={METRICS}>
-      <ThemeProvider>
-        <CoreProvider deps={deps}>
-          {guarded ? <AuthStack /> : <Slot />}
-          <OfflineNotice />
-        </CoreProvider>
-      </ThemeProvider>
-    </SafeAreaProvider>
-  )
+  static async app(routes: Record<string, ComponentType>, options: IAppOptions): Promise<void> {
+    const { backend, guarded = false, network, saved, url } = options
 
-  await renderRouter({ ...routes, _layout: Layout }, { initialUrl: url })
+    Fakes.stubBackend(backend)
+
+    const deps = Fakes.testDeps(saved, network)
+
+    /**
+     * The root layout of the test app.
+     * @returns The providers around the current route.
+     */
+    const Layout = (): ReactElement => (
+      <SafeAreaProvider initialMetrics={METRICS}>
+        <ThemeProvider>
+          <CoreProvider deps={deps}>
+            {guarded ? <AuthStack /> : <Slot />}
+            <OfflineNotice />
+          </CoreProvider>
+        </ThemeProvider>
+      </SafeAreaProvider>
+    )
+
+    await renderRouter({ ...routes, _layout: Layout }, { initialUrl: url })
+  }
 }

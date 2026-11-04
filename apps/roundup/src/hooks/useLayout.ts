@@ -1,4 +1,4 @@
-import { breakpointFor, useBreakpoint } from '@roundup/ui'
+import { Breakpoint, useBreakpoint } from '@roundup/ui'
 
 /** How the shell is laid out at a given width. */
 export interface IShellLayout {
@@ -11,23 +11,28 @@ export interface IShellLayout {
 }
 
 /**
- * Width is the only input: folded, open, rotated and Split View windows all look the same to it.
- * @param width - The window width in points.
- * @returns The navigation, gutter and content width.
+ * Shell layout helpers. Static methods only.
  */
-export const layoutFor = (width: number): IShellLayout => {
-  // Tailwind's defaults: md is 768 and lg is 1024, p-4 is 16 and p-8 is 32, w-62 (the SideNav) is
-  // 248. The content column is max-w-content, 1200, from theme.css.
-  const step = breakpointFor(width)
-  const nav = step === 'desktop' ? 'side' : 'bottom'
-  const gutter = step === 'phone' ? 16 : 32
-  const available = width - (nav === 'side' ? 248 : 0)
+export class Layout {
+  /**
+   * Width is the only input: folded, open, rotated and Split View windows all look the same to it.
+   * @param width - The window width in points.
+   * @returns The navigation, gutter and content width.
+   */
+  static forWidth(width: number): IShellLayout {
+    // Tailwind's defaults: md is 768 and lg is 1024, p-4 is 16 and p-8 is 32, w-62 (the SideNav) is
+    // 248. The content column is max-w-content, 1200, from theme.css.
+    const step = Breakpoint.of(width)
+    const nav = step === 'desktop' ? 'side' : 'bottom'
+    const gutter = step === 'phone' ? 16 : 32
+    const available = width - (nav === 'side' ? 248 : 0)
 
-  return { nav, gutter, contentWidth: Math.min(available - gutter * 2, 1200) }
+    return { nav, gutter, contentWidth: Math.min(available - gutter * 2, 1200) }
+  }
 }
 
 /**
  * The shell layout for the current window, recomputed when it is resized, folded or rotated.
  * @returns The navigation, gutter and content width.
  */
-export const useLayout = (): IShellLayout => layoutFor(useBreakpoint().width)
+export const useLayout = (): IShellLayout => Layout.forWidth(useBreakpoint().width)

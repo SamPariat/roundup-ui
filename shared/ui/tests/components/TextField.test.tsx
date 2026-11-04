@@ -1,11 +1,11 @@
 import { fireEvent, screen } from '@testing-library/react-native'
 
 import { TextField } from '../../src/components/TextField'
-import { renderWithTheme } from '../helpers/render'
+import { Render } from '../helpers/render'
 
 describe('TextField', () => {
   it('is named by its label', async () => {
-    await renderWithTheme(<TextField label="Squad name" />)
+    await Render.withTheme(<TextField label="Squad name" />)
 
     expect(screen.getByLabelText('Squad name')).toBeOnTheScreen()
   })
@@ -13,7 +13,7 @@ describe('TextField', () => {
   it('reports what the person types', async () => {
     const onChangeText = jest.fn()
 
-    await renderWithTheme(<TextField label="Squad name" onChangeText={onChangeText} />)
+    await Render.withTheme(<TextField label="Squad name" onChangeText={onChangeText} />)
 
     await fireEvent.changeText(screen.getByLabelText('Squad name'), 'Friday crew')
 
@@ -21,7 +21,7 @@ describe('TextField', () => {
   })
 
   it('announces the error as an alert and replaces the helper', async () => {
-    await renderWithTheme(
+    await Render.withTheme(
       <TextField
         error="That name is taken. Try another."
         helper="Pick a name"
@@ -34,7 +34,7 @@ describe('TextField', () => {
   })
 
   it('cannot be edited when disabled', async () => {
-    await renderWithTheme(<TextField disabled label="Squad name" />)
+    await Render.withTheme(<TextField disabled label="Squad name" />)
 
     expect(screen.getByLabelText('Squad name')).toBeDisabled()
   })

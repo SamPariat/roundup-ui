@@ -2,7 +2,7 @@ import { useCallback, useState } from 'react'
 
 import { getGetMeQueryKey, updateMe } from '@roundup/api'
 
-import type { TErrorKey } from '../helpers/error-helper'
+import type { TErrorKey } from '../helpers/error-key'
 
 import { useDeps } from '../di/useDeps'
 import { useAttempt } from './useAttempt'

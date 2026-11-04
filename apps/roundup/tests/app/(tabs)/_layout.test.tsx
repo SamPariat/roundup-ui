@@ -92,14 +92,20 @@ jest.mock('expo-router', () => ({ usePathname: mockPathname }))
 jest.mock('../../../src/components/AppShell', () => ({ AppShell: mockContainer }))
 
 /**
- * Lists the trigger routes recorded under a prefix, in render order.
- * @param prefix - Which tab bar recorded them, such as "native:".
- * @returns The route names without the prefix.
+ * Tab layout test helpers. Static methods only.
  */
-const triggersWith = (prefix: string): string[] =>
-  mockTriggers
-    .filter((entry) => entry.startsWith(prefix))
-    .map((entry) => entry.slice(prefix.length))
+class TabsFixtures {
+  /**
+   * Lists the trigger routes recorded under a prefix, in render order.
+   * @param prefix - Which tab bar recorded them, such as "native:".
+   * @returns The route names without the prefix.
+   */
+  static triggersWith(prefix: string): string[] {
+    return mockTriggers
+      .filter((entry) => entry.startsWith(prefix))
+      .map((entry) => entry.slice(prefix.length))
+  }
+}
 
 /** Insets and frame of a notched phone, so the safe-area hooks have values. */
 const METRICS = {
@@ -122,7 +128,7 @@ describe('tab layouts', () => {
 
     await render(<Shared />)
 
-    expect(triggersWith('native:')).toEqual(['squads', 'explore', 'profile'])
-    expect(triggersWith('headless:')).toEqual(triggersWith('native:'))
+    expect(TabsFixtures.triggersWith('native:')).toEqual(['squads', 'explore', 'profile'])
+    expect(TabsFixtures.triggersWith('headless:')).toEqual(TabsFixtures.triggersWith('native:'))
   })
 })

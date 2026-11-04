@@ -11,7 +11,7 @@ import type { TIconName } from '../lib/icons'
 import ArtDark from '../../../../assets/svg/illustrations/welcome-dark.svg'
 import ArtLight from '../../../../assets/svg/illustrations/welcome-light.svg'
 import { cn } from '../lib/cn'
-import { breakpointFor } from '../lib/useBreakpoint'
+import { Breakpoint } from '../lib/useBreakpoint'
 import { useTheme } from '../theme/theme'
 import { Button } from './Button'
 import { Icon } from './Icon'
@@ -63,7 +63,7 @@ const WelcomeArt = (): ReactElement => {
 export const Welcome = ({ body, onStart, startLabel, title }: IWelcomeProps): ReactElement => {
   const { t } = useT()
   const [width, setWidth] = useState(0)
-  const wide = breakpointFor(width) !== 'phone'
+  const wide = Breakpoint.of(width) !== 'phone'
 
   const handleLayout = useCallback((event: LayoutChangeEvent) => {
     setWidth(event.nativeEvent.layout.width)

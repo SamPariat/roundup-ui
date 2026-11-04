@@ -12,7 +12,7 @@ import type { IBackend } from '../helpers/fakes'
 
 import WelcomeScreen from '../../src/app/index'
 import { AuthStack } from '../../src/components/AuthStack'
-import { stubBackend, testDeps } from '../helpers/fakes'
+import { Fakes } from '../helpers/fakes'
 
 /** Insets and frame of a phone, so the safe-area hooks have values. */
 const METRICS = {
@@ -30,7 +30,7 @@ let saved: string | undefined
 const Layout = (): ReactElement => (
   <SafeAreaProvider initialMetrics={METRICS}>
     <ThemeProvider>
-      <CoreProvider deps={testDeps(saved)}>
+      <CoreProvider deps={Fakes.testDeps(saved)}>
         <AuthStack />
       </CoreProvider>
     </ThemeProvider>
@@ -68,23 +68,28 @@ const Code = (): ReactElement => <Text>screen: code</Text>
 const Squads = (): ReactElement => <Text>screen: squads</Text>
 
 /**
- * Renders the app at a url.
- * @param initialUrl - Where the app starts, as a deep link would.
- * @returns A promise that resolves once the app has rendered.
+ * AuthStack test helpers. Static methods only.
  */
-const launch = async (initialUrl: string): Promise<void> => {
-  await renderRouter(
-    {
-      '(tabs)/_layout': TabsLayout,
-      '(tabs)/squads': Squads,
-      _layout: Layout,
-      index: WelcomeScreen,
-      'sign-in/code': Code,
-      'sign-in/index': Phone,
-      'sign-in/name': Name,
-    },
-    { initialUrl },
-  )
+class AuthStackFixtures {
+  /**
+   * Renders the app at a url.
+   * @param initialUrl - Where the app starts, as a deep link would.
+   * @returns A promise that resolves once the app has rendered.
+   */
+  static async launch(initialUrl: string): Promise<void> {
+    await renderRouter(
+      {
+        '(tabs)/_layout': TabsLayout,
+        '(tabs)/squads': Squads,
+        _layout: Layout,
+        index: WelcomeScreen,
+        'sign-in/code': Code,
+        'sign-in/index': Phone,
+        'sign-in/name': Name,
+      },
+      { initialUrl },
+    )
+  }
 }
 
 /** The backend the test talks to. */
@@ -94,13 +99,13 @@ describe('AuthStack', () => {
   beforeEach(() => {
     saved = undefined
     backend = { paths: [], user: { name: 'Asha' } }
-    stubBackend(backend)
+    Fakes.stubBackend(backend)
   })
 
   it('shows nothing while the saved session is being checked', async () => {
     saved = 'r1'
     backend.hang = true
-    await launch('/')
+    await AuthStackFixtures.launch('/')
 
     await waitFor(() => {
       expect(backend.paths).toContain('POST /api/v1/auth/refresh')
@@ -110,33 +115,33 @@ describe('AuthStack', () => {
   })
 
   it('shows Welcome when signed out', async () => {
-    await launch('/')
+    await AuthStackFixtures.launch('/')
 
     expect(await screen.findByText('Continue with phone')).toBeOnTheScreen()
   })
 
   it('sends a signed-out deep link to the app back to Welcome', async () => {
-    await launch('/squads')
+    await AuthStackFixtures.launch('/squads')
 
     expect(await screen.findByText('Continue with phone')).toBeOnTheScreen()
   })
 
   it('lets a signed-out visitor reach the sign-in screens', async () => {
-    await launch('/sign-in')
+    await AuthStackFixtures.launch('/sign-in')
 
     expect(await screen.findByText('screen: phone')).toBeOnTheScreen()
   })
 
   it('shows the app when signed in with a name', async () => {
     saved = 'r1'
-    await launch('/')
+    await AuthStackFixtures.launch('/')
 
     expect(await screen.findByText('screen: squads')).toBeOnTheScreen()
   })
 
   it('keeps a signed-in launch away from Welcome and sign-in', async () => {
     saved = 'r1'
-    await launch('/sign-in')
+    await AuthStackFixtures.launch('/sign-in')
 
     expect(await screen.findByText('screen: squads')).toBeOnTheScreen()
     expect(screen.queryByText('screen: phone')).toBeNull()

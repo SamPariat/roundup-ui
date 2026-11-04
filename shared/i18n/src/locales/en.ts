@@ -22,6 +22,11 @@ export const en = {
       profile: 'Profile',
     },
   },
+  titles: {
+    squads: 'Your squads',
+    explore: 'Explore',
+    profile: 'Profile',
+  },
   tabs: {
     withCount: '{{label}}, {{total}}',
   },

@@ -1,6 +1,6 @@
 import * as SecureStore from 'expo-secure-store'
 
-import { createSessionStore } from '../../src/session/session-store.native'
+import { SessionStore } from '../../src/session/session-store.native'
 
 /** The options every call must carry, so a background refresh works after the first unlock. */
 const OPTIONS = { keychainAccessible: SecureStore.AFTER_FIRST_UNLOCK }
@@ -12,7 +12,7 @@ describe('native session store', () => {
 
   it('saves the refresh token to the Keychain and keeps it in memory', async () => {
     const set = jest.spyOn(SecureStore, 'setItemAsync').mockResolvedValue()
-    const store = createSessionStore()
+    const store = SessionStore.create()
 
     expect(store.cookie).toBe(false)
 
@@ -24,7 +24,7 @@ describe('native session store', () => {
 
   it('restores what an earlier launch saved', async () => {
     const get = jest.spyOn(SecureStore, 'getItemAsync').mockResolvedValue('r9')
-    const store = createSessionStore()
+    const store = SessionStore.create()
 
     await store.restore()
 
@@ -35,7 +35,7 @@ describe('native session store', () => {
   it('restores nothing when the Keychain has no entry', async () => {
     jest.spyOn(SecureStore, 'getItemAsync').mockResolvedValue(null)
 
-    const store = createSessionStore()
+    const store = SessionStore.create()
 
     await store.restore()
 
@@ -46,7 +46,7 @@ describe('native session store', () => {
     jest.spyOn(SecureStore, 'setItemAsync').mockResolvedValue()
 
     const remove = jest.spyOn(SecureStore, 'deleteItemAsync').mockResolvedValue()
-    const store = createSessionStore()
+    const store = SessionStore.create()
 
     await store.save('r1')
     await store.clear()

@@ -15,7 +15,7 @@ import { useT } from '@roundup/i18n'
 
 import { ActionContext } from '../lib/action-context'
 import { cn } from '../lib/cn'
-import { breakpointFor } from '../lib/useBreakpoint'
+import { Breakpoint } from '../lib/useBreakpoint'
 import { Button } from './Button'
 import { Surface } from './Surface'
 import { Text } from './Text'
@@ -59,19 +59,24 @@ interface IFocusable {
 }
 
 /**
- * Moves focus to the dialog title so assistive technology starts reading at the top of the dialog.
- * @param title - The title element, or null before it has mounted.
+ * Modal helpers. Static methods only.
  */
-const moveFocusTo = (title: null | TTitleElement): void => {
-  if (title === null) return
+class ModalFocus {
+  /**
+   * Moves focus to the dialog title so assistive technology starts reading at the top of the dialog.
+   * @param title - The title element, or null before it has mounted.
+   */
+  static moveFocusTo(title: null | TTitleElement): void {
+    if (title === null) return
 
-  if (Platform.OS === 'web') {
-    ;(title as unknown as IFocusable).focus?.()
+    if (Platform.OS === 'web') {
+      ;(title as unknown as IFocusable).focus?.()
 
-    return
+      return
+    }
+
+    AccessibilityInfo.sendAccessibilityEvent(title, 'focus')
   }
-
-  AccessibilityInfo.sendAccessibilityEvent(title, 'focus')
 }
 
 /** Props for the header row of the modal. */
@@ -189,7 +194,7 @@ export const Modal = ({
 }: IModalProps): ReactElement => {
   const { width } = useWindowDimensions()
   const titleRef = useRef<TTitleElement>(null)
-  const sheet = breakpointFor(width) === 'phone'
+  const sheet = Breakpoint.of(width) === 'phone'
   const confirm = tone === 'confirm'
   const showClose = !confirm && !busy && closable
 
@@ -201,7 +206,7 @@ export const Modal = ({
   }, [busy, onClose])
 
   const focusTitle = useCallback(() => {
-    moveFocusTo(titleRef.current)
+    ModalFocus.moveFocusTo(titleRef.current)
   }, [])
 
   return (

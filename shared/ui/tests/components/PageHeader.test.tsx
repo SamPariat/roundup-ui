@@ -1,11 +1,11 @@
 import { fireEvent, screen } from '@testing-library/react-native'
 
 import { PageHeader } from '../../src/components/PageHeader'
-import { renderWithTheme } from '../helpers/render'
+import { Render } from '../helpers/render'
 
 describe('PageHeader', () => {
   it('titles the page with a level 1 heading', async () => {
-    await renderWithTheme(<PageHeader title="Friday crew" />)
+    await Render.withTheme(<PageHeader title="Friday crew" />)
 
     expect(screen.getByRole('heading', { name: 'Friday crew' })).toBeOnTheScreen()
   })
@@ -13,7 +13,7 @@ describe('PageHeader', () => {
   it('offers a back button named by its text', async () => {
     const onBack = jest.fn()
 
-    await renderWithTheme(<PageHeader back="Squads" onBack={onBack} title="Friday crew" />)
+    await Render.withTheme(<PageHeader back="Squads" onBack={onBack} title="Friday crew" />)
 
     await fireEvent.press(screen.getByRole('button', { name: 'Squads' }))
 
@@ -21,7 +21,7 @@ describe('PageHeader', () => {
   })
 
   it('shows the subtitle', async () => {
-    await renderWithTheme(<PageHeader subtitle="12 members" title="Friday crew" />)
+    await Render.withTheme(<PageHeader subtitle="12 members" title="Friday crew" />)
 
     expect(screen.getByText('12 members')).toBeOnTheScreen()
   })

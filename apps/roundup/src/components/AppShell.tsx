@@ -26,7 +26,7 @@ export const AppShell = ({ children, current }: IAppShellProps): ReactElement =>
   const { gutter, nav } = useLayout()
   const items = useTabItems()
   const navItems = items.map(({ href, icon, id, label }) => ({ href, icon, id, label }))
-  const title = items.find((item) => item.id === current)?.label ?? ''
+  const title = items.find((item) => item.id === current)?.title ?? ''
 
   return (
     <View className={cn('flex-1 bg-bg', nav === 'side' && 'flex-row')}>

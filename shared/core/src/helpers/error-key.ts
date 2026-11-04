@@ -19,7 +19,7 @@ export interface IErrorMessage {
 /**
  * Maps errors to messages. Static methods only; the dependency container holds the class.
  */
-export class ErrorHelper {
+export class ErrorKey {
   /**
    * Maps whatever a request threw to a message key. 400 is invalid input, 401 a wrong code, 429 too
    * many requests (or too many tries at a code), 0 no connection, and anything else a generic

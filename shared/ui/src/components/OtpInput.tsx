@@ -33,15 +33,20 @@ export interface IOtpInputProps {
 }
 
 /**
- * Formats a number of seconds as m:ss for the resend countdown.
- * @param seconds - Whole seconds remaining.
- * @returns The time as minutes, a colon and two-digit seconds.
+ * Resend countdown helpers. Static methods only.
  */
-export const formatCountdown = (seconds: number): string => {
-  const minutes = Math.floor(seconds / 60)
-  const rest = seconds % 60
+export class Countdown {
+  /**
+   * Formats a number of seconds as m:ss for the resend countdown.
+   * @param seconds - Whole seconds remaining.
+   * @returns The time as minutes, a colon and two-digit seconds.
+   */
+  static format(seconds: number): string {
+    const minutes = Math.floor(seconds / 60)
+    const rest = seconds % 60
 
-  return `${String(minutes)}:${rest < 10 ? '0' : ''}${String(rest)}`
+    return `${String(minutes)}:${rest < 10 ? '0' : ''}${String(rest)}`
+  }
 }
 
 /**
@@ -113,7 +118,7 @@ export const OtpInput = ({
               <Text tone="muted" variant="body-sm">
                 {t('otpInput.resendIn')}
               </Text>
-              <Text variant="numeric">{formatCountdown(resendIn)}</Text>
+              <Text variant="numeric">{Countdown.format(resendIn)}</Text>
             </>
           ) : (
             <>

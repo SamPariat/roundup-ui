@@ -9,18 +9,26 @@ export interface IAuthBridge {
   refresh: () => Promise<boolean>
 }
 
-let current: IAuthBridge | undefined
-
 /**
- * Installs (or, with undefined, removes) the session bridge the fetcher calls.
- * @param bridge - The bridge to use from now on.
+ * Holds the session bridge the fetcher calls. Static members only.
  */
-export const setAuthBridge = (bridge: IAuthBridge | undefined): void => {
-  current = bridge
+export class AuthBridge {
+  /** The installed bridge, or undefined when none is installed. */
+  private static current: IAuthBridge | undefined
+
+  /**
+   * Installs (or, with undefined, removes) the session bridge the fetcher calls.
+   * @param bridge - The bridge to use from now on.
+   */
+  static set(bridge: IAuthBridge | undefined): void {
+    AuthBridge.current = bridge
+  }
+
+  /**
+   * Reads the installed bridge.
+   * @returns The bridge, or undefined when none is installed.
+   */
+  static get(): IAuthBridge | undefined {
+    return AuthBridge.current
+  }
 }
-
-/**
- * Reads the installed bridge.
- * @returns The bridge, or undefined when none is installed.
- */
-export const getAuthBridge = (): IAuthBridge | undefined => current

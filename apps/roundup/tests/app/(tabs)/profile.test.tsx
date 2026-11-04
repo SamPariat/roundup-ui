@@ -7,7 +7,7 @@ import type { IBackend } from '../../helpers/fakes'
 
 import ProfileScreen from '../../../src/app/(tabs)/profile/index'
 import WelcomeScreen from '../../../src/app/index'
-import { renderApp } from '../../helpers/render'
+import { Render } from '../../helpers/render'
 
 /**
  * Stand-in for the tabs layout: renders the active tab.
@@ -24,7 +24,7 @@ describe('profile screen', () => {
   })
 
   it('shows the signed-in person and the log out row', async () => {
-    await renderApp({ profile: ProfileScreen }, { backend, saved: 'r1', url: '/profile' })
+    await Render.app({ profile: ProfileScreen }, { backend, saved: 'r1', url: '/profile' })
 
     expect(await screen.findByText('Asha Rao')).toBeOnTheScreen()
     expect(screen.getByText('+91 98765 43210')).toBeOnTheScreen()
@@ -32,13 +32,13 @@ describe('profile screen', () => {
   })
 
   it('still offers the theme choice', async () => {
-    await renderApp({ profile: ProfileScreen }, { backend, saved: 'r1', url: '/profile' })
+    await Render.app({ profile: ProfileScreen }, { backend, saved: 'r1', url: '/profile' })
 
     expect(await screen.findByText('Theme')).toBeOnTheScreen()
   })
 
   it('logs out and returns to Welcome', async () => {
-    await renderApp(
+    await Render.app(
       { '(tabs)/_layout': TabsLayout, '(tabs)/profile': ProfileScreen, index: WelcomeScreen },
       { backend, guarded: true, saved: 'r1', url: '/profile' },
     )

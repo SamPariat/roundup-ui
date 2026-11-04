@@ -1,6 +1,6 @@
 import * as ExpoNetwork from 'expo-network'
 
-import { createNetworkSource } from '../../src/network/network-source'
+import { NetworkSource } from '../../src/network/network-source'
 
 jest.mock('expo-network')
 
@@ -21,7 +21,7 @@ describe('network source', () => {
   ])('reads %j as online=%s', async (state, online) => {
     mocked.getNetworkStateAsync.mockResolvedValue(state)
 
-    await expect(createNetworkSource().getState()).resolves.toEqual({ online })
+    await expect(NetworkSource.create().getState()).resolves.toEqual({ online })
   })
 
   it('maps each change to the listener and stops listening', () => {
@@ -30,7 +30,7 @@ describe('network source', () => {
     mocked.addNetworkStateListener.mockReturnValue({ remove })
 
     const listener = jest.fn()
-    const stop = createNetworkSource().subscribe(listener)
+    const stop = NetworkSource.create().subscribe(listener)
 
     const emit = mocked.addNetworkStateListener.mock.calls[0]?.[0] as (
       state: ExpoNetwork.NetworkState,

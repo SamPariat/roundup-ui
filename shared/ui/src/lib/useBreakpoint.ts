@@ -14,16 +14,21 @@ export interface IBreakpointState {
 }
 
 /**
- * Maps a window width to a layout step. The widths are Tailwind's defaults for md (768) and lg
- * (1024), the same steps `md:` and `lg:` classes switch at, so JavaScript and CSS agree.
- * @param width - The window width in points.
- * @returns phone below 768, tablet from 768, desktop from 1024.
+ * Breakpoint helpers. Static methods only.
  */
-export const breakpointFor = (width: number): TBreakpoint => {
-  if (width >= 1024) return 'desktop'
-  if (width >= 768) return 'tablet'
+export class Breakpoint {
+  /**
+   * Maps a window width to a layout step. The widths are Tailwind's defaults for md (768) and lg
+   * (1024), the same steps `md:` and `lg:` classes switch at, so JavaScript and CSS agree.
+   * @param width - The window width in points.
+   * @returns phone below 768, tablet from 768, desktop from 1024.
+   */
+  static of(width: number): TBreakpoint {
+    if (width >= 1024) return 'desktop'
+    if (width >= 768) return 'tablet'
 
-  return 'phone'
+    return 'phone'
+  }
 }
 
 /**
@@ -38,5 +43,5 @@ export const useBreakpoint = (): IBreakpointState => {
   const hydrated = useHydrated()
   const width = hydrated ? live : 0
 
-  return { breakpoint: breakpointFor(width), width }
+  return { breakpoint: Breakpoint.of(width), width }
 }
