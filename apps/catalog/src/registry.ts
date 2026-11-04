@@ -13,6 +13,7 @@ import { ListDemo } from './demos/ListDemo'
 import { ListRowDemo } from './demos/ListRowDemo'
 import { LogoDemo } from './demos/LogoDemo'
 import { ModalDemo } from './demos/ModalDemo'
+import { NotifierDemo } from './demos/NotifierDemo'
 import { OtpInputDemo } from './demos/OtpInputDemo'
 import { PageHeaderDemo } from './demos/PageHeaderDemo'
 import { PhoneInputDemo } from './demos/PhoneInputDemo'
@@ -172,6 +173,12 @@ const ENTRIES: readonly TEntryInput[] = [
     group: 'Feedback',
     summary: 'A short message with an optional action.',
     Demo: ToastDemo,
+  },
+  {
+    title: 'Notifier',
+    group: 'Feedback',
+    summary: 'The app-wide host that floats one message at the top of the screen.',
+    Demo: NotifierDemo,
   },
   {
     title: 'EmptyState',
