@@ -1,16 +1,16 @@
-import { resolveLanguage } from '../src/language'
+import { LanguageHelper } from '../src/language'
 
-describe('resolveLanguage', () => {
+describe('LanguageHelper.resolve', () => {
   it('uses a language we ship', () => {
-    expect(resolveLanguage(['en'])).toBe('en')
+    expect(LanguageHelper.resolve(['en'])).toBe('en')
   })
 
   it('takes the first shipped language in the person order of preference', () => {
-    expect(resolveLanguage(['fr', 'en', 'de'])).toBe('en')
+    expect(LanguageHelper.resolve(['fr', 'en', 'de'])).toBe('en')
   })
 
   it('falls back to English for unknown or missing languages', () => {
-    expect(resolveLanguage(['fr', null])).toBe('en')
-    expect(resolveLanguage([])).toBe('en')
+    expect(LanguageHelper.resolve(['fr', null])).toBe('en')
+    expect(LanguageHelper.resolve([])).toBe('en')
   })
 })
