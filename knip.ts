@@ -31,7 +31,8 @@ export default {
         // (pnpm does not hoist them from shared/ui), even though only shared/ui imports them.
         'expo-glass-effect',
         'expo-localization',
-        // Imported only by shared/core's session store.
+        // Imported only by shared/core's session store and network source.
+        'expo-network',
         'expo-secure-store',
         // Named in app.config.ts plugins or loaded by Expo itself, never imported.
         // expo-dev-client is linked natively by expo run:ios / run:android and never imported.

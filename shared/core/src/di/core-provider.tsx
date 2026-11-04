@@ -1,6 +1,6 @@
 import type { ReactElement, ReactNode } from 'react'
 
-import { QueryClientProvider } from '@tanstack/react-query'
+import { onlineManager, QueryClientProvider } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
 
 import { setAuthBridge } from '@roundup/api'
@@ -41,6 +41,17 @@ export const CoreProvider = ({ children, deps }: ICoreProviderProps): ReactEleme
     })
 
     void built.session.restore()
+
+    // Queries pause while offline and refetch when the connection returns.
+    onlineManager.setEventListener((setOnline) => {
+      void built.deps.network.getState().then(({ online }) => {
+        setOnline(online)
+      })
+
+      return built.deps.network.subscribe(({ online }) => {
+        setOnline(online)
+      })
+    })
 
     return () => {
       setAuthBridge(undefined)

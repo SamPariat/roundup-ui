@@ -7,9 +7,10 @@ import { SafeAreaProvider } from 'react-native-safe-area-context'
 import { CoreProvider } from '@roundup/core'
 import { ThemeProvider } from '@roundup/ui'
 
-import type { IBackend } from './fakes'
+import type { FakeNetwork, IBackend } from './fakes'
 
 import { AuthStack } from '../../src/components/AuthStack'
+import { OfflineNotice } from '../../src/components/OfflineNotice'
 import { stubBackend, testDeps } from './fakes'
 
 /** Insets and frame of a phone, so the safe-area hooks have values. */
@@ -28,10 +29,12 @@ export interface IAppOptions {
   backend: IBackend
   /** True to render the real AuthStack guards instead of a plain slot. */
   guarded?: boolean
+  /** The network source; a test calls set(false) on it to go offline. Defaults to one that stays online. */
+  network?: FakeNetwork
 }
 
 /**
- * Renders routes inside the providers the real root layout supplies, against a stubbed backend.
+ * Renders routes inside the providers and the offline notice the real root layout supplies, against a stubbed backend.
  * @param routes - The route files, by their path under src/app.
  * @param options - The start url, the saved session and the backend.
  * @returns A promise that resolves once the app has rendered.
@@ -40,11 +43,11 @@ export const renderApp = async (
   routes: Record<string, ComponentType>,
   options: IAppOptions,
 ): Promise<void> => {
-  const { backend, guarded = false, saved, url } = options
+  const { backend, guarded = false, network, saved, url } = options
 
   stubBackend(backend)
 
-  const deps = testDeps(saved)
+  const deps = testDeps(saved, network)
 
   /**
    * The root layout of the test app.
@@ -53,7 +56,10 @@ export const renderApp = async (
   const Layout = (): ReactElement => (
     <SafeAreaProvider initialMetrics={METRICS}>
       <ThemeProvider>
-        <CoreProvider deps={deps}>{guarded ? <AuthStack /> : <Slot />}</CoreProvider>
+        <CoreProvider deps={deps}>
+          {guarded ? <AuthStack /> : <Slot />}
+          <OfflineNotice />
+        </CoreProvider>
       </ThemeProvider>
     </SafeAreaProvider>
   )

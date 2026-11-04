@@ -1,3 +1,4 @@
+import type { INetworkSource, INetworkState } from '../../src/network/types'
 import type { ISessionStore } from '../../src/session/types'
 
 /** A session store that keeps its token in memory and records what core asked of it. */
@@ -61,6 +62,46 @@ export class FakeStore implements ISessionStore {
     this.saved.push(refreshToken)
 
     return Promise.resolve()
+  }
+}
+
+/** A network source a test switches by hand. It starts online. */
+export class FakeNetwork implements INetworkSource {
+  /** Whether the device is "online". */
+  private online = true
+
+  /** Everyone listening. */
+  private readonly listeners = new Set<(state: INetworkState) => void>()
+
+  /**
+   * Reads the current state.
+   * @returns Whether the device is online.
+   */
+  getState(): Promise<INetworkState> {
+    return Promise.resolve({ online: this.online })
+  }
+
+  /**
+   * Changes the state and tells the listeners.
+   * @param online - Whether the device is now online.
+   */
+  set(online: boolean): void {
+    this.online = online
+
+    for (const listener of this.listeners) listener({ online })
+  }
+
+  /**
+   * Starts listening.
+   * @param listener - Called on every change.
+   * @returns The function that stops listening.
+   */
+  subscribe(listener: (state: INetworkState) => void): () => void {
+    this.listeners.add(listener)
+
+    return () => {
+      this.listeners.delete(listener)
+    }
   }
 }
 
