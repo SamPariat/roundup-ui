@@ -43,7 +43,7 @@ const insets: IInsets = { top: 47, right: 3, bottom: 34, left: 11 }
 /**
  * Shell test helpers. Static methods only.
  */
-class ShellTestHelper {
+class ShellFixtures {
   /**
    * Renders the shell inside a router at a given window width.
    * @param width - The window width in points.
@@ -80,7 +80,7 @@ class ShellTestHelper {
 
 describe('AppShell', () => {
   it.each([360, 466, 626, 768, 890])('uses the bottom nav at %i wide', async (width) => {
-    await ShellTestHelper.renderShellAt(width)
+    await ShellFixtures.renderShellAt(width)
 
     expect(screen.getByLabelText('Main')).toBeOnTheScreen()
     expect(screen.queryByLabelText('Sidebar')).not.toBeOnTheScreen()
@@ -88,7 +88,7 @@ describe('AppShell', () => {
   })
 
   it.each([1024, 1440])('uses the side nav at %i wide', async (width) => {
-    await ShellTestHelper.renderShellAt(width)
+    await ShellFixtures.renderShellAt(width)
 
     expect(screen.getByLabelText('Sidebar')).toBeOnTheScreen()
     expect(screen.queryByLabelText('Main')).not.toBeOnTheScreen()
@@ -96,7 +96,7 @@ describe('AppShell', () => {
   })
 
   it('offers the same three destinations on every width', async () => {
-    await ShellTestHelper.renderShellAt(360)
+    await ShellFixtures.renderShellAt(360)
 
     const phoneTabs = screen
       .getAllByRole('tab')
@@ -106,19 +106,19 @@ describe('AppShell', () => {
   })
 
   it('selects the destination of the current route', async () => {
-    await ShellTestHelper.renderShellAt(1440, 'profile')
+    await ShellFixtures.renderShellAt(1440, 'profile')
 
     expect(screen.getByRole('tab', { name: 'Profile' })).toBeSelected()
   })
 
   it('shows the page content', async () => {
-    await ShellTestHelper.renderShellAt(360)
+    await ShellFixtures.renderShellAt(360)
 
     expect(screen.getByText('Page content')).toBeOnTheScreen()
   })
 
   it('reads each safe-area edge on its own', async () => {
-    await ShellTestHelper.renderShellAt(466, 'squads', insets)
+    await ShellFixtures.renderShellAt(466, 'squads', insets)
     const bar = screen.getByLabelText('Main').parent
 
     expect(bar).toHaveStyle({

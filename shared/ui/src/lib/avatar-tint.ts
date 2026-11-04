@@ -4,7 +4,7 @@ export type TAvatarTint = 1 | 2 | 3 | 4 | 5 | 6
 /**
  * Avatar helpers. Static methods only.
  */
-export class AvatarHelper {
+export class AvatarTint {
   /**
    * Takes the initials of a name: first letter of the first and last words, uppercased; `?` for an empty name.
    * @param name - A person or squad name.

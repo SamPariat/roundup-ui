@@ -19,7 +19,7 @@ interface IRenderOptions {
 /**
  * Rendering helpers for the ui tests. Static methods only.
  */
-export class RenderHelper {
+export class Render {
   /**
    * Components read colors through useTheme() and safe areas through the provider, so every
    * test renders inside both. Pass insets and a frame width to test a particular device.

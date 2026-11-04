@@ -16,7 +16,7 @@ export interface IBreakpointState {
 /**
  * Breakpoint helpers. Static methods only.
  */
-export class BreakpointHelper {
+export class Breakpoint {
   /**
    * Maps a window width to a layout step. The widths are Tailwind's defaults for md (768) and lg
    * (1024), the same steps `md:` and `lg:` classes switch at, so JavaScript and CSS agree.
@@ -43,5 +43,5 @@ export const useBreakpoint = (): IBreakpointState => {
   const hydrated = useHydrated()
   const width = hydrated ? live : 0
 
-  return { breakpoint: BreakpointHelper.of(width), width }
+  return { breakpoint: Breakpoint.of(width), width }
 }

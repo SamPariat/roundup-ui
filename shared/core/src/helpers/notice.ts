@@ -5,7 +5,7 @@ export type TPhase = 'back' | 'offline' | 'online'
  * Connection notice helpers. Static methods only; the dependency container holds the class, so a
  * test can swap it.
  */
-export class NoticeHelper {
+export class Notice {
   /**
    * The phase after a new reading. Regaining a connection only says "back online" if it was lost.
    * @param current - The phase so far.

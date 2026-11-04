@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 
 import type { en } from '@roundup/i18n'
 
-import type { TPhase } from '../helpers/notice-helper'
+import type { TPhase } from '../helpers/notice'
 import type { INetworkState } from './types'
 
 import { useDeps } from '../di/useDeps'

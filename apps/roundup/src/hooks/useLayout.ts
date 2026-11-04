@@ -1,4 +1,4 @@
-import { BreakpointHelper, useBreakpoint } from '@roundup/ui'
+import { Breakpoint, useBreakpoint } from '@roundup/ui'
 
 /** How the shell is laid out at a given width. */
 export interface IShellLayout {
@@ -22,7 +22,7 @@ export class Layout {
   static forWidth(width: number): IShellLayout {
     // Tailwind's defaults: md is 768 and lg is 1024, p-4 is 16 and p-8 is 32, w-62 (the SideNav) is
     // 248. The content column is max-w-content, 1200, from theme.css.
-    const step = BreakpointHelper.of(width)
+    const step = Breakpoint.of(width)
     const nav = step === 'desktop' ? 'side' : 'bottom'
     const gutter = step === 'phone' ? 16 : 32
     const available = width - (nav === 'side' ? 248 : 0)

@@ -10,7 +10,7 @@ export const FALLBACK_LANGUAGE: TSupportedLanguage = 'en'
 /**
  * Language helpers. Static methods only.
  */
-export class LanguageHelper {
+export class Language {
   /**
    * Picks the first device language we ship, in the person's order of preference, else English.
    * @param deviceLanguages - Language codes from the device, most preferred first.

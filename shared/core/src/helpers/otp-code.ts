@@ -5,7 +5,7 @@ export const CODE_LENGTH = 6
  * Sign-in code helpers. Static methods only; the dependency container holds the class, so a test
  * can swap it.
  */
-export class CodeHelper {
+export class OtpCode {
   /**
    * Keeps only digits, at most the code length.
    * @param text - Whatever the field now holds.

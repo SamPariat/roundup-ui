@@ -36,7 +36,7 @@ export interface IAppOptions {
 /**
  * Rendering helpers for the app tests. Static methods only.
  */
-export class RenderHelper {
+export class Render {
   /**
    * Renders routes inside the providers and the offline notice the real root layout supplies, against a stubbed backend.
    * @param routes - The route files, by their path under src/app.

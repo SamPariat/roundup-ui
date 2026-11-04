@@ -94,7 +94,7 @@ jest.mock('../../../src/components/AppShell', () => ({ AppShell: mockContainer }
 /**
  * Tab layout test helpers. Static methods only.
  */
-class TabsTestHelper {
+class TabsFixtures {
   /**
    * Lists the trigger routes recorded under a prefix, in render order.
    * @param prefix - Which tab bar recorded them, such as "native:".
@@ -128,7 +128,7 @@ describe('tab layouts', () => {
 
     await render(<Shared />)
 
-    expect(TabsTestHelper.triggersWith('native:')).toEqual(['squads', 'explore', 'profile'])
-    expect(TabsTestHelper.triggersWith('headless:')).toEqual(TabsTestHelper.triggersWith('native:'))
+    expect(TabsFixtures.triggersWith('native:')).toEqual(['squads', 'explore', 'profile'])
+    expect(TabsFixtures.triggersWith('headless:')).toEqual(TabsFixtures.triggersWith('native:'))
   })
 })

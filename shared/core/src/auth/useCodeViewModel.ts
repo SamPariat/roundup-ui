@@ -2,10 +2,10 @@ import { useCallback, useEffect, useState } from 'react'
 
 import { requestOTP, verifyOTP } from '@roundup/api'
 
-import type { TErrorKey } from '../helpers/error-helper'
+import type { TErrorKey } from '../helpers/error-key'
 
 import { useDeps } from '../di/useDeps'
-import { CODE_LENGTH } from '../helpers/code-helper'
+import { CODE_LENGTH } from '../helpers/otp-code'
 import { useSession } from '../session/useSession'
 import { useAttempt } from './useAttempt'
 

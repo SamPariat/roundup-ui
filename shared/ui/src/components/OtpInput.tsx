@@ -35,7 +35,7 @@ export interface IOtpInputProps {
 /**
  * Resend countdown helpers. Static methods only.
  */
-export class CountdownHelper {
+export class Countdown {
   /**
    * Formats a number of seconds as m:ss for the resend countdown.
    * @param seconds - Whole seconds remaining.
@@ -118,7 +118,7 @@ export const OtpInput = ({
               <Text tone="muted" variant="body-sm">
                 {t('otpInput.resendIn')}
               </Text>
-              <Text variant="numeric">{CountdownHelper.format(resendIn)}</Text>
+              <Text variant="numeric">{Countdown.format(resendIn)}</Text>
             </>
           ) : (
             <>

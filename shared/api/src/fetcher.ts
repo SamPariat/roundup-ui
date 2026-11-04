@@ -15,7 +15,7 @@ const REQUEST_ID_HEADER = 'X-Request-ID'
 /**
  * Request helpers for the fetcher. Static members only.
  */
-class FetchHelper {
+class Fetch {
   /** The refresh already running, so concurrent 401s share one. */
   private static refreshing: Promise<boolean> | undefined
 
@@ -40,7 +40,7 @@ class FetchHelper {
     const token = AuthBridge.get()?.getAccessToken()
 
     headers.set('Accept', 'application/json')
-    headers.set('X-Client', FetchHelper.clientKind())
+    headers.set('X-Client', Fetch.clientKind())
 
     if (token !== undefined && !headers.has('Authorization')) {
       headers.set('Authorization', `Bearer ${token}`)
@@ -66,11 +66,11 @@ class FetchHelper {
 
     if (bridge === undefined) return Promise.resolve(false)
 
-    FetchHelper.refreshing ??= bridge.refresh().finally(() => {
-      FetchHelper.refreshing = undefined
+    Fetch.refreshing ??= bridge.refresh().finally(() => {
+      Fetch.refreshing = undefined
     })
 
-    return FetchHelper.refreshing
+    return Fetch.refreshing
   }
 
   /**
@@ -125,29 +125,22 @@ class FetchHelper {
  * @returns The parsed response body, typed by the generated client.
  */
 export const fetcher = async <T>(url: string, init?: RequestInit): Promise<T> => {
-  let response = await FetchHelper.send(url, init)
+  let response = await Fetch.send(url, init)
 
-  if (
-    response.status === 401 &&
-    !FetchHelper.isAuthRoute(url) &&
-    (await FetchHelper.refreshOnce())
-  ) {
-    response = await FetchHelper.send(url, init)
+  if (response.status === 401 && !Fetch.isAuthRoute(url) && (await Fetch.refreshOnce())) {
+    response = await Fetch.send(url, init)
   }
 
   const requestId = response.headers.get(REQUEST_ID_HEADER) ?? undefined
 
   if (NO_CONTENT.has(response.status) && response.ok) return undefined as T
 
-  const body = await FetchHelper.readBody(response)
+  const body = await Fetch.readBody(response)
 
   if (!response.ok) {
     throw new ApiError(
       response.status,
-      FetchHelper.errorMessage(
-        body,
-        response.statusText === '' ? 'Request failed' : response.statusText,
-      ),
+      Fetch.errorMessage(body, response.statusText === '' ? 'Request failed' : response.statusText),
       requestId,
     )
   }

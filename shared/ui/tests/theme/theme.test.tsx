@@ -3,7 +3,7 @@ import type { ReactNode } from 'react'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { act, renderHook, waitFor } from '@testing-library/react-native'
 
-import { THEME_STORAGE_KEY, ThemeHelper, ThemeProvider, useTheme } from '../../src/theme/theme'
+import { Theme, THEME_STORAGE_KEY, ThemeProvider, useTheme } from '../../src/theme/theme'
 
 /** Props of the hook test wrapper. */
 interface IWrapperProps {
@@ -19,17 +19,17 @@ const wrapper = ({ children }: IWrapperProps) => <ThemeProvider>{children}</Them
 
 describe('themeNameFor', () => {
   it('follows the device when the preference is system', () => {
-    expect(ThemeHelper.nameFor('system', 'light')).toBe('latte')
-    expect(ThemeHelper.nameFor('system', 'dark')).toBe('mocha')
+    expect(Theme.nameFor('system', 'light')).toBe('latte')
+    expect(Theme.nameFor('system', 'dark')).toBe('mocha')
   })
 
   it('defaults to Mocha when the device does not say', () => {
-    expect(ThemeHelper.nameFor('system', null)).toBe('mocha')
+    expect(Theme.nameFor('system', null)).toBe('mocha')
   })
 
   it('lets an explicit choice win over the device', () => {
-    expect(ThemeHelper.nameFor('light', 'dark')).toBe('latte')
-    expect(ThemeHelper.nameFor('dark', 'light')).toBe('mocha')
+    expect(Theme.nameFor('light', 'dark')).toBe('latte')
+    expect(Theme.nameFor('dark', 'light')).toBe('mocha')
   })
 })
 

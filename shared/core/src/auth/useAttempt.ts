@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react'
 
-import type { TErrorContext, TErrorKey } from '../helpers/error-helper'
+import type { TErrorContext, TErrorKey } from '../helpers/error-key'
 
 import { useDeps } from '../di/useDeps'
 

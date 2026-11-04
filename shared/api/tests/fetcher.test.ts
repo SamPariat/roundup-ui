@@ -28,7 +28,7 @@ let refresh: jest.Mock<Promise<boolean>, []>
 /**
  * Fetcher test helpers. Static methods only.
  */
-class FetcherTestHelper {
+class FetcherFixtures {
   /**
    * Builds a JSON response the way the gateway sends one.
    * @param status - The HTTP status.
@@ -106,12 +106,12 @@ describe('fetcher', () => {
        * Hands out the current test token.
        * @returns The bearer token string.
        */
-      getAccessToken: () => FetcherTestHelper.currentToken(),
+      getAccessToken: () => FetcherFixtures.currentToken(),
       /**
        * Runs the current refresh mock.
        * @returns What the mock resolves.
        */
-      refresh: () => FetcherTestHelper.runRefresh(),
+      refresh: () => FetcherFixtures.runRefresh(),
     })
   })
 
@@ -120,7 +120,7 @@ describe('fetcher', () => {
   })
 
   it('returns the parsed envelope from the configured base url', async () => {
-    fetchMock.mockResolvedValue(FetcherTestHelper.json(200, { data: { id: 'u1' }, success: true }))
+    fetchMock.mockResolvedValue(FetcherFixtures.json(200, { data: { id: 'u1' }, success: true }))
 
     const result = await fetcher<IEnvelope<IIdentified>>('/api/v1/users/me', { method: 'GET' })
 
@@ -129,14 +129,14 @@ describe('fetcher', () => {
   })
 
   it.each([202, 204])('resolves undefined for a %i', async (status) => {
-    fetchMock.mockResolvedValue(FetcherTestHelper.empty(status))
+    fetchMock.mockResolvedValue(FetcherFixtures.empty(status))
 
     await expect(fetcher('/api/v1/auth/logout', { method: 'POST' })).resolves.toBeUndefined()
   })
 
   it('throws an ApiError with status, message and request id', async () => {
     fetchMock.mockResolvedValue(
-      FetcherTestHelper.json(
+      FetcherFixtures.json(
         429,
         { error: 'too many requests', success: false },
         { 'X-Request-ID': 'req-9' },
@@ -158,23 +158,23 @@ describe('fetcher', () => {
   })
 
   it('sends the client kind, JSON accept and the bearer token on native', async () => {
-    fetchMock.mockResolvedValue(FetcherTestHelper.json(200, { success: true }))
+    fetchMock.mockResolvedValue(FetcherFixtures.json(200, { success: true }))
 
     await fetcher('/api/v1/users/me')
 
-    expect(FetcherTestHelper.sentHeaders(0).get('X-Client')).toBe('ios')
-    expect(FetcherTestHelper.sentHeaders(0).get('Accept')).toBe('application/json')
-    expect(FetcherTestHelper.sentHeaders(0).get('Authorization')).toBe('Bearer access-1')
+    expect(FetcherFixtures.sentHeaders(0).get('X-Client')).toBe('ios')
+    expect(FetcherFixtures.sentHeaders(0).get('Accept')).toBe('application/json')
+    expect(FetcherFixtures.sentHeaders(0).get('Authorization')).toBe('Bearer access-1')
     expect(fetchMock.mock.calls[0]?.[1].credentials).toBeUndefined()
   })
 
   it('sends X-Client web and includes cookies on web', async () => {
-    jest.spyOn(Platform, 'select').mockImplementation((spec) => FetcherTestHelper.selectWeb(spec))
-    fetchMock.mockResolvedValue(FetcherTestHelper.json(200, { success: true }))
+    jest.spyOn(Platform, 'select').mockImplementation((spec) => FetcherFixtures.selectWeb(spec))
+    fetchMock.mockResolvedValue(FetcherFixtures.json(200, { success: true }))
 
     await fetcher('/api/v1/users/me')
 
-    expect(FetcherTestHelper.sentHeaders(0).get('X-Client')).toBe('web')
+    expect(FetcherFixtures.sentHeaders(0).get('X-Client')).toBe('web')
     expect(fetchMock.mock.calls[0]?.[1].credentials).toBe('include')
   })
 
@@ -188,14 +188,14 @@ describe('fetcher', () => {
     })
 
     fetchMock
-      .mockResolvedValueOnce(FetcherTestHelper.json(401, { error: 'expired', success: false }))
-      .mockResolvedValueOnce(FetcherTestHelper.json(200, { data: 7, success: true }))
+      .mockResolvedValueOnce(FetcherFixtures.json(401, { error: 'expired', success: false }))
+      .mockResolvedValueOnce(FetcherFixtures.json(200, { data: 7, success: true }))
 
     const result = await fetcher<IEnvelope<number>>('/api/v1/users/me')
 
     expect(result.data).toBe(7)
     expect(refresh).toHaveBeenCalledTimes(1)
-    expect(FetcherTestHelper.sentHeaders(1).get('Authorization')).toBe('Bearer new')
+    expect(FetcherFixtures.sentHeaders(1).get('Authorization')).toBe('Bearer new')
   })
 
   it('shares one refresh between concurrent 401s', async () => {
@@ -218,14 +218,14 @@ describe('fetcher', () => {
 
       return Promise.resolve(
         stale
-          ? FetcherTestHelper.json(401, { error: 'expired', success: false })
-          : FetcherTestHelper.json(200, { success: true }),
+          ? FetcherFixtures.json(401, { error: 'expired', success: false })
+          : FetcherFixtures.json(200, { success: true }),
       )
     })
 
     const calls = Promise.all([fetcher('/api/v1/a'), fetcher('/api/v1/b'), fetcher('/api/v1/c')])
 
-    await FetcherTestHelper.tick()
+    await FetcherFixtures.tick()
 
     expect(refresh).toHaveBeenCalledTimes(1)
 
@@ -237,7 +237,7 @@ describe('fetcher', () => {
   })
 
   it('does not loop when the refresh fails', async () => {
-    fetchMock.mockResolvedValue(FetcherTestHelper.json(401, { error: 'expired', success: false }))
+    fetchMock.mockResolvedValue(FetcherFixtures.json(401, { error: 'expired', success: false }))
 
     await expect(fetcher('/api/v1/users/me')).rejects.toMatchObject({ status: 401 })
     expect(refresh).toHaveBeenCalledTimes(1)
@@ -248,7 +248,7 @@ describe('fetcher', () => {
     refresh.mockResolvedValue(true)
 
     fetchMock.mockResolvedValue(
-      FetcherTestHelper.json(401, { error: 'invalid code', success: false }),
+      FetcherFixtures.json(401, { error: 'invalid code', success: false }),
     )
 
     await expect(fetcher('/api/v1/auth/otp/verify', { method: 'POST' })).rejects.toMatchObject({
@@ -260,7 +260,7 @@ describe('fetcher', () => {
 
   it('retries only once when the retry also gets a 401', async () => {
     refresh.mockResolvedValue(true)
-    fetchMock.mockResolvedValue(FetcherTestHelper.json(401, { error: 'expired', success: false }))
+    fetchMock.mockResolvedValue(FetcherFixtures.json(401, { error: 'expired', success: false }))
 
     await expect(fetcher('/api/v1/users/me')).rejects.toMatchObject({ status: 401 })
     expect(fetchMock).toHaveBeenCalledTimes(2)

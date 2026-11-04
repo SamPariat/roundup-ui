@@ -70,7 +70,7 @@ type TEntryInput = Omit<ICatalogEntry, 'slug'>
 /**
  * URL segment helpers. Static methods only.
  */
-class SlugHelper {
+class Slug {
   /**
    * Turns a title into its URL segment: AvatarGroup becomes avatar-group.
    * @param title - The component's export name.
@@ -294,7 +294,7 @@ const ENTRIES: readonly TEntryInput[] = [
 /** Every page of the catalog, in index order. */
 export const REGISTRY: readonly ICatalogEntry[] = ENTRIES.map((entry) => ({
   ...entry,
-  slug: SlugHelper.of(entry.title),
+  slug: Slug.of(entry.title),
 }))
 
 /**

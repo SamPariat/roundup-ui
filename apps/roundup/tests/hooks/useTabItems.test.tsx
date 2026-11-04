@@ -1,8 +1,8 @@
 import { renderHook } from '@testing-library/react-native'
 
-import { TabHelper, useTabItems } from '../../src/hooks/useTabItems'
+import { Tab, useTabItems } from '../../src/hooks/useTabItems'
 
-describe('TabHelper.idForPath', () => {
+describe('Tab.idForPath', () => {
   it.each([
     ['/squads', 'squads'],
     ['/squads/42/members', 'squads'],
@@ -10,7 +10,7 @@ describe('TabHelper.idForPath', () => {
     ['/profile', 'profile'],
     ['/unknown', 'squads'],
   ] as const)('maps %s to %s', (path, id) => {
-    expect(TabHelper.idForPath(path)).toBe(id)
+    expect(Tab.idForPath(path)).toBe(id)
   })
 })
 

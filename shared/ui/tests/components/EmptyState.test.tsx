@@ -1,17 +1,17 @@
 import { screen } from '@testing-library/react-native'
 
 import { EmptyState } from '../../src/components/EmptyState'
-import { RenderHelper } from '../helpers/render'
+import { Render } from '../helpers/render'
 
 describe('EmptyState', () => {
   it('titles itself with a heading', async () => {
-    await RenderHelper.withTheme(<EmptyState title="No squads yet" />)
+    await Render.withTheme(<EmptyState title="No squads yet" />)
 
     expect(screen.getByRole('heading', { name: 'No squads yet' })).toBeOnTheScreen()
   })
 
   it('shows its body text', async () => {
-    await RenderHelper.withTheme(
+    await Render.withTheme(
       <EmptyState body="Make one and add your friends." title="No squads yet" />,
     )
 

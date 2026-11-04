@@ -3,12 +3,12 @@ import { fireEvent, screen } from '@testing-library/react-native'
 import { Button } from '../../src/components/Button'
 import { Modal } from '../../src/components/Modal'
 import { Text } from '../../src/components/Text'
-import { RenderHelper } from '../helpers/render'
+import { Render } from '../helpers/render'
 
 /**
  * Modal test helpers. Static methods only.
  */
-class ModalTestHelper {
+class ModalFixtures {
   /**
    * onRequestClose lives on the native Modal, the ancestor of the dialog Surface; fireEvent wants that element.
    * @returns The native modal's host element.
@@ -24,7 +24,7 @@ class ModalTestHelper {
 
 describe('Modal', () => {
   it('is a dialog named by its title', async () => {
-    await RenderHelper.withTheme(
+    await Render.withTheme(
       <Modal title="Add member">
         <Text>Body</Text>
       </Modal>,
@@ -37,13 +37,13 @@ describe('Modal', () => {
   it('closes when the system asks it to (Esc or the Android back button)', async () => {
     const onClose = jest.fn()
 
-    await RenderHelper.withTheme(
+    await Render.withTheme(
       <Modal onClose={onClose} title="Add member">
         <Text>Body</Text>
       </Modal>,
     )
 
-    await fireEvent(ModalTestHelper.modalHost(), 'requestClose')
+    await fireEvent(ModalFixtures.modalHost(), 'requestClose')
 
     expect(onClose).toHaveBeenCalledTimes(1)
   })
@@ -51,7 +51,7 @@ describe('Modal', () => {
   it('closes from its Close button', async () => {
     const onClose = jest.fn()
 
-    await RenderHelper.withTheme(
+    await Render.withTheme(
       <Modal onClose={onClose} title="Add member">
         <Text>Body</Text>
       </Modal>,
@@ -63,7 +63,7 @@ describe('Modal', () => {
   })
 
   it('has no Close button on a confirmation', async () => {
-    await RenderHelper.withTheme(
+    await Render.withTheme(
       <Modal
         actions={[<Button key="leave">Leave</Button>]}
         body="You can rejoin later."
@@ -77,7 +77,7 @@ describe('Modal', () => {
   })
 
   it('can hide its Close button', async () => {
-    await RenderHelper.withTheme(
+    await Render.withTheme(
       <Modal closable={false} title="Add member">
         <Text>Body</Text>
       </Modal>,
@@ -87,7 +87,7 @@ describe('Modal', () => {
   })
 
   it('shows nothing while not visible', async () => {
-    await RenderHelper.withTheme(<Modal title="Add member" visible={false} />)
+    await Render.withTheme(<Modal title="Add member" visible={false} />)
 
     expect(screen.queryByRole('heading', { name: 'Add member' })).not.toBeOnTheScreen()
   })
@@ -112,13 +112,13 @@ describe('Modal', () => {
     )
 
     it('hides the close button', async () => {
-      await RenderHelper.withTheme(busyModal)
+      await Render.withTheme(busyModal)
 
       expect(screen.queryByRole('button', { name: 'Close' })).not.toBeOnTheScreen()
     })
 
     it('disables every action except the one that is loading', async () => {
-      await RenderHelper.withTheme(busyModal)
+      await Render.withTheme(busyModal)
 
       expect(screen.getByRole('button', { name: 'Cancel' })).toBeDisabled()
       expect(screen.getByRole('button', { name: 'Send invite' })).toBeBusy()
@@ -127,13 +127,13 @@ describe('Modal', () => {
     it('ignores the back button', async () => {
       const onClose = jest.fn()
 
-      await RenderHelper.withTheme(
+      await Render.withTheme(
         <Modal busy onClose={onClose} title="Add member">
           <Text>Body</Text>
         </Modal>,
       )
 
-      await fireEvent(ModalTestHelper.modalHost(), 'requestClose')
+      await fireEvent(ModalFixtures.modalHost(), 'requestClose')
 
       expect(onClose).not.toHaveBeenCalled()
     })

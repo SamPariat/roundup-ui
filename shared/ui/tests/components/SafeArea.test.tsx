@@ -12,7 +12,7 @@ const frame = { x: 0, y: 0, width: 466, height: 800 }
 /**
  * SafeArea test helpers. Static methods only.
  */
-class SafeAreaTestHelper {
+class SafeAreaFixtures {
   /**
    * Wraps an element in a safe-area provider with the insets above.
    * @param ui - The element under test.
@@ -26,7 +26,7 @@ class SafeAreaTestHelper {
 describe('SafeArea', () => {
   it('applies each requested edge from its own inset', async () => {
     await render(
-      SafeAreaTestHelper.inProvider(
+      SafeAreaFixtures.inProvider(
         <SafeArea
           accessibilityLabel="area"
           accessible
@@ -45,7 +45,7 @@ describe('SafeArea', () => {
 
   it('leaves edges that were not requested at zero', async () => {
     await render(
-      SafeAreaTestHelper.inProvider(
+      SafeAreaFixtures.inProvider(
         <SafeArea accessibilityLabel="area" accessible edges={['bottom']} />,
       ),
     )

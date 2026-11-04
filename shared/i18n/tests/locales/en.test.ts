@@ -11,7 +11,7 @@ const SOURCE_ROOTS = ['apps/roundup/src', 'shared/ui/src']
 /**
  * Helpers for reading the sources and resources. Static methods only.
  */
-class ResourceTestHelper {
+class ResourceFixtures {
   /**
    * Lists the TypeScript files under a folder, recursively.
    * @param directory - The folder to walk.
@@ -21,7 +21,7 @@ class ResourceTestHelper {
     return readdirSync(directory).flatMap((entry) => {
       const file = path.join(directory, entry)
 
-      if (statSync(file).isDirectory()) return ResourceTestHelper.sourceFiles(file)
+      if (statSync(file).isDirectory()) return ResourceFixtures.sourceFiles(file)
 
       return /\.(?:ts|tsx)$/.test(file) ? [file] : []
     })
@@ -37,7 +37,7 @@ class ResourceTestHelper {
     if (typeof value !== 'object' || value === null) return [[prefix, value]]
 
     return Object.entries(value).flatMap(([key, child]) =>
-      ResourceTestHelper.leaves(child, prefix === '' ? key : `${prefix}.${key}`),
+      ResourceFixtures.leaves(child, prefix === '' ? key : `${prefix}.${key}`),
     )
   }
 }
@@ -46,7 +46,7 @@ class ResourceTestHelper {
 const T_CALL = /\bt\(\s*(['"`])([\w.${}-]+)\1/g
 
 const usedKeys = SOURCE_ROOTS.flatMap((root) =>
-  ResourceTestHelper.sourceFiles(path.join(repoRoot, root)),
+  ResourceFixtures.sourceFiles(path.join(repoRoot, root)),
 ).flatMap((file) => [...readFileSync(file, 'utf8').matchAll(T_CALL)].map((match) => match[2] ?? ''))
 
 const uniqueKeys = [...new Set(usedKeys)]
@@ -55,7 +55,7 @@ const dynamicKeys = uniqueKeys.filter((key) => key.includes('${'))
 
 describe('English resources', () => {
   it('has no empty strings', () => {
-    const empty = ResourceTestHelper.leaves(en)
+    const empty = ResourceFixtures.leaves(en)
       .filter(([, text]) => typeof text !== 'string' || text.trim() === '')
       .map(([key]) => key)
 
@@ -77,7 +77,7 @@ describe('English resources', () => {
     const missing = dynamicKeys.filter((key) => {
       const parent = key.slice(0, key.indexOf('${') - 1)
 
-      return ResourceTestHelper.leaves(i18n.getResource('en', 'translation', parent)).length === 0
+      return ResourceFixtures.leaves(i18n.getResource('en', 'translation', parent)).length === 0
     })
 
     expect(missing).toEqual([])

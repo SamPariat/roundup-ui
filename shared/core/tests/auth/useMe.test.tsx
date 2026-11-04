@@ -10,7 +10,7 @@ import { TestCore } from '../helpers/wrapper'
 /**
  * Profile test helpers. Static methods only.
  */
-class MeTestHelper {
+class MeFixtures {
   /**
    * Builds the profile of a signed-in user.
    * @param name - The user's name; empty until they set one.
@@ -56,11 +56,11 @@ describe('useMe', () => {
 
   it('loads the profile once signed in', async () => {
     Fakes.stubNetwork({
-      'GET /api/v1/users/me': Fakes.ok(MeTestHelper.user('Asha')),
+      'GET /api/v1/users/me': Fakes.ok(MeFixtures.user('Asha')),
       'POST /api/v1/auth/refresh': Fakes.ok(Fakes.pair('a2', 'r2')),
     })
 
-    const { wrapper } = await MeTestHelper.signedInCore()
+    const { wrapper } = await MeFixtures.signedInCore()
     const { result } = await renderHook(() => useMe(), { wrapper })
 
     await waitFor(() => {
@@ -72,11 +72,11 @@ describe('useMe', () => {
 
   it('needs a name when the profile has none', async () => {
     Fakes.stubNetwork({
-      'GET /api/v1/users/me': Fakes.ok(MeTestHelper.user('')),
+      'GET /api/v1/users/me': Fakes.ok(MeFixtures.user('')),
       'POST /api/v1/auth/refresh': Fakes.ok(Fakes.pair('a2', 'r2')),
     })
 
-    const { wrapper } = await MeTestHelper.signedInCore()
+    const { wrapper } = await MeFixtures.signedInCore()
     const { result } = await renderHook(() => useMe(), { wrapper })
 
     await waitFor(() => {
@@ -90,7 +90,7 @@ describe('useMe', () => {
       'POST /api/v1/auth/refresh': Fakes.ok(Fakes.pair('a2', 'r2')),
     })
 
-    const { wrapper } = await MeTestHelper.signedInCore()
+    const { wrapper } = await MeFixtures.signedInCore()
     const { result } = await renderHook(() => useMe(), { wrapper })
 
     await waitFor(() => {
@@ -104,12 +104,12 @@ describe('useMe', () => {
 describe('useProfileViewModel', () => {
   it('signs out through the session', async () => {
     const network = Fakes.stubNetwork({
-      'GET /api/v1/users/me': Fakes.ok(MeTestHelper.user('Asha')),
+      'GET /api/v1/users/me': Fakes.ok(MeFixtures.user('Asha')),
       'POST /api/v1/auth/logout': Fakes.empty(204),
       'POST /api/v1/auth/refresh': Fakes.ok(Fakes.pair('a2', 'r2')),
     })
 
-    const { wrapper } = await MeTestHelper.signedInCore()
+    const { wrapper } = await MeFixtures.signedInCore()
     const { result } = await renderHook(() => useProfileViewModel(), { wrapper })
 
     await waitFor(() => {

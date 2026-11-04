@@ -5,7 +5,7 @@ import path from 'node:path'
 
 import { Logo } from '../../src/components/Logo'
 import { THEME_STORAGE_KEY } from '../../src/theme/theme'
-import { RenderHelper } from '../helpers/render'
+import { Render } from '../helpers/render'
 import { latte, mocha } from '../helpers/theme-css'
 
 // Jest picks svg.native.ts, whose styled() wrapper hands the class to react-native-css, and that
@@ -29,19 +29,19 @@ const BRAND_ROLES = ['logo-stem', 'logo-bowl', 'logo-leg'] as const
 
 describe('Logo artwork files', () => {
   it.each(THEMES)('draws the $variant mark in the logo role colors', ({ roles, variant }) => {
-    expect(LogoTestHelper.fillsOf(LogoTestHelper.svg(LOGO_DIR, `mark-${variant}`))).toEqual(
+    expect(LogoFixtures.fillsOf(LogoFixtures.svg(LOGO_DIR, `mark-${variant}`))).toEqual(
       BRAND_ROLES.map((role) => roles[role] ?? ''),
     )
   })
 
   it.each(THEMES)('draws the $variant wordmark in the text color', ({ roles, variant }) => {
-    expect(LogoTestHelper.fillsOf(LogoTestHelper.svg(LOGO_DIR, `wordmark-${variant}`))).toEqual([
+    expect(LogoFixtures.fillsOf(LogoFixtures.svg(LOGO_DIR, `wordmark-${variant}`))).toEqual([
       roles['fg'],
     ])
   })
 
   it.each(THEMES)('draws the $variant lockup from both', ({ roles, variant }) => {
-    expect(LogoTestHelper.fillsOf(LogoTestHelper.svg(LOGO_DIR, `lockup-${variant}`))).toEqual([
+    expect(LogoFixtures.fillsOf(LogoFixtures.svg(LOGO_DIR, `lockup-${variant}`))).toEqual([
       ...BRAND_ROLES.map((role) => roles[role] ?? ''),
       roles['fg'],
     ])
@@ -50,8 +50,8 @@ describe('Logo artwork files', () => {
   it.each(THEMES)(
     'draws the $variant welcome art in the logo role colors',
     ({ roles, variant }) => {
-      const [stem, bowl, leg, dots] = LogoTestHelper.fillsOf(
-        LogoTestHelper.svg(ILLUSTRATION_DIR, `welcome-${variant}`),
+      const [stem, bowl, leg, dots] = LogoFixtures.fillsOf(
+        LogoFixtures.svg(ILLUSTRATION_DIR, `welcome-${variant}`),
       )
 
       expect([stem, bowl, leg, dots]).toEqual([
@@ -64,14 +64,14 @@ describe('Logo artwork files', () => {
   )
 
   it.each(['mark', 'wordmark', 'lockup'])('lets the mono %s follow the text color', (type) => {
-    expect(new Set(LogoTestHelper.fillsOf(LogoTestHelper.svg(LOGO_DIR, `${type}-mono`)))).toEqual(
+    expect(new Set(LogoFixtures.fillsOf(LogoFixtures.svg(LOGO_DIR, `${type}-mono`)))).toEqual(
       new Set(['currentcolor']),
     )
   })
 
   it.each(['mark', 'wordmark', 'lockup'])('outlines the %s, with no live text', (type) => {
     for (const variant of ['dark', 'light', 'mono']) {
-      expect(LogoTestHelper.svg(LOGO_DIR, `${type}-${variant}`)).not.toContain('<text')
+      expect(LogoFixtures.svg(LOGO_DIR, `${type}-${variant}`)).not.toContain('<text')
     }
   })
 })
@@ -112,7 +112,7 @@ interface IFill {
 /**
  * Logo test helpers. Static methods only.
  */
-class LogoTestHelper {
+class LogoFixtures {
   /**
    * Reads an SVG file.
    * @param directory - The folder under assets/svg.
@@ -137,10 +137,10 @@ class LogoTestHelper {
    * @returns Lowercase hex colors.
    */
   static renderedFills(): string[] {
-    return LogoTestHelper.collect()
+    return LogoFixtures.collect()
       .map((node) => node.props.fill)
       .flatMap((fill) =>
-        typeof fill?.payload === 'number' ? [LogoTestHelper.hexOf(fill.payload)] : [],
+        typeof fill?.payload === 'number' ? [LogoFixtures.hexOf(fill.payload)] : [],
       )
   }
 
@@ -149,7 +149,7 @@ class LogoTestHelper {
    * @returns All nodes, depth first.
    */
   static collect(): IJsonNode[] {
-    return LogoTestHelper.flatten(
+    return LogoFixtures.flatten(
       [screen.toJSON() as unknown as IJsonNode | IJsonNode[] | null]
         .flat()
         .filter((node) => node !== null),
@@ -162,7 +162,7 @@ class LogoTestHelper {
    * @returns The nodes and all their descendants, depth first.
    */
   private static flatten(nodes: IJsonNode[]): IJsonNode[] {
-    return nodes.flatMap((node) => [node, ...LogoTestHelper.flatten(node.children ?? [])])
+    return nodes.flatMap((node) => [node, ...LogoFixtures.flatten(node.children ?? [])])
   }
 
   /**
@@ -181,21 +181,21 @@ describe('Logo', () => {
   })
 
   it('is announced as Roundup', async () => {
-    await RenderHelper.withTheme(<Logo />)
+    await Render.withTheme(<Logo />)
 
     expect(screen.getByRole('image', { name: 'Roundup' })).toBeOnTheScreen()
   })
 
   it('can carry another name', async () => {
-    await RenderHelper.withTheme(<Logo label="Roundup home" type="mark" />)
+    await Render.withTheme(<Logo label="Roundup home" type="mark" />)
 
     expect(screen.getByRole('image', { name: 'Roundup home' })).toBeOnTheScreen()
   })
 
   it('hides the artwork from assistive technology', async () => {
-    await RenderHelper.withTheme(<Logo />)
+    await Render.withTheme(<Logo />)
 
-    const art = LogoTestHelper.collect().find((node) => node.type === 'RNSVGSvgView')
+    const art = LogoFixtures.collect().find((node) => node.type === 'RNSVGSvgView')
 
     expect(art?.props['aria-hidden']).toBe(true)
   })
@@ -204,11 +204,11 @@ describe('Logo', () => {
     ['lockup', 'lockup-light'],
     ['wordmark', 'wordmark-light'],
   ] as const)('keeps the %s as wide as its file is', async (type, file) => {
-    await RenderHelper.withTheme(<Logo size={48} type={type} />)
+    await Render.withTheme(<Logo size={48} type={type} />)
 
-    const art = LogoTestHelper.collect().find((node) => node.type === 'RNSVGSvgView')
+    const art = LogoFixtures.collect().find((node) => node.type === 'RNSVGSvgView')
 
-    const viewBox = (/viewBox="([^"]+)"/.exec(LogoTestHelper.svg(LOGO_DIR, file))?.[1] ?? '')
+    const viewBox = (/viewBox="([^"]+)"/.exec(LogoFixtures.svg(LOGO_DIR, file))?.[1] ?? '')
       .split(' ')
       .map(Number)
 
@@ -219,30 +219,30 @@ describe('Logo', () => {
   })
 
   it('draws the light theme in Latte colors', async () => {
-    await RenderHelper.withTheme(<Logo type="lockup" />)
+    await Render.withTheme(<Logo type="lockup" />)
 
-    expect(new Set(LogoTestHelper.renderedFills())).toEqual(
+    expect(new Set(LogoFixtures.renderedFills())).toEqual(
       new Set([...BRAND_ROLES.map((role) => latte[role]), latte['fg'], BLACK]),
     )
   })
 
   it('draws the dark theme in Mocha colors', async () => {
     await AsyncStorage.setItem(THEME_STORAGE_KEY, 'dark')
-    await RenderHelper.withTheme(<Logo type="lockup" />)
+    await Render.withTheme(<Logo type="lockup" />)
 
     await waitFor(() => {
-      expect(LogoTestHelper.renderedFills()).toContain(mocha['logo-stem'])
+      expect(LogoFixtures.renderedFills()).toContain(mocha['logo-stem'])
     })
 
-    expect(new Set(LogoTestHelper.renderedFills())).toEqual(
+    expect(new Set(LogoFixtures.renderedFills())).toEqual(
       new Set([...BRAND_ROLES.map((role) => mocha[role]), mocha['fg'], BLACK]),
     )
   })
 
   it('tints the mono artwork with the text color class', async () => {
-    await RenderHelper.withTheme(<Logo tone="mono" type="mark" />)
+    await Render.withTheme(<Logo tone="mono" type="mark" />)
 
-    const art = LogoTestHelper.collect().find((node) => node.type === 'RNSVGSvgView')
+    const art = LogoFixtures.collect().find((node) => node.type === 'RNSVGSvgView')
 
     expect(art?.props.className).toBe('text-fg')
   })

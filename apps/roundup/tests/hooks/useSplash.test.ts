@@ -4,7 +4,7 @@ import { AccessibilityInfo } from 'react-native'
 
 import type { ISplashElement } from '../../src/hooks/useSplash'
 
-import { SplashHelper, useSplash } from '../../src/hooks/useSplash'
+import { Splash, useSplash } from '../../src/hooks/useSplash'
 
 /** Props of the hook under test. */
 interface IReadyProps {
@@ -14,7 +14,7 @@ interface IReadyProps {
 
 /** A stand-in splash element and what was done to it. */
 interface IFakeSplash {
-  /** The element to pass to SplashHelper.hideWeb. */
+  /** The element to pass to Splash.hideWeb. */
   element: ISplashElement
   /** The calls made on it, in order. */
   log: string[]
@@ -72,7 +72,7 @@ describe('useSplash', () => {
 /**
  * Splash test helpers. Static methods only.
  */
-class SplashTestHelper {
+class SplashFixtures {
   /**
    * Builds a stand-in for the splash element that records what was done to it.
    * @returns The element and the log of its calls.
@@ -109,25 +109,25 @@ class SplashTestHelper {
   }
 }
 
-describe('SplashHelper.hideWeb', () => {
+describe('Splash.hideWeb', () => {
   it('does nothing when the page has no splash', () => {
     expect(() => {
-      SplashHelper.hideWeb(null, false)
+      Splash.hideWeb(null, false)
     }).not.toThrow()
   })
 
   it('removes the splash at once with reduced motion', () => {
-    const { element, log } = SplashTestHelper.fakeElement()
+    const { element, log } = SplashFixtures.fakeElement()
 
-    SplashHelper.hideWeb(element, true)
+    Splash.hideWeb(element, true)
 
     expect(log).toEqual(['remove'])
   })
 
   it('fades the splash out and removes it when the fade ends', () => {
-    const { element, log } = SplashTestHelper.fakeElement()
+    const { element, log } = SplashFixtures.fakeElement()
 
-    SplashHelper.hideWeb(element, false)
+    Splash.hideWeb(element, false)
 
     expect(log).toEqual(['listen transitionend', 'remove', 'add splash-hidden'])
   })

@@ -13,7 +13,7 @@ const frame = { x: 0, y: 0, width: 466, height: 800 }
 /**
  * Screen test helpers. Static methods only.
  */
-class ScreenTestHelper {
+class ScreenFixtures {
   /**
    * Wraps an element in a safe-area provider with the insets above.
    * @param ui - The element under test.
@@ -35,14 +35,14 @@ class ScreenTestHelper {
 describe('Screen', () => {
   it('keeps the body clear of every edge when there is no header', async () => {
     await render(
-      ScreenTestHelper.inProvider(
+      ScreenFixtures.inProvider(
         <Screen>
           <Text>Body</Text>
         </Screen>,
       ),
     )
 
-    expect(ScreenTestHelper.body()).toHaveStyle({
+    expect(ScreenFixtures.body()).toHaveStyle({
       paddingTop: 47,
       paddingRight: 3,
       paddingBottom: 34,
@@ -52,7 +52,7 @@ describe('Screen', () => {
 
   it('leaves the top to the header and renders it above the body', async () => {
     await render(
-      ScreenTestHelper.inProvider(
+      ScreenFixtures.inProvider(
         <Screen header={<Text>Header</Text>}>
           <Text>Body</Text>
         </Screen>,
@@ -61,7 +61,7 @@ describe('Screen', () => {
 
     expect(screen.getByText('Header')).toBeOnTheScreen()
 
-    expect(ScreenTestHelper.body()).toHaveStyle({
+    expect(ScreenFixtures.body()).toHaveStyle({
       paddingTop: 0,
       paddingRight: 3,
       paddingBottom: 34,

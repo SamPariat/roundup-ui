@@ -32,7 +32,7 @@ const PREFERENCES: ReadonlySet<unknown> = new Set(['system', 'light', 'dark'])
 /**
  * Theme helpers. Static methods only.
  */
-export class ThemeHelper {
+export class Theme {
   /**
    * Narrows a stored value to a known preference, so a corrupted entry is ignored.
    * @param value - The raw value read from storage.
@@ -81,7 +81,7 @@ export const ThemeProvider = ({ children }: IThemeProviderProps): ReactElement =
 
     AsyncStorage.getItem(THEME_STORAGE_KEY)
       .then((stored) => {
-        if (active && ThemeHelper.isPreference(stored)) setPreference(stored)
+        if (active && Theme.isPreference(stored)) setPreference(stored)
       })
       .catch(() => {
         // Storage can be unavailable (private windows); the device default still works.
@@ -125,7 +125,7 @@ export const ThemeProvider = ({ children }: IThemeProviderProps): ReactElement =
 
   // The static HTML is rendered as Mocha; the device's real scheme is applied one pass later.
   const hydrated = useHydrated()
-  const name = ThemeHelper.nameFor(preference, hydrated ? device : null)
+  const name = Theme.nameFor(preference, hydrated ? device : null)
 
   const value = useMemo<ITheme>(
     () => ({

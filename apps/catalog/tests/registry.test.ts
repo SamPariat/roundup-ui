@@ -4,6 +4,8 @@ import { GROUPS, REGISTRY, Registry } from '../src/registry'
 
 /** Exports that start with a capital letter but are not components to show. */
 const NOT_COMPONENTS: ReadonlySet<string> = new Set([
+  // A static helper class: Breakpoint.of maps a window width to a breakpoint.
+  'Breakpoint',
   // A provider: it renders nothing of its own. The catalog's layout wraps every page in it.
   'ThemeProvider',
 ])
@@ -11,21 +13,17 @@ const NOT_COMPONENTS: ReadonlySet<string> = new Set([
 /**
  * Registry test helpers. Static methods only.
  */
-class RegistryTestHelper {
+class RegistryFixtures {
   /**
    * Whether an export of the ui package is a component that needs a catalog page. Components are the
    * PascalCase value exports; types do not exist at runtime, hooks and helpers are camelCase, and
-   * the `*Variants` objects (class recipes such as buttonVariants) and the `*Helper` static classes are not components.
+   * the `*Variants` objects (class recipes such as buttonVariants) and the static helper classes
+   * listed in NOT_COMPONENTS are not components.
    * @param name - The export name.
    * @returns True when the catalog must show it.
    */
   static isComponent(name: string): boolean {
-    return (
-      /^[A-Z]/.test(name) &&
-      !NOT_COMPONENTS.has(name) &&
-      !name.endsWith('Variants') &&
-      !name.endsWith('Helper')
-    )
+    return /^[A-Z]/.test(name) && !NOT_COMPONENTS.has(name) && !name.endsWith('Variants')
   }
 
   /**
@@ -40,7 +38,7 @@ class RegistryTestHelper {
 }
 
 describe('registry', () => {
-  const components = Object.keys(ui).filter((name) => RegistryTestHelper.isComponent(name))
+  const components = Object.keys(ui).filter((name) => RegistryFixtures.isComponent(name))
 
   it('finds the components of @roundup/ui', () => {
     expect(components).toEqual(expect.arrayContaining(['Button', 'Surface', 'VenueCard']))
@@ -53,8 +51,8 @@ describe('registry', () => {
   it('has no page for something @roundup/ui does not export, other than the foundations', () => {
     const pages = REGISTRY.filter(({ group }) => group !== 'Foundations').map(({ title }) => title)
 
-    expect(pages.toSorted((a, b) => RegistryTestHelper.compare(a, b))).toEqual(
-      components.toSorted((a, b) => RegistryTestHelper.compare(a, b)),
+    expect(pages.toSorted((a, b) => RegistryFixtures.compare(a, b))).toEqual(
+      components.toSorted((a, b) => RegistryFixtures.compare(a, b)),
     )
   })
 

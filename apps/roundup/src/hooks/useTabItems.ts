@@ -68,7 +68,7 @@ const TAB_DEFINITIONS: readonly ITabDefinition[] = [
 /**
  * Tab helpers. Static methods only.
  */
-export class TabHelper {
+export class Tab {
   /**
    * Finds which tab a pathname belongs to, so nested routes keep their tab highlighted. Falls back to Squads.
    * @param pathname - The current URL path.
@@ -97,4 +97,4 @@ export const useTabItems = (): readonly ITabItem[] => {
  * The tab the current route belongs to.
  * @returns The id of the active tab.
  */
-export const useCurrentTab = (): ITabItem['id'] => TabHelper.idForPath(usePathname())
+export const useCurrentTab = (): ITabItem['id'] => Tab.idForPath(usePathname())

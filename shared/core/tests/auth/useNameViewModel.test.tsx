@@ -22,7 +22,7 @@ interface IRendered {
 /**
  * Name view model test helpers. Static methods only.
  */
-class NameTestHelper {
+class NameFixtures {
   /**
    * Renders the view model inside a CoreProvider with fakes.
    * @param core - The fakes to render in.
@@ -36,7 +36,7 @@ class NameTestHelper {
 describe('useNameViewModel', () => {
   it.each(['', ' '.repeat(3), 'x'.repeat(51)])('rejects %j without a request', async (typed) => {
     const network = Fakes.stubNetwork({})
-    const { result } = await NameTestHelper.setup()
+    const { result } = await NameFixtures.setup()
 
     await act(() => {
       result.current.setName(typed)
@@ -57,7 +57,7 @@ describe('useNameViewModel', () => {
     const network = Fakes.stubNetwork({ 'PATCH /api/v1/users/me': Fakes.ok({ name: 'Asha' }) })
     const core = TestCore.create()
     const invalidate = jest.spyOn(core.queryClient, 'invalidateQueries')
-    const { result } = await NameTestHelper.setup(core)
+    const { result } = await NameFixtures.setup(core)
 
     await act(() => {
       result.current.setName('  Asha  ')
@@ -80,7 +80,7 @@ describe('useNameViewModel', () => {
   ] as const)('maps a %i to %s', async (status, key) => {
     Fakes.stubNetwork({ 'PATCH /api/v1/users/me': Fakes.failure(status, 'nope') })
 
-    const { result } = await NameTestHelper.setup()
+    const { result } = await NameFixtures.setup()
 
     await act(() => {
       result.current.setName('Asha')
@@ -97,7 +97,7 @@ describe('useNameViewModel', () => {
   it('says offline when there is no connection', async () => {
     Fakes.goOffline()
 
-    const { result } = await NameTestHelper.setup()
+    const { result } = await NameFixtures.setup()
 
     await act(() => {
       result.current.setName('Asha')

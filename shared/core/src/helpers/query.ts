@@ -6,7 +6,7 @@ const MAX_RETRIES = 2
 /**
  * Query client policy helpers. Static methods only; the dependency container holds the class.
  */
-export class QueryHelper {
+export class Query {
   /**
    * Whether a failed query is worth trying again: only a lost connection or a server fault, never
    * an answer such as 401 or 404 that a retry cannot change.

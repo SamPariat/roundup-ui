@@ -33,7 +33,7 @@ interface ISplashOptions {
 /**
  * Config test helpers. Static methods only.
  */
-class ConfigTestHelper {
+class ConfigFixtures {
   /**
    * Loads app.config.ts fresh with an APP_ENV, since the file reads it when it is first imported.
    * @param appEnv - The value of APP_ENV.
@@ -51,7 +51,7 @@ class ConfigTestHelper {
    * @returns The options given to expo-splash-screen.
    */
   static splashOptions(): ISplashOptions {
-    const entry = ConfigTestHelper.loadConfig('beta').plugins.find(
+    const entry = ConfigFixtures.loadConfig('beta').plugins.find(
       (plugin) => Array.isArray(plugin) && plugin[0] === 'expo-splash-screen',
     )
 
@@ -61,7 +61,7 @@ class ConfigTestHelper {
 
 describe('app.config', () => {
   it('names the beta app and gives it the beta bundle id', () => {
-    const config = ConfigTestHelper.loadConfig('beta')
+    const config = ConfigFixtures.loadConfig('beta')
 
     expect(config.name).toBe('Roundup Beta')
     expect(config.ios.bundleIdentifier).toBe('app.roundup.client.beta')
@@ -69,7 +69,7 @@ describe('app.config', () => {
   })
 
   it('names the production app and gives it the production bundle id', () => {
-    const config = ConfigTestHelper.loadConfig('prod')
+    const config = ConfigFixtures.loadConfig('prod')
 
     expect(config.name).toBe('Roundup')
     expect(config.ios.bundleIdentifier).toBe('app.roundup.client')
@@ -77,7 +77,7 @@ describe('app.config', () => {
   })
 
   it('turns on typed routes', () => {
-    const config = ConfigTestHelper.loadConfig('beta')
+    const config = ConfigFixtures.loadConfig('beta')
 
     expect(config.experiments.typedRoutes).toBe(true)
   })
@@ -85,7 +85,7 @@ describe('app.config', () => {
 
 describe('app.config splash screen', () => {
   it('uses the Latte background with the light mark and Mocha with the dark mark', () => {
-    const options = ConfigTestHelper.splashOptions()
+    const options = ConfigFixtures.splashOptions()
 
     expect(options.backgroundColor).toBe('#f2e9e1')
     expect(options.dark.backgroundColor).toBe('#1e1e2e')
@@ -94,7 +94,7 @@ describe('app.config splash screen', () => {
   })
 
   it('points at PNG files that exist', () => {
-    const options = ConfigTestHelper.splashOptions()
+    const options = ConfigFixtures.splashOptions()
 
     for (const image of [options.image, options.dark.image]) {
       expect(existsSync(path.resolve(__dirname, '..', image))).toBe(true)

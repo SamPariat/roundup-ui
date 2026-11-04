@@ -70,7 +70,7 @@ const Squads = (): ReactElement => <Text>screen: squads</Text>
 /**
  * AuthStack test helpers. Static methods only.
  */
-class AuthStackTestHelper {
+class AuthStackFixtures {
   /**
    * Renders the app at a url.
    * @param initialUrl - Where the app starts, as a deep link would.
@@ -105,7 +105,7 @@ describe('AuthStack', () => {
   it('shows nothing while the saved session is being checked', async () => {
     saved = 'r1'
     backend.hang = true
-    await AuthStackTestHelper.launch('/')
+    await AuthStackFixtures.launch('/')
 
     await waitFor(() => {
       expect(backend.paths).toContain('POST /api/v1/auth/refresh')
@@ -115,33 +115,33 @@ describe('AuthStack', () => {
   })
 
   it('shows Welcome when signed out', async () => {
-    await AuthStackTestHelper.launch('/')
+    await AuthStackFixtures.launch('/')
 
     expect(await screen.findByText('Continue with phone')).toBeOnTheScreen()
   })
 
   it('sends a signed-out deep link to the app back to Welcome', async () => {
-    await AuthStackTestHelper.launch('/squads')
+    await AuthStackFixtures.launch('/squads')
 
     expect(await screen.findByText('Continue with phone')).toBeOnTheScreen()
   })
 
   it('lets a signed-out visitor reach the sign-in screens', async () => {
-    await AuthStackTestHelper.launch('/sign-in')
+    await AuthStackFixtures.launch('/sign-in')
 
     expect(await screen.findByText('screen: phone')).toBeOnTheScreen()
   })
 
   it('shows the app when signed in with a name', async () => {
     saved = 'r1'
-    await AuthStackTestHelper.launch('/')
+    await AuthStackFixtures.launch('/')
 
     expect(await screen.findByText('screen: squads')).toBeOnTheScreen()
   })
 
   it('keeps a signed-in launch away from Welcome and sign-in', async () => {
     saved = 'r1'
-    await AuthStackTestHelper.launch('/sign-in')
+    await AuthStackFixtures.launch('/sign-in')
 
     expect(await screen.findByText('screen: squads')).toBeOnTheScreen()
     expect(screen.queryByText('screen: phone')).toBeNull()

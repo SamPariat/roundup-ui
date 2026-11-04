@@ -3,11 +3,11 @@ import { QueryClient } from '@tanstack/react-query'
 import type { INetworkSource } from '../network/types'
 import type { ISessionStore } from '../session/types'
 
-import { CodeHelper } from '../helpers/code-helper'
-import { ErrorHelper } from '../helpers/error-helper'
-import { NoticeHelper } from '../helpers/notice-helper'
-import { PhoneHelper } from '../helpers/phone-helper'
-import { QueryHelper } from '../helpers/query-helper'
+import { ErrorKey } from '../helpers/error-key'
+import { Notice } from '../helpers/notice'
+import { OtpCode } from '../helpers/otp-code'
+import { Phone } from '../helpers/phone'
+import { Query } from '../helpers/query'
 import { NetworkSource } from '../network/network-source'
 import { SessionStore } from '../session/session-store'
 
@@ -18,13 +18,13 @@ export interface IDeps {
   /** The helper classes, held here so a test can swap one. */
   helpers: {
     /** Sign-in code parsing. */
-    code: typeof CodeHelper
+    code: typeof OtpCode
     /** Error to message mapping. */
-    errors: typeof ErrorHelper
+    errors: typeof ErrorKey
     /** Connection notice phases. */
-    notice: typeof NoticeHelper
+    notice: typeof Notice
     /** Phone number parsing and formatting. */
-    phone: typeof PhoneHelper
+    phone: typeof Phone
   }
   /** Whether the device has internet, and when that changes. */
   network: INetworkSource
@@ -46,7 +46,7 @@ export class Deps {
    * @returns True to try again.
    */
   private static readonly shouldRetry = (failureCount: number, error: unknown): boolean =>
-    QueryHelper.shouldRetry(failureCount, error)
+    Query.shouldRetry(failureCount, error)
 
   /**
    * Builds the real dependencies: the platform's session store, the network source, a query client and the clock.
@@ -54,7 +54,7 @@ export class Deps {
    */
   static create(): IDeps {
     return {
-      helpers: { code: CodeHelper, errors: ErrorHelper, notice: NoticeHelper, phone: PhoneHelper },
+      helpers: { code: OtpCode, errors: ErrorKey, notice: Notice, phone: Phone },
       /**
        * Reads the system clock.
        * @returns Milliseconds since the epoch.

@@ -10,7 +10,7 @@ import { FrameProvider } from '../../src/components/FrameProvider'
 /**
  * Rendering helpers for the catalog tests. Static methods only.
  */
-export class RenderHelper {
+export class Render {
   /**
    * Renders an element inside the providers the catalog's root layout supplies: safe areas, the
    * theme and the preview width.

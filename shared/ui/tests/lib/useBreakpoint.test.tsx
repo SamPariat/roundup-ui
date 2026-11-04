@@ -1,6 +1,6 @@
 import { renderHook } from '@testing-library/react-native'
 
-import { BreakpointHelper, useBreakpoint } from '../../src/lib/useBreakpoint'
+import { Breakpoint, useBreakpoint } from '../../src/lib/useBreakpoint'
 
 describe('breakpointFor', () => {
   it.each([
@@ -14,7 +14,7 @@ describe('breakpointFor', () => {
     [1024, 'desktop'],
     [1440, 'desktop'],
   ] as const)('maps %i wide to %s', (width, expected) => {
-    expect(BreakpointHelper.of(width)).toBe(expected)
+    expect(Breakpoint.of(width)).toBe(expected)
   })
 })
 

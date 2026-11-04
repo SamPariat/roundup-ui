@@ -13,7 +13,7 @@ export interface IGlassState {
 /**
  * Glass helpers. Static methods only.
  */
-class GlassHelper {
+class Glass {
   /**
    * True on iOS 26+, where the glass view exists.
    * @returns Whether both glass APIs are present.
@@ -46,5 +46,5 @@ export const useGlass = (): IGlassState => {
     }
   }, [])
 
-  return { available: GlassHelper.isAvailable(), reduced }
+  return { available: Glass.isAvailable(), reduced }
 }

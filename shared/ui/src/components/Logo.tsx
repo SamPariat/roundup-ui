@@ -86,7 +86,7 @@ const ARTWORK: Record<NonNullable<ILogoProps['type']>, IArtwork> = {
 /**
  * Logo helpers. Static methods only.
  */
-class LogoHelper {
+class LogoVariant {
   /**
    * Chooses the artwork variant from the tone and the active theme. Mocha is the dark theme and
    * Latte the light one; the files carry that theme's logo-* colors.
@@ -117,7 +117,7 @@ export const Logo = ({
   const { name } = useTheme()
   const mark = typeof size === 'number' ? size : SIZES[size]
   const { aspect, files, height: share } = ARTWORK[type]
-  const Artwork = files[LogoHelper.variantFor(tone, name)]
+  const Artwork = files[LogoVariant.variantFor(tone, name)]
   const height = mark * share
 
   return (

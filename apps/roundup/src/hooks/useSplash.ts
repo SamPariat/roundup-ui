@@ -5,7 +5,7 @@ import { AccessibilityInfo, Platform } from 'react-native'
 /** The id of the splash element that src/app/+html.tsx puts in the static page. */
 const WEB_SPLASH_ID = 'splash'
 
-/** The part of a DOM element that SplashHelper.hideWeb uses. */
+/** The part of a DOM element that Splash.hideWeb uses. */
 export interface ISplashElement {
   /** The element's classes, to start the fade. */
   classList: Pick<DOMTokenList, 'add'>
@@ -27,7 +27,7 @@ export interface ISplashElement {
 /**
  * Splash helpers. Static methods only.
  */
-export class SplashHelper {
+export class Splash {
   /**
    * Takes the web splash away. With reduced motion it disappears at once; otherwise the page adds
    * the splash-hidden class, which fades it out, and the element is removed when the fade ends.
@@ -71,7 +71,7 @@ export const useSplash = (ready: boolean): void => {
         if (!active) return
 
         if (Platform.OS === 'web') {
-          SplashHelper.hideWeb(document.querySelector<HTMLElement>(`#${WEB_SPLASH_ID}`), reduced)
+          Splash.hideWeb(document.querySelector<HTMLElement>(`#${WEB_SPLASH_ID}`), reduced)
 
           return
         }

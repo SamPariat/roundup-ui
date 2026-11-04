@@ -1,12 +1,12 @@
 import { fireEvent, screen } from '@testing-library/react-native'
 
 import { Welcome } from '../../src/components/Welcome'
-import { RenderHelper } from '../helpers/render'
+import { Render } from '../helpers/render'
 
 /**
  * Welcome test helpers. Static methods only.
  */
-class WelcomeTestHelper {
+class WelcomeFixtures {
   /**
    * Tells the Welcome page it was laid out at a width, as React Native does after the first layout.
    * @param width - The width to report in points.
@@ -20,7 +20,7 @@ class WelcomeTestHelper {
 
 describe('Welcome', () => {
   it('leads with the page title as a level 1 heading', async () => {
-    await RenderHelper.withTheme(<Welcome />)
+    await Render.withTheme(<Welcome />)
 
     expect(
       screen.getByRole('header', { name: 'Weekend plans for the whole squad.' }),
@@ -30,7 +30,7 @@ describe('Welcome', () => {
   it('starts sign-in from its button', async () => {
     const onStart = jest.fn()
 
-    await RenderHelper.withTheme(<Welcome onStart={onStart} />)
+    await Render.withTheme(<Welcome onStart={onStart} />)
 
     await fireEvent.press(screen.getByRole('button', { name: 'Continue with phone' }))
 
@@ -38,9 +38,7 @@ describe('Welcome', () => {
   })
 
   it('takes its own title, body and button label', async () => {
-    await RenderHelper.withTheme(
-      <Welcome body="Body text" startLabel="Get going" title="Hello squad" />,
-    )
+    await Render.withTheme(<Welcome body="Body text" startLabel="Get going" title="Hello squad" />)
 
     expect(screen.getByText('Hello squad')).toBeOnTheScreen()
     expect(screen.getByText('Body text')).toBeOnTheScreen()
@@ -48,8 +46,8 @@ describe('Welcome', () => {
   })
 
   it.each([360, 766, 768, 1440])('keeps all three points at %i wide', async (width) => {
-    await RenderHelper.withTheme(<Welcome />)
-    await WelcomeTestHelper.layoutAt(width)
+    await Render.withTheme(<Welcome />)
+    await WelcomeFixtures.layoutAt(width)
 
     expect(screen.getByText('Squads')).toBeOnTheScreen()
     expect(screen.getByText('Explore')).toBeOnTheScreen()
