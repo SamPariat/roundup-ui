@@ -4,7 +4,7 @@ import { Text } from 'react-native'
 import { useTheme } from '@roundup/ui'
 
 import { Toolbar } from '../../src/components/Toolbar'
-import { renderInCatalog } from '../helpers/render'
+import { RenderHelper } from '../helpers/render'
 
 /**
  * Prints the chosen theme preference, so a test can see the toolbar change it.
@@ -14,7 +14,7 @@ const Preference = () => <Text>{`preference: ${useTheme().preference}`}</Text>
 
 describe('Toolbar', () => {
   it('switches the theme', async () => {
-    await renderInCatalog(
+    await RenderHelper.inCatalog(
       <>
         <Toolbar />
         <Preference />
@@ -29,7 +29,7 @@ describe('Toolbar', () => {
   })
 
   it('leaves the preview width to the web, where windows can be resized', async () => {
-    await renderInCatalog(<Toolbar />)
+    await RenderHelper.inCatalog(<Toolbar />)
 
     expect(screen.queryByRole('button', { name: '360' })).not.toBeOnTheScreen()
   })

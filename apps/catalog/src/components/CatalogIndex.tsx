@@ -4,7 +4,7 @@ import { View } from 'react-native'
 
 import { List, Text } from '@roundup/ui'
 
-import { entriesIn, GROUPS } from '../registry'
+import { GROUPS, Registry } from '../registry'
 import { CatalogRow } from './CatalogRow'
 
 /**
@@ -28,7 +28,7 @@ export const CatalogIndex = (): ReactElement => (
           {group}
         </Text>
         <List>
-          {entriesIn(group).map((entry) => (
+          {Registry.entriesIn(group).map((entry) => (
             <CatalogRow entry={entry} key={entry.slug} />
           ))}
         </List>

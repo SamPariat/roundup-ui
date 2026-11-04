@@ -10,7 +10,7 @@ import { Frame } from '../components/Frame'
 import { NotFound } from '../components/NotFound'
 import { Toolbar } from '../components/Toolbar'
 import { useWide } from '../hooks/useWide'
-import { findEntry, REGISTRY } from '../registry'
+import { REGISTRY, Registry } from '../registry'
 
 /**
  * The slugs the static web export renders a page for: one per registry entry.
@@ -30,7 +30,7 @@ export default function ComponentScreen(): ReactElement {
   const { component } = useLocalSearchParams<'/[component]'>()
   const router = useRouter()
   const wide = useWide()
-  const entry = findEntry(component)
+  const entry = Registry.find(component)
 
   const back = useCallback((): void => {
     if (router.canGoBack()) router.back()

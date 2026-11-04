@@ -8,21 +8,27 @@ import { ThemeProvider } from '@roundup/ui'
 import { FrameProvider } from '../../src/components/FrameProvider'
 
 /**
- * Renders an element inside the providers the catalog's root layout supplies: safe areas, the
- * theme and the preview width.
- * @param ui - The element under test.
- * @returns The Testing Library render result.
+ * Rendering helpers for the catalog tests. Static methods only.
  */
-export const renderInCatalog = async (ui: ReactElement): ReturnType<typeof render> =>
-  render(
-    <SafeAreaProvider
-      initialMetrics={{
-        insets: { top: 0, right: 0, bottom: 0, left: 0 },
-        frame: { x: 0, y: 0, width: 390, height: 800 },
-      }}
-    >
-      <ThemeProvider>
-        <FrameProvider>{ui}</FrameProvider>
-      </ThemeProvider>
-    </SafeAreaProvider>,
-  )
+export class RenderHelper {
+  /**
+   * Renders an element inside the providers the catalog's root layout supplies: safe areas, the
+   * theme and the preview width.
+   * @param ui - The element under test.
+   * @returns The Testing Library render result.
+   */
+  static async inCatalog(ui: ReactElement): ReturnType<typeof render> {
+    return render(
+      <SafeAreaProvider
+        initialMetrics={{
+          insets: { top: 0, right: 0, bottom: 0, left: 0 },
+          frame: { x: 0, y: 0, width: 390, height: 800 },
+        }}
+      >
+        <ThemeProvider>
+          <FrameProvider>{ui}</FrameProvider>
+        </ThemeProvider>
+      </SafeAreaProvider>,
+    )
+  }
+}

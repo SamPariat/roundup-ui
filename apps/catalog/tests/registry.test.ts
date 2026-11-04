@@ -1,6 +1,6 @@
 import * as ui from '@roundup/ui'
 
-import { entriesIn, findEntry, GROUPS, REGISTRY } from '../src/registry'
+import { GROUPS, REGISTRY, Registry } from '../src/registry'
 
 /** Exports that start with a capital letter but are not components to show. */
 const NOT_COMPONENTS: ReadonlySet<string> = new Set([
@@ -9,25 +9,38 @@ const NOT_COMPONENTS: ReadonlySet<string> = new Set([
 ])
 
 /**
- * Whether an export of the ui package is a component that needs a catalog page. Components are the
- * PascalCase value exports; types do not exist at runtime, hooks and helpers are camelCase, and
- * the `*Variants` objects (class recipes such as buttonVariants) are not components.
- * @param name - The export name.
- * @returns True when the catalog must show it.
+ * Registry test helpers. Static methods only.
  */
-const isComponent = (name: string): boolean =>
-  /^[A-Z]/.test(name) && !NOT_COMPONENTS.has(name) && !name.endsWith('Variants')
+class RegistryTestHelper {
+  /**
+   * Whether an export of the ui package is a component that needs a catalog page. Components are the
+   * PascalCase value exports; types do not exist at runtime, hooks and helpers are camelCase, and
+   * the `*Variants` objects (class recipes such as buttonVariants) and the `*Helper` static classes (such as ClassHelper) are not components.
+   * @param name - The export name.
+   * @returns True when the catalog must show it.
+   */
+  static isComponent(name: string): boolean {
+    return (
+      /^[A-Z]/.test(name) &&
+      !NOT_COMPONENTS.has(name) &&
+      !name.endsWith('Variants') &&
+      !name.endsWith('Helper')
+    )
+  }
 
-/**
- * Orders names alphabetically.
- * @param a - One name.
- * @param b - The other name.
- * @returns Negative when a sorts first, positive when b does, zero when they are equal.
- */
-const compare = (a: string, b: string): number => a.localeCompare(b)
+  /**
+   * Orders names alphabetically.
+   * @param a - One name.
+   * @param b - The other name.
+   * @returns Negative when a sorts first, positive when b does, zero when they are equal.
+   */
+  static compare(a: string, b: string): number {
+    return a.localeCompare(b)
+  }
+}
 
 describe('registry', () => {
-  const components = Object.keys(ui).filter(isComponent)
+  const components = Object.keys(ui).filter((name) => RegistryTestHelper.isComponent(name))
 
   it('finds the components of @roundup/ui', () => {
     expect(components).toEqual(expect.arrayContaining(['Button', 'Surface', 'VenueCard']))
@@ -40,7 +53,9 @@ describe('registry', () => {
   it('has no page for something @roundup/ui does not export, other than the foundations', () => {
     const pages = REGISTRY.filter(({ group }) => group !== 'Foundations').map(({ title }) => title)
 
-    expect(pages.toSorted(compare)).toEqual(components.toSorted(compare))
+    expect(pages.toSorted((a, b) => RegistryTestHelper.compare(a, b))).toEqual(
+      components.toSorted((a, b) => RegistryTestHelper.compare(a, b)),
+    )
   })
 
   it('gives every page its own slug', () => {
@@ -50,12 +65,12 @@ describe('registry', () => {
   })
 
   it('looks a page up by its slug', () => {
-    expect(findEntry('avatar-group')?.title).toBe('AvatarGroup')
-    expect(findEntry('nope')).toBeUndefined()
-    expect(findEntry()).toBeUndefined()
+    expect(Registry.find('avatar-group')?.title).toBe('AvatarGroup')
+    expect(Registry.find('nope')).toBeUndefined()
+    expect(Registry.find()).toBeUndefined()
   })
 
   it.each(GROUPS)('lists something under %s', (group) => {
-    expect(entriesIn(group).length).toBeGreaterThan(0)
+    expect(Registry.entriesIn(group).length).toBeGreaterThan(0)
   })
 })
