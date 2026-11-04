@@ -4,8 +4,8 @@ import type { INameViewModel } from '../../src/auth/useNameViewModel'
 import type { ITestCore } from '../helpers/wrapper'
 
 import { useNameViewModel } from '../../src/auth/useNameViewModel'
-import { failure, goOffline, ok, stubNetwork } from '../helpers/fakes'
-import { createTestCore } from '../helpers/wrapper'
+import { Fakes } from '../helpers/fakes'
+import { TestCore } from '../helpers/wrapper'
 
 /** The latest value of a hook under test. */
 interface ICurrent {
@@ -20,17 +20,23 @@ interface IRendered {
 }
 
 /**
- * Renders the view model inside a CoreProvider with fakes.
- * @param core - The fakes to render in.
- * @returns The rendered hook.
+ * Name view model test helpers. Static methods only.
  */
-const setup = (core: ITestCore = createTestCore()): Promise<IRendered> =>
-  renderHook(() => useNameViewModel(), { wrapper: core.wrapper })
+class NameTestHelper {
+  /**
+   * Renders the view model inside a CoreProvider with fakes.
+   * @param core - The fakes to render in.
+   * @returns The rendered hook.
+   */
+  static setup(core: ITestCore = TestCore.create()): Promise<IRendered> {
+    return renderHook(() => useNameViewModel(), { wrapper: core.wrapper })
+  }
+}
 
 describe('useNameViewModel', () => {
   it.each(['', ' '.repeat(3), 'x'.repeat(51)])('rejects %j without a request', async (typed) => {
-    const network = stubNetwork({})
-    const { result } = await setup()
+    const network = Fakes.stubNetwork({})
+    const { result } = await NameTestHelper.setup()
 
     await act(() => {
       result.current.setName(typed)
@@ -48,10 +54,10 @@ describe('useNameViewModel', () => {
   })
 
   it('saves the trimmed name and refreshes the profile', async () => {
-    const network = stubNetwork({ 'PATCH /api/v1/users/me': ok({ name: 'Asha' }) })
-    const core = createTestCore()
+    const network = Fakes.stubNetwork({ 'PATCH /api/v1/users/me': Fakes.ok({ name: 'Asha' }) })
+    const core = TestCore.create()
     const invalidate = jest.spyOn(core.queryClient, 'invalidateQueries')
-    const { result } = await setup(core)
+    const { result } = await NameTestHelper.setup(core)
 
     await act(() => {
       result.current.setName('  Asha  ')
@@ -72,9 +78,9 @@ describe('useNameViewModel', () => {
     [400, 'errors.invalidName'],
     [500, 'errors.genericWithId'],
   ] as const)('maps a %i to %s', async (status, key) => {
-    stubNetwork({ 'PATCH /api/v1/users/me': failure(status, 'nope') })
+    Fakes.stubNetwork({ 'PATCH /api/v1/users/me': Fakes.failure(status, 'nope') })
 
-    const { result } = await setup()
+    const { result } = await NameTestHelper.setup()
 
     await act(() => {
       result.current.setName('Asha')
@@ -89,9 +95,9 @@ describe('useNameViewModel', () => {
   })
 
   it('says offline when there is no connection', async () => {
-    goOffline()
+    Fakes.goOffline()
 
-    const { result } = await setup()
+    const { result } = await NameTestHelper.setup()
 
     await act(() => {
       result.current.setName('Asha')

@@ -1,6 +1,6 @@
 import { ApiError } from '@roundup/api'
 
-import { createDeps } from '../../src/di/deps'
+import { Deps } from '../../src/di/deps'
 import { QueryHelper } from '../../src/helpers/query-helper'
 
 describe('QueryHelper.shouldRetry', () => {
@@ -21,9 +21,9 @@ describe('QueryHelper.shouldRetry', () => {
   })
 })
 
-describe('createDeps', () => {
+describe('Deps.create', () => {
   it('builds the platform store, the network source, a query client and the clock', () => {
-    const deps = createDeps()
+    const deps = Deps.create()
 
     const retry = deps.queryClient.getDefaultOptions().queries?.retry
 

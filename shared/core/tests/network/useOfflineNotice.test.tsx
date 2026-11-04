@@ -2,7 +2,7 @@ import { onlineManager } from '@tanstack/react-query'
 import { act, renderHook } from '@testing-library/react-native'
 
 import { BACK_ONLINE_MS, useOfflineNotice } from '../../src/network/useOfflineNotice'
-import { createTestCore } from '../helpers/wrapper'
+import { TestCore } from '../helpers/wrapper'
 
 describe('useOfflineNotice', () => {
   beforeEach(() => {
@@ -14,14 +14,14 @@ describe('useOfflineNotice', () => {
   })
 
   it('shows nothing while online', async () => {
-    const { wrapper } = createTestCore()
+    const { wrapper } = TestCore.create()
     const { result } = await renderHook(() => useOfflineNotice(), { wrapper })
 
     expect(result.current).toBeUndefined()
   })
 
   it('goes offline, then back online, then hides after two seconds', async () => {
-    const { network, wrapper } = createTestCore()
+    const { network, wrapper } = TestCore.create()
     const { result } = await renderHook(() => useOfflineNotice(), { wrapper })
 
     await act(() => {
@@ -54,7 +54,7 @@ describe('useOfflineNotice', () => {
   })
 
   it('shows the offline notice at launch when there is no connection', async () => {
-    const { network, wrapper } = createTestCore()
+    const { network, wrapper } = TestCore.create()
 
     network.set(false)
 
@@ -64,7 +64,7 @@ describe('useOfflineNotice', () => {
   })
 
   it('goes offline again if the connection drops during "back online"', async () => {
-    const { network, wrapper } = createTestCore()
+    const { network, wrapper } = TestCore.create()
     const { result } = await renderHook(() => useOfflineNotice(), { wrapper })
 
     await act(() => {
@@ -81,7 +81,7 @@ describe('useOfflineNotice', () => {
   })
 
   it('stays quiet when a report says online while already online', async () => {
-    const { network, wrapper } = createTestCore()
+    const { network, wrapper } = TestCore.create()
     const { result } = await renderHook(() => useOfflineNotice(), { wrapper })
 
     await act(() => {
@@ -92,7 +92,7 @@ describe('useOfflineNotice', () => {
   })
 
   it('points the query client at the same source', async () => {
-    const { network, wrapper } = createTestCore()
+    const { network, wrapper } = TestCore.create()
 
     await renderHook(() => useOfflineNotice(), { wrapper })
 

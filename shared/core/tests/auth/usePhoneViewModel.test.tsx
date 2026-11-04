@@ -3,8 +3,8 @@ import { act, renderHook } from '@testing-library/react-native'
 import type { IPhoneViewModel } from '../../src/auth/usePhoneViewModel'
 
 import { usePhoneViewModel } from '../../src/auth/usePhoneViewModel'
-import { empty, failure, goOffline, stubNetwork } from '../helpers/fakes'
-import { createTestCore } from '../helpers/wrapper'
+import { Fakes } from '../helpers/fakes'
+import { TestCore } from '../helpers/wrapper'
 
 /** The latest value of a hook under test. */
 interface ICurrent {
@@ -19,15 +19,21 @@ interface IRendered {
 }
 
 /**
- * Renders the view model inside a CoreProvider with fakes.
- * @returns The rendered hook.
+ * Phone view model test helpers. Static methods only.
  */
-const setup = (): Promise<IRendered> =>
-  renderHook(() => usePhoneViewModel(), { wrapper: createTestCore().wrapper })
+class PhoneTestHelper {
+  /**
+   * Renders the view model inside a CoreProvider with fakes.
+   * @returns The rendered hook.
+   */
+  static setup(): Promise<IRendered> {
+    return renderHook(() => usePhoneViewModel(), { wrapper: TestCore.create().wrapper })
+  }
+}
 
 describe('usePhoneViewModel', () => {
   it('keeps digits only, at most ten', async () => {
-    const { result } = await setup()
+    const { result } = await PhoneTestHelper.setup()
 
     await act(() => {
       result.current.setPhone('98a76-54 3210999')
@@ -37,7 +43,7 @@ describe('usePhoneViewModel', () => {
   })
 
   it('drops a pasted country code', async () => {
-    const { result } = await setup()
+    const { result } = await PhoneTestHelper.setup()
 
     await act(() => {
       result.current.setPhone('+91 98765 43210')
@@ -49,8 +55,8 @@ describe('usePhoneViewModel', () => {
   it.each(['', '12345', '5876543210', '98765432'])(
     'rejects %j without a request',
     async (typed) => {
-      const network = stubNetwork({})
-      const { result } = await setup()
+      const network = Fakes.stubNetwork({})
+      const { result } = await PhoneTestHelper.setup()
 
       await act(() => {
         result.current.setPhone(typed)
@@ -69,8 +75,8 @@ describe('usePhoneViewModel', () => {
   )
 
   it('sends the code to the E.164 number and returns it', async () => {
-    const network = stubNetwork({ 'POST /api/v1/auth/otp/request': empty(202) })
-    const { result } = await setup()
+    const network = Fakes.stubNetwork({ 'POST /api/v1/auth/otp/request': Fakes.empty(202) })
+    const { result } = await PhoneTestHelper.setup()
 
     await act(() => {
       result.current.setPhone('9876543210')
@@ -91,9 +97,11 @@ describe('usePhoneViewModel', () => {
   it('is busy while the request is in flight', async () => {
     const gate = Promise.withResolvers<boolean>()
 
-    stubNetwork({ 'POST /api/v1/auth/otp/request': { ...empty(202), gate: gate.promise } })
+    Fakes.stubNetwork({
+      'POST /api/v1/auth/otp/request': { ...Fakes.empty(202), gate: gate.promise },
+    })
 
-    const { result } = await setup()
+    const { result } = await PhoneTestHelper.setup()
 
     await act(() => {
       result.current.setPhone('9876543210')
@@ -120,9 +128,9 @@ describe('usePhoneViewModel', () => {
     [429, 'errors.tooManyRequests'],
     [500, 'errors.genericWithId'],
   ] as const)('maps a %i to %s', async (status, key) => {
-    stubNetwork({ 'POST /api/v1/auth/otp/request': failure(status, 'nope') })
+    Fakes.stubNetwork({ 'POST /api/v1/auth/otp/request': Fakes.failure(status, 'nope') })
 
-    const { result } = await setup()
+    const { result } = await PhoneTestHelper.setup()
 
     await act(() => {
       result.current.setPhone('9876543210')
@@ -136,9 +144,9 @@ describe('usePhoneViewModel', () => {
   })
 
   it('shows the request id of an unexpected failure', async () => {
-    stubNetwork({ 'POST /api/v1/auth/otp/request': failure(500, 'boom') })
+    Fakes.stubNetwork({ 'POST /api/v1/auth/otp/request': Fakes.failure(500, 'boom') })
 
-    const { result } = await setup()
+    const { result } = await PhoneTestHelper.setup()
 
     await act(() => {
       result.current.setPhone('9876543210')
@@ -152,9 +160,9 @@ describe('usePhoneViewModel', () => {
   })
 
   it('says offline when there is no connection', async () => {
-    goOffline()
+    Fakes.goOffline()
 
-    const { result } = await setup()
+    const { result } = await PhoneTestHelper.setup()
 
     await act(() => {
       result.current.setPhone('9876543210')
@@ -168,7 +176,7 @@ describe('usePhoneViewModel', () => {
   })
 
   it('clears the message when the number is edited', async () => {
-    const { result } = await setup()
+    const { result } = await PhoneTestHelper.setup()
 
     await act(async () => {
       await result.current.submit()

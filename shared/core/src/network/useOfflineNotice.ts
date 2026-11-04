@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 
 import type { en } from '@roundup/i18n'
 
+import type { TPhase } from '../helpers/notice-helper'
 import type { INetworkState } from './types'
 
 import { useDeps } from '../di/useDeps'
@@ -22,25 +23,10 @@ export interface INetworkNotice {
   tone: 'error' | 'success'
 }
 
-/** Where the connection is: fine, lost, or just regained. */
-type TPhase = 'back' | 'offline' | 'online'
-
 const NOTICES = {
   back: { id: 'back-online', message: 'notice.backOnline', tone: 'success' },
   offline: { id: 'offline', message: 'notice.offline', tone: 'error' },
 } as const satisfies Record<Exclude<TPhase, 'online'>, INetworkNotice>
-
-/**
- * The phase after a new reading. Regaining a connection only says "back online" if it was lost.
- * @param current - The phase so far.
- * @param online - Whether the device is online.
- * @returns The next phase.
- */
-const next = (current: TPhase, online: boolean): TPhase => {
-  if (!online) return 'offline'
-
-  return current === 'offline' ? 'back' : current
-}
 
 /**
  * Follows the network source: a notice while offline, then "back online" for BACK_ONLINE_MS after
@@ -48,7 +34,8 @@ const next = (current: TPhase, online: boolean): TPhase => {
  * @returns The notice to show, or undefined.
  */
 export const useOfflineNotice = (): INetworkNotice | undefined => {
-  const { network } = useDeps()
+  const { helpers, network } = useDeps()
+  const noticeHelper = helpers.notice
   const [phase, setPhase] = useState<TPhase>('online')
 
   useEffect(() => {
@@ -60,7 +47,7 @@ export const useOfflineNotice = (): INetworkNotice | undefined => {
      * @param state.online - Whether the device is online.
      */
     const apply = ({ online }: INetworkState): void => {
-      if (active) setPhase((current) => next(current, online))
+      if (active) setPhase((current) => noticeHelper.next(current, online))
     }
 
     void network.getState().then(apply)
@@ -71,7 +58,7 @@ export const useOfflineNotice = (): INetworkNotice | undefined => {
       active = false
       unsubscribe()
     }
-  }, [network])
+  }, [network, noticeHelper])
 
   useEffect(() => {
     if (phase !== 'back') return

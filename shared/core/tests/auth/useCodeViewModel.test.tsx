@@ -2,8 +2,8 @@ import { act, renderHook } from '@testing-library/react-native'
 
 import { useCodeViewModel } from '../../src/auth/useCodeViewModel'
 import { useSession } from '../../src/session/useSession'
-import { empty, failure, goOffline, login, stubNetwork } from '../helpers/fakes'
-import { createTestCore } from '../helpers/wrapper'
+import { Fakes } from '../helpers/fakes'
+import { TestCore } from '../helpers/wrapper'
 
 /** The number the code was sent to. */
 const PHONE = '+919876543210'
@@ -28,7 +28,7 @@ describe('useCodeViewModel', () => {
   })
 
   it('keeps digits only, at most six', async () => {
-    const { result } = await renderHook(useBoth, { wrapper: createTestCore().wrapper })
+    const { result } = await renderHook(useBoth, { wrapper: TestCore.create().wrapper })
 
     await act(() => {
       result.current.vm.setCode('12-34')
@@ -38,8 +38,8 @@ describe('useCodeViewModel', () => {
   })
 
   it('submits by itself on the sixth digit and signs in', async () => {
-    const network = stubNetwork({ 'POST /api/v1/auth/otp/verify': login(false) })
-    const core = createTestCore()
+    const network = Fakes.stubNetwork({ 'POST /api/v1/auth/otp/verify': Fakes.login(false) })
+    const core = TestCore.create()
     const { result } = await renderHook(useBoth, { wrapper: core.wrapper })
 
     await act(() => {
@@ -58,17 +58,17 @@ describe('useCodeViewModel', () => {
   })
 
   it('resolves whether the user is new', async () => {
-    const network = stubNetwork({
-      'POST /api/v1/auth/otp/verify': failure(401, 'invalid or expired code'),
+    const network = Fakes.stubNetwork({
+      'POST /api/v1/auth/otp/verify': Fakes.failure(401, 'invalid or expired code'),
     })
 
-    const { result } = await renderHook(useBoth, { wrapper: createTestCore().wrapper })
+    const { result } = await renderHook(useBoth, { wrapper: TestCore.create().wrapper })
 
     await act(() => {
       result.current.vm.setCode('123456')
     })
 
-    network.routes['POST /api/v1/auth/otp/verify'] = login(true)
+    network.routes['POST /api/v1/auth/otp/verify'] = Fakes.login(true)
 
     let isNewUser: boolean | undefined
 
@@ -80,8 +80,8 @@ describe('useCodeViewModel', () => {
   })
 
   it('does not submit an incomplete code', async () => {
-    const network = stubNetwork({})
-    const { result } = await renderHook(useBoth, { wrapper: createTestCore().wrapper })
+    const network = Fakes.stubNetwork({})
+    const { result } = await renderHook(useBoth, { wrapper: TestCore.create().wrapper })
 
     await act(() => {
       result.current.vm.setCode('123')
@@ -101,9 +101,9 @@ describe('useCodeViewModel', () => {
     [429, 'errors.codeExpired'],
     [500, 'errors.genericWithId'],
   ] as const)('maps a %i to %s', async (status, key) => {
-    stubNetwork({ 'POST /api/v1/auth/otp/verify': failure(status, 'nope') })
+    Fakes.stubNetwork({ 'POST /api/v1/auth/otp/verify': Fakes.failure(status, 'nope') })
 
-    const { result } = await renderHook(useBoth, { wrapper: createTestCore().wrapper })
+    const { result } = await renderHook(useBoth, { wrapper: TestCore.create().wrapper })
 
     await act(() => {
       result.current.vm.setCode('123456')
@@ -114,9 +114,9 @@ describe('useCodeViewModel', () => {
   })
 
   it('says offline when there is no connection', async () => {
-    goOffline()
+    Fakes.goOffline()
 
-    const { result } = await renderHook(useBoth, { wrapper: createTestCore().wrapper })
+    const { result } = await renderHook(useBoth, { wrapper: TestCore.create().wrapper })
 
     await act(() => {
       result.current.vm.setCode('123456')
@@ -126,9 +126,11 @@ describe('useCodeViewModel', () => {
   })
 
   it('clears the message when the code is edited', async () => {
-    stubNetwork({ 'POST /api/v1/auth/otp/verify': failure(401, 'invalid or expired code') })
+    Fakes.stubNetwork({
+      'POST /api/v1/auth/otp/verify': Fakes.failure(401, 'invalid or expired code'),
+    })
 
-    const { result } = await renderHook(useBoth, { wrapper: createTestCore().wrapper })
+    const { result } = await renderHook(useBoth, { wrapper: TestCore.create().wrapper })
 
     await act(() => {
       result.current.vm.setCode('123456')
@@ -144,7 +146,7 @@ describe('useCodeViewModel', () => {
   it('counts down 30 seconds before a code can be asked for again', async () => {
     jest.useFakeTimers()
 
-    const { result } = await renderHook(useBoth, { wrapper: createTestCore().wrapper })
+    const { result } = await renderHook(useBoth, { wrapper: TestCore.create().wrapper })
 
     expect(result.current.vm.resendIn).toBe(30)
 
@@ -164,8 +166,8 @@ describe('useCodeViewModel', () => {
   it('sends a new code and restarts the countdown', async () => {
     jest.useFakeTimers()
 
-    const network = stubNetwork({ 'POST /api/v1/auth/otp/request': empty(202) })
-    const { result } = await renderHook(useBoth, { wrapper: createTestCore().wrapper })
+    const network = Fakes.stubNetwork({ 'POST /api/v1/auth/otp/request': Fakes.empty(202) })
+    const { result } = await renderHook(useBoth, { wrapper: TestCore.create().wrapper })
 
     await act(() => {
       jest.advanceTimersByTime(31_000)

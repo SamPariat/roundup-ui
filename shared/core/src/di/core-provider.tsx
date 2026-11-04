@@ -7,9 +7,9 @@ import { AuthBridge } from '@roundup/api'
 
 import type { IDeps } from './deps'
 
-import { createSession } from '../session/session'
+import { Session } from '../session/session'
 import { DepsContext, SessionContext } from './context'
-import { createDeps } from './deps'
+import { Deps } from './deps'
 
 /** Props for CoreProvider. */
 export interface ICoreProviderProps {
@@ -26,11 +26,11 @@ export interface ICoreProviderProps {
  */
 export const CoreProvider = ({ children, deps }: ICoreProviderProps): ReactElement => {
   const [built] = useState(() => {
-    const merged: IDeps = { ...createDeps(), ...deps }
+    const merged: IDeps = { ...Deps.create(), ...deps }
 
     return {
       deps: merged,
-      session: createSession({ queryClient: merged.queryClient, store: merged.session }),
+      session: Session.create({ queryClient: merged.queryClient, store: merged.session }),
     }
   })
 
