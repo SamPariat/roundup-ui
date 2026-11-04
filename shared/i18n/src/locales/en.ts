@@ -110,6 +110,10 @@ export const en = {
       submitting: 'Saving…',
     },
   },
+  notice: {
+    offline: "You're offline. We'll reconnect when you're back.",
+    backOnline: 'Back online',
+  },
   errors: {
     invalidPhone: 'Enter a 10-digit mobile number that starts with 6, 7, 8 or 9.',
     invalidName: 'Enter a name between 1 and 50 characters.',

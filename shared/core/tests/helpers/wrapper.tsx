@@ -5,7 +5,7 @@ import { QueryClient } from '@tanstack/react-query'
 import type { IDeps } from '../../src/di/deps'
 
 import { CoreProvider } from '../../src/di/core-provider'
-import { FakeStore } from './fakes'
+import { FakeNetwork, FakeStore } from './fakes'
 
 /** The props of the wrapper component. */
 interface IWrapperProps {
@@ -15,6 +15,8 @@ interface IWrapperProps {
 
 /** What a test gets back with its wrapper. */
 export interface ITestCore {
+  /** The network source the wrapper uses; call set(false) to go offline. */
+  network: FakeNetwork
   /** The store the wrapper uses. */
   store: FakeStore
   /** The query client the wrapper uses. */
@@ -25,19 +27,20 @@ export interface ITestCore {
 
 /**
  * Builds a CoreProvider wrapper with fake dependencies, so a view model runs against a fake
- * Keychain and a stubbed network and no module is mocked.
+ * Keychain, a fake network source and a stubbed fetch, and no module is mocked.
  * @param overrides - Any dependency to replace, such as the clock.
  * @returns The wrapper and the fakes behind it.
  */
 export const createTestCore = (overrides: Partial<IDeps> = {}): ITestCore => {
   const store = new FakeStore()
+  const network = new FakeNetwork()
 
   // gcTime Infinity: the default 5 minute garbage-collection timer would keep Jest alive.
   const queryClient = new QueryClient({
     defaultOptions: { queries: { gcTime: Infinity, retry: false } },
   })
 
-  const deps: Partial<IDeps> = { queryClient, session: store, ...overrides }
+  const deps: Partial<IDeps> = { network, queryClient, session: store, ...overrides }
 
   /**
    * The provider with the fakes.
@@ -47,5 +50,5 @@ export const createTestCore = (overrides: Partial<IDeps> = {}): ITestCore => {
     <CoreProvider deps={deps}>{children}</CoreProvider>
   )
 
-  return { queryClient, store, wrapper }
+  return { network, queryClient, store, wrapper }
 }

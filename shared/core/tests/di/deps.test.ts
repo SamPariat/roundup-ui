@@ -22,13 +22,14 @@ describe('QueryHelper.shouldRetry', () => {
 })
 
 describe('createDeps', () => {
-  it('builds the platform store, a query client and the clock', () => {
+  it('builds the platform store, the network source, a query client and the clock', () => {
     const deps = createDeps()
 
     const retry = deps.queryClient.getDefaultOptions().queries?.retry
 
     expect(deps.session.cookie).toBe(false)
     expect(typeof retry).toBe('function')
+    expect(typeof deps.network.getState).toBe('function')
     expect(Math.abs(deps.now() - Date.now())).toBeLessThan(1000)
   })
 })
