@@ -1,5 +1,6 @@
-import type { ReactElement } from 'react'
+import type { ComponentRef, ReactElement } from 'react'
 
+import { useCallback, useRef } from 'react'
 import { Pressable, TextInput, View } from 'react-native'
 
 import { useT } from '@roundup/i18n'
@@ -7,6 +8,9 @@ import { useT } from '@roundup/i18n'
 import { cn } from '../lib/cn'
 import { Icon } from './Icon'
 import { Text } from './Text'
+
+/** The native text input behind the boxes. */
+type TInputElement = ComponentRef<typeof TextInput>
 
 /** Props for OtpInput. */
 export interface IOtpInputProps {
@@ -24,6 +28,8 @@ export interface IOtpInputProps {
   onResend?: () => void
   /** Called with the digits typed or pasted so far. */
   onChangeText?: (text: string) => void
+  /** Focuses the field, and so opens the keyboard, when it mounts. */
+  autoFocus?: boolean
 }
 
 /**
@@ -40,10 +46,13 @@ export const formatCountdown = (seconds: number): string => {
 
 /**
  * One real text input sits invisibly over the boxes, so paste, autofill from SMS and the
- * keyboard all work, and a screen reader meets a single field instead of six.
+ * keyboard all work, and a screen reader meets a single field instead of six. Pressing the boxes
+ * focuses that input directly: iOS skips a near-transparent view when it hit-tests a tap, so the
+ * overlay alone cannot be relied on to open the keyboard.
  * @returns The code boxes and the resend row.
  */
 export const OtpInput = ({
+  autoFocus = false,
   error,
   label,
   length = 6,
@@ -56,10 +65,15 @@ export const OtpInput = ({
   const digits = value.slice(0, length)
   const complete = digits.length === length
   const boxes = Array.from({ length }, (_, position) => position)
+  const inputRef = useRef<TInputElement>(null)
+
+  const focusInput = useCallback(() => {
+    inputRef.current?.focus()
+  }, [])
 
   return (
     <View className="items-start gap-3">
-      <View className="relative">
+      <Pressable accessible={false} className="relative" onPress={focusInput}>
         <View aria-hidden className="flex-row gap-2">
           {boxes.map((position) => (
             <View
@@ -80,16 +94,18 @@ export const OtpInput = ({
           accessibilityLabel={label}
           aria-invalid={error !== undefined}
           autoComplete="sms-otp"
+          autoFocus={autoFocus}
           caretHidden
           className="absolute inset-0 text-transparent opacity-1"
           inputMode="numeric"
           keyboardType="number-pad"
           maxLength={length}
           onChangeText={onChangeText}
+          ref={inputRef}
           textContentType="oneTimeCode"
           value={digits}
         />
-      </View>
+      </Pressable>
       {error === undefined ? (
         <View className="flex-row items-center gap-1">
           {resendIn > 0 ? (

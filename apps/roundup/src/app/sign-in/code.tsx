@@ -50,6 +50,7 @@ const CodeForm = ({ phone }: ICodeFormProps): ReactElement => {
       title={t('signIn.code.title')}
     >
       <OtpInput
+        autoFocus
         label={t('signIn.code.label')}
         onChangeText={setCode}
         onResend={sendAgain}

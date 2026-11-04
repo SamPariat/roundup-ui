@@ -1,4 +1,5 @@
 import { fireEvent, screen } from '@testing-library/react-native'
+import { TextInput } from 'react-native'
 
 import { formatCountdown, OtpInput } from '../../src/components/OtpInput'
 import { renderWithTheme } from '../helpers/render'
@@ -29,6 +30,24 @@ describe('OtpInput', () => {
     await fireEvent.changeText(screen.getByLabelText('6-digit code'), '482917')
 
     expect(onChangeText).toHaveBeenCalledWith('482917')
+  })
+
+  it('focuses the field on mount when asked, so the keyboard opens', async () => {
+    await renderWithTheme(<OtpInput autoFocus label="6-digit code" />)
+
+    expect(screen.getByLabelText('6-digit code')).toHaveProp('autoFocus', true)
+  })
+
+  it('focuses the field when the boxes are pressed', async () => {
+    const focus = jest.spyOn(TextInput.prototype, 'focus')
+
+    await renderWithTheme(<OtpInput label="6-digit code" value="4" />)
+
+    await fireEvent.press(screen.getByText('4', { includeHiddenElements: true }))
+
+    expect(focus).toHaveBeenCalledTimes(1)
+
+    focus.mockRestore()
   })
 
   it('shows the countdown while the code cannot be resent', async () => {

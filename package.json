@@ -31,6 +31,7 @@
     "syncpack": "syncpack lint",
     "files": "scripts/check-files.sh",
     "doctor": "pnpm --filter @roundup/roundup run doctor && pnpm --filter @roundup/catalog run doctor",
+    "release-age": "scripts/check-release-age.sh",
     "updates": "scripts/check-updates.sh"
   },
   "devDependencies": {

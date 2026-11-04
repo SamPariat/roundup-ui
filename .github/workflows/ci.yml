@@ -61,6 +61,11 @@ jobs:
       - name: expo doctor
         run: pnpm run doctor
 
+      # Package versions this PR adds to the lockfile must be at least a day old.
+      - name: release age
+        if: github.event_name == 'pull_request'
+        run: pnpm run release-age "${{ github.event.pull_request.base.sha }}"
+
       - name: commitlint
         if: github.event_name == 'pull_request'
         run: pnpm exec commitlint --from "${{ github.event.pull_request.base.sha }}" --to "${{ github.event.pull_request.head.sha }}"
