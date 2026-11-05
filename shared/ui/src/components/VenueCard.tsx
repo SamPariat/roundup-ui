@@ -142,7 +142,7 @@ const VenueFacts = ({
   return (
     <View className="flex-row flex-wrap items-center gap-2">
       {rating === undefined ? null : <Rating value={rating} {...count} />}
-      {priceLevel === undefined || priceLevel === 0 ? null : <Price level={priceLevel} />}
+      {priceLevel === undefined ? null : <Price level={priceLevel} />}
       {isOpen === undefined ? null : <OpenBadge isOpen={isOpen} />}
     </View>
   )

@@ -211,7 +211,7 @@ export const Button = ({
   const block = blockProp ?? action.block
   const iconOnly = icon !== undefined && children === undefined
   // Inside a busy Modal every Button but the one that is loading goes inert.
-  const inactive = disabled || loading || (action.busy && !loading)
+  const inactive = disabled || loading || action.busy
   const labelTone = LABEL_TONE[variant]
   const iconTone = inactive ? 'fg-subtle' : labelTone
   const textTone = inactive ? 'subtle' : labelTone
