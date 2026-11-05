@@ -2,9 +2,9 @@ import { renderHook, waitFor } from '@testing-library/react-native'
 import { hideAsync, setOptions } from 'expo-splash-screen'
 import { AccessibilityInfo } from 'react-native'
 
-import type { ISplashElement } from '../../src/hooks/useSplash'
+import type { ISplashElement } from '../../src/lib/useSplash'
 
-import { Splash, useSplash } from '../../src/hooks/useSplash'
+import { Splash, useSplash } from '../../src/lib/useSplash'
 
 /** Props of the hook under test. */
 interface IReadyProps {
