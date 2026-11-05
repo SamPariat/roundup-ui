@@ -49,12 +49,14 @@ class ShellFixtures {
    * @param width - The window width in points.
    * @param current - Which tab is showing.
    * @param edgeInsets - The simulated safe-area insets.
+   * @param url - The route the app opens at.
    * @returns The router test renderer's result.
    */
   static renderShellAt(
     width: number,
     current: 'explore' | 'profile' | 'squads' = 'squads',
     edgeInsets: IInsets = NO_INSETS,
+    url = '/',
   ) {
     mockWindow.width = width
 
@@ -74,7 +76,7 @@ class ShellFixtures {
       </SafeAreaProvider>
     )
 
-    return renderRouter({ index: Page }, { initialUrl: '/' })
+    return renderRouter({ index: Page, 'profile/edit': Page }, { initialUrl: url })
   }
 }
 
@@ -109,6 +111,20 @@ describe('AppShell', () => {
     await ShellFixtures.renderShellAt(1440, 'profile')
 
     expect(screen.getByRole('tab', { name: 'Profile' })).toBeSelected()
+  })
+
+  it.each([390, 1440])('titles a nested screen and offers back at %i wide', async (width) => {
+    await ShellFixtures.renderShellAt(width, 'profile', NO_INSETS, '/profile/edit')
+
+    expect(screen.getByRole('heading', { name: 'Edit profile' })).toBeOnTheScreen()
+    expect(screen.getByRole('button', { name: 'Back' })).toBeOnTheScreen()
+    expect(screen.getByRole('tab', { name: 'Profile' })).toBeSelected()
+  })
+
+  it('offers no back button on a tab page', async () => {
+    await ShellFixtures.renderShellAt(390)
+
+    expect(screen.queryByRole('button', { name: 'Back' })).toBeNull()
   })
 
   it('shows the page content', async () => {

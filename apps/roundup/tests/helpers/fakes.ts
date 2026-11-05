@@ -22,6 +22,8 @@ export interface IBackend {
   hangOtp?: boolean
   /** True to make the verify route hang, so the Verify button stays busy. */
   hangVerify?: boolean
+  /** The status the save-profile route answers with. Defaults to 200. */
+  patch?: number
   /** Paths of the requests made, in order. */
   paths: string[]
 }
@@ -167,8 +169,7 @@ export class Fakes {
 
       if (path === '/api/v1/auth/logout') return new Response(null, { status: 204 })
 
-      if (path === '/api/v1/users/me')
-        return Fakes.profile(method === 'PATCH' ? 'Asha' : backend.user.name)
+      if (path === '/api/v1/users/me') return Fakes.meAnswer(method, backend)
 
       const answer = await Fakes.signInAnswer(path, backend)
 
@@ -211,6 +212,23 @@ export class Fakes {
    */
   private static envelope(data: unknown, status = 200): Response {
     return Response.json({ data, success: true }, { status })
+  }
+
+  /**
+   * Answers the profile route: the profile on a read, and the save outcome on a PATCH.
+   * @param method - The request method.
+   * @param backend - What the backend is told to do.
+   * @returns The response.
+   */
+  private static meAnswer(method: string, backend: IBackend): Response {
+    if (method !== 'PATCH') return Fakes.profile(backend.user.name)
+
+    return backend.patch === undefined || backend.patch === 200
+      ? Fakes.profile('Asha')
+      : Response.json(
+          { error: 'nope', success: false },
+          { headers: { 'X-Request-ID': 'req-7' }, status: backend.patch },
+        )
   }
 
   /**

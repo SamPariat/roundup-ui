@@ -91,6 +91,28 @@ export class Paths {
   }
 
   /**
+   * Edit profile, under the Profile tab.
+   * @param query - Extra query parameters, if any.
+   * @returns The path, or the path with its parameters.
+   */
+  static profileEdit<Q extends TQuery | undefined = undefined>(
+    query?: Q,
+  ): TBuilt<'/profile/edit', Q> {
+    return Paths.build('/profile/edit', query)
+  }
+
+  /**
+   * Preferences, under the Profile tab.
+   * @param query - Extra query parameters, if any.
+   * @returns The path, or the path with its parameters.
+   */
+  static profilePreferences<Q extends TQuery | undefined = undefined>(
+    query?: Q,
+  ): TBuilt<'/profile/preferences', Q> {
+    return Paths.build('/profile/preferences', query)
+  }
+
+  /**
    * Builds the plain path or the path with parameters.
    * @param pathname - The path of the route.
    * @param query - The query, if any.

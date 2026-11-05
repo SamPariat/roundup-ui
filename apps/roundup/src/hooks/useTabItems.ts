@@ -65,6 +65,20 @@ const TAB_DEFINITIONS: readonly ITabDefinition[] = [
   },
 ]
 
+/** A screen pushed inside a tab, which has its own title and a back button. */
+interface INestedDefinition {
+  /** The route of the screen. */
+  href: string
+  /** The key of its page title. */
+  titleKey: TTitleKey
+}
+
+/** The screens pushed inside the tabs, so the shell can title them and offer a way back. */
+const NESTED_DEFINITIONS: readonly INestedDefinition[] = [
+  { href: Paths.profileEdit(), titleKey: 'titles.editProfile' },
+  { href: Paths.profilePreferences(), titleKey: 'titles.preferences' },
+]
+
 /**
  * Tab helpers. Static methods only.
  */
@@ -76,6 +90,15 @@ export class Tab {
    */
   static idForPath(pathname: string): ITabItem['id'] {
     return TAB_DEFINITIONS.find((item) => pathname.startsWith(item.href))?.id ?? 'squads'
+  }
+
+  /**
+   * Finds the title key of a screen pushed inside a tab.
+   * @param pathname - The current URL path.
+   * @returns The key of the screen's title, or undefined on a tab's own page.
+   */
+  static nestedTitleKey(pathname: string): TTitleKey | undefined {
+    return NESTED_DEFINITIONS.find((item) => item.href === pathname)?.titleKey
   }
 }
 
@@ -98,3 +121,14 @@ export const useTabItems = (): readonly ITabItem[] => {
  * @returns The id of the active tab.
  */
 export const useCurrentTab = (): ITabItem['id'] => Tab.idForPath(usePathname())
+
+/**
+ * The title of the screen pushed inside a tab, when the current route is one.
+ * @returns The translated title, or undefined on a tab's own page.
+ */
+export const useNestedTitle = (): string | undefined => {
+  const { t } = useT()
+  const key = Tab.nestedTitleKey(usePathname())
+
+  return key === undefined ? undefined : t(key)
+}
