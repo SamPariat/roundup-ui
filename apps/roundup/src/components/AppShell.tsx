@@ -22,12 +22,11 @@ export interface IAppShellProps {
 /**
  * SideNav and PageHeader from 1024 wide up; TopAppBar and BottomNav below. The items are the
  * same everywhere, only the chrome changes. A screen pushed inside a tab (Edit profile) shows its
- * own title and a back button in place of the logo. Past 1600 wide the side nav and content stay together
- * as one centered, framed block instead of the nav sitting at the far left edge.
+ * own title and a back button in place of the logo.
  * @returns The page frame: nav, title and content.
  */
 export const AppShell = ({ children, current }: IAppShellProps): ReactElement => {
-  const { nav } = useLayout()
+  const { gutter, nav } = useLayout()
   const items = useTabItems()
   const navItems = items.map(({ href, icon, id, label }) => ({ href, icon, id, label }))
   const { t } = useT()
@@ -40,28 +39,23 @@ export const AppShell = ({ children, current }: IAppShellProps): ReactElement =>
     nestedTitle === undefined ? {} : { back: t('common.back'), onBack: goBack }
 
   return (
-    <View className="flex-1 bg-bg">
-      <View
-        className={cn(
-          'mx-auto w-full max-w-app flex-1 border-border app:border-x',
-          nav === 'side' && 'flex-row',
-        )}
-      >
-        {nav === 'side' ? <SideNav items={navItems} value={current} /> : null}
-        <View className="min-w-0 flex-1">
-          {nav === 'bottom' ? (
-            <TopAppBar {...backProps} logo={nestedTitle === undefined} title={title} />
+    <View className={cn('flex-1 bg-bg', nav === 'side' && 'flex-row')}>
+      {nav === 'side' ? <SideNav items={navItems} value={current} /> : null}
+      <View className="min-w-0 flex-1">
+        {nav === 'bottom' ? (
+          <TopAppBar {...backProps} logo={nestedTitle === undefined} title={title} />
+        ) : null}
+        <View
+          className={cn('mx-auto w-full max-w-content flex-1', gutter === 32 ? 'px-8' : 'px-4')}
+        >
+          {nav === 'side' ? (
+            <View className="pt-8 pb-6">
+              <PageHeader {...headerBackProps} title={title} />
+            </View>
           ) : null}
-          <View className="mx-auto w-full max-w-content flex-1 px-4 md:px-8">
-            {nav === 'side' ? (
-              <View className="pt-8 pb-6">
-                <PageHeader {...headerBackProps} title={title} />
-              </View>
-            ) : null}
-            {children}
-          </View>
-          {nav === 'bottom' ? <BottomNav items={navItems} value={current} /> : null}
+          {children}
         </View>
+        {nav === 'bottom' ? <BottomNav items={navItems} value={current} /> : null}
       </View>
     </View>
   )
