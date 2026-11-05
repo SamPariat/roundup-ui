@@ -1,4 +1,5 @@
 import { fireEvent, screen } from '@testing-library/react-native'
+import { Platform } from 'react-native'
 
 import { Button } from '../../src/components/Button'
 import { Modal } from '../../src/components/Modal'
@@ -23,6 +24,37 @@ class ModalFixtures {
 }
 
 describe('Modal', () => {
+  describe('at phone width', () => {
+    const originalOs = Platform.OS
+
+    afterEach(() => {
+      Platform.OS = originalOs
+      Reflect.deleteProperty(globalThis, 'document')
+    })
+
+    it('slides up as a sheet in the app', async () => {
+      Platform.OS = 'ios'
+
+      await Render.withTheme(<Modal title="Add member" />)
+
+      expect(ModalFixtures.modalHost().props['animationType']).toBe('slide')
+    })
+
+    it('fades in as a centered card on web, never a bottom sheet', async () => {
+      Platform.OS = 'web'
+
+      // On web the theme provider writes data-theme to <html>; this suite runs without a DOM.
+      Object.defineProperty(globalThis, 'document', {
+        configurable: true,
+        value: { documentElement: { dataset: {}, style: {} } },
+      })
+
+      await Render.withTheme(<Modal title="Add member" />)
+
+      expect(ModalFixtures.modalHost().props['animationType']).toBe('fade')
+    })
+  })
+
   it('is a dialog named by its title', async () => {
     await Render.withTheme(
       <Modal title="Add member">

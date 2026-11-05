@@ -173,10 +173,12 @@ const ModalContent = ({
 }
 
 /**
- * A dialog that is a bottom sheet below the tablet breakpoint and a centerd card above it. It traps focus, closes on Esc and the Android back button, and tells assistive technology it is a (alert)dialog and when it is busy.
- * Every sheet, form and confirmation. A bottom sheet below 768 wide, a centerd 480 panel from
- * there up; identical content on web and app. The web build traps focus inside, closes on Esc
- * and returns focus to the trigger; native closes on the Android back button.
+ * A dialog: a bottom sheet on phones in the app, and a centered card everywhere else, including
+ * every width on web, where a sheet at the bottom of a browser window reads as broken. It traps
+ * focus, closes on Esc and the Android back button, and tells assistive technology it is a
+ * (alert)dialog and when it is busy.
+ * Every sheet, form and confirmation. Identical content on web and app. The web build traps focus
+ * inside, closes on Esc and returns focus to the trigger; native closes on the Android back button.
  * @returns The native modal host with its sheet or card.
  */
 export const Modal = ({
@@ -194,7 +196,7 @@ export const Modal = ({
 }: IModalProps): ReactElement => {
   const { width } = useWindowDimensions()
   const titleRef = useRef<TTitleElement>(null)
-  const sheet = Breakpoint.of(width) === 'phone'
+  const sheet = Platform.OS !== 'web' && Breakpoint.of(width) === 'phone'
   const confirm = tone === 'confirm'
   const showClose = !confirm && !busy && closable
 
@@ -256,7 +258,9 @@ export const Modal = ({
           </ModalContent>
           {actions !== undefined && actions.length > 0 ? (
             <ActionContext value={actionContext}>
-              <View className={cn('mt-6 gap-2', !sheet && 'flex-row-reverse justify-start')}>
+              <View
+                className={cn('mt-6 gap-2', !sheet && 'flex-row-reverse flex-wrap justify-start')}
+              >
                 {actions}
               </View>
             </ActionContext>
