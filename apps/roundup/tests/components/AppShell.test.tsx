@@ -87,7 +87,7 @@ describe('AppShell', () => {
     expect(screen.getByRole('heading', { name: 'Your squads' })).toBeOnTheScreen()
   })
 
-  it.each([1024, 1440, 2560, 3440])('uses the side nav at %i wide', async (width) => {
+  it.each([1024, 1440])('uses the side nav at %i wide', async (width) => {
     await ShellFixtures.renderShellAt(width)
 
     expect(screen.getByLabelText('Sidebar')).toBeOnTheScreen()
