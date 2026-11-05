@@ -53,6 +53,15 @@ describe('edit profile screen', () => {
     expect(screen).toHavePathname('/profile')
   })
 
+  it('goes back without a request when the name is unchanged', async () => {
+    await EditFixtures.open()
+    await fireEvent.press(await screen.findByRole('button', { name: 'Save' }))
+
+    expect(await screen.findByRole('button', { name: 'Log out' })).toBeOnTheScreen()
+    expect(screen).toHavePathname('/profile')
+    expect(backend.paths).not.toContain('PATCH /api/v1/users/me')
+  })
+
   it('asks for a name before saving', async () => {
     await EditFixtures.open()
     await fireEvent.changeText(await screen.findByLabelText('Name'), ' '.repeat(3))

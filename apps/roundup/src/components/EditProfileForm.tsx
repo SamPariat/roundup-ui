@@ -29,13 +29,11 @@ export const EditProfileForm = ({ id, name }: IEditProfileFormProps): ReactEleme
   const { busy, error, name: typed, requestId, setName, submit } = useNameViewModel(name)
   const errorText = useErrorText(error, requestId)
 
-  const save = useCallback(async () => {
-    if (await submit()) goBack()
+  const save = useCallback(() => {
+    void submit().then((saved) => {
+      if (saved) goBack()
+    })
   }, [goBack, submit])
-
-  const press = useCallback(() => {
-    void save()
-  }, [save])
 
   return (
     <View className="max-w-160 gap-6">
@@ -52,7 +50,7 @@ export const EditProfileForm = ({ id, name }: IEditProfileFormProps): ReactEleme
           block={Platform.OS !== 'web'}
           loading={busy}
           loadingLabel={t('screens.editProfile.saving')}
-          onPress={press}
+          onPress={save}
           size="lg"
         >
           {t('screens.editProfile.save')}
