@@ -21,11 +21,11 @@ export class Layout {
    */
   static forWidth(width: number): IShellLayout {
     // Tailwind's defaults: md is 768 and lg is 1024, p-4 is 16 and p-8 is 32, w-62 (the SideNav) is
-    // 248. The content column is max-w-content, 1200, and the app is max-w-app, 1600, from theme.css.
+    // 248. The content column is max-w-content, 1200, from theme.css.
     const step = Breakpoint.of(width)
     const nav = step === 'desktop' ? 'side' : 'bottom'
     const gutter = step === 'phone' ? 16 : 32
-    const available = Math.min(width, 1600) - (nav === 'side' ? 248 : 0)
+    const available = width - (nav === 'side' ? 248 : 0)
 
     return { nav, gutter, contentWidth: Math.min(available - gutter * 2, 1200) }
   }
@@ -33,8 +33,6 @@ export class Layout {
 
 /**
  * The shell layout for the current window, recomputed when it is resized, folded or rotated.
- * The shell's styling (gutter padding, the ultrawide frame) comes from Tailwind breakpoints; this
- * picks which nav to render, and gives the gutter to native views that take a style, not a class.
  * @returns The navigation, gutter and content width.
  */
 export const useLayout = (): IShellLayout => Layout.forWidth(useBreakpoint().width)
