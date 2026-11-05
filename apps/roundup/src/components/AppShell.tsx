@@ -25,12 +25,11 @@ export interface IAppShellProps {
 export const AppShell = ({ children, current }: IAppShellProps): ReactElement => {
   const { gutter, nav } = useLayout()
   const items = useTabItems()
-  const navItems = items.map(({ href, icon, id, label }) => ({ href, icon, id, label }))
   const title = items.find((item) => item.id === current)?.title ?? ''
 
   return (
     <View className={cn('flex-1 bg-bg', nav === 'side' && 'flex-row')}>
-      {nav === 'side' ? <SideNav items={navItems} value={current} /> : null}
+      {nav === 'side' ? <SideNav items={items} value={current} /> : null}
       <View className="min-w-0 flex-1">
         {nav === 'bottom' ? <TopAppBar logo title={title} /> : null}
         <View
@@ -43,7 +42,7 @@ export const AppShell = ({ children, current }: IAppShellProps): ReactElement =>
           ) : null}
           {children}
         </View>
-        {nav === 'bottom' ? <BottomNav items={navItems} value={current} /> : null}
+        {nav === 'bottom' ? <BottomNav items={items} value={current} /> : null}
       </View>
     </View>
   )
