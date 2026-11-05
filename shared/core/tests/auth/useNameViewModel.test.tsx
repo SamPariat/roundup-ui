@@ -26,10 +26,11 @@ class NameFixtures {
   /**
    * Renders the view model inside a CoreProvider with fakes.
    * @param core - The fakes to render in.
+   * @param initialName - The name the field starts with.
    * @returns The rendered hook.
    */
-  static setup(core: ITestCore = TestCore.create()): Promise<IRendered> {
-    return renderHook(() => useNameViewModel(), { wrapper: core.wrapper })
+  static setup(core: ITestCore = TestCore.create(), initialName?: string): Promise<IRendered> {
+    return renderHook(() => useNameViewModel(initialName), { wrapper: core.wrapper })
   }
 }
 
@@ -72,6 +73,29 @@ describe('useNameViewModel', () => {
     expect(saved).toBe(true)
     expect(network.requests[0]?.body).toEqual({ name: 'Asha' })
     expect(invalidate).toHaveBeenCalledWith({ queryKey: ['/api/v1/users/me'] })
+  })
+
+  it('starts with an empty name by default', async () => {
+    const { result } = await NameFixtures.setup()
+
+    expect(result.current.name).toBe('')
+  })
+
+  it('starts with the name it is given, and saves it once changed', async () => {
+    const network = Fakes.stubNetwork({ 'PATCH /api/v1/users/me': Fakes.ok({ name: 'Asha Rao' }) })
+    const { result } = await NameFixtures.setup(TestCore.create(), 'Asha')
+
+    expect(result.current.name).toBe('Asha')
+
+    await act(() => {
+      result.current.setName(' Asha Rao ')
+    })
+
+    await act(async () => {
+      await result.current.submit()
+    })
+
+    expect(network.requests[0]?.body).toEqual({ name: 'Asha Rao' })
   })
 
   it.each([

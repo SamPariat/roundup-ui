@@ -27,14 +27,15 @@ export interface INameViewModel {
 }
 
 /**
- * The view model of the name step: validates the name, saves it, and refreshes the profile so the
- * route guard lets the person through.
+ * The view model of the name step and of Edit profile: validates the name, saves it, and refreshes
+ * the profile, so the route guard lets a new person through and an existing name updates everywhere.
+ * @param initialName - The name the field starts with; empty on the name step, the current name when editing.
  * @returns The state and the actions.
  */
-export const useNameViewModel = (): INameViewModel => {
+export const useNameViewModel = (initialName = ''): INameViewModel => {
   const { queryClient } = useDeps()
   const { busy, clear, error, fail, requestId, run } = useAttempt()
-  const [typed, setTyped] = useState('')
+  const [typed, setTyped] = useState(initialName)
 
   const setName = useCallback(
     (text: string) => {
