@@ -15,7 +15,6 @@ import { Logo } from './Logo'
 import { NavTab } from './NavTab'
 import { Text } from './Text'
 
-/** Props for SideNav. */
 /** The person shown at the bottom of the rail. */
 export interface INavUser extends IPerson {
   /** Phone number shown under the name. */
