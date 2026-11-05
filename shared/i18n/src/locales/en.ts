@@ -26,6 +26,8 @@ export const en = {
     squads: 'Your squads',
     explore: 'Explore',
     profile: 'Profile',
+    editProfile: 'Edit profile',
+    preferences: 'Preferences',
   },
   tabs: {
     withCount: '{{label}}, {{total}}',
@@ -140,8 +142,25 @@ export const en = {
       emptyBody: 'Bars, cafes and restaurants near you will show up here.',
     },
     profile: {
-      themeHeading: 'Theme',
+      editProfile: 'Edit profile',
+      editProfileHint: 'Photo and name',
+      preferences: 'Preferences',
+      preferencesHint: 'Appearance and language',
       logOut: 'Log out',
+    },
+    editProfile: {
+      nameLabel: 'Name',
+      nameHelper: 'Your squads see this name.',
+      save: 'Save',
+      saving: 'Saving…',
+      cancel: 'Cancel',
+    },
+    preferences: {
+      appearance: 'Appearance',
+      appearanceCaption: "System follows your device's light or dark setting.",
+      language: 'Language',
+      languageName: 'English',
+      languageCaption: 'More languages are on the way.',
     },
     notFound: {
       windowTitle: 'Not found',

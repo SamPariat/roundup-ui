@@ -14,6 +14,17 @@ describe('Tab.idForPath', () => {
   })
 })
 
+describe('Tab.nestedTitleKey', () => {
+  it.each([
+    ['/profile/edit', 'titles.editProfile'],
+    ['/profile/preferences', 'titles.preferences'],
+    ['/profile', undefined],
+    ['/squads', undefined],
+  ] as const)('maps %s to %s', (path, key) => {
+    expect(Tab.nestedTitleKey(path)).toBe(key)
+  })
+})
+
 describe('useTabItems', () => {
   it('lists the destinations in order with their English labels and page titles', async () => {
     const { result } = await renderHook(() => useTabItems())
