@@ -42,24 +42,14 @@ export const OtpInputDemo = (): ReactElement => {
         note={`Type ${RIGHT_CODE} to clear it. Resent ${String(resends)} times.`}
         title="Interactive"
       >
-        {wrong ? (
-          <OtpInput
-            error="That code is not right."
-            label="6-digit code"
-            onChangeText={setCode}
-            onResend={resend}
-            resendIn={0}
-            value={code}
-          />
-        ) : (
-          <OtpInput
-            label="6-digit code"
-            onChangeText={setCode}
-            onResend={resend}
-            resendIn={0}
-            value={code}
-          />
-        )}
+        <OtpInput
+          label="6-digit code"
+          onChangeText={setCode}
+          onResend={resend}
+          resendIn={0}
+          value={code}
+          {...(wrong ? { error: 'That code is not right.' } : {})}
+        />
       </Specimen>
     </>
   )
