@@ -13,7 +13,7 @@ import { Specimen } from '../components/Specimen'
 export const PageHeaderDemo = (): ReactElement => {
   const [went, setWent] = useState('Nowhere yet')
 
-  const back = useCallback(() => {
+  const back = useCallback((): void => {
     setWent('Back to Squads')
   }, [])
 

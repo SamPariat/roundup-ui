@@ -17,11 +17,11 @@ export interface IFocusState {
 export const useFocus = (): IFocusState => {
   const [focused, setFocused] = useState(false)
 
-  const onFocus = useCallback(() => {
+  const onFocus = useCallback((): void => {
     setFocused(true)
   }, [])
 
-  const onBlur = useCallback(() => {
+  const onBlur = useCallback((): void => {
     setFocused(false)
   }, [])
 

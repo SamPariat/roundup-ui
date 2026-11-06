@@ -13,7 +13,7 @@ import { Specimen } from '../components/Specimen'
 export const ListRowDemo = (): ReactElement => {
   const [presses, setPresses] = useState(0)
 
-  const press = useCallback(() => {
+  const press = useCallback((): void => {
     setPresses((count) => count + 1)
   }, [])
 

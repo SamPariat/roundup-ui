@@ -21,7 +21,7 @@ export default function PhoneScreen(): ReactElement {
   const { busy, error, phone, requestId, setPhone, submit } = usePhoneViewModel()
   const errorText = useErrorText(error, requestId)
 
-  const send = useCallback(() => {
+  const send = useCallback((): void => {
     void submit().then((e164) => {
       if (e164 !== undefined) router.push(Paths.signInCode({ phone: e164 }))
     })

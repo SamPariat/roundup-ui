@@ -30,7 +30,7 @@ interface IHostProps {
 const Host = ({ first, next }: IHostProps): ReactElement => {
   const [notice, setNotice] = useState(first)
 
-  const change = useCallback(() => {
+  const change = useCallback((): void => {
     setNotice(next)
   }, [next])
 

@@ -19,7 +19,7 @@ export const OtpInputDemo = (): ReactElement => {
   const [resends, setResends] = useState(0)
   const wrong = code.length === RIGHT_CODE.length && code !== RIGHT_CODE
 
-  const resend = useCallback(() => {
+  const resend = useCallback((): void => {
     setResends((count) => count + 1)
     setCode('')
   }, [])

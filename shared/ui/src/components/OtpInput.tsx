@@ -72,7 +72,7 @@ export const OtpInput = ({
   const boxes = Array.from({ length }, (_, position) => position)
   const inputRef = useRef<TInputElement>(null)
 
-  const focusInput = useCallback(() => {
+  const focusInput = useCallback((): void => {
     inputRef.current?.focus()
   }, [])
 

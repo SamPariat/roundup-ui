@@ -56,7 +56,7 @@ const ThemeOption = ({ checked, onChange, option }: IThemeOptionProps): ReactEle
   const { t } = useT()
   const label = t(`themeSwitch.${option.id}`)
 
-  const press = useCallback(() => {
+  const press = useCallback((): void => {
     onChange?.(option.id)
   }, [onChange, option.id])
 

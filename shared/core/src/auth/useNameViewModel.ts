@@ -39,7 +39,7 @@ export const useNameViewModel = (initialName = ''): INameViewModel => {
   const [typed, setTyped] = useState(initialName)
 
   const setName = useCallback(
-    (text: string) => {
+    (text: string): void => {
       setTyped(text)
       clear()
     },

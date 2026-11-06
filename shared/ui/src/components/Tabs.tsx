@@ -45,7 +45,7 @@ interface ITabButtonProps {
 const TabButton = ({ active, item, onChange }: ITabButtonProps): ReactElement => {
   const { t } = useT()
 
-  const press = useCallback(() => {
+  const press = useCallback((): void => {
     onChange?.(item.id)
   }, [item.id, onChange])
 

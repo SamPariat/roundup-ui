@@ -11,7 +11,7 @@ import { Paths } from '../navigation/paths'
 export const useBack = (): (() => void) => {
   const router = useRouter()
 
-  return useCallback(() => {
+  return useCallback((): void => {
     if (router.canGoBack()) router.back()
     else router.replace(Paths.tabsProfile())
   }, [router])

@@ -21,7 +21,7 @@ export interface IFrameChipProps {
  * @returns The chip, selected when its width is the chosen one.
  */
 export const FrameChip = ({ onSelect, option, selected }: IFrameChipProps): ReactElement => {
-  const select = useCallback(() => {
+  const select = useCallback((): void => {
     onSelect(option.id)
   }, [onSelect, option.id])
 

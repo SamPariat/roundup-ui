@@ -33,12 +33,12 @@ export const useAttempt = (): IAttempt => {
   const [error, setError] = useState<TErrorKey | undefined>()
   const [requestId, setRequestId] = useState<string | undefined>()
 
-  const clear = useCallback(() => {
+  const clear = useCallback((): void => {
     setError(undefined)
     setRequestId(undefined)
   }, [])
 
-  const fail = useCallback((key: TErrorKey) => {
+  const fail = useCallback((key: TErrorKey): void => {
     setError(key)
     setRequestId(undefined)
   }, [])

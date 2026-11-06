@@ -19,7 +19,7 @@ export default function WelcomeScreen(): ReactElement {
   const router = useRouter()
   const gate = useRouteGate()
 
-  const start = useCallback(() => {
+  const start = useCallback((): void => {
     router.push(Paths.signInPhone())
   }, [router])
 

@@ -14,7 +14,7 @@ import { PEOPLE } from '../fixtures'
 export const SkeletonDemo = (): ReactElement => {
   const [loading, setLoading] = useState(true)
 
-  const toggle = useCallback(() => {
+  const toggle = useCallback((): void => {
     setLoading((current) => !current)
   }, [])
 

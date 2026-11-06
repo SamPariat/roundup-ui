@@ -8,6 +8,7 @@ import { useDeps, useProfileViewModel } from '@roundup/core'
 import { useT } from '@roundup/i18n'
 import { Avatar, Icon, List, ListRow, Skeleton, Text } from '@roundup/ui'
 
+import { TabPage } from '../../../components/TabPage'
 import { Paths } from '../../../navigation/paths'
 
 /**
@@ -21,61 +22,63 @@ export default function ProfileScreen(): ReactElement {
   const { helpers } = useDeps()
   const { loading, me, signOut } = useProfileViewModel()
 
-  const editProfile = useCallback(() => {
+  const editProfile = useCallback((): void => {
     router.push(Paths.profileEdit())
   }, [router])
 
-  const openPreferences = useCallback(() => {
+  const openPreferences = useCallback((): void => {
     router.push(Paths.profilePreferences())
   }, [router])
 
-  const logOut = useCallback(() => {
+  const logOut = useCallback((): void => {
     void signOut()
   }, [signOut])
 
   return (
-    <View className="flex-1 gap-6 py-6">
-      {loading || me === undefined ? (
-        <Skeleton variant="row" />
-      ) : (
-        <View className="flex-row items-center gap-4">
-          <Avatar id={me.id} name={me.name} size={64} />
-          <View className="min-w-0 flex-1">
-            <Text heading={1} numberOfLines={1} variant="heading">
-              {me.name}
-            </Text>
-            <Text numberOfLines={1} tone="muted" variant="body">
-              {helpers.phone.isE164(me.phone) ? helpers.phone.format(me.phone) : me.phone}
-            </Text>
+    <TabPage>
+      <View className="gap-6">
+        {loading || me === undefined ? (
+          <Skeleton variant="row" />
+        ) : (
+          <View className="flex-row items-center gap-4">
+            <Avatar id={me.id} name={me.name} size={64} />
+            <View className="min-w-0 flex-1">
+              <Text heading={1} numberOfLines={1} variant="heading">
+                {me.name}
+              </Text>
+              <Text numberOfLines={1} tone="muted" variant="body">
+                {helpers.phone.isE164(me.phone) ? helpers.phone.format(me.phone) : me.phone}
+              </Text>
+            </View>
           </View>
+        )}
+        <View className="max-w-160 gap-6">
+          <List>
+            <ListRow
+              chevron
+              leading={<Icon decorative name="edit" />}
+              onPress={editProfile}
+              subtitle={t('screens.profile.editProfileHint')}
+              title={t('screens.profile.editProfile')}
+            />
+            <ListRow
+              chevron
+              leading={<Icon decorative name="device" />}
+              onPress={openPreferences}
+              subtitle={t('screens.profile.preferencesHint')}
+              title={t('screens.profile.preferences')}
+            />
+          </List>
+          <List>
+            <ListRow
+              destructive
+              leading={<Icon decorative name="logout" tone="danger" />}
+              onPress={logOut}
+              title={t('screens.profile.logOut')}
+            />
+          </List>
         </View>
-      )}
-      <View className="max-w-160 gap-6">
-        <List>
-          <ListRow
-            chevron
-            leading={<Icon decorative name="edit" />}
-            onPress={editProfile}
-            subtitle={t('screens.profile.editProfileHint')}
-            title={t('screens.profile.editProfile')}
-          />
-          <ListRow
-            chevron
-            leading={<Icon decorative name="device" />}
-            onPress={openPreferences}
-            subtitle={t('screens.profile.preferencesHint')}
-            title={t('screens.profile.preferences')}
-          />
-        </List>
-        <List>
-          <ListRow
-            destructive
-            leading={<Icon decorative name="logout" tone="danger" />}
-            onPress={logOut}
-            title={t('screens.profile.logOut')}
-          />
-        </List>
       </View>
-    </View>
+    </TabPage>
   )
 }

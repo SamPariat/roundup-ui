@@ -14,7 +14,7 @@ import { Specimen } from '../components/Specimen'
 export const WelcomeDemo = (): ReactElement => {
   const [started, setStarted] = useState(false)
 
-  const start = useCallback(() => {
+  const start = useCallback((): void => {
     setStarted(true)
   }, [])
 

@@ -28,7 +28,7 @@ export const useSquadName = (initialName: string): ISquadNameField => {
   const [typed, setTyped] = useState(initialName)
 
   const setName = useCallback(
-    (text: string) => {
+    (text: string): void => {
       setTyped(text)
       clear()
     },

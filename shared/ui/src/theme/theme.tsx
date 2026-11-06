@@ -115,7 +115,7 @@ export const ThemeProvider = ({ children }: IThemeProviderProps): ReactElement =
     } else Appearance.setColorScheme(override)
   }, [preference])
 
-  const choosePreference = useCallback((next: TThemePreference) => {
+  const choosePreference = useCallback((next: TThemePreference): void => {
     setPreference(next)
 
     AsyncStorage.setItem(THEME_STORAGE_KEY, next).catch(() => {
@@ -127,8 +127,8 @@ export const ThemeProvider = ({ children }: IThemeProviderProps): ReactElement =
   const hydrated = useHydrated()
   const name = Theme.nameFor(preference, hydrated ? device : null)
 
-  const value = useMemo<ITheme>(
-    () => ({
+  const value = useMemo(
+    (): ITheme => ({
       name,
       preference,
       loaded,

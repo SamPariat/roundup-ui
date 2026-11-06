@@ -14,7 +14,7 @@ import { BOOK_CLUB, FRIDAY_FOOTY, PEOPLE } from '../fixtures'
 export const SquadCardDemo = (): ReactElement => {
   const [opened, setOpened] = useState('Nothing yet')
 
-  const open = useCallback(() => {
+  const open = useCallback((): void => {
     setOpened('Opened Friday Footy')
   }, [])
 

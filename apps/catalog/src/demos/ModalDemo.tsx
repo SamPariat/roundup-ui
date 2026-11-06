@@ -20,28 +20,28 @@ export const ModalDemo = (): ReactElement => {
   const [open, setOpen] = useState<TOpen>(null)
   const [saving, setSaving] = useState(false)
 
-  const showContent = useCallback(() => {
+  const showContent = useCallback((): void => {
     setOpen('content')
   }, [])
 
-  const showConfirm = useCallback(() => {
+  const showConfirm = useCallback((): void => {
     setOpen('confirm')
   }, [])
 
-  const showBusy = useCallback(() => {
+  const showBusy = useCallback((): void => {
     setSaving(false)
     setOpen('busy')
   }, [])
 
-  const showLocked = useCallback(() => {
+  const showLocked = useCallback((): void => {
     setOpen('locked')
   }, [])
 
-  const close = useCallback(() => {
+  const close = useCallback((): void => {
     setOpen(null)
   }, [])
 
-  const save = useCallback(() => {
+  const save = useCallback((): void => {
     setSaving(true)
   }, [])
 

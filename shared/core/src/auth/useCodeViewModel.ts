@@ -79,7 +79,7 @@ export const useCodeViewModel = (phone: string): ICodeViewModel => {
   )
 
   const setCode = useCallback(
-    (text: string) => {
+    (text: string): void => {
       const digits = codeHelper.toDigits(text)
 
       setTyped(digits)
