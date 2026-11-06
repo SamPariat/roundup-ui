@@ -26,6 +26,8 @@ export interface IListRowProps {
   onPress?: () => void
   /** Why the row cannot be pressed right now, while a request is in flight. */
   busy?: boolean
+  /** Whether the row is picked, for a row that ticks like a checkbox. Leave it out for other rows. */
+  selected?: boolean
 }
 
 /**
@@ -38,6 +40,7 @@ export const ListRow = ({
   destructive = false,
   leading,
   onPress,
+  selected,
   subtitle,
   title,
   trailing,
@@ -75,6 +78,7 @@ export const ListRow = ({
       accessibilityLabel={subtitle === undefined ? title : t('listRow.spoken', { subtitle, title })}
       accessibilityRole="button"
       aria-busy={busy}
+      aria-selected={selected}
       className={cn(
         layout,
         'hover:bg-bg-hover focus:outline-2 focus:-outline-offset-2 focus:outline-focus-ring active:bg-bg-hover',

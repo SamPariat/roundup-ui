@@ -24,6 +24,17 @@ export const ListRowDemo = (): ReactElement => {
           <ListRow title="Friday Footy" />
         </List>
       </Specimen>
+      <Specimen note="Ticks like a checkbox; the state is announced as selected." title="selected">
+        <List>
+          <ListRow
+            leading={<Avatar name="Meera Iyer" size={40} />}
+            onPress={press}
+            selected
+            title="Meera Iyer"
+            trailing={<Icon label="Picked" name="check" />}
+          />
+        </List>
+      </Specimen>
       <Specimen title="subtitle">
         <List>
           <ListRow subtitle="12 members · last plan on Friday" title="Friday Footy" />

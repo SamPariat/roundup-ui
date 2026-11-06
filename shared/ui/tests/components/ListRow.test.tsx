@@ -32,4 +32,10 @@ describe('ListRow', () => {
 
     expect(screen.getByRole('button', { name: 'Remove Meera' })).toBeBusy()
   })
+
+  it('reports whether it is selected', async () => {
+    await Render.withTheme(<ListRow onPress={jest.fn()} selected title="Meera Krishnan" />)
+
+    expect(screen.getByRole('button', { name: 'Meera Krishnan' })).toBeSelected()
+  })
 })
