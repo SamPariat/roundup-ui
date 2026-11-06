@@ -76,6 +76,18 @@ describe('app.config', () => {
     expect(config.android.package).toBe('app.roundup.client')
   })
 
+  it('asks for contacts with a reason and keeps the app from writing them', () => {
+    const config = ConfigFixtures.loadConfig('beta')
+
+    const entry = config.plugins.find(
+      (plugin) => Array.isArray(plugin) && plugin[0] === 'expo-contacts',
+    )
+
+    expect(entry).toBeDefined()
+    expect(JSON.stringify(entry)).toContain('contactsPermission')
+    expect(config.android.blockedPermissions).toEqual(['android.permission.WRITE_CONTACTS'])
+  })
+
   it('turns on typed routes', () => {
     const config = ConfigFixtures.loadConfig('beta')
 
