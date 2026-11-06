@@ -1,13 +1,17 @@
 import type { ComponentRef, ReactElement, ReactNode, RefObject } from 'react'
+import type { ViewStyle } from 'react-native'
 
-import { useCallback, useMemo, useRef } from 'react'
+import { BlurView } from 'expo-blur'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {
   AccessibilityInfo,
+  Animated,
+  Easing,
   KeyboardAvoidingView,
   Modal as NativeModal,
   Platform,
+  Pressable,
   ScrollView,
-  useWindowDimensions,
   View,
 } from 'react-native'
 
@@ -17,7 +21,9 @@ import type { IActionContextValue } from '../lib/action-context'
 
 import { ActionContext } from '../lib/action-context'
 import { cn } from '../lib/cn'
-import { Breakpoint } from '../lib/useBreakpoint'
+import { ABSOLUTE_FILL } from '../lib/fill'
+import { useReducedMotion } from '../lib/useReducedMotion'
+import { useTheme } from '../theme/theme'
 import { Button } from './Button'
 import { Surface } from './Surface'
 import { Text } from './Text'
@@ -47,9 +53,21 @@ export interface IModalProps {
   closable?: boolean
   /** Whether it is showing. The modal mounts its content only while visible. */
   visible?: boolean
-  /** Called when the close button, Esc or the Android back button asks to close. Not called while busy. */
+  /** Called when the close button, Esc, the Android back button or a tap on the backdrop asks to close. Not called while busy. */
   onClose?: () => void
 }
+
+/** How far the sheet rises from as it opens, in points. */
+const SHEET_RISE = 48
+
+/** How long the sheet takes to rise, in milliseconds. */
+const RISE_MS = 280
+
+/** Ease-out cubic: quick to start, gentle to settle, like the system sheets. */
+const EASE_OUT = Easing.bezier(0.33, 1, 0.68, 1)
+
+/** How strongly the screen behind is blurred, on expo-blur's 0 to 100 scale. */
+const BACKDROP_BLUR = 24
 
 /** The native element behind the title wrapper, which gets focus on open. */
 type TTitleElement = ComponentRef<typeof View>
@@ -174,13 +192,76 @@ const ModalContent = ({
   )
 }
 
+/** Props for the backdrop behind the modal. */
+interface IBackdropProps {
+  /** Called when the backdrop is tapped. */
+  onPress: () => void
+}
+
 /**
- * A dialog: a bottom sheet on phones in the app, and a centered card everywhere else, including
- * every width on web, where a sheet at the bottom of a browser window reads as broken. It traps
+ * The screen behind the modal, blurred under a light scrim. Tapping it asks the modal to close.
+ * It is hidden from assistive technology, which closes the modal with its close button, Esc or the
+ * Android back button instead. Android cannot blur another window, so it gets the scrim alone.
+ * @returns The pressable, blurred backdrop.
+ */
+const ModalBackdrop = ({ onPress }: IBackdropProps): ReactElement => {
+  const { name } = useTheme()
+
+  return (
+    <Pressable
+      accessible={false}
+      aria-hidden
+      className="absolute inset-0"
+      focusable={false}
+      importantForAccessibility="no-hide-descendants"
+      onPress={onPress}
+    >
+      <BlurView
+        intensity={BACKDROP_BLUR}
+        style={ABSOLUTE_FILL}
+        tint={name === 'latte' ? 'light' : 'dark'}
+      />
+      <View className="absolute inset-0 bg-scrim" />
+    </Pressable>
+  )
+}
+
+/**
+ * Raises the sheet into place each time it opens, unless the person asked for less motion.
+ * @param visible - Whether the modal is showing.
+ * @param sheet - Whether it is a bottom sheet; the web panel only fades.
+ * @returns The style that moves the sheet.
+ */
+const useSheetRise = (visible: boolean, sheet: boolean): Animated.WithAnimatedValue<ViewStyle> => {
+  const reduced = useReducedMotion()
+  const [offset] = useState((): Animated.Value => new Animated.Value(0))
+
+  useEffect(() => {
+    if (!visible || !sheet || reduced) return
+
+    offset.setValue(SHEET_RISE)
+
+    Animated.timing(offset, {
+      duration: RISE_MS,
+      easing: EASE_OUT,
+      toValue: 0,
+      useNativeDriver: true,
+    }).start()
+  }, [offset, reduced, sheet, visible])
+
+  return useMemo(
+    (): Animated.WithAnimatedValue<ViewStyle> => ({ transform: [{ translateY: offset }] }),
+    [offset],
+  )
+}
+
+/**
+ * A dialog, drawn as glass over a blurred backdrop that closes it when tapped. In the app it is a
+ * bottom sheet at every width, floating 8 points in from the edges with corners that follow the
+ * device's, like the system sheets. On the web it is a centered card at every width, where a sheet
+ * at the bottom of a browser window reads as broken. Identical content on web and app. It traps
  * focus, closes on Esc and the Android back button, and tells assistive technology it is a
- * (alert)dialog and when it is busy.
- * Every sheet, form and confirmation. Identical content on web and app. The web build traps focus
- * inside, closes on Esc and returns focus to the trigger; native closes on the Android back button.
+ * (alert)dialog and when it is busy; while busy nothing closes it.
  * @returns The native modal host with its sheet or card.
  */
 export const Modal = ({
@@ -196,11 +277,11 @@ export const Modal = ({
   tone = 'content',
   visible = true,
 }: IModalProps): ReactElement => {
-  const { width } = useWindowDimensions()
   const titleRef = useRef<TTitleElement>(null)
-  const sheet = Platform.OS !== 'web' && Breakpoint.of(width) === 'phone'
+  const sheet = Platform.OS !== 'web'
   const confirm = tone === 'confirm'
   const showClose = !confirm && !busy && closable
+  const rise = useSheetRise(visible, sheet)
 
   // While a request is in flight only the loading Button stays active; Buttons read this context.
   const actionContext = useMemo((): IActionContextValue => ({ busy, block: sheet }), [busy, sheet])
@@ -215,7 +296,7 @@ export const Modal = ({
 
   return (
     <NativeModal
-      animationType={sheet ? 'slide' : 'fade'}
+      animationType="fade"
       onRequestClose={requestClose}
       onShow={focusTitle}
       statusBarTranslucent
@@ -226,48 +307,56 @@ export const Modal = ({
           padding by the keyboard's height lifts the sheet. Android resizes the window itself. */}
       <KeyboardAvoidingView
         behavior={Platform.select({ ios: 'padding' })}
-        className={cn('flex-1 bg-scrim', sheet ? 'justify-end' : 'items-center justify-center p-6')}
+        className={cn(
+          'flex-1',
+          sheet ? 'justify-end px-2 pb-2' : 'items-center justify-center p-6',
+        )}
       >
-        <Surface
-          accessibilityLabel={title}
-          accessibilityViewIsModal
-          aria-busy={busy}
-          aria-modal
-          className={cn(
-            'max-h-[85%] p-6',
-            sheet
-              ? 'w-full rounded-t-3xl shadow-sheet'
-              : 'w-120 max-w-full rounded-2xl shadow-toast',
-          )}
-          role={confirm ? 'alertdialog' : 'dialog'}
+        <ModalBackdrop onPress={requestClose} />
+        <Animated.View
+          className={cn('max-h-[85%]', sheet ? 'mx-auto w-full max-w-140' : 'w-120 max-w-full')}
+          style={rise}
         >
-          {sheet ? (
-            <View
-              aria-hidden
-              className="absolute top-2 left-1/2 -ml-4 h-1 w-8 rounded-full bg-border-strong"
-            />
-          ) : null}
-          <ModalHeader
-            leading={leading}
-            onClose={onClose}
-            showClose={showClose}
-            subtitle={subtitle}
-            title={title}
-            titleRef={titleRef}
-          />
-          <ModalContent body={body} busy={busy}>
-            {children}
-          </ModalContent>
-          {actions !== undefined && actions.length > 0 ? (
-            <ActionContext value={actionContext}>
+          <Surface
+            accessibilityLabel={title}
+            accessibilityViewIsModal
+            aria-busy={busy}
+            aria-modal
+            className={cn(
+              'max-h-full border border-glass-edge p-6',
+              sheet ? 'rounded-[32px] shadow-sheet' : 'rounded-[28px] shadow-toast',
+              !sheet && 'bg-glass backdrop-blur-2xl',
+            )}
+            role={confirm ? 'alertdialog' : 'dialog'}
+          >
+            {sheet ? (
               <View
-                className={cn('mt-6 gap-2', !sheet && 'flex-row-reverse flex-wrap justify-start')}
-              >
-                {actions}
-              </View>
-            </ActionContext>
-          ) : null}
-        </Surface>
+                aria-hidden
+                className="absolute top-2 left-1/2 -ml-4 h-1 w-8 rounded-full bg-border-strong"
+              />
+            ) : null}
+            <ModalHeader
+              leading={leading}
+              onClose={onClose}
+              showClose={showClose}
+              subtitle={subtitle}
+              title={title}
+              titleRef={titleRef}
+            />
+            <ModalContent body={body} busy={busy}>
+              {children}
+            </ModalContent>
+            {actions !== undefined && actions.length > 0 ? (
+              <ActionContext value={actionContext}>
+                <View
+                  className={cn('mt-6 gap-2', !sheet && 'flex-row-reverse flex-wrap justify-start')}
+                >
+                  {actions}
+                </View>
+              </ActionContext>
+            ) : null}
+          </Surface>
+        </Animated.View>
       </KeyboardAvoidingView>
     </NativeModal>
   )

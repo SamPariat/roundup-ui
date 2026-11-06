@@ -7,6 +7,7 @@ import { View } from 'react-native'
 import type { TRoleColor } from '../lib/useRoleColor'
 
 import { cn } from '../lib/cn'
+import { ABSOLUTE_FILL } from '../lib/fill'
 import { useGlass } from '../lib/useGlass'
 import { useRoleColor } from '../lib/useRoleColor'
 import { useTheme } from '../theme/theme'
@@ -34,9 +35,6 @@ export type TSurfaceProps = ViewProps & {
   tone?: keyof typeof TONES
 }
 
-// Raw geometry for the glass layer; it is the one place a style object is the right tool.
-const FILL = { position: 'absolute', top: 0, right: 0, bottom: 0, left: 0 } as const
-
 /**
  * The one surface primitive. On iOS 26+ it is Liquid Glass tinted with the role color;
  * everywhere else, and whenever Reduce Transparency is on, it is the solid role color.
@@ -62,7 +60,7 @@ export const Surface = ({
           colorScheme={name === 'mocha' ? 'dark' : 'light'}
           glassEffectStyle="regular"
           pointerEvents="none"
-          style={FILL}
+          style={ABSOLUTE_FILL}
           tintColor={tintColor}
         />
       ) : null}

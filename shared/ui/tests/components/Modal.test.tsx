@@ -21,10 +21,33 @@ class ModalFixtures {
 
     return node
   }
+
+  /**
+   * The blurred backdrop behind the dialog. It is hidden from assistive technology, so it is found
+   * by walking up from the dialog to the sibling that hides its descendants.
+   * @returns The backdrop's host element.
+   */
+  static backdrop() {
+    let node = screen.getByLabelText('Add member')
+
+    while (node.parent !== null) {
+      const backdrop = node.parent.children.find(
+        (child) =>
+          typeof child !== 'string' &&
+          child.props['importantForAccessibility'] === 'no-hide-descendants',
+      )
+
+      if (backdrop !== undefined && typeof backdrop !== 'string') return backdrop
+
+      node = node.parent
+    }
+
+    throw new Error('The modal has no backdrop')
+  }
 }
 
 describe('Modal', () => {
-  describe('at phone width', () => {
+  describe('on each platform', () => {
     const originalOs = Platform.OS
 
     afterEach(() => {
@@ -32,12 +55,12 @@ describe('Modal', () => {
       Reflect.deleteProperty(globalThis, 'document')
     })
 
-    it('slides up as a sheet in the app', async () => {
+    it('fades in over the blurred screen in the app, and the sheet rises on its own', async () => {
       Platform.OS = 'ios'
 
       await Render.withTheme(<Modal title="Add member" />)
 
-      expect(ModalFixtures.modalHost().props['animationType']).toBe('slide')
+      expect(ModalFixtures.modalHost().props['animationType']).toBe('fade')
     })
 
     it('fades in as a centered card on web, never a bottom sheet', async () => {
@@ -76,6 +99,20 @@ describe('Modal', () => {
     )
 
     await fireEvent(ModalFixtures.modalHost(), 'requestClose')
+
+    expect(onClose).toHaveBeenCalledTimes(1)
+  })
+
+  it('closes when the backdrop is tapped', async () => {
+    const onClose = jest.fn()
+
+    await Render.withTheme(
+      <Modal onClose={onClose} title="Add member">
+        <Text>Body</Text>
+      </Modal>,
+    )
+
+    await fireEvent.press(ModalFixtures.backdrop())
 
     expect(onClose).toHaveBeenCalledTimes(1)
   })
@@ -166,6 +203,20 @@ describe('Modal', () => {
       )
 
       await fireEvent(ModalFixtures.modalHost(), 'requestClose')
+
+      expect(onClose).not.toHaveBeenCalled()
+    })
+
+    it('ignores a tap on the backdrop', async () => {
+      const onClose = jest.fn()
+
+      await Render.withTheme(
+        <Modal busy onClose={onClose} title="Add member">
+          <Text>Body</Text>
+        </Modal>,
+      )
+
+      await fireEvent.press(ModalFixtures.backdrop())
 
       expect(onClose).not.toHaveBeenCalled()
     })
