@@ -8,6 +8,7 @@ export const en = {
   common: {
     appName: 'Roundup',
     back: 'Back',
+    cancel: 'Cancel',
     close: 'Close',
     loading: 'Loading',
     members_one: '{{count}} member',
@@ -24,6 +25,7 @@ export const en = {
   },
   titles: {
     squads: 'Your squads',
+    squad: 'Squad',
     explore: 'Explore',
     profile: 'Profile',
     editProfile: 'Edit profile',
@@ -142,6 +144,15 @@ export const en = {
     squads: {
       emptyTitle: 'No squads yet',
       emptyBody: 'Make one and add your friends.',
+      newSquad: 'New squad',
+      create: {
+        title: 'New squad',
+        subtitle: 'You can add people right after',
+        nameLabel: 'Squad name',
+        nameHelper: 'Everyone in the squad sees this name.',
+        submit: 'Create squad',
+        submitting: 'Creating squad…',
+      },
     },
     explore: {
       emptyTitle: 'Nothing to explore yet',

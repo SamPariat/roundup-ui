@@ -42,4 +42,11 @@ describe('Paths', () => {
       pathname: '/sign-in/code',
     })
   })
+
+  it('builds the squad path with the squad it opens', () => {
+    expect(Paths.squad('s1')).toEqual({
+      params: { squadId: 's1' },
+      pathname: '/squads/[squadId]',
+    })
+  })
 })

@@ -6,11 +6,15 @@ import { useT } from '@roundup/i18n'
 
 import { TabStack } from '../../../components/TabStack'
 
-/** The route name of the tab's own screen, as the file under squads/ spells it. */
-const HOME = 'index'
+/** The route names of the squads stack, as the files under squads/ spell them. */
+const ROUTES = {
+  home: 'index',
+  squad: '[squadId]',
+} as const
 
 /**
- * The stack inside the Squads tab, so its screen gets the iOS header with its title.
+ * The stack inside the Squads tab, so Squads and a squad's page get the iOS header with their
+ * titles. The squad's page replaces its default title with the squad's name once it loads.
  * @returns The stack of the Squads tab.
  */
 export default function SquadsLayout(): ReactElement {
@@ -18,7 +22,8 @@ export default function SquadsLayout(): ReactElement {
 
   return (
     <TabStack>
-      <Stack.Screen name={HOME} options={{ title: t('titles.squads') }} />
+      <Stack.Screen name={ROUTES.home} options={{ title: t('titles.squads') }} />
+      <Stack.Screen name={ROUTES.squad} options={{ title: t('titles.squad') }} />
     </TabStack>
   )
 }
