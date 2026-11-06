@@ -27,17 +27,12 @@ interface IRendered {
  */
 class MembersFixtures {
   /**
-   * Renders the view model for squad s1 with u1 (me, admin) and u2 in both caches.
+   * Renders the view model for squad s1, with u1 (me, admin) and u2, and the list cached.
    * @param core - The fakes to render in.
    * @returns The view hook.
    */
   static setup(core: ITestCore): Promise<IRendered> {
-    const summary = SquadFixtures.summary('s1', {
-      memberCount: 2,
-      memberPreview: [SquadFixtures.member('u1', 'ADMIN'), SquadFixtures.member('u2')],
-    })
-
-    SquadFixtures.seedList(core, [summary, SquadFixtures.summary('s0')])
+    SquadFixtures.seedList(core, [SquadFixtures.summary('s1')])
     SquadFixtures.seedDetail(core, SquadFixtures.detail('s1'))
 
     return renderHook(() => useSquadMembersViewModel('s1'), { wrapper: core.wrapper })
@@ -60,7 +55,7 @@ class MembersFixtures {
 }
 
 describe('useSquadMembersViewModel', () => {
-  it('makes a member an admin in the cached detail and list item', async () => {
+  it('makes a member an admin and invalidates the squad and the list', async () => {
     const network = Fakes.stubNetwork({
       'PATCH /api/v1/squads/s1/members/u2': Fakes.empty(HttpStatus.noContent),
     })
@@ -71,8 +66,8 @@ describe('useSquadMembersViewModel', () => {
     expect(await MembersFixtures.run(() => result.current.makeAdmin('u2'))).toBe(true)
     expect(network.requests[0]?.body).toEqual({ role: 'ADMIN' })
     expect(network.requests).toHaveLength(1)
-    expect(SquadFixtures.cachedDetail(core, 's1')?.members[1]?.role).toBe('ADMIN')
-    expect(SquadFixtures.listed(core)[0]?.memberPreview[1]?.role).toBe('ADMIN')
+    expect(SquadFixtures.detailInvalidated(core, 's1')).toBe(true)
+    expect(SquadFixtures.listInvalidated(core)).toBe(true)
     expect(result.current.busyUserId).toBeUndefined()
   })
 
@@ -84,14 +79,12 @@ describe('useSquadMembersViewModel', () => {
     const core = TestCore.create()
     const { result } = await MembersFixtures.setup(core)
 
-    await MembersFixtures.run(() => result.current.makeAdmin('u2'))
-    await MembersFixtures.run(() => result.current.removeAdmin('u2'))
-
-    expect(network.requests[1]?.body).toEqual({ role: 'MEMBER' })
-    expect(SquadFixtures.cachedDetail(core, 's1')?.members[1]?.role).toBe('MEMBER')
+    expect(await MembersFixtures.run(() => result.current.removeAdmin('u2'))).toBe(true)
+    expect(network.requests[0]?.body).toEqual({ role: 'MEMBER' })
+    expect(SquadFixtures.detailInvalidated(core, 's1')).toBe(true)
   })
 
-  it('shows needsAnAdmin on a 409 and keeps the cache', async () => {
+  it('shows needsAnAdmin on a 409 and leaves the cache alone', async () => {
     Fakes.stubNetwork({
       'PATCH /api/v1/squads/s1/members/u1': Fakes.failure(HttpStatus.conflict, 'last admin'),
     })
@@ -101,10 +94,11 @@ describe('useSquadMembersViewModel', () => {
 
     expect(await MembersFixtures.run(() => result.current.removeAdmin('u1'))).toBe(false)
     expect(result.current.error).toBe('errors.needsAnAdmin')
-    expect(SquadFixtures.cachedDetail(core, 's1')?.members[0]?.role).toBe('ADMIN')
+    expect(SquadFixtures.detailInvalidated(core, 's1')).toBe(false)
+    expect(SquadFixtures.listInvalidated(core)).toBe(false)
   })
 
-  it('removes a member from the detail, the count and the preview', async () => {
+  it('removes a member and invalidates the squad and the list', async () => {
     const network = Fakes.stubNetwork({
       'DELETE /api/v1/squads/s1/members/u2': Fakes.empty(HttpStatus.noContent),
     })
@@ -114,16 +108,11 @@ describe('useSquadMembersViewModel', () => {
 
     expect(await MembersFixtures.run(() => result.current.remove('u2'))).toBe(true)
     expect(network.requests).toHaveLength(1)
-
-    const detail = SquadFixtures.cachedDetail(core, 's1')
-
-    expect(detail?.members.map((member) => member.userID)).toEqual(['u1'])
-    expect(detail?.memberCount).toBe(1)
-    expect(SquadFixtures.listed(core)[0]).toMatchObject({ memberCount: 1 })
-    expect(SquadFixtures.listed(core)[0]?.memberPreview).toHaveLength(1)
+    expect(SquadFixtures.detailInvalidated(core, 's1')).toBe(true)
+    expect(SquadFixtures.listInvalidated(core)).toBe(true)
   })
 
-  it('leaves by removing my own id, then drops the squad and its detail', async () => {
+  it('leaves by removing my own id, then drops the detail and invalidates the list', async () => {
     const network = Fakes.stubNetwork({
       'DELETE /api/v1/squads/s1/members/u1': Fakes.empty(HttpStatus.noContent),
     })
@@ -138,8 +127,8 @@ describe('useSquadMembersViewModel', () => {
       path: '/api/v1/squads/s1/members/u1',
     })
 
-    expect(SquadFixtures.listed(core).map((squad) => squad.id)).toEqual(['s0'])
-    expect(SquadFixtures.cachedDetail(core, 's1')).toBeUndefined()
+    expect(core.queryClient.getQueryData(['/api/v1/squads/s1'])).toBeUndefined()
+    expect(SquadFixtures.listInvalidated(core)).toBe(true)
   })
 
   it('cannot leave before the squad has loaded', async () => {

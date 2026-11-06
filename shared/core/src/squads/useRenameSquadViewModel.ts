@@ -25,8 +25,8 @@ export interface IRenameSquadViewModel {
 }
 
 /**
- * The view model of the Rename squad modal: validates the name, saves it and updates the cached
- * detail and list item. An unchanged name counts as saved without a request.
+ * The view model of the Rename squad modal: validates the name, saves it and loads the squad
+ * and the list again. An unchanged name counts as saved without a request.
  * @param squadId - The squad to rename.
  * @param currentName - The squad's name now, which the field starts with.
  * @returns The state and the actions.
@@ -47,9 +47,8 @@ export const useRenameSquadViewModel = (
     if (trimmed === currentName) return true
 
     const saved = await run('squadName', async () => {
-      const { data } = await updateSquad(squadId, { name: trimmed })
-
-      Squads.renamed(queryClient, data)
+      await updateSquad(squadId, { name: trimmed })
+      await Squads.changed(queryClient, squadId)
 
       return true
     })

@@ -28,7 +28,7 @@ export interface IAddMemberViewModel {
 
 /**
  * The view model of adding someone to a squad by phone number: turns the input into E.164, adds
- * them and puts the new member in the cached detail and list item.
+ * them and loads the squad and the list again.
  * @param squadId - The squad people are added to.
  * @returns The state and the actions.
  */
@@ -55,9 +55,8 @@ export const useAddMemberViewModel = (squadId: string): IAddMemberViewModel => {
       }
 
       const added = await run('addMember', async () => {
-        const { data } = await addSquadMember(squadId, { phone: phoneHelper.toE164(national) })
-
-        Squads.memberAdded(queryClient, squadId, data)
+        await addSquadMember(squadId, { phone: phoneHelper.toE164(national) })
+        await Squads.changed(queryClient, squadId)
 
         return true
       })

@@ -29,8 +29,8 @@ export interface ISquadMembersViewModel {
 }
 
 /**
- * The view model of the member actions of one squad. Each action updates the cached detail and
- * list item instead of loading them again, and only one runs at a time.
+ * The view model of the member actions of one squad. Each action loads the squad and the list
+ * again afterwards, so your own role and permissions update too, and only one runs at a time.
  * @param squadId - The squad whose members the actions change.
  * @returns The state and the actions.
  */
@@ -67,7 +67,7 @@ export const useSquadMembersViewModel = (squadId: string): ISquadMembersViewMode
     (userId: string, role: TRole): Promise<boolean> =>
       act(userId, 'role', async () => {
         await changeSquadMemberRole(squadId, userId, { role })
-        Squads.roleChanged(queryClient, squadId, userId, role)
+        await Squads.changed(queryClient, squadId)
       }),
     [act, queryClient, squadId],
   )
@@ -86,7 +86,7 @@ export const useSquadMembersViewModel = (squadId: string): ISquadMembersViewMode
     (userId: string): Promise<boolean> =>
       act(userId, 'squad', async () => {
         await removeSquadMember(squadId, userId)
-        Squads.memberRemoved(queryClient, squadId, userId)
+        await Squads.changed(queryClient, squadId)
       }),
     [act, queryClient, squadId],
   )
@@ -102,7 +102,7 @@ export const useSquadMembersViewModel = (squadId: string): ISquadMembersViewMode
 
     return act(me.id, 'squad', async () => {
       await removeSquadMember(squadId, me.id)
-      Squads.left(queryClient, squadId)
+      await Squads.left(queryClient, squadId)
     })
   }, [act, fail, members, queryClient, squadId])
 

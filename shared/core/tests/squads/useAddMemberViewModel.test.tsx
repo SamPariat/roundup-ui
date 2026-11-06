@@ -35,12 +35,7 @@ class AddFixtures {
    * @returns The view hook.
    */
   static setup(core: ITestCore = TestCore.create()): Promise<IRendered> {
-    SquadFixtures.seedList(core, [
-      SquadFixtures.summary('s1', {
-        memberCount: 2,
-        memberPreview: [SquadFixtures.member('u1', 'ADMIN'), SquadFixtures.member('u2')],
-      }),
-    ])
+    SquadFixtures.seedList(core, [SquadFixtures.summary('s1')])
 
     SquadFixtures.seedDetail(core, SquadFixtures.detail('s1'))
 
@@ -78,7 +73,7 @@ describe('useAddMemberViewModel', () => {
     expect(network.requests).toHaveLength(0)
   })
 
-  it('adds the typed number as E.164 and puts the member in both caches', async () => {
+  it('adds the typed number as E.164 and invalidates the squad and the list', async () => {
     const network = Fakes.stubNetwork({
       [ADD]: {
         body: { data: SquadFixtures.member('u3'), success: true },
@@ -92,13 +87,8 @@ describe('useAddMemberViewModel', () => {
     expect(await AddFixtures.submitNumber(view, '98765 43210')).toBe(true)
     expect(network.requests[0]?.body).toEqual({ phone: '+919876543210' })
     expect(network.requests).toHaveLength(1)
-
-    const detail = SquadFixtures.cachedDetail(core, 's1')
-
-    expect(detail?.memberCount).toBe(3)
-    expect(detail?.members[2]).toMatchObject({ isMe: false, userID: 'u3' })
-    expect(SquadFixtures.listed(core)[0]).toMatchObject({ memberCount: 3 })
-    expect(SquadFixtures.listed(core)[0]?.memberPreview).toHaveLength(3)
+    expect(SquadFixtures.detailInvalidated(core, 's1')).toBe(true)
+    expect(SquadFixtures.listInvalidated(core)).toBe(true)
   })
 
   it('adds a contact by its E.164 number', async () => {
@@ -120,45 +110,24 @@ describe('useAddMemberViewModel', () => {
     expect(network.requests[0]?.body).toEqual({ phone: '+919876543210' })
   })
 
-  it('does not preview more than four members', async () => {
-    Fakes.stubNetwork({
-      [ADD]: {
-        body: { data: SquadFixtures.member('u9'), success: true },
-        status: HttpStatus.created,
-      },
-    })
-
-    const core = TestCore.create()
-    const view = await AddFixtures.setup(core)
-
-    SquadFixtures.seedList(core, [
-      SquadFixtures.summary('s1', {
-        memberCount: 4,
-        memberPreview: ['u1', 'u2', 'u3', 'u4'].map((id) => SquadFixtures.member(id)),
-      }),
-    ])
-
-    await AddFixtures.submitNumber(view, '9876543210')
-
-    expect(SquadFixtures.listed(core)[0]).toMatchObject({ memberCount: 5 })
-    expect(SquadFixtures.listed(core)[0]?.memberPreview).toHaveLength(4)
-  })
-
   it.each([
     [HttpStatus.notFound, 'not found', 'errors.notOnRoundup'],
     [HttpStatus.conflict, 'user is already a member of this squad: u2', 'errors.alreadyInSquad'],
     [HttpStatus.conflict, 'squad is full: 50 members', 'errors.squadFull'],
     [HttpStatus.internalServerError, 'boom', 'errors.genericWithId'],
-  ] as const)('maps a %i saying %j to %s and keeps the cache', async (status, message, key) => {
-    Fakes.stubNetwork({ [ADD]: Fakes.failure(status, message) })
+  ] as const)(
+    'maps a %i saying %j to %s and leaves the cache alone',
+    async (status, message, key) => {
+      Fakes.stubNetwork({ [ADD]: Fakes.failure(status, message) })
 
-    const core = TestCore.create()
-    const view = await AddFixtures.setup(core)
+      const core = TestCore.create()
+      const view = await AddFixtures.setup(core)
 
-    expect(await AddFixtures.submitNumber(view, '9876543210')).toBe(false)
-    expect(view.result.current.error).toBe(key)
-    expect(SquadFixtures.cachedDetail(core, 's1')?.memberCount).toBe(2)
-  })
+      expect(await AddFixtures.submitNumber(view, '9876543210')).toBe(false)
+      expect(view.result.current.error).toBe(key)
+      expect(SquadFixtures.detailInvalidated(core, 's1')).toBe(false)
+    },
+  )
 
   it('says offline when there is no connection', async () => {
     Fakes.goOffline()

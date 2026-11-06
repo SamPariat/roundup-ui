@@ -66,7 +66,7 @@ describe('useCreateSquadViewModel', () => {
     expect(network.requests).toHaveLength(0)
   })
 
-  it('creates the squad with the trimmed name and puts it first in the cached list', async () => {
+  it('creates the squad with the trimmed name and invalidates the list', async () => {
     const created = SquadFixtures.summary('s2')
 
     const network = Fakes.stubNetwork({
@@ -77,22 +77,12 @@ describe('useCreateSquadViewModel', () => {
 
     SquadFixtures.seedList(core, [SquadFixtures.summary('s1')])
 
-    core.queryClient.setQueryData(['/api/v1/users/me'], {
-      data: { avatarURL: '', id: 'u1', name: 'Asha' },
-      success: true,
-    })
-
     const view = await CreateFixtures.setup(core)
 
     expect(await CreateFixtures.submitName(view, '  Weekend  ')).toBe('s2')
     expect(network.requests[0]?.body).toEqual({ name: 'Weekend' })
     expect(network.requests).toHaveLength(1)
-
-    const [first, second] = SquadFixtures.listed(core)
-
-    expect(first).toMatchObject({ id: 's2', memberCount: 1, role: 'ADMIN' })
-    expect(first?.memberPreview).toEqual([expect.objectContaining({ name: 'Asha', userID: 'u1' })])
-    expect(second?.id).toBe('s1')
+    expect(SquadFixtures.listInvalidated(core)).toBe(true)
   })
 
   it.each([

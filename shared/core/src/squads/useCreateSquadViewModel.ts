@@ -25,8 +25,8 @@ export interface ICreateSquadViewModel {
 }
 
 /**
- * The view model of the New squad modal: validates the name, creates the squad and puts it at the
- * front of the cached list, so the list does not load again.
+ * The view model of the New squad modal: validates the name, creates the squad and loads the
+ * squad list again.
  * @returns The state and the actions.
  */
 export const useCreateSquadViewModel = (): ICreateSquadViewModel => {
@@ -42,7 +42,7 @@ export const useCreateSquadViewModel = (): ICreateSquadViewModel => {
     const created = await run('squadName', async () => {
       const { data } = await createSquad({ name: trimmed })
 
-      Squads.created(queryClient, data)
+      await Squads.changed(queryClient)
 
       return data.id
     })

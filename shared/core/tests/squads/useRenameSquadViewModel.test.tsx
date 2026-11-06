@@ -83,7 +83,7 @@ describe('useRenameSquadViewModel', () => {
     expect(network.requests).toHaveLength(0)
   })
 
-  it('saves a new name and updates the cached detail and list item', async () => {
+  it('saves a new name and invalidates the squad and the list', async () => {
     const network = Fakes.stubNetwork({
       'PATCH /api/v1/squads/s1': Fakes.ok({ ...SquadFixtures.summary('s1'), name: 'Weekend' }),
     })
@@ -94,15 +94,14 @@ describe('useRenameSquadViewModel', () => {
     expect(await RenameFixtures.submitName(view, '  Weekend ')).toBe(true)
     expect(network.requests[0]?.body).toEqual({ name: 'Weekend' })
     expect(network.requests).toHaveLength(1)
-    expect(SquadFixtures.cachedDetail(core, 's1')?.name).toBe('Weekend')
-    expect(SquadFixtures.cachedDetail(core, 's1')?.members).toHaveLength(2)
-    expect(SquadFixtures.listed(core)[0]).toMatchObject({ memberCount: 1, name: 'Weekend' })
+    expect(SquadFixtures.detailInvalidated(core, 's1')).toBe(true)
+    expect(SquadFixtures.listInvalidated(core)).toBe(true)
   })
 
   it.each([
     [HttpStatus.badRequest, 'errors.invalidSquadName'],
     [HttpStatus.internalServerError, 'errors.genericWithId'],
-  ] as const)('maps a %i to %s and keeps the cache', async (status, key) => {
+  ] as const)('maps a %i to %s and leaves the cache alone', async (status, key) => {
     Fakes.stubNetwork({ 'PATCH /api/v1/squads/s1': Fakes.failure(status, 'nope') })
 
     const core = TestCore.create()
@@ -110,7 +109,7 @@ describe('useRenameSquadViewModel', () => {
 
     expect(await RenameFixtures.submitName(view, 'Weekend')).toBe(false)
     expect(view.result.current.error).toBe(key)
-    expect(SquadFixtures.listed(core)[0]?.name).toBe('Squad s1')
+    expect(SquadFixtures.listInvalidated(core)).toBe(false)
   })
 
   it('says offline when there is no connection', async () => {

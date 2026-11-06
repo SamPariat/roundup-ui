@@ -117,28 +117,21 @@ export class SquadFixtures {
   }
 
   /**
-   * Reads the cached list back.
+   * Whether the cached list was marked out of date.
    * @param core - The core whose cache to read.
-   * @returns The list items of every cached page, in order.
+   * @returns True once it was invalidated.
    */
-  static listed(core: ITestCore): SquadSummary[] {
-    const cached = core.queryClient.getQueryData<InfiniteData<ListSquads200>>(['/api/v1/squads'])
-
-    return cached?.pages.flatMap((page) => page.data.squads) ?? []
+  static listInvalidated(core: ITestCore): boolean {
+    return core.queryClient.getQueryState(['/api/v1/squads'])?.isInvalidated === true
   }
 
   /**
-   * Reads a cached detail back.
+   * Whether a squad's cached detail was marked out of date.
    * @param core - The core whose cache to read.
    * @param id - Which squad.
-   * @returns The detail, or undefined when it is not cached.
+   * @returns True once it was invalidated.
    */
-  static cachedDetail(core: ITestCore, id: string): SquadDetail | undefined {
-    return core.queryClient.getQueryData<{
-      /**
-       *
-       */
-      data: SquadDetail
-    }>([`/api/v1/squads/${id}`])?.data
+  static detailInvalidated(core: ITestCore, id: string): boolean {
+    return core.queryClient.getQueryState([`/api/v1/squads/${id}`])?.isInvalidated === true
   }
 }
