@@ -124,6 +124,12 @@ export const en = {
   errors: {
     invalidPhone: 'Enter a 10-digit mobile number that starts with 6, 7, 8 or 9.',
     invalidName: 'Enter a name between 1 and 50 characters.',
+    invalidSquadName: 'Enter a squad name between 1 and 50 characters.',
+    notOnRoundup: "That number isn't on Roundup yet.",
+    alreadyInSquad: "They're already in this squad.",
+    squadFull: 'This squad is full. A squad can have up to 50 people.',
+    needsAnAdmin: 'A squad needs at least one admin. Make someone else an admin first.',
+    squadNotFound: "We can't find that squad. It may have been deleted, or you may have left it.",
     wrongCode: "That code isn't right. Check it and try again.",
     codeExpired: 'That code has expired or was tried too many times. Ask for a new one.',
     tooManyRequests: 'Too many tries. Wait a few minutes and try again.',
