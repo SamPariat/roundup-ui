@@ -1,5 +1,7 @@
 import { act, renderHook, waitFor } from '@testing-library/react-native'
 
+import { HttpStatus } from '@roundup/api'
+
 import { useSquads } from '../../src/squads/useSquads'
 import { Fakes } from '../helpers/fakes'
 import { SquadFixtures } from '../helpers/squad-fixtures'
@@ -144,7 +146,7 @@ describe('useSquads', () => {
   it('shows the request id of a server failure', async () => {
     Fakes.stubNetwork({
       ...REFRESH,
-      'GET /api/v1/squads?limit=25': Fakes.failure(500, 'boom'),
+      'GET /api/v1/squads?limit=25': Fakes.failure(HttpStatus.internalServerError, 'boom'),
     })
 
     const { wrapper } = await SquadFixtures.signedInCore()

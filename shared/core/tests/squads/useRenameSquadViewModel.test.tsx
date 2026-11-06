@@ -1,5 +1,7 @@
 import { act, renderHook } from '@testing-library/react-native'
 
+import { HttpStatus } from '@roundup/api'
+
 import type { IRenameSquadViewModel } from '../../src/squads/useRenameSquadViewModel'
 import type { ITestCore } from '../helpers/wrapper'
 
@@ -98,8 +100,8 @@ describe('useRenameSquadViewModel', () => {
   })
 
   it.each([
-    [400, 'errors.invalidSquadName'],
-    [500, 'errors.genericWithId'],
+    [HttpStatus.badRequest, 'errors.invalidSquadName'],
+    [HttpStatus.internalServerError, 'errors.genericWithId'],
   ] as const)('maps a %i to %s and keeps the cache', async (status, key) => {
     Fakes.stubNetwork({ 'PATCH /api/v1/squads/s1': Fakes.failure(status, 'nope') })
 

@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 
-import { ApiError, useGetSquad } from '@roundup/api'
+import { ApiError, HttpStatus, useGetSquad } from '@roundup/api'
 
 import type { TErrorKey } from '../helpers/error-key'
 import type { ISquadInfo, ISquadMember, ISquadPermissions, TRole } from './types'
@@ -52,7 +52,7 @@ export const useSquad = (squadId: string): IUseSquad => {
     loading: signedIn && isPending,
     members: members ?? NO_MEMBERS,
     myRole: detail?.myRole,
-    notFound: ApiError.is(error) && error.status === 404,
+    notFound: ApiError.is(error) && error.status === HttpStatus.notFound,
     permissions,
     requestId: message?.requestId,
     squad,

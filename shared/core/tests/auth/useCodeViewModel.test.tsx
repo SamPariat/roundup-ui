@@ -1,5 +1,7 @@
 import { act, renderHook } from '@testing-library/react-native'
 
+import { HttpStatus } from '@roundup/api'
+
 import { useCodeViewModel } from '../../src/auth/useCodeViewModel'
 import { useSession } from '../../src/session/useSession'
 import { Fakes } from '../helpers/fakes'
@@ -59,7 +61,10 @@ describe('useCodeViewModel', () => {
 
   it('resolves whether the user is new', async () => {
     const network = Fakes.stubNetwork({
-      'POST /api/v1/auth/otp/verify': Fakes.failure(401, 'invalid or expired code'),
+      'POST /api/v1/auth/otp/verify': Fakes.failure(
+        HttpStatus.unauthorized,
+        'invalid or expired code',
+      ),
     })
 
     const { result } = await renderHook(useBoth, { wrapper: TestCore.create().wrapper })
@@ -96,10 +101,10 @@ describe('useCodeViewModel', () => {
   })
 
   it.each([
-    [401, 'errors.wrongCode'],
-    [400, 'errors.wrongCode'],
-    [429, 'errors.codeExpired'],
-    [500, 'errors.genericWithId'],
+    [HttpStatus.unauthorized, 'errors.wrongCode'],
+    [HttpStatus.badRequest, 'errors.wrongCode'],
+    [HttpStatus.tooManyRequests, 'errors.codeExpired'],
+    [HttpStatus.internalServerError, 'errors.genericWithId'],
   ] as const)('maps a %i to %s', async (status, key) => {
     Fakes.stubNetwork({ 'POST /api/v1/auth/otp/verify': Fakes.failure(status, 'nope') })
 
@@ -127,7 +132,10 @@ describe('useCodeViewModel', () => {
 
   it('clears the message when the code is edited', async () => {
     Fakes.stubNetwork({
-      'POST /api/v1/auth/otp/verify': Fakes.failure(401, 'invalid or expired code'),
+      'POST /api/v1/auth/otp/verify': Fakes.failure(
+        HttpStatus.unauthorized,
+        'invalid or expired code',
+      ),
     })
 
     const { result } = await renderHook(useBoth, { wrapper: TestCore.create().wrapper })
@@ -166,7 +174,10 @@ describe('useCodeViewModel', () => {
   it('sends a new code and restarts the countdown', async () => {
     jest.useFakeTimers()
 
-    const network = Fakes.stubNetwork({ 'POST /api/v1/auth/otp/request': Fakes.empty(202) })
+    const network = Fakes.stubNetwork({
+      'POST /api/v1/auth/otp/request': Fakes.empty(HttpStatus.accepted),
+    })
+
     const { result } = await renderHook(useBoth, { wrapper: TestCore.create().wrapper })
 
     await act(() => {

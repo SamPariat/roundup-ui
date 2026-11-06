@@ -1,5 +1,7 @@
 import { act, renderHook } from '@testing-library/react-native'
 
+import { HttpStatus } from '@roundup/api'
+
 import type { ICreateSquadViewModel } from '../../src/squads/useCreateSquadViewModel'
 import type { ITestCore } from '../helpers/wrapper'
 
@@ -68,7 +70,7 @@ describe('useCreateSquadViewModel', () => {
     const created = SquadFixtures.summary('s2')
 
     const network = Fakes.stubNetwork({
-      'POST /api/v1/squads': { body: { data: created, success: true }, status: 201 },
+      'POST /api/v1/squads': { body: { data: created, success: true }, status: HttpStatus.created },
     })
 
     const core = TestCore.create()
@@ -94,8 +96,8 @@ describe('useCreateSquadViewModel', () => {
   })
 
   it.each([
-    [400, 'errors.invalidSquadName'],
-    [500, 'errors.genericWithId'],
+    [HttpStatus.badRequest, 'errors.invalidSquadName'],
+    [HttpStatus.internalServerError, 'errors.genericWithId'],
   ] as const)('maps a %i to %s', async (status, key) => {
     Fakes.stubNetwork({ 'POST /api/v1/squads': Fakes.failure(status, 'nope') })
 

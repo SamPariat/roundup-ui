@@ -1,5 +1,7 @@
 import { act, renderHook } from '@testing-library/react-native'
 
+import { HttpStatus } from '@roundup/api'
+
 import type { IAddMemberViewModel } from '../../src/squads/useAddMemberViewModel'
 import type { ITestCore } from '../helpers/wrapper'
 
@@ -78,7 +80,10 @@ describe('useAddMemberViewModel', () => {
 
   it('adds the typed number as E.164 and puts the member in both caches', async () => {
     const network = Fakes.stubNetwork({
-      [ADD]: { body: { data: SquadFixtures.member('u3'), success: true }, status: 201 },
+      [ADD]: {
+        body: { data: SquadFixtures.member('u3'), success: true },
+        status: HttpStatus.created,
+      },
     })
 
     const core = TestCore.create()
@@ -98,7 +103,10 @@ describe('useAddMemberViewModel', () => {
 
   it('adds a contact by its E.164 number', async () => {
     const network = Fakes.stubNetwork({
-      [ADD]: { body: { data: SquadFixtures.member('u3'), success: true }, status: 201 },
+      [ADD]: {
+        body: { data: SquadFixtures.member('u3'), success: true },
+        status: HttpStatus.created,
+      },
     })
 
     const { result } = await AddFixtures.setup()
@@ -114,7 +122,10 @@ describe('useAddMemberViewModel', () => {
 
   it('does not preview more than four members', async () => {
     Fakes.stubNetwork({
-      [ADD]: { body: { data: SquadFixtures.member('u9'), success: true }, status: 201 },
+      [ADD]: {
+        body: { data: SquadFixtures.member('u9'), success: true },
+        status: HttpStatus.created,
+      },
     })
 
     const core = TestCore.create()
@@ -134,10 +145,10 @@ describe('useAddMemberViewModel', () => {
   })
 
   it.each([
-    [404, 'not found', 'errors.notOnRoundup'],
-    [409, 'user is already a member of this squad: u2', 'errors.alreadyInSquad'],
-    [409, 'squad is full: 50 members', 'errors.squadFull'],
-    [500, 'boom', 'errors.genericWithId'],
+    [HttpStatus.notFound, 'not found', 'errors.notOnRoundup'],
+    [HttpStatus.conflict, 'user is already a member of this squad: u2', 'errors.alreadyInSquad'],
+    [HttpStatus.conflict, 'squad is full: 50 members', 'errors.squadFull'],
+    [HttpStatus.internalServerError, 'boom', 'errors.genericWithId'],
   ] as const)('maps a %i saying %j to %s and keeps the cache', async (status, message, key) => {
     Fakes.stubNetwork({ [ADD]: Fakes.failure(status, message) })
 

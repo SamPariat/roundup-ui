@@ -1,5 +1,7 @@
 import { renderHook, waitFor } from '@testing-library/react-native'
 
+import { HttpStatus } from '@roundup/api'
+
 import { useSquad } from '../../src/squads/useSquad'
 import { Fakes } from '../helpers/fakes'
 import { SquadFixtures } from '../helpers/squad-fixtures'
@@ -36,7 +38,7 @@ describe('useSquad', () => {
   it('reports not found on a 404', async () => {
     Fakes.stubNetwork({
       ...REFRESH,
-      'GET /api/v1/squads/s1': Fakes.failure(404, 'squad not found'),
+      'GET /api/v1/squads/s1': Fakes.failure(HttpStatus.notFound, 'squad not found'),
     })
 
     const { wrapper } = await SquadFixtures.signedInCore()
@@ -54,7 +56,7 @@ describe('useSquad', () => {
   it('shows the request id of a server failure without calling it not found', async () => {
     Fakes.stubNetwork({
       ...REFRESH,
-      'GET /api/v1/squads/s1': Fakes.failure(500, 'boom'),
+      'GET /api/v1/squads/s1': Fakes.failure(HttpStatus.internalServerError, 'boom'),
     })
 
     const { wrapper } = await SquadFixtures.signedInCore()

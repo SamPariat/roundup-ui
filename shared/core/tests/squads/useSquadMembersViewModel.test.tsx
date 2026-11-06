@@ -1,5 +1,7 @@
 import { act, renderHook } from '@testing-library/react-native'
 
+import { HttpStatus } from '@roundup/api'
+
 import type { ISquadMembersViewModel } from '../../src/squads/useSquadMembersViewModel'
 import type { ITestCore } from '../helpers/wrapper'
 
@@ -59,7 +61,10 @@ class MembersFixtures {
 
 describe('useSquadMembersViewModel', () => {
   it('makes a member an admin in the cached detail and list item', async () => {
-    const network = Fakes.stubNetwork({ 'PATCH /api/v1/squads/s1/members/u2': Fakes.empty(204) })
+    const network = Fakes.stubNetwork({
+      'PATCH /api/v1/squads/s1/members/u2': Fakes.empty(HttpStatus.noContent),
+    })
+
     const core = TestCore.create()
     const { result } = await MembersFixtures.setup(core)
 
@@ -72,7 +77,10 @@ describe('useSquadMembersViewModel', () => {
   })
 
   it('makes an admin a plain member', async () => {
-    const network = Fakes.stubNetwork({ 'PATCH /api/v1/squads/s1/members/u2': Fakes.empty(204) })
+    const network = Fakes.stubNetwork({
+      'PATCH /api/v1/squads/s1/members/u2': Fakes.empty(HttpStatus.noContent),
+    })
+
     const core = TestCore.create()
     const { result } = await MembersFixtures.setup(core)
 
@@ -84,7 +92,9 @@ describe('useSquadMembersViewModel', () => {
   })
 
   it('shows needsAnAdmin on a 409 and keeps the cache', async () => {
-    Fakes.stubNetwork({ 'PATCH /api/v1/squads/s1/members/u1': Fakes.failure(409, 'last admin') })
+    Fakes.stubNetwork({
+      'PATCH /api/v1/squads/s1/members/u1': Fakes.failure(HttpStatus.conflict, 'last admin'),
+    })
 
     const core = TestCore.create()
     const { result } = await MembersFixtures.setup(core)
@@ -95,7 +105,10 @@ describe('useSquadMembersViewModel', () => {
   })
 
   it('removes a member from the detail, the count and the preview', async () => {
-    const network = Fakes.stubNetwork({ 'DELETE /api/v1/squads/s1/members/u2': Fakes.empty(204) })
+    const network = Fakes.stubNetwork({
+      'DELETE /api/v1/squads/s1/members/u2': Fakes.empty(HttpStatus.noContent),
+    })
+
     const core = TestCore.create()
     const { result } = await MembersFixtures.setup(core)
 
@@ -111,7 +124,10 @@ describe('useSquadMembersViewModel', () => {
   })
 
   it('leaves by removing my own id, then drops the squad and its detail', async () => {
-    const network = Fakes.stubNetwork({ 'DELETE /api/v1/squads/s1/members/u1': Fakes.empty(204) })
+    const network = Fakes.stubNetwork({
+      'DELETE /api/v1/squads/s1/members/u1': Fakes.empty(HttpStatus.noContent),
+    })
+
     const core = TestCore.create()
     const { result } = await MembersFixtures.setup(core)
 
@@ -141,7 +157,9 @@ describe('useSquadMembersViewModel', () => {
   it('marks only the tapped member as busy while the request runs', async () => {
     const { promise: gate, resolve: release } = Promise.withResolvers<boolean>()
 
-    Fakes.stubNetwork({ 'DELETE /api/v1/squads/s1/members/u2': { gate, status: 204 } })
+    Fakes.stubNetwork({
+      'DELETE /api/v1/squads/s1/members/u2': { gate, status: HttpStatus.noContent },
+    })
 
     const { result } = await MembersFixtures.setup(TestCore.create())
     let pending: Promise<boolean> = Promise.resolve(false)
@@ -161,8 +179,8 @@ describe('useSquadMembersViewModel', () => {
   })
 
   it.each([
-    [404, 'errors.squadNotFound'],
-    [500, 'errors.genericWithId'],
+    [HttpStatus.notFound, 'errors.squadNotFound'],
+    [HttpStatus.internalServerError, 'errors.genericWithId'],
   ] as const)('maps a %i on remove to %s', async (status, key) => {
     Fakes.stubNetwork({ 'DELETE /api/v1/squads/s1/members/u2': Fakes.failure(status, 'nope') })
 

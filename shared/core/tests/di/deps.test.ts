@@ -1,14 +1,22 @@
-import { ApiError } from '@roundup/api'
+import { ApiError, HttpStatus } from '@roundup/api'
 
 import { Deps } from '../../src/di/deps'
 import { Query } from '../../src/helpers/query'
 
 describe('Query.shouldRetry', () => {
-  it.each([0, 500, 502])('retries a status %i', (status) => {
-    expect(Query.shouldRetry(0, new ApiError(status, 'failed'))).toBe(true)
-  })
+  it.each([HttpStatus.noResponse, HttpStatus.internalServerError, HttpStatus.badGateway])(
+    'retries a status %i',
+    (status) => {
+      expect(Query.shouldRetry(0, new ApiError(status, 'failed'))).toBe(true)
+    },
+  )
 
-  it.each([400, 401, 404, 429])('does not retry a status %i', (status) => {
+  it.each([
+    HttpStatus.badRequest,
+    HttpStatus.unauthorized,
+    HttpStatus.notFound,
+    HttpStatus.tooManyRequests,
+  ])('does not retry a status %i', (status) => {
     expect(Query.shouldRetry(0, new ApiError(status, 'failed'))).toBe(false)
   })
 
@@ -17,7 +25,7 @@ describe('Query.shouldRetry', () => {
   })
 
   it('gives up after two retries', () => {
-    expect(Query.shouldRetry(2, new ApiError(500, 'failed'))).toBe(false)
+    expect(Query.shouldRetry(2, new ApiError(HttpStatus.internalServerError, 'failed'))).toBe(false)
   })
 })
 

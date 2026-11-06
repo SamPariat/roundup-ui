@@ -1,6 +1,6 @@
 import type { en } from '@roundup/i18n'
 
-import { ApiError } from '@roundup/api'
+import { ApiError, HttpStatus } from '@roundup/api'
 
 /** A key of the translated error messages, such as errors.offline. */
 export type TErrorKey = `errors.${keyof typeof en.errors}`
@@ -14,15 +14,15 @@ const SQUAD_FULL = 'squad is full'
 
 /** The message of each status on the steps where it has its own meaning. */
 const BY_STATUS: Partial<Record<number, Partial<Record<TErrorContext, TErrorKey>>>> = {
-  400: {
+  [HttpStatus.badRequest]: {
     code: 'errors.wrongCode',
     name: 'errors.invalidName',
     phone: 'errors.invalidPhone',
     squadName: 'errors.invalidSquadName',
   },
-  401: { code: 'errors.wrongCode' },
-  404: { addMember: 'errors.notOnRoundup', squad: 'errors.squadNotFound' },
-  409: { role: 'errors.needsAnAdmin' },
+  [HttpStatus.unauthorized]: { code: 'errors.wrongCode' },
+  [HttpStatus.notFound]: { addMember: 'errors.notOnRoundup', squad: 'errors.squadNotFound' },
+  [HttpStatus.conflict]: { role: 'errors.needsAnAdmin' },
 }
 
 /** An error ready to show: the message key and, for the generic message, the request to quote. */
@@ -51,13 +51,13 @@ export class ErrorKey {
 
     const { requestId, status } = error
 
-    if (status === 0) return { key: 'errors.offline', requestId: undefined }
+    if (status === HttpStatus.noResponse) return { key: 'errors.offline', requestId: undefined }
 
     const key = ErrorKey.forContext(status, error.message, context)
 
     if (key !== undefined) return { key, requestId: undefined }
 
-    if (status === 429) {
+    if (status === HttpStatus.tooManyRequests) {
       return {
         key: context === 'code' ? 'errors.codeExpired' : 'errors.tooManyRequests',
         requestId: undefined,
@@ -81,7 +81,7 @@ export class ErrorKey {
     message: string,
     context: TErrorContext,
   ): TErrorKey | undefined {
-    if (status === 409 && context === 'addMember') {
+    if (status === HttpStatus.conflict && context === 'addMember') {
       return message.startsWith(SQUAD_FULL) ? 'errors.squadFull' : 'errors.alreadyInSquad'
     }
 

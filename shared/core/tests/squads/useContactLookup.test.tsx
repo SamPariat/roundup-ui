@@ -1,5 +1,7 @@
 import { act, renderHook } from '@testing-library/react-native'
 
+import { HttpStatus } from '@roundup/api'
+
 import type { IContactMatch } from '../../src/squads/types'
 import type { IContactLookup } from '../../src/squads/useContactLookup'
 import type { ITestCore } from '../helpers/wrapper'
@@ -161,7 +163,7 @@ describe('useContactLookup', () => {
   })
 
   it('shows the request id of a server failure', async () => {
-    Fakes.stubNetwork({ [LOOKUP]: Fakes.failure(500, 'boom') })
+    Fakes.stubNetwork({ [LOOKUP]: Fakes.failure(HttpStatus.internalServerError, 'boom') })
 
     const view = await LookupFixtures.setup()
 

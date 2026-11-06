@@ -1,3 +1,5 @@
+import { HttpStatus } from '@roundup/api'
+
 import type { INetworkSource, INetworkState } from '../../src/network/types'
 import type { ISessionStore } from '../../src/session/types'
 
@@ -190,7 +192,7 @@ export class Fakes {
    * @returns A 200 answer.
    */
   static ok(data: unknown): IRouteSpec {
-    return { body: { data, success: true }, status: 200 }
+    return { body: { data, success: true }, status: HttpStatus.ok }
   }
 
   /**

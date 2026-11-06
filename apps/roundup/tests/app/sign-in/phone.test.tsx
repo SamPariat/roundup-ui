@@ -1,5 +1,7 @@
 import { fireEvent, screen } from 'expo-router/testing-library'
 
+import { HttpStatus } from '@roundup/core'
+
 import type { IBackend } from '../../helpers/fakes'
 
 import CodeScreen from '../../../src/app/sign-in/code'
@@ -71,7 +73,7 @@ describe('phone screen', () => {
   })
 
   it('quotes the request id when something unexpected fails', async () => {
-    backend.otp = 500
+    backend.otp = HttpStatus.internalServerError
     await PhoneFixtures.open()
     await fireEvent.changeText(await screen.findByLabelText('Phone number'), '9876543210')
     await fireEvent.press(screen.getByRole('button', { name: 'Send code' }))

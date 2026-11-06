@@ -1,5 +1,7 @@
 import { fireEvent, screen, waitFor } from 'expo-router/testing-library'
 
+import { HttpStatus } from '@roundup/core'
+
 import type { IBackend } from '../../helpers/fakes'
 
 import EditProfileScreen from '../../../src/app/(tabs)/profile/edit'
@@ -72,7 +74,7 @@ describe('edit profile screen', () => {
   })
 
   it('shows the message for a failed save and stays on the screen', async () => {
-    backend.patch = 500
+    backend.patch = HttpStatus.internalServerError
     await EditFixtures.open()
     await fireEvent.changeText(await screen.findByLabelText('Name'), 'Asha')
     await fireEvent.press(screen.getByRole('button', { name: 'Save' }))

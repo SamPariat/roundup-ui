@@ -1,5 +1,7 @@
 import { renderHook, waitFor } from '@testing-library/react-native'
 
+import { HttpStatus } from '@roundup/api'
+
 import type { ITestCore } from '../helpers/wrapper'
 
 import { useMe } from '../../src/auth/useMe'
@@ -86,7 +88,7 @@ describe('useMe', () => {
 
   it('does not ask for a name when the profile failed to load', async () => {
     Fakes.stubNetwork({
-      'GET /api/v1/users/me': Fakes.failure(502, 'bad gateway'),
+      'GET /api/v1/users/me': Fakes.failure(HttpStatus.badGateway, 'bad gateway'),
       'POST /api/v1/auth/refresh': Fakes.ok(Fakes.pair('a2', 'r2')),
     })
 
@@ -105,7 +107,7 @@ describe('useProfileViewModel', () => {
   it('signs out through the session', async () => {
     const network = Fakes.stubNetwork({
       'GET /api/v1/users/me': Fakes.ok(MeFixtures.user('Asha')),
-      'POST /api/v1/auth/logout': Fakes.empty(204),
+      'POST /api/v1/auth/logout': Fakes.empty(HttpStatus.noContent),
       'POST /api/v1/auth/refresh': Fakes.ok(Fakes.pair('a2', 'r2')),
     })
 
