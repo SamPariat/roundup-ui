@@ -5,7 +5,9 @@ import { fireEvent, screen } from 'expo-router/testing-library'
 
 import type { IBackend } from '../../helpers/fakes'
 
+import EditProfileScreen from '../../../src/app/(tabs)/profile/edit'
 import ProfileScreen from '../../../src/app/(tabs)/profile/index'
+import PreferencesScreen from '../../../src/app/(tabs)/profile/preferences'
 import WelcomeScreen from '../../../src/app/index'
 import { Render } from '../../helpers/render'
 
@@ -31,10 +33,44 @@ describe('profile screen', () => {
     expect(screen.getByRole('button', { name: 'Log out' })).toBeOnTheScreen()
   })
 
-  it('still offers the theme choice', async () => {
+  it('lists Edit profile and Preferences with their hints', async () => {
     await Render.app({ profile: ProfileScreen }, { backend, saved: 'r1', url: '/profile' })
 
-    expect(await screen.findByText('Theme')).toBeOnTheScreen()
+    expect(
+      await screen.findByRole('button', { name: 'Edit profile, Photo and name' }),
+    ).toBeOnTheScreen()
+
+    expect(
+      screen.getByRole('button', { name: 'Preferences, Appearance and language' }),
+    ).toBeOnTheScreen()
+  })
+
+  it('opens Edit profile from its row', async () => {
+    await Render.app(
+      { 'profile/edit': EditProfileScreen, 'profile/index': ProfileScreen },
+      { backend, saved: 'r1', url: '/profile' },
+    )
+
+    await fireEvent.press(
+      await screen.findByRole('button', { name: 'Edit profile, Photo and name' }),
+    )
+
+    expect(await screen.findByLabelText('Name')).toBeOnTheScreen()
+    expect(screen).toHavePathname('/profile/edit')
+  })
+
+  it('opens Preferences from its row', async () => {
+    await Render.app(
+      { 'profile/index': ProfileScreen, 'profile/preferences': PreferencesScreen },
+      { backend, saved: 'r1', url: '/profile' },
+    )
+
+    await fireEvent.press(
+      await screen.findByRole('button', { name: 'Preferences, Appearance and language' }),
+    )
+
+    expect(await screen.findByRole('heading', { name: 'Appearance' })).toBeOnTheScreen()
+    expect(screen).toHavePathname('/profile/preferences')
   })
 
   it('logs out and returns to Welcome', async () => {

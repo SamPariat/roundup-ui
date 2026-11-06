@@ -27,14 +27,16 @@ export interface INameViewModel {
 }
 
 /**
- * The view model of the name step: validates the name, saves it, and refreshes the profile so the
- * route guard lets the person through.
+ * The view model of the name step and of Edit profile: validates the name, saves it, and puts the
+ * saved profile in the cache, so the route guard lets a new person through and an existing name
+ * updates everywhere. An unchanged name counts as saved without a request.
+ * @param initialName - The name the field starts with; empty on the name step, the current name when editing.
  * @returns The state and the actions.
  */
-export const useNameViewModel = (): INameViewModel => {
+export const useNameViewModel = (initialName = ''): INameViewModel => {
   const { queryClient } = useDeps()
   const { busy, clear, error, fail, requestId, run } = useAttempt()
-  const [typed, setTyped] = useState('')
+  const [typed, setTyped] = useState(initialName)
 
   const setName = useCallback(
     (text: string) => {
@@ -53,15 +55,16 @@ export const useNameViewModel = (): INameViewModel => {
       return false
     }
 
+    if (trimmed === initialName) return true
+
     const saved = await run('name', async () => {
-      await updateMe({ name: trimmed })
-      await queryClient.invalidateQueries({ queryKey: getGetMeQueryKey() })
+      queryClient.setQueryData(getGetMeQueryKey(), await updateMe({ name: trimmed }))
 
       return true
     })
 
     return saved === true
-  }, [fail, queryClient, run, typed])
+  }, [fail, initialName, queryClient, run, typed])
 
   return { busy, error, name: typed, requestId, setName, submit }
 }

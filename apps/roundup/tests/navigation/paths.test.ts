@@ -8,6 +8,8 @@ describe('Paths', () => {
     expect(Paths.tabsSquads()).toBe('/squads')
     expect(Paths.tabsExplore()).toBe('/explore')
     expect(Paths.tabsProfile()).toBe('/profile')
+    expect(Paths.profileEdit()).toBe('/profile/edit')
+    expect(Paths.profilePreferences()).toBe('/profile/preferences')
   })
 
   it('carries extra query parameters', () => {
@@ -19,6 +21,12 @@ describe('Paths', () => {
     expect(Paths.tabsSquads(query)).toEqual({ params: query, pathname: '/squads' })
     expect(Paths.tabsExplore(query)).toEqual({ params: query, pathname: '/explore' })
     expect(Paths.tabsProfile(query)).toEqual({ params: query, pathname: '/profile' })
+    expect(Paths.profileEdit(query)).toEqual({ params: query, pathname: '/profile/edit' })
+
+    expect(Paths.profilePreferences(query)).toEqual({
+      params: query,
+      pathname: '/profile/preferences',
+    })
   })
 
   it('builds the code path with the phone it needs', () => {

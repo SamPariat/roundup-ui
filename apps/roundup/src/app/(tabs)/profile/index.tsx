@@ -1,22 +1,33 @@
 import type { ReactElement } from 'react'
 
+import { useRouter } from 'expo-router'
 import { useCallback } from 'react'
 import { View } from 'react-native'
 
 import { useDeps, useProfileViewModel } from '@roundup/core'
 import { useT } from '@roundup/i18n'
-import { Avatar, Icon, List, ListRow, Skeleton, Text, ThemeSwitch, useTheme } from '@roundup/ui'
+import { Avatar, Icon, List, ListRow, Skeleton, Text } from '@roundup/ui'
+
+import { Paths } from '../../../navigation/paths'
 
 /**
- * The Profile tab: who is signed in, the theme choice, and Log out. Logging out ends the session,
+ * The Profile tab: who is signed in, the way to Edit profile and Preferences, and Log out. Logging out ends the session,
  * and the route guard then returns to Welcome, so this screen navigates nowhere itself.
- * @returns The signed-in person, the theme switch and the log out row.
+ * @returns The signed-in person, the two settings rows and the log out row.
  */
 export default function ProfileScreen(): ReactElement {
-  const { preference, setPreference } = useTheme()
+  const router = useRouter()
   const { t } = useT()
   const { helpers } = useDeps()
   const { loading, me, signOut } = useProfileViewModel()
+
+  const editProfile = useCallback(() => {
+    router.push(Paths.profileEdit())
+  }, [router])
+
+  const openPreferences = useCallback(() => {
+    router.push(Paths.profilePreferences())
+  }, [router])
 
   const logOut = useCallback(() => {
     void signOut()
@@ -39,11 +50,23 @@ export default function ProfileScreen(): ReactElement {
           </View>
         </View>
       )}
-      <View className="max-w-160 gap-2">
-        <Text variant="heading">{t('screens.profile.themeHeading')}</Text>
-        <ThemeSwitch onChange={setPreference} value={preference} />
-      </View>
-      <View className="max-w-160">
+      <View className="max-w-160 gap-6">
+        <List>
+          <ListRow
+            chevron
+            leading={<Icon decorative name="edit" />}
+            onPress={editProfile}
+            subtitle={t('screens.profile.editProfileHint')}
+            title={t('screens.profile.editProfile')}
+          />
+          <ListRow
+            chevron
+            leading={<Icon decorative name="device" />}
+            onPress={openPreferences}
+            subtitle={t('screens.profile.preferencesHint')}
+            title={t('screens.profile.preferences')}
+          />
+        </List>
         <List>
           <ListRow
             destructive
