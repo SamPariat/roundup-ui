@@ -17,6 +17,7 @@
     "clsx": "catalog:",
     "expo-glass-effect": "catalog:",
     "expo-router": "catalog:",
+    "expo-splash-screen": "catalog:",
     "nativewind": "catalog:",
     "react": "catalog:",
     "react-native": "catalog:",

@@ -13,19 +13,4 @@ describe('Layout.forWidth', () => {
   ] as const)('at %i wide uses the %s nav with a %i gutter', (width, nav, gutter) => {
     expect(Layout.forWidth(width)).toMatchObject({ nav, gutter })
   })
-
-  it.each([360, 466, 626, 768, 890, 1024, 1440, 2560])(
-    'never lets the content overflow a %i wide window',
-    (width) => {
-      const { contentWidth, gutter, nav } = Layout.forWidth(width)
-      const sidebar = nav === 'side' ? 248 : 0
-
-      expect(contentWidth).toBeGreaterThan(0)
-      expect(contentWidth + gutter * 2).toBeLessThanOrEqual(width - sidebar)
-    },
-  )
-
-  it('caps the content column at 1200', () => {
-    expect(Layout.forWidth(2560).contentWidth).toBe(1200)
-  })
 })

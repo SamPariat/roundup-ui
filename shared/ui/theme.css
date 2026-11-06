@@ -17,8 +17,6 @@
   /* Remove Tailwind's default palette. */
   --color-*: initial;
   --color-transparent: transparent;
-  --color-*: initial;
-  --color-transparent: transparent;
   --color-bg: #1e1e2e;
   --color-bg-raised: #313244;
   --color-bg-sunken: #181825;
@@ -369,21 +367,4 @@
   line-height: 20px;
   letter-spacing: 0px;
   font-variant: tabular-nums;
-}
-
-/* One weight at a time, for the few places that need only a family. */
-@utility font-onest-400 {
-  font-family: Onest-Regular;
-}
-
-@utility font-onest-500 {
-  font-family: Onest-Medium;
-}
-
-@utility font-onest-600 {
-  font-family: Onest-SemiBold;
-}
-
-@utility font-onest-700 {
-  font-family: Onest-Bold;
 }

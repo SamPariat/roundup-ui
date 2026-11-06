@@ -19,7 +19,6 @@ const spinnerVariants = cva('size-4.5 rounded-full border-2', {
   defaultVariants: { tone: 'fg' },
 })
 
-/** Props for Spinner: the tone variant plus extra classes. */
 /** Props the spinner adds to its tone variant. */
 interface ISpinnerOwnProps {
   /** Extra classes for placement. */

@@ -7,6 +7,7 @@ import { useT } from '@roundup/i18n'
 import type { IPerson } from '../lib/person'
 import type { TAvatarSize } from './Avatar'
 
+import { cn } from '../lib/cn'
 import { Avatar } from './Avatar'
 import { Text } from './Text'
 
@@ -46,11 +47,7 @@ export const AvatarGroup = ({
     >
       {shown.map((person, index) => (
         <View
-          className={
-            index === 0
-              ? 'rounded-full border-2 border-bg-raised'
-              : '-ml-2 rounded-full border-2 border-bg-raised'
-          }
+          className={cn('rounded-full border-2 border-bg-raised', index > 0 && '-ml-2')}
           key={person.id ?? `${person.name}-${String(index)}`}
         >
           <Avatar

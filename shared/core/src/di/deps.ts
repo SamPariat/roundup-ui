@@ -39,7 +39,7 @@ export interface IDeps {
  */
 export class Deps {
   /**
-   * The query client's retry policy, delegating to the helper held in the container. An arrow
+   * The query client's retry policy, delegating to Query.shouldRetry. An arrow
    * function because the query client takes it as a bare callback.
    * @param failureCount - How many times the query has failed so far.
    * @param error - What it failed with.

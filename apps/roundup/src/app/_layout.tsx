@@ -10,7 +10,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context'
 import '../../global.css'
 
 import { CoreProvider } from '@roundup/core'
-import { ThemeProvider, useTheme } from '@roundup/ui'
+import { ThemeProvider, useSplash, useTheme } from '@roundup/ui'
 
 import OnestBold from '../../../../assets/fonts/Onest-Bold.ttf'
 import OnestMedium from '../../../../assets/fonts/Onest-Medium.ttf'
@@ -19,7 +19,6 @@ import OnestSemiBold from '../../../../assets/fonts/Onest-SemiBold.ttf'
 import { AuthStack } from '../components/AuthStack'
 import { OfflineNotice } from '../components/OfflineNotice'
 import { useRouteGate } from '../hooks/useRouteGate'
-import { useSplash } from '../hooks/useSplash'
 
 void preventAutoHideAsync()
 

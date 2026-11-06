@@ -1,6 +1,6 @@
 import type { en } from './locales/en'
 
-// Teaches i18next the shape of the English resources, so t('shell.tabs.squads') is checked and a
+// Teaches i18next the shape of the English resources, so t('nav.tabs.squads') is checked and a
 // misspelt or removed key fails the typecheck. Imported for its side effect by index.ts.
 /** The resources i18next should type-check against. */
 interface IResources {

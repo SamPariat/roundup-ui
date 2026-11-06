@@ -58,17 +58,13 @@ export const TextFieldDemo = (): ReactElement => {
         />
       </Specimen>
       <Specimen note="Fix the address to clear the error." title="Interactive · error from input">
-        {emailValid ? (
-          <TextField label="Email" onChangeText={setEmail} type="email" value={email} />
-        ) : (
-          <TextField
-            error="Enter a full address, like name@example.com"
-            label="Email"
-            onChangeText={setEmail}
-            type="email"
-            value={email}
-          />
-        )}
+        <TextField
+          label="Email"
+          onChangeText={setEmail}
+          type="email"
+          value={email}
+          {...(emailValid ? {} : { error: 'Enter a full address, like name@example.com' })}
+        />
       </Specimen>
     </>
   )

@@ -20,7 +20,6 @@ export class AvatarTint {
 
   /**
    * Hashes a key to one of the six tints, so the same person always gets the same color.
-   * A stable tint per person: the same ID always lands on the same one of the six.
    * @param key - A stable ID, or the name when there is no ID.
    * @returns A tint number from 1 to 6.
    */
