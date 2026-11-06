@@ -82,15 +82,22 @@ export const TabList = <T,>({
     [columns, renderItem],
   )
 
+  // The cells carry 6 points of padding on every side, so the list sits 6 outside the gutter to
+  // keep the cards on it, and the header takes the 6 back and adds the last 6 of the 12 row gap.
+  const headerBox =
+    header === undefined ? undefined : <View className="px-1.5 pb-1.5">{header}</View>
+
   const placeholder = loading ? (
-    <Skeleton count={PLACEHOLDERS} />
+    <View className="px-1.5">
+      <Skeleton count={PLACEHOLDERS} />
+    </View>
   ) : (
-    <View className="flex-1 justify-center">{empty}</View>
+    <View className="flex-1 justify-center px-1.5">{empty}</View>
   )
 
   return (
     <FlatList
-      contentContainerClassName={cn('grow py-6', sides)}
+      contentContainerClassName={cn('-mx-1.5 grow py-4.5', sides)}
       contentInsetAdjustmentBehavior="automatic"
       data={data}
       key={columns}
@@ -98,7 +105,7 @@ export const TabList = <T,>({
       keyExtractor={keyExtractor}
       ListEmptyComponent={placeholder}
       ListFooterComponent={footer}
-      ListHeaderComponent={header}
+      ListHeaderComponent={headerBox}
       numColumns={columns}
       onEndReached={onEndReached}
       refreshControl={
