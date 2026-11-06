@@ -18,3 +18,26 @@ export type { INetworkNotice } from './network/useOfflineNotice'
 export type { TSessionStatus, ISessionStore } from './session/types'
 export { useSession } from './session/useSession'
 export type { IUseSession } from './session/useSession'
+export type {
+  IContactMatch,
+  ISquadCard,
+  ISquadInfo,
+  ISquadMember,
+  ISquadPerson,
+  ISquadPermissions,
+  TRole,
+} from './squads/types'
+export { useAddMemberViewModel } from './squads/useAddMemberViewModel'
+export type { IAddMemberViewModel } from './squads/useAddMemberViewModel'
+export { useContactLookup } from './squads/useContactLookup'
+export type { IContactLookup } from './squads/useContactLookup'
+export { useCreateSquadViewModel } from './squads/useCreateSquadViewModel'
+export type { ICreateSquadViewModel } from './squads/useCreateSquadViewModel'
+export { useRenameSquadViewModel } from './squads/useRenameSquadViewModel'
+export type { IRenameSquadViewModel } from './squads/useRenameSquadViewModel'
+export { useSquad } from './squads/useSquad'
+export type { IUseSquad } from './squads/useSquad'
+export { useSquadMembersViewModel } from './squads/useSquadMembersViewModel'
+export type { ISquadMembersViewModel } from './squads/useSquadMembersViewModel'
+export { useSquads } from './squads/useSquads'
+export type { IUseSquads } from './squads/useSquads'

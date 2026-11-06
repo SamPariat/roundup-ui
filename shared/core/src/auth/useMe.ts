@@ -2,7 +2,7 @@ import type { User } from '@roundup/api'
 
 import { useGetMe } from '@roundup/api'
 
-import { useSession } from '../session/useSession'
+import { useSignedIn } from '../session/useSignedIn'
 
 /** The signed-in person's profile as the app needs it. */
 export interface IMe {
@@ -20,8 +20,7 @@ export interface IMe {
  * @returns The profile, whether it is loading, and whether a name is missing.
  */
 export const useMe = (): IMe => {
-  const { status } = useSession()
-  const signedIn = status === 'signedIn'
+  const signedIn = useSignedIn()
   const query = useGetMe({ query: { enabled: signedIn } })
   const me = signedIn ? query.data?.data : undefined
 

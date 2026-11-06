@@ -8,7 +8,7 @@ import { useDeps } from '../di/useDeps'
 import { useAttempt } from './useAttempt'
 
 /** The longest name the backend accepts. */
-const MAX_NAME = 50
+export const MAX_NAME = 50
 
 /** What the name screen shows and does. */
 export interface INameViewModel {
