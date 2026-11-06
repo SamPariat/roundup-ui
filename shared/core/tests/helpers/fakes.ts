@@ -108,7 +108,7 @@ export class FakeNetwork implements INetworkSource {
 }
 
 /** What a stubbed route answers. */
-export interface IRouteSpec {
+interface IRouteSpec {
   /** The HTTP status. */
   status: number
   /** The JSON body; none for 202 and 204. */
@@ -130,7 +130,7 @@ interface IRecordedRequest {
 }
 
 /** Everything a test needs to see of the fake network. */
-export interface IStubbedNetwork {
+interface IStubbedNetwork {
   /** Every request, in order. */
   requests: IRecordedRequest[]
   /** The answers by "METHOD /path"; change an entry to change what the next request gets. */
