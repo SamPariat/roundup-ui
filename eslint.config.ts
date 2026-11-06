@@ -657,12 +657,12 @@ export default [
     },
   },
   {
-    // Component files are PascalCase by design (components/Button.tsx); helpers in lib/ stay kebab-case.
+    // Component files are PascalCase by design (components/Button.tsx, and the app's feature folders under it); helpers in lib/ stay kebab-case.
     files: [
       'shared/ui/src/components/*.tsx',
       'shared/ui/tests/components/*.tsx',
-      'apps/roundup/src/components/*.tsx',
-      'apps/roundup/tests/components/*.tsx',
+      'apps/roundup/src/components/**/*.tsx',
+      'apps/roundup/tests/components/**/*.tsx',
       'apps/catalog/src/components/*.tsx',
       'apps/catalog/src/demos/*.tsx',
       'apps/catalog/tests/components/*.tsx',
