@@ -57,7 +57,7 @@ export default {
       {
         // Shown by iOS in the permission prompt, and READ_CONTACTS is added on Android.
         contactsPermission:
-          'Roundup reads phone numbers from your contacts to find friends who are already on Roundup. Nothing is stored.',
+          '$(PRODUCT_NAME) reads phone numbers from your contacts to find friends who are already on Roundup. Nothing is stored.',
       },
     ],
     'expo-localization',
