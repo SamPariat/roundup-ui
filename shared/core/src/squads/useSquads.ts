@@ -77,16 +77,16 @@ export const useSquads = (): IUseSquads => {
     })
 
   const squads = useMemo(
-    () =>
+    (): ISquadCard[] =>
       data?.pages.flatMap((page) => page.data.squads.map((squad) => Squads.toCard(squad))) ?? [],
     [data],
   )
 
-  const loadMore = useCallback(() => {
+  const loadMore = useCallback((): void => {
     if (hasNextPage && !isFetchingNextPage) void fetchNextPage()
   }, [fetchNextPage, hasNextPage, isFetchingNextPage])
 
-  const refresh = useCallback(async () => {
+  const refresh = useCallback(async (): Promise<void> => {
     await refetch()
   }, [refetch])
 

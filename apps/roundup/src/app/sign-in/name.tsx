@@ -19,7 +19,7 @@ export default function NameScreen(): ReactElement {
   const { busy, error, name, requestId, setName, submit } = useNameViewModel()
   const errorText = useErrorText(error, requestId)
 
-  const save = useCallback(() => {
+  const save = useCallback((): void => {
     void submit()
   }, [submit])
 

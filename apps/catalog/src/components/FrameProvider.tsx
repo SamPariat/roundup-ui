@@ -2,7 +2,7 @@ import type { ReactElement, ReactNode } from 'react'
 
 import { useMemo, useState } from 'react'
 
-import type { TFrameWidth } from '../hooks/useFrame'
+import type { IFrameState, TFrameWidth } from '../hooks/useFrame'
 
 import { FrameContext } from '../hooks/useFrame'
 
@@ -20,7 +20,7 @@ export interface IFrameProviderProps {
 export const FrameProvider = ({ children }: IFrameProviderProps): ReactElement => {
   const [width, setWidth] = useState<TFrameWidth>('full')
 
-  const value = useMemo(() => ({ setWidth, width }), [width])
+  const value = useMemo((): IFrameState => ({ setWidth, width }), [width])
 
   return <FrameContext value={value}>{children}</FrameContext>
 }

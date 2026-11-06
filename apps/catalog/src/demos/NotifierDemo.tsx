@@ -42,7 +42,7 @@ const Stage = ({ notice }: IStageProps): ReactElement => (
 export const NotifierDemo = (): ReactElement => {
   const [offline, setOffline] = useState(false)
 
-  const toggle = useCallback(() => {
+  const toggle = useCallback((): void => {
     setOffline((current) => !current)
   }, [])
 

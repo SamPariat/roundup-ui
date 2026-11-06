@@ -1,4 +1,5 @@
 import type { ReactElement } from 'react'
+import type { ViewStyle } from 'react-native'
 
 import { NativeTabs } from 'expo-router/native-tabs'
 import { useMemo } from 'react'
@@ -20,7 +21,7 @@ export default function TabsLayout(): ReactElement {
   const accent = useRoleColor('accent')
   const background = useRoleColor('bg')
 
-  const contentStyle = useMemo(() => ({ backgroundColor: background }), [background])
+  const contentStyle = useMemo((): ViewStyle => ({ backgroundColor: background }), [background])
 
   return (
     <NativeTabs minimizeBehavior="onScrollDown" sidebarAdaptable tintColor={accent}>

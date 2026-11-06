@@ -34,7 +34,7 @@ export const usePhoneViewModel = (): IPhoneViewModel => {
   const { busy, clear, error, fail, requestId, run } = useAttempt()
 
   const setPhone = useCallback(
-    (text: string) => {
+    (text: string): void => {
       setDigits(phoneHelper.toNationalDigits(text))
       clear()
     },

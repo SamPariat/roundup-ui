@@ -1,3 +1,4 @@
+import type { NativeStackNavigationOptions } from 'expo-router'
 import type { ReactElement, ReactNode } from 'react'
 
 import { Stack } from 'expo-router'
@@ -24,7 +25,7 @@ export const TabStack = ({ children }: ITabStackProps): ReactElement => {
   const foreground = useRoleColor('fg')
 
   const screenOptions = useMemo(
-    () => ({
+    (): NativeStackNavigationOptions => ({
       contentStyle: { backgroundColor: background },
       headerShown: Platform.OS === 'ios',
       headerTintColor: foreground,

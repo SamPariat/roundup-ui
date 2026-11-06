@@ -13,11 +13,11 @@ import { Specimen } from '../components/Specimen'
 export const ToastDemo = (): ReactElement => {
   const [removed, setRemoved] = useState(true)
 
-  const undo = useCallback(() => {
+  const undo = useCallback((): void => {
     setRemoved(false)
   }, [])
 
-  const reset = useCallback(() => {
+  const reset = useCallback((): void => {
     setRemoved(true)
   }, [])
 

@@ -31,15 +31,15 @@ const CodeForm = ({ phone }: ICodeFormProps): ReactElement => {
 
   const errorText = useErrorText(error, requestId)
 
-  const back = useCallback(() => {
+  const back = useCallback((): void => {
     router.back()
   }, [router])
 
-  const verify = useCallback(() => {
+  const verify = useCallback((): void => {
     void submit()
   }, [submit])
 
-  const sendAgain = useCallback(() => {
+  const sendAgain = useCallback((): void => {
     void resend()
   }, [resend])
 

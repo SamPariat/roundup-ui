@@ -15,11 +15,11 @@ import { Specimen } from '../components/Specimen'
 export const TopAppBarDemo = (): ReactElement => {
   const [pressed, setPressed] = useState('Nothing yet')
 
-  const back = useCallback(() => {
+  const back = useCallback((): void => {
     setPressed('Back')
   }, [])
 
-  const add = useCallback(() => {
+  const add = useCallback((): void => {
     setPressed('Add')
   }, [])
 

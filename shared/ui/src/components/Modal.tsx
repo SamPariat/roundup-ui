@@ -13,6 +13,8 @@ import {
 
 import { useT } from '@roundup/i18n'
 
+import type { IActionContextValue } from '../lib/action-context'
+
 import { ActionContext } from '../lib/action-context'
 import { cn } from '../lib/cn'
 import { Breakpoint } from '../lib/useBreakpoint'
@@ -201,13 +203,13 @@ export const Modal = ({
   const showClose = !confirm && !busy && closable
 
   // While a request is in flight only the loading Button stays active; Buttons read this context.
-  const actionContext = useMemo(() => ({ busy, block: sheet }), [busy, sheet])
+  const actionContext = useMemo((): IActionContextValue => ({ busy, block: sheet }), [busy, sheet])
 
-  const requestClose = useCallback(() => {
+  const requestClose = useCallback((): void => {
     if (!busy) onClose?.()
   }, [busy, onClose])
 
-  const focusTitle = useCallback(() => {
+  const focusTitle = useCallback((): void => {
     ModalFocus.moveFocusTo(titleRef.current)
   }, [])
 

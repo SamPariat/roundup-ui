@@ -65,7 +65,7 @@ export const Welcome = ({ body, onStart, startLabel, title }: IWelcomeProps): Re
   const [width, setWidth] = useState(0)
   const wide = Breakpoint.of(width) !== 'phone'
 
-  const handleLayout = useCallback((event: LayoutChangeEvent) => {
+  const handleLayout = useCallback((event: LayoutChangeEvent): void => {
     setWidth(event.nativeEvent.layout.width)
   }, [])
 

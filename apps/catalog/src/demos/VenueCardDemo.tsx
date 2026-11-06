@@ -14,7 +14,7 @@ import { CLOSED_VENUE, OPEN_VENUE } from '../fixtures'
 export const VenueCardDemo = (): ReactElement => {
   const [saved, setSaved] = useState(false)
 
-  const toggle = useCallback(() => {
+  const toggle = useCallback((): void => {
     setSaved((current) => !current)
   }, [])
 

@@ -22,15 +22,15 @@ export default function ProfileScreen(): ReactElement {
   const { helpers } = useDeps()
   const { loading, me, signOut } = useProfileViewModel()
 
-  const editProfile = useCallback(() => {
+  const editProfile = useCallback((): void => {
     router.push(Paths.profileEdit())
   }, [router])
 
-  const openPreferences = useCallback(() => {
+  const openPreferences = useCallback((): void => {
     router.push(Paths.profilePreferences())
   }, [router])
 
-  const logOut = useCallback(() => {
+  const logOut = useCallback((): void => {
     void signOut()
   }, [signOut])
 

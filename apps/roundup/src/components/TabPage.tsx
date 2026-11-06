@@ -1,4 +1,6 @@
 import type { ReactElement, ReactNode } from 'react'
+import type { ViewStyle } from 'react-native'
+import type { Edge } from 'react-native-safe-area-context'
 
 import { Platform, ScrollView, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
@@ -16,10 +18,10 @@ export interface ITabPageProps {
 }
 
 /** Fills the screen; SafeAreaView takes a style, not a className. */
-const FILL = { flex: 1 } as const
+const FILL: ViewStyle = { flex: 1 }
 
 /** The edges of the visible area on iOS: below the header and above the floating tab bar. */
-const VISIBLE = ['top', 'bottom'] as const
+const VISIBLE: readonly Edge[] = ['top', 'bottom']
 
 /**
  * The body of every screen inside a tab. On iOS the header and the tab bar are glass and float over

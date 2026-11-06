@@ -29,7 +29,7 @@ export const EditProfileForm = ({ id, name }: IEditProfileFormProps): ReactEleme
   const { busy, error, name: typed, requestId, setName, submit } = useNameViewModel(name)
   const errorText = useErrorText(error, requestId)
 
-  const save = useCallback(() => {
+  const save = useCallback((): void => {
     void submit().then((saved) => {
       if (saved) goBack()
     })

@@ -27,6 +27,28 @@ import globals from 'globals'
 import path from 'node:path'
 import tseslint from 'typescript-eslint'
 
+/**
+ * Syntax banned in every TypeScript file. Each block that sets no-restricted-syntax spreads these,
+ * because a later block's setting replaces an earlier one's for the files they share.
+ */
+const BANNED_EVERYWHERE = [
+  {
+    selector: 'TSAnyKeyword',
+    message: 'Do not use any. Use unknown and narrow it (typeof, in, a type guard or a schema).',
+  },
+  {
+    selector: 'TSNeverKeyword',
+    message:
+      'Do not use never. For exclusive props in a discriminated union write `prop?: undefined`; for exhaustiveness use satisfies or an assertNever that takes the value typed as the union (switch-exhaustiveness-check also covers switches).',
+  },
+  {
+    selector:
+      'CallExpression[callee.name=/^use(Memo|Callback)$/] > ArrowFunctionExpression:not([returnType])',
+    message:
+      'Give a useMemo or useCallback function its return type, such as (): void => or (): ViewStyle =>.',
+  },
+]
+
 /** The shape of a plugin that ships no types: just its rules by name. */
 interface IRuleSet {
   /** The rules the plugin defines. */
@@ -297,16 +319,7 @@ export default [
           message:
             'Read each safe-area inset edge separately; never collapse them with Math.max/min.',
         },
-        {
-          selector: 'TSAnyKeyword',
-          message:
-            'Do not use any. Use unknown and narrow it (typeof, in, a type guard or a schema).',
-        },
-        {
-          selector: 'TSNeverKeyword',
-          message:
-            'Do not use never. For exclusive props in a discriminated union write `prop?: undefined`; for exhaustiveness use satisfies or an assertNever that takes the value typed as the union (switch-exhaustiveness-check also covers switches).',
-        },
+        ...BANNED_EVERYWHERE,
       ],
       'no-restricted-properties': [
         'error',
@@ -355,9 +368,10 @@ export default [
     },
   },
   {
-    // The few files that need a raw style object (boxShadow on floating surfaces, per-edge safe-area padding, the glass layer) say so here and nowhere else.
+    // The few files that need a raw style object (boxShadow on floating surfaces, per-edge safe-area padding, the glass layer, animated values) say so here and nowhere else.
     files: [
       'shared/ui/src/components/Modal.tsx',
+      'shared/ui/src/components/Notifier.tsx',
       'shared/ui/src/components/SafeArea.tsx',
       'shared/ui/src/components/Surface.tsx',
       'shared/ui/src/components/Toast.tsx',
@@ -376,16 +390,7 @@ export default [
           message:
             'Read each safe-area inset edge separately; never collapse them with Math.max/min.',
         },
-        {
-          selector: 'TSAnyKeyword',
-          message:
-            'Do not use any. Use unknown and narrow it (typeof, in, a type guard or a schema).',
-        },
-        {
-          selector: 'TSNeverKeyword',
-          message:
-            'Do not use never. For exclusive props in a discriminated union write `prop?: undefined`; for exhaustiveness use satisfies or an assertNever that takes the value typed as the union (switch-exhaustiveness-check also covers switches).',
-        },
+        ...BANNED_EVERYWHERE,
       ],
     },
   },
@@ -439,28 +444,6 @@ export default [
     files: ['apps/catalog/src/**/*.tsx'],
     plugins: { i18next },
     rules: { 'i18next/no-literal-string': 'off' },
-  },
-
-  {
-    // any and never are banned everywhere, including scripts, tool configs and .d.ts shims. Blocks
-    // below that set no-restricted-syntax for their files repeat the any and never bans, because a later
-    // setting replaces this one.
-    files: ['**/*.{ts,tsx}'],
-    rules: {
-      'no-restricted-syntax': [
-        'error',
-        {
-          selector: 'TSAnyKeyword',
-          message:
-            'Do not use any. Use unknown and narrow it (typeof, in, a type guard or a schema).',
-        },
-        {
-          selector: 'TSNeverKeyword',
-          message:
-            'Do not use never. For exclusive props in a discriminated union write `prop?: undefined`; for exhaustiveness use satisfies or an assertNever that takes the value typed as the union (switch-exhaustiveness-check also covers switches).',
-        },
-      ],
-    },
   },
 
   // ── Architecture ────────────────────────────────────────────
@@ -827,16 +810,7 @@ export default [
           selector: 'CallExpression[callee.property.name=/^(get|query|find)(All)?ByTestId$/]',
           message: 'Query by role, label or text so tests prove what users can reach.',
         },
-        {
-          selector: 'TSAnyKeyword',
-          message:
-            'Do not use any. Use unknown and narrow it (typeof, in, a type guard or a schema).',
-        },
-        {
-          selector: 'TSNeverKeyword',
-          message:
-            'Do not use never. For exclusive props in a discriminated union write `prop?: undefined`; for exhaustiveness use satisfies or an assertNever that takes the value typed as the union (switch-exhaustiveness-check also covers switches).',
-        },
+        ...BANNED_EVERYWHERE,
       ],
     },
   },

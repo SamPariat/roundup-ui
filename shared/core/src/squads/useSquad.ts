@@ -42,9 +42,19 @@ export const useSquad = (squadId: string): IUseSquad => {
   const signedIn = useSignedIn()
   const { data, error, isPending } = useGetSquad(squadId, { query: { enabled: signedIn } })
   const detail = data?.data
-  const members = useMemo(() => detail?.members.map((member) => Squads.toMember(member)), [detail])
-  const squad = useMemo(() => detail && Squads.toInfo(detail), [detail])
-  const permissions = useMemo(() => detail && Squads.toPermissions(detail), [detail])
+
+  const members = useMemo(
+    (): ISquadMember[] | undefined => detail?.members.map((member) => Squads.toMember(member)),
+    [detail],
+  )
+
+  const squad = useMemo((): ISquadInfo | undefined => detail && Squads.toInfo(detail), [detail])
+
+  const permissions = useMemo(
+    (): ISquadPermissions | undefined => detail && Squads.toPermissions(detail),
+    [detail],
+  )
+
   const message = error === null ? undefined : helpers.errors.toMessage(error, 'squad')
 
   return {

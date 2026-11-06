@@ -33,7 +33,7 @@ export const NavTab = ({
   item,
   onChange,
 }: INavTabProps): ReactElement => {
-  const press = useCallback(() => {
+  const press = useCallback((): void => {
     onChange?.(item.id)
   }, [item.id, onChange])
 
