@@ -82,8 +82,10 @@ export const TabList = <T,>({
     [columns, renderItem],
   )
 
-  // The cells carry 6 points of padding on every side, so the list sits 6 outside the gutter to
-  // keep the cards on it, and the header takes the 6 back and adds the last 6 of the 12 row gap.
+  // The cells carry 6 points of padding on every side, so the list itself sits 6 outside the gutter
+  // to keep the cards on it, and the header takes the 6 back and adds the last 6 of the 12 row gap.
+  // The negative margin goes on a plain wrapping View: iOS ignores margins on a scroll view's
+  // content container, and on the web a FlatList's own className lands on two nested elements.
   const headerBox =
     header === undefined ? undefined : <View className="px-1.5 pb-1.5">{header}</View>
 
@@ -96,24 +98,26 @@ export const TabList = <T,>({
   )
 
   return (
-    <FlatList
-      contentContainerClassName={cn('-mx-1.5 grow py-4.5', sides)}
-      contentInsetAdjustmentBehavior="automatic"
-      data={data}
-      key={columns}
-      keyboardShouldPersistTaps="handled"
-      keyExtractor={keyExtractor}
-      ListEmptyComponent={placeholder}
-      ListFooterComponent={footer}
-      ListHeaderComponent={headerBox}
-      numColumns={columns}
-      onEndReached={onEndReached}
-      refreshControl={
-        onRefresh === undefined ? undefined : (
-          <RefreshControl onRefresh={onRefresh} refreshing={refreshing} />
-        )
-      }
-      renderItem={cell}
-    />
+    <View className="-mx-1.5 flex-1">
+      <FlatList
+        contentContainerClassName={cn('grow py-4.5', sides)}
+        contentInsetAdjustmentBehavior="automatic"
+        data={data}
+        key={columns}
+        keyboardShouldPersistTaps="handled"
+        keyExtractor={keyExtractor}
+        ListEmptyComponent={placeholder}
+        ListFooterComponent={footer}
+        ListHeaderComponent={headerBox}
+        numColumns={columns}
+        onEndReached={onEndReached}
+        refreshControl={
+          onRefresh === undefined ? undefined : (
+            <RefreshControl onRefresh={onRefresh} refreshing={refreshing} />
+          )
+        }
+        renderItem={cell}
+      />
+    </View>
   )
 }
