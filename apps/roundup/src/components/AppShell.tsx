@@ -29,9 +29,10 @@ export const AppShell = ({ children, current }: IAppShellProps): ReactElement =>
   const { gutter, nav } = useLayout()
   const items = useTabItems()
   const { t } = useT()
-  const goBack = useBack()
+  const tab = items.find((item) => item.id === current)
+  const goBack = useBack(tab?.href)
   const nestedTitle = useNestedTitle()
-  const title = nestedTitle ?? items.find((item) => item.id === current)?.title ?? ''
+  const title = nestedTitle ?? tab?.title ?? ''
   const backProps = nestedTitle === undefined ? {} : { onBack: goBack }
 
   const headerBackProps =

@@ -3,6 +3,7 @@ import { usePathname } from 'expo-router'
 import type { en } from '@roundup/i18n'
 import type { TIconName } from '@roundup/ui'
 
+import { useSquad } from '@roundup/core'
 import { useT } from '@roundup/i18n'
 
 import { Paths } from '../navigation/paths'
@@ -79,6 +80,9 @@ const NESTED_DEFINITIONS: readonly INestedDefinition[] = [
   { href: Paths.profilePreferences(), titleKey: 'titles.preferences' },
 ]
 
+/** A squad's page: the Squads tab's path, then the squad's ID. */
+const SQUAD_PATH = /^\/squads\/([^/]+)$/
+
 /**
  * Tab helpers. Static methods only.
  */
@@ -99,6 +103,16 @@ export class Tab {
    */
   static nestedTitleKey(pathname: string): TTitleKey | undefined {
     return NESTED_DEFINITIONS.find((item) => item.href === pathname)?.titleKey
+  }
+
+  /**
+   * Finds which squad a path opens. A squad's title is its name, which no fixed key can hold, so
+   * its page is told apart from the screens in NESTED_DEFINITIONS here.
+   * @param pathname - The current URL path.
+   * @returns The squad's ID, or undefined when the path is not a squad's page.
+   */
+  static squadId(pathname: string): string | undefined {
+    return SQUAD_PATH.exec(pathname)?.[1]
   }
 }
 
@@ -123,12 +137,18 @@ export const useTabItems = (): readonly ITabItem[] => {
 export const useCurrentTab = (): ITabItem['id'] => Tab.idForPath(usePathname())
 
 /**
- * The title of the screen pushed inside a tab, when the current route is one.
+ * The title of the screen pushed inside a tab, when the current route is one. A squad's page is
+ * titled with the squad's name, and "Squad" until the name loads.
  * @returns The translated title, or undefined on a tab's own page.
  */
 export const useNestedTitle = (): string | undefined => {
   const { t } = useT()
-  const key = Tab.nestedTitleKey(usePathname())
+  const pathname = usePathname()
+  const squadId = Tab.squadId(pathname)
+  const { squad } = useSquad(squadId)
+  const key = Tab.nestedTitleKey(pathname)
+
+  if (squadId !== undefined) return squad?.name ?? t('titles.squad')
 
   return key === undefined ? undefined : t(key)
 }

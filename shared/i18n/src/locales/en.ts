@@ -165,6 +165,15 @@ export const en = {
       preferencesHint: 'Appearance and language',
       logOut: 'Log out',
     },
+    squad: {
+      members: 'Members',
+      admin: 'Admin',
+      you: '{{name}} (you)',
+      notFoundTitle: 'Squad not found',
+      notFoundAction: 'Go to your squads',
+      errorTitle: "Couldn't load this squad",
+      options: 'Squad options',
+    },
     editProfile: {
       nameLabel: 'Name',
       nameHelper: 'Your squads see this name.',

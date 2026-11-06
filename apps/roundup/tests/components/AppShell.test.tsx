@@ -5,9 +5,11 @@ import { renderRouter } from 'expo-router/testing-library'
 import { Text } from 'react-native'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 
+import { CoreProvider } from '@roundup/core'
 import { ThemeProvider } from '@roundup/ui'
 
 import { AppShell } from '../../src/components/AppShell'
+import { Fakes } from '../helpers/fakes'
 
 const mockWindow = { width: 390, height: 800, scale: 2, fontScale: 1 }
 
@@ -69,9 +71,11 @@ class ShellFixtures {
         initialMetrics={{ insets: edgeInsets, frame: { x: 0, y: 0, width, height: 800 } }}
       >
         <ThemeProvider>
-          <AppShell current={current}>
-            <Text>Page content</Text>
-          </AppShell>
+          <CoreProvider deps={Fakes.testDeps()}>
+            <AppShell current={current}>
+              <Text>Page content</Text>
+            </AppShell>
+          </CoreProvider>
         </ThemeProvider>
       </SafeAreaProvider>
     )
