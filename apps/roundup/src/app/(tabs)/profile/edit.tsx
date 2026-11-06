@@ -4,7 +4,7 @@ import { useProfileViewModel } from '@roundup/core'
 import { Skeleton } from '@roundup/ui'
 
 import { EditProfileForm } from '../../../components/EditProfileForm'
-import { StackPage } from '../../../components/StackPage'
+import { TabPage } from '../../../components/TabPage'
 
 /**
  * Edit profile: change your name. The form waits for the profile so the field starts with the
@@ -15,12 +15,12 @@ export default function EditProfileScreen(): ReactElement {
   const { loading, me } = useProfileViewModel()
 
   return (
-    <StackPage>
+    <TabPage>
       {loading || me === undefined ? (
         <Skeleton variant="row" />
       ) : (
         <EditProfileForm id={me.id} name={me.name} />
       )}
-    </StackPage>
+    </TabPage>
   )
 }

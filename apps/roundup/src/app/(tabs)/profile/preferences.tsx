@@ -5,7 +5,7 @@ import { View } from 'react-native'
 import { useT } from '@roundup/i18n'
 import { List, ListRow, Text, ThemeSwitch, useTheme } from '@roundup/ui'
 
-import { StackPage } from '../../../components/StackPage'
+import { TabPage } from '../../../components/TabPage'
 
 /**
  * Preferences: the theme and the language. English is the only language, so its row is plain
@@ -17,7 +17,7 @@ export default function PreferencesScreen(): ReactElement {
   const { t } = useT()
 
   return (
-    <StackPage>
+    <TabPage>
       <View className="max-w-160 gap-8">
         <View className="gap-3">
           <Text heading={2} variant="heading">
@@ -47,6 +47,6 @@ export default function PreferencesScreen(): ReactElement {
           </Text>
         </View>
       </View>
-    </StackPage>
+    </TabPage>
   )
 }
