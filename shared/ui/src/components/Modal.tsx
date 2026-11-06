@@ -2,11 +2,10 @@ import type { ComponentRef, ReactElement, ReactNode, RefObject } from 'react'
 import type { ViewStyle } from 'react-native'
 
 import { BlurView } from 'expo-blur'
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useMemo, useRef } from 'react'
 import {
   AccessibilityInfo,
   Animated,
-  Easing,
   KeyboardAvoidingView,
   Modal as NativeModal,
   Platform,
@@ -22,7 +21,7 @@ import type { IActionContextValue } from '../lib/action-context'
 import { ActionContext } from '../lib/action-context'
 import { cn } from '../lib/cn'
 import { ABSOLUTE_FILL } from '../lib/fill'
-import { useReducedMotion } from '../lib/useReducedMotion'
+import { useModalMotion } from '../lib/useModalMotion'
 import { useTheme } from '../theme/theme'
 import { Button } from './Button'
 import { Surface } from './Surface'
@@ -56,15 +55,6 @@ export interface IModalProps {
   /** Called when the close button, Esc, the Android back button or a tap on the backdrop asks to close. Not called while busy. */
   onClose?: () => void
 }
-
-/** How far the sheet rises from as it opens, in points. */
-const SHEET_RISE = 48
-
-/** How long the sheet takes to rise, in milliseconds. */
-const RISE_MS = 280
-
-/** Ease-out cubic: quick to start, gentle to settle, like the system sheets. */
-const EASE_OUT = Easing.bezier(0.33, 1, 0.68, 1)
 
 /** How strongly the screen behind is blurred, on expo-blur's 0 to 100 scale. */
 const BACKDROP_BLUR = 24
@@ -196,6 +186,8 @@ const ModalContent = ({
 interface IBackdropProps {
   /** Called when the backdrop is tapped. */
   onPress: () => void
+  /** Its fade, which follows the modal opening and closing. */
+  style: Animated.WithAnimatedValue<ViewStyle>
 }
 
 /**
@@ -204,54 +196,27 @@ interface IBackdropProps {
  * Android back button instead. Android cannot blur another window, so it gets the scrim alone.
  * @returns The pressable, blurred backdrop.
  */
-const ModalBackdrop = ({ onPress }: IBackdropProps): ReactElement => {
+const ModalBackdrop = ({ onPress, style }: IBackdropProps): ReactElement => {
   const { name } = useTheme()
 
   return (
-    <Pressable
-      accessible={false}
-      aria-hidden
-      className="absolute inset-0"
-      focusable={false}
-      importantForAccessibility="no-hide-descendants"
-      onPress={onPress}
-    >
-      <BlurView
-        intensity={BACKDROP_BLUR}
-        style={ABSOLUTE_FILL}
-        tint={name === 'latte' ? 'light' : 'dark'}
-      />
-      <View className="absolute inset-0 bg-scrim" />
-    </Pressable>
-  )
-}
-
-/**
- * Raises the sheet into place each time it opens, unless the person asked for less motion.
- * @param visible - Whether the modal is showing.
- * @param sheet - Whether it is a bottom sheet; the web panel only fades.
- * @returns The style that moves the sheet.
- */
-const useSheetRise = (visible: boolean, sheet: boolean): Animated.WithAnimatedValue<ViewStyle> => {
-  const reduced = useReducedMotion()
-  const [offset] = useState((): Animated.Value => new Animated.Value(0))
-
-  useEffect(() => {
-    if (!visible || !sheet || reduced) return
-
-    offset.setValue(SHEET_RISE)
-
-    Animated.timing(offset, {
-      duration: RISE_MS,
-      easing: EASE_OUT,
-      toValue: 0,
-      useNativeDriver: true,
-    }).start()
-  }, [offset, reduced, sheet, visible])
-
-  return useMemo(
-    (): Animated.WithAnimatedValue<ViewStyle> => ({ transform: [{ translateY: offset }] }),
-    [offset],
+    <Animated.View className="absolute inset-0" style={style}>
+      <Pressable
+        accessible={false}
+        aria-hidden
+        className="absolute inset-0"
+        focusable={false}
+        importantForAccessibility="no-hide-descendants"
+        onPress={onPress}
+      >
+        <BlurView
+          intensity={BACKDROP_BLUR}
+          style={ABSOLUTE_FILL}
+          tint={name === 'latte' ? 'light' : 'dark'}
+        />
+        <View className="absolute inset-0 bg-scrim" />
+      </Pressable>
+    </Animated.View>
   )
 }
 
@@ -281,14 +246,18 @@ export const Modal = ({
   const sheet = Platform.OS !== 'web'
   const confirm = tone === 'confirm'
   const showClose = !confirm && !busy && closable
-  const rise = useSheetRise(visible, sheet)
 
   // While a request is in flight only the loading Button stays active; Buttons read this context.
   const actionContext = useMemo((): IActionContextValue => ({ busy, block: sheet }), [busy, sheet])
 
-  const requestClose = useCallback((): void => {
-    if (!busy) onClose?.()
-  }, [busy, onClose])
+  // Every way of closing plays the closing motion first: the backdrop, the close button, a drag,
+  // Esc and the Android back button. While busy none of them does anything.
+  const { backdrop, dragHandlers, mounted, panel, requestClose } = useModalMotion({
+    busy,
+    onClose,
+    sheet,
+    visible,
+  })
 
   const focusTitle = useCallback((): void => {
     ModalFocus.moveFocusTo(titleRef.current)
@@ -296,12 +265,12 @@ export const Modal = ({
 
   return (
     <NativeModal
-      animationType="fade"
+      animationType="none"
       onRequestClose={requestClose}
       onShow={focusTitle}
       statusBarTranslucent
       transparent
-      visible={visible}
+      visible={mounted}
     >
       {/* iOS draws the keyboard over the window, so a field in the sheet would sit behind it;
           padding by the keyboard's height lifts the sheet. Android resizes the window itself. */}
@@ -312,10 +281,10 @@ export const Modal = ({
           sheet ? 'justify-end px-2 pb-2' : 'items-center justify-center p-6',
         )}
       >
-        <ModalBackdrop onPress={requestClose} />
+        <ModalBackdrop onPress={requestClose} style={backdrop} />
         <Animated.View
           className={cn('max-h-[85%]', sheet ? 'mx-auto w-full max-w-140' : 'w-120 max-w-full')}
-          style={rise}
+          style={panel}
         >
           <Surface
             accessibilityLabel={title}
@@ -329,20 +298,23 @@ export const Modal = ({
             )}
             role={confirm ? 'alertdialog' : 'dialog'}
           >
-            {sheet ? (
-              <View
-                aria-hidden
-                className="absolute top-2 left-1/2 -ml-4 h-1 w-8 rounded-full bg-border-strong"
+            {/* The handle and the header are where a finger drags the sheet down to close it. */}
+            <View {...dragHandlers}>
+              {sheet ? (
+                <View
+                  aria-hidden
+                  className="-mt-3 mb-3 h-1.5 w-10 self-center rounded-full bg-border-strong"
+                />
+              ) : null}
+              <ModalHeader
+                leading={leading}
+                onClose={requestClose}
+                showClose={showClose}
+                subtitle={subtitle}
+                title={title}
+                titleRef={titleRef}
               />
-            ) : null}
-            <ModalHeader
-              leading={leading}
-              onClose={onClose}
-              showClose={showClose}
-              subtitle={subtitle}
-              title={title}
-              titleRef={titleRef}
-            />
+            </View>
             <ModalContent body={body} busy={busy}>
               {children}
             </ModalContent>

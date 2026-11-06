@@ -1,4 +1,4 @@
-import { fireEvent, screen } from '@testing-library/react-native'
+import { fireEvent, screen, waitFor } from '@testing-library/react-native'
 import { Platform } from 'react-native'
 
 import { Button } from '../../src/components/Button'
@@ -28,18 +28,16 @@ class ModalFixtures {
    * @returns The backdrop's host element.
    */
   static backdrop() {
-    let node = screen.getByLabelText('Add member')
+    let root = screen.getByLabelText('Add member')
 
-    while (node.parent !== null) {
-      const backdrop = node.parent.children.find(
-        (child) =>
-          typeof child !== 'string' &&
-          child.props['importantForAccessibility'] === 'no-hide-descendants',
-      )
+    while (root.parent !== null) root = root.parent
 
-      if (backdrop !== undefined && typeof backdrop !== 'string') return backdrop
+    const pending = [root]
 
-      node = node.parent
+    for (let node = pending.pop(); node !== undefined; node = pending.pop()) {
+      if (node.props['importantForAccessibility'] === 'no-hide-descendants') return node
+
+      for (const child of node.children) if (typeof child !== 'string') pending.push(child)
     }
 
     throw new Error('The modal has no backdrop')
@@ -55,15 +53,15 @@ describe('Modal', () => {
       Reflect.deleteProperty(globalThis, 'document')
     })
 
-    it('fades in over the blurred screen in the app, and the sheet rises on its own', async () => {
+    it('draws its own opening motion in the app instead of the system one', async () => {
       Platform.OS = 'ios'
 
       await Render.withTheme(<Modal title="Add member" />)
 
-      expect(ModalFixtures.modalHost().props['animationType']).toBe('fade')
+      expect(ModalFixtures.modalHost().props['animationType']).toBe('none')
     })
 
-    it('fades in as a centered card on web, never a bottom sheet', async () => {
+    it('draws its own fade on web too, as a centered card', async () => {
       Platform.OS = 'web'
 
       // On web the theme provider writes data-theme to <html>; this suite runs without a DOM.
@@ -74,7 +72,7 @@ describe('Modal', () => {
 
       await Render.withTheme(<Modal title="Add member" />)
 
-      expect(ModalFixtures.modalHost().props['animationType']).toBe('fade')
+      expect(ModalFixtures.modalHost().props['animationType']).toBe('none')
     })
   })
 
@@ -100,7 +98,9 @@ describe('Modal', () => {
 
     await fireEvent(ModalFixtures.modalHost(), 'requestClose')
 
-    expect(onClose).toHaveBeenCalledTimes(1)
+    await waitFor(() => {
+      expect(onClose).toHaveBeenCalledTimes(1)
+    })
   })
 
   it('closes when the backdrop is tapped', async () => {
@@ -114,7 +114,9 @@ describe('Modal', () => {
 
     await fireEvent.press(ModalFixtures.backdrop())
 
-    expect(onClose).toHaveBeenCalledTimes(1)
+    await waitFor(() => {
+      expect(onClose).toHaveBeenCalledTimes(1)
+    })
   })
 
   it('closes from its Close button', async () => {
@@ -128,7 +130,9 @@ describe('Modal', () => {
 
     await fireEvent.press(screen.getByRole('button', { name: 'Close' }))
 
-    expect(onClose).toHaveBeenCalledTimes(1)
+    await waitFor(() => {
+      expect(onClose).toHaveBeenCalledTimes(1)
+    })
   })
 
   it('has no Close button on a confirmation', async () => {
