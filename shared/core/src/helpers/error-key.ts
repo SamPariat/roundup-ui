@@ -1,12 +1,29 @@
 import type { en } from '@roundup/i18n'
 
-import { ApiError } from '@roundup/api'
+import { ApiError, HttpStatus } from '@roundup/api'
 
 /** A key of the translated error messages, such as errors.offline. */
 export type TErrorKey = `errors.${keyof typeof en.errors}`
 
 /** Which step failed, since the same status means different things on each. */
-export type TErrorContext = 'code' | 'name' | 'phone' | 'profile'
+export type TErrorContext =
+  'addMember' | 'code' | 'name' | 'phone' | 'profile' | 'role' | 'squad' | 'squadName'
+
+/** How the backend's message starts when a squad is full; it sends no error codes. */
+const SQUAD_FULL = 'squad is full'
+
+/** The message of each status on the steps where it has its own meaning. */
+const BY_STATUS: Partial<Record<number, Partial<Record<TErrorContext, TErrorKey>>>> = {
+  [HttpStatus.badRequest]: {
+    code: 'errors.wrongCode',
+    name: 'errors.invalidName',
+    phone: 'errors.invalidPhone',
+    squadName: 'errors.invalidSquadName',
+  },
+  [HttpStatus.unauthorized]: { code: 'errors.wrongCode' },
+  [HttpStatus.notFound]: { addMember: 'errors.notOnRoundup', squad: 'errors.squadNotFound' },
+  [HttpStatus.conflict]: { role: 'errors.needsAnAdmin' },
+}
 
 /** An error ready to show: the message key and, for the generic message, the request to quote. */
 export interface IErrorMessage {
@@ -22,8 +39,9 @@ export interface IErrorMessage {
 export class ErrorKey {
   /**
    * Maps whatever a request threw to a message key. 400 is invalid input, 401 a wrong code, 429 too
-   * many requests (or too many tries at a code), 0 no connection, and anything else a generic
-   * message that carries the request ID so a person can quote it.
+   * many requests (or too many tries at a code), 404 a missing squad or a number not on Roundup,
+   * 409 a member already there, a full squad or a squad left without an admin, 0 no connection,
+   * and anything else a generic message that carries the request ID so a person can quote it.
    * @param error - What was thrown.
    * @param context - Which step failed.
    * @returns The key to translate and the request ID to fill in.
@@ -33,21 +51,13 @@ export class ErrorKey {
 
     const { requestId, status } = error
 
-    if (status === 0) return { key: 'errors.offline', requestId: undefined }
+    if (status === HttpStatus.noResponse) return { key: 'errors.offline', requestId: undefined }
 
-    if (status === 400 && context === 'phone') {
-      return { key: 'errors.invalidPhone', requestId: undefined }
-    }
+    const key = ErrorKey.forContext(status, error.message, context)
 
-    if (status === 400 && context === 'name') {
-      return { key: 'errors.invalidName', requestId: undefined }
-    }
+    if (key !== undefined) return { key, requestId: undefined }
 
-    if ((status === 400 || status === 401) && context === 'code') {
-      return { key: 'errors.wrongCode', requestId: undefined }
-    }
-
-    if (status === 429) {
+    if (status === HttpStatus.tooManyRequests) {
       return {
         key: context === 'code' ? 'errors.codeExpired' : 'errors.tooManyRequests',
         requestId: undefined,
@@ -57,5 +67,24 @@ export class ErrorKey {
     return requestId === undefined
       ? { key: 'errors.generic', requestId: undefined }
       : { key: 'errors.genericWithId', requestId }
+  }
+
+  /**
+   * Maps the statuses whose meaning depends on the step that failed.
+   * @param status - The HTTP status.
+   * @param message - The server's error text, which says why a 409 happened.
+   * @param context - Which step failed.
+   * @returns The message key, or undefined when the status means the same on every step.
+   */
+  private static forContext(
+    status: number,
+    message: string,
+    context: TErrorContext,
+  ): TErrorKey | undefined {
+    if (status === HttpStatus.conflict && context === 'addMember') {
+      return message.startsWith(SQUAD_FULL) ? 'errors.squadFull' : 'errors.alreadyInSquad'
+    }
+
+    return BY_STATUS[status]?.[context]
   }
 }

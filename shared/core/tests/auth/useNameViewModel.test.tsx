@@ -1,5 +1,7 @@
 import { act, renderHook } from '@testing-library/react-native'
 
+import { HttpStatus } from '@roundup/api'
+
 import type { INameViewModel } from '../../src/auth/useNameViewModel'
 import type { ITestCore } from '../helpers/wrapper'
 
@@ -121,8 +123,8 @@ describe('useNameViewModel', () => {
   })
 
   it.each([
-    [400, 'errors.invalidName'],
-    [500, 'errors.genericWithId'],
+    [HttpStatus.badRequest, 'errors.invalidName'],
+    [HttpStatus.internalServerError, 'errors.genericWithId'],
   ] as const)('maps a %i to %s', async (status, key) => {
     Fakes.stubNetwork({ 'PATCH /api/v1/users/me': Fakes.failure(status, 'nope') })
 

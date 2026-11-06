@@ -2,6 +2,8 @@ import { QueryClient } from '@tanstack/react-query'
 
 import type { IDeps } from '@roundup/core'
 
+import { HttpStatus } from '@roundup/core'
+
 /** The user the stubbed profile route returns. */
 interface IStubUser {
   /** The name; empty until the person sets one. */
@@ -167,7 +169,8 @@ export class Fakes {
         return Fakes.tokens('r2')
       }
 
-      if (path === '/api/v1/auth/logout') return new Response(null, { status: 204 })
+      if (path === '/api/v1/auth/logout')
+        return new Response(null, { status: HttpStatus.noContent })
 
       if (path === '/api/v1/users/me') return Fakes.meAnswer(method, backend)
 
@@ -210,7 +213,7 @@ export class Fakes {
    * @param status - The HTTP status.
    * @returns The response.
    */
-  private static envelope(data: unknown, status = 200): Response {
+  private static envelope(data: unknown, status = HttpStatus.ok): Response {
     return Response.json({ data, success: true }, { status })
   }
 
@@ -223,7 +226,7 @@ export class Fakes {
   private static meAnswer(method: string, backend: IBackend): Response {
     if (method !== 'PATCH') return Fakes.profile(backend.user.name)
 
-    return backend.patch === undefined || backend.patch === 200
+    return backend.patch === undefined || backend.patch === HttpStatus.ok
       ? Fakes.profile('Asha')
       : Response.json(
           { error: 'nope', success: false },
@@ -276,8 +279,8 @@ export class Fakes {
     if (path === '/api/v1/auth/otp/request') {
       if (backend.hangOtp === true) await Fakes.hang()
 
-      return backend.otp === undefined || backend.otp === 202
-        ? new Response(null, { status: 202 })
+      return backend.otp === undefined || backend.otp === HttpStatus.accepted
+        ? new Response(null, { status: HttpStatus.accepted })
         : Response.json(
             { error: 'nope', success: false },
             { headers: { 'X-Request-ID': 'req-7' }, status: backend.otp },
@@ -288,7 +291,10 @@ export class Fakes {
       if (backend.hangVerify === true) await Fakes.hang()
 
       return backend.verify === 'wrong'
-        ? Response.json({ error: 'invalid or expired code', success: false }, { status: 401 })
+        ? Response.json(
+            { error: 'invalid or expired code', success: false },
+            { status: HttpStatus.unauthorized },
+          )
         : Fakes.tokens('r1', { isNewUser: backend.verify === 'new', userID: 'u1' })
     }
 

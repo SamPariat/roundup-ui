@@ -1,5 +1,7 @@
 import { QueryClient } from '@tanstack/react-query'
 
+import { HttpStatus } from '@roundup/api'
+
 import type { ISession } from '../../src/session/session'
 
 import { Session } from '../../src/session/session'
@@ -71,7 +73,10 @@ describe('session', () => {
       const store = new FakeStore('r1')
 
       Fakes.stubNetwork({
-        'POST /api/v1/auth/refresh': Fakes.failure(401, 'invalid refresh token'),
+        'POST /api/v1/auth/refresh': Fakes.failure(
+          HttpStatus.unauthorized,
+          'invalid refresh token',
+        ),
       })
 
       const session = SessionFixtures.build(store)
@@ -165,7 +170,11 @@ describe('session', () => {
   describe('signOut', () => {
     it('revokes the session, clears the store and the query cache', async () => {
       const store = new FakeStore()
-      const network = Fakes.stubNetwork({ 'POST /api/v1/auth/logout': Fakes.empty(204) })
+
+      const network = Fakes.stubNetwork({
+        'POST /api/v1/auth/logout': Fakes.empty(HttpStatus.noContent),
+      })
+
       const session = SessionFixtures.build(store)
       const clear = jest.spyOn(queryClient, 'clear')
 
@@ -210,7 +219,9 @@ describe('session', () => {
     })
 
     it('signs out when the server rejects the token mid-session', async () => {
-      Fakes.stubNetwork({ 'POST /api/v1/auth/refresh': Fakes.failure(401, 'reuse') })
+      Fakes.stubNetwork({
+        'POST /api/v1/auth/refresh': Fakes.failure(HttpStatus.unauthorized, 'reuse'),
+      })
 
       const session = SessionFixtures.build(new FakeStore())
 

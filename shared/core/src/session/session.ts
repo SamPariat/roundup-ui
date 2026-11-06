@@ -2,12 +2,12 @@ import type { QueryClient } from '@tanstack/react-query'
 
 import type { TokenPair } from '@roundup/api'
 
-import { ApiError, logout, refreshTokens } from '@roundup/api'
+import { ApiError, HttpStatus, logout, refreshTokens } from '@roundup/api'
 
 import type { ISessionState, ISessionStore } from './types'
 
 /** The statuses from the refresh route that mean the refresh token is no good. */
-const REJECTED = new Set([400, 401])
+const REJECTED = new Set([HttpStatus.badRequest, HttpStatus.unauthorized])
 
 /** The body of an auth request that carries the refresh token. */
 interface IRefreshBody {

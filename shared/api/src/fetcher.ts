@@ -2,12 +2,13 @@ import { Platform } from 'react-native'
 
 import { ApiError } from './api-error'
 import { AuthBridge } from './auth-bridge'
+import { HttpStatus } from './http-status'
 
 /** The paths that sign in, refresh and sign out: a 401 from these is an answer, not an expired token. */
 const AUTH_PATH = '/api/v1/auth/'
 
 /** The statuses that carry no body. */
-const NO_CONTENT = new Set([202, 204])
+const NO_CONTENT = new Set([HttpStatus.accepted, HttpStatus.noContent])
 
 /** The response header the gateway puts a request ID in. */
 const REQUEST_ID_HEADER = 'X-Request-ID'
@@ -53,7 +54,7 @@ class Fetch {
         ...Platform.select({ default: {}, web: { credentials: 'include' as const } }),
       })
     } catch {
-      throw new ApiError(0, 'Network request failed')
+      throw new ApiError(HttpStatus.noResponse, 'Network request failed')
     }
   }
 
@@ -127,7 +128,11 @@ class Fetch {
 export const fetcher = async <T>(url: string, init?: RequestInit): Promise<T> => {
   let response = await Fetch.send(url, init)
 
-  if (response.status === 401 && !Fetch.isAuthRoute(url) && (await Fetch.refreshOnce())) {
+  if (
+    response.status === HttpStatus.unauthorized &&
+    !Fetch.isAuthRoute(url) &&
+    (await Fetch.refreshOnce())
+  ) {
     response = await Fetch.send(url, init)
   }
 

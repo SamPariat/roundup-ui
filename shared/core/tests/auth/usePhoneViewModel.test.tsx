@@ -1,5 +1,7 @@
 import { act, renderHook } from '@testing-library/react-native'
 
+import { HttpStatus } from '@roundup/api'
+
 import type { IPhoneViewModel } from '../../src/auth/usePhoneViewModel'
 
 import { usePhoneViewModel } from '../../src/auth/usePhoneViewModel'
@@ -75,7 +77,10 @@ describe('usePhoneViewModel', () => {
   )
 
   it('sends the code to the E.164 number and returns it', async () => {
-    const network = Fakes.stubNetwork({ 'POST /api/v1/auth/otp/request': Fakes.empty(202) })
+    const network = Fakes.stubNetwork({
+      'POST /api/v1/auth/otp/request': Fakes.empty(HttpStatus.accepted),
+    })
+
     const { result } = await PhoneFixtures.setup()
 
     await act(() => {
@@ -98,7 +103,7 @@ describe('usePhoneViewModel', () => {
     const gate = Promise.withResolvers<boolean>()
 
     Fakes.stubNetwork({
-      'POST /api/v1/auth/otp/request': { ...Fakes.empty(202), gate: gate.promise },
+      'POST /api/v1/auth/otp/request': { ...Fakes.empty(HttpStatus.accepted), gate: gate.promise },
     })
 
     const { result } = await PhoneFixtures.setup()
@@ -124,9 +129,9 @@ describe('usePhoneViewModel', () => {
   })
 
   it.each([
-    [400, 'errors.invalidPhone'],
-    [429, 'errors.tooManyRequests'],
-    [500, 'errors.genericWithId'],
+    [HttpStatus.badRequest, 'errors.invalidPhone'],
+    [HttpStatus.tooManyRequests, 'errors.tooManyRequests'],
+    [HttpStatus.internalServerError, 'errors.genericWithId'],
   ] as const)('maps a %i to %s', async (status, key) => {
     Fakes.stubNetwork({ 'POST /api/v1/auth/otp/request': Fakes.failure(status, 'nope') })
 
@@ -144,7 +149,9 @@ describe('usePhoneViewModel', () => {
   })
 
   it('shows the request id of an unexpected failure', async () => {
-    Fakes.stubNetwork({ 'POST /api/v1/auth/otp/request': Fakes.failure(500, 'boom') })
+    Fakes.stubNetwork({
+      'POST /api/v1/auth/otp/request': Fakes.failure(HttpStatus.internalServerError, 'boom'),
+    })
 
     const { result } = await PhoneFixtures.setup()
 

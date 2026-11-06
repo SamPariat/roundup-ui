@@ -1,4 +1,4 @@
-import { ApiError } from '@roundup/api'
+import { ApiError, HttpStatus } from '@roundup/api'
 
 /** How many times a failed query is tried again. */
 const MAX_RETRIES = 2
@@ -17,6 +17,10 @@ export class Query {
   static shouldRetry(failureCount: number, error: unknown): boolean {
     if (failureCount >= MAX_RETRIES) return false
 
-    return !ApiError.is(error) || error.status === 0 || error.status >= 500
+    return (
+      !ApiError.is(error) ||
+      error.status === HttpStatus.noResponse ||
+      error.status >= HttpStatus.internalServerError
+    )
   }
 }

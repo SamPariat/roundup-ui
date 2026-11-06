@@ -3,6 +3,7 @@ import { Platform } from 'react-native'
 import { ApiError } from '../src/api-error'
 import { AuthBridge } from '../src/auth-bridge'
 import { fetcher } from '../src/fetcher'
+import { HttpStatus } from '../src/http-status'
 
 /** The envelope tests read back. */
 interface IEnvelope<T> {
@@ -120,7 +121,9 @@ describe('fetcher', () => {
   })
 
   it('returns the parsed envelope from the configured base url', async () => {
-    fetchMock.mockResolvedValue(FetcherFixtures.json(200, { data: { id: 'u1' }, success: true }))
+    fetchMock.mockResolvedValue(
+      FetcherFixtures.json(HttpStatus.ok, { data: { id: 'u1' }, success: true }),
+    )
 
     const result = await fetcher<IEnvelope<IIdentified>>('/api/v1/users/me', { method: 'GET' })
 
@@ -128,16 +131,19 @@ describe('fetcher', () => {
     expect(fetchMock.mock.calls[0]?.[0]).toBe('http://localhost:8080/api/v1/users/me')
   })
 
-  it.each([202, 204])('resolves undefined for a %i', async (status) => {
-    fetchMock.mockResolvedValue(FetcherFixtures.empty(status))
+  it.each([HttpStatus.accepted, HttpStatus.noContent])(
+    'resolves undefined for a %i',
+    async (status) => {
+      fetchMock.mockResolvedValue(FetcherFixtures.empty(status))
 
-    await expect(fetcher('/api/v1/auth/logout', { method: 'POST' })).resolves.toBeUndefined()
-  })
+      await expect(fetcher('/api/v1/auth/logout', { method: 'POST' })).resolves.toBeUndefined()
+    },
+  )
 
   it('throws an ApiError with status, message and request id', async () => {
     fetchMock.mockResolvedValue(
       FetcherFixtures.json(
-        429,
+        HttpStatus.tooManyRequests,
         { error: 'too many requests', success: false },
         { 'X-Request-ID': 'req-9' },
       ),
@@ -148,17 +154,24 @@ describe('fetcher', () => {
     )
 
     expect(failure).toBeInstanceOf(ApiError)
-    expect(failure).toMatchObject({ message: 'too many requests', requestId: 'req-9', status: 429 })
+
+    expect(failure).toMatchObject({
+      message: 'too many requests',
+      requestId: 'req-9',
+      status: HttpStatus.tooManyRequests,
+    })
   })
 
   it('turns a network failure into status 0', async () => {
     fetchMock.mockRejectedValue(new TypeError('Network request failed'))
 
-    await expect(fetcher('/api/v1/users/me')).rejects.toMatchObject({ status: 0 })
+    await expect(fetcher('/api/v1/users/me')).rejects.toMatchObject({
+      status: HttpStatus.noResponse,
+    })
   })
 
   it('sends the client kind, JSON accept and the bearer token on native', async () => {
-    fetchMock.mockResolvedValue(FetcherFixtures.json(200, { success: true }))
+    fetchMock.mockResolvedValue(FetcherFixtures.json(HttpStatus.ok, { success: true }))
 
     await fetcher('/api/v1/users/me')
 
@@ -170,7 +183,7 @@ describe('fetcher', () => {
 
   it('sends X-Client web and includes cookies on web', async () => {
     jest.spyOn(Platform, 'select').mockImplementation((spec) => FetcherFixtures.selectWeb(spec))
-    fetchMock.mockResolvedValue(FetcherFixtures.json(200, { success: true }))
+    fetchMock.mockResolvedValue(FetcherFixtures.json(HttpStatus.ok, { success: true }))
 
     await fetcher('/api/v1/users/me')
 
@@ -188,8 +201,10 @@ describe('fetcher', () => {
     })
 
     fetchMock
-      .mockResolvedValueOnce(FetcherFixtures.json(401, { error: 'expired', success: false }))
-      .mockResolvedValueOnce(FetcherFixtures.json(200, { data: 7, success: true }))
+      .mockResolvedValueOnce(
+        FetcherFixtures.json(HttpStatus.unauthorized, { error: 'expired', success: false }),
+      )
+      .mockResolvedValueOnce(FetcherFixtures.json(HttpStatus.ok, { data: 7, success: true }))
 
     const result = await fetcher<IEnvelope<number>>('/api/v1/users/me')
 
@@ -218,8 +233,8 @@ describe('fetcher', () => {
 
       return Promise.resolve(
         stale
-          ? FetcherFixtures.json(401, { error: 'expired', success: false })
-          : FetcherFixtures.json(200, { success: true }),
+          ? FetcherFixtures.json(HttpStatus.unauthorized, { error: 'expired', success: false })
+          : FetcherFixtures.json(HttpStatus.ok, { success: true }),
       )
     })
 
@@ -237,9 +252,14 @@ describe('fetcher', () => {
   })
 
   it('does not loop when the refresh fails', async () => {
-    fetchMock.mockResolvedValue(FetcherFixtures.json(401, { error: 'expired', success: false }))
+    fetchMock.mockResolvedValue(
+      FetcherFixtures.json(HttpStatus.unauthorized, { error: 'expired', success: false }),
+    )
 
-    await expect(fetcher('/api/v1/users/me')).rejects.toMatchObject({ status: 401 })
+    await expect(fetcher('/api/v1/users/me')).rejects.toMatchObject({
+      status: HttpStatus.unauthorized,
+    })
+
     expect(refresh).toHaveBeenCalledTimes(1)
     expect(fetchMock).toHaveBeenCalledTimes(1)
   })
@@ -248,11 +268,11 @@ describe('fetcher', () => {
     refresh.mockResolvedValue(true)
 
     fetchMock.mockResolvedValue(
-      FetcherFixtures.json(401, { error: 'invalid code', success: false }),
+      FetcherFixtures.json(HttpStatus.unauthorized, { error: 'invalid code', success: false }),
     )
 
     await expect(fetcher('/api/v1/auth/otp/verify', { method: 'POST' })).rejects.toMatchObject({
-      status: 401,
+      status: HttpStatus.unauthorized,
     })
 
     expect(refresh).not.toHaveBeenCalled()
@@ -260,9 +280,15 @@ describe('fetcher', () => {
 
   it('retries only once when the retry also gets a 401', async () => {
     refresh.mockResolvedValue(true)
-    fetchMock.mockResolvedValue(FetcherFixtures.json(401, { error: 'expired', success: false }))
 
-    await expect(fetcher('/api/v1/users/me')).rejects.toMatchObject({ status: 401 })
+    fetchMock.mockResolvedValue(
+      FetcherFixtures.json(HttpStatus.unauthorized, { error: 'expired', success: false }),
+    )
+
+    await expect(fetcher('/api/v1/users/me')).rejects.toMatchObject({
+      status: HttpStatus.unauthorized,
+    })
+
     expect(fetchMock).toHaveBeenCalledTimes(2)
     expect(refresh).toHaveBeenCalledTimes(1)
   })
