@@ -10,29 +10,14 @@ import { useSquad } from '@roundup/core'
 import { useT } from '@roundup/i18n'
 import { Avatar, Button, EmptyState, List, Skeleton, Text } from '@roundup/ui'
 
-import { LeaveSquadModal } from '../../../components/squads/LeaveSquadModal'
-import { MemberActions, MemberActionsModal } from '../../../components/squads/MemberActionsModal'
+import type { TSheet } from '../../../components/squads/SquadSheets'
+
+import { MemberActions } from '../../../components/squads/MemberActionsModal'
 import { MemberRow } from '../../../components/squads/MemberRow'
-import { RenameSquadModal } from '../../../components/squads/RenameSquadModal'
-import { SquadOptionsModal } from '../../../components/squads/SquadOptionsModal'
+import { SquadSheets } from '../../../components/squads/SquadSheets'
 import { TabPage } from '../../../components/TabPage'
 import { useErrorText } from '../../../hooks/useErrorText'
 import { Paths } from '../../../navigation/paths'
-
-/** Which dialog is open on the squad's page. */
-type TSheet =
-  | {
-      /**
-       *
-       */
-      kind: 'leave' | 'options' | 'rename'
-    }
-  | {
-      /** A member's actions are open. */
-      kind: 'member'
-      /** Who they are for. */
-      memberId: string
-    }
 
 /**
  * One squad: its avatar and member count, then the members with an Admin badge on admins. What a
@@ -57,20 +42,12 @@ export default function SquadScreen(): ReactElement {
     router.dismissTo(Paths.tabsSquads())
   }, [router])
 
-  const closeSheet = useCallback((): void => {
-    setSheet(undefined)
-  }, [])
-
   const openOptions = useCallback((): void => {
     setSheet({ kind: 'options' })
   }, [])
 
-  const openRename = useCallback((): void => {
-    setSheet({ kind: 'rename' })
-  }, [])
-
-  const openLeave = useCallback((): void => {
-    setSheet({ kind: 'leave' })
+  const openAdd = useCallback((): void => {
+    setSheet({ kind: 'add' })
   }, [])
 
   const openMember = useCallback((member: ISquadMember): void => {
@@ -113,7 +90,6 @@ export default function SquadScreen(): ReactElement {
   }
 
   const ios = Platform.OS === 'ios'
-  const picked = sheet?.kind === 'member' ? members.find((m) => m.id === sheet.memberId) : undefined
 
   return (
     <>
@@ -136,7 +112,14 @@ export default function SquadScreen(): ReactElement {
               <Text heading={2} variant="heading">
                 {t('screens.squad.members')}
               </Text>
-              {ios ? null : optionsButton}
+              <View className="flex-row items-center gap-2">
+                {permissions.canAddMembers ? (
+                  <Button icon="plus" onPress={openAdd} size="sm" variant="secondary">
+                    {t('addPeople.title')}
+                  </Button>
+                ) : null}
+                {ios ? null : optionsButton}
+              </View>
             </View>
             <List>
               {members.map((member) => (
@@ -152,35 +135,15 @@ export default function SquadScreen(): ReactElement {
           </View>
         </View>
       </TabPage>
-      {sheet?.kind === 'options' ? (
-        <SquadOptionsModal
-          myRole={myRole}
-          onClose={closeSheet}
-          onLeave={openLeave}
-          onRename={openRename}
-          permissions={permissions}
-          squad={squad}
-        />
-      ) : null}
-      {sheet?.kind === 'rename' ? (
-        <RenameSquadModal currentName={squad.name} onClose={closeSheet} squadId={squad.id} />
-      ) : null}
-      {sheet?.kind === 'leave' ? (
-        <LeaveSquadModal
-          name={squad.name}
-          onClose={closeSheet}
-          onLeft={goToSquads}
-          squadId={squad.id}
-        />
-      ) : null}
-      {picked === undefined ? null : (
-        <MemberActionsModal
-          member={picked}
-          onClose={closeSheet}
-          permissions={permissions}
-          squadId={squad.id}
-        />
-      )}
+      <SquadSheets
+        members={members}
+        myRole={myRole}
+        onLeft={goToSquads}
+        onSheet={setSheet}
+        permissions={permissions}
+        sheet={sheet}
+        squad={squad}
+      />
     </>
   )
 }
