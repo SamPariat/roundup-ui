@@ -47,8 +47,7 @@ export default {
     },
     'apps/catalog': {
       // Expo Router discovers routes by file name, so every route is an entry.
-      // The .web.tsx twin of a component is picked by Metro on web; nothing imports it by name.
-      entry: ['src/app/**/*.{ts,tsx}', 'src/components/**/*.web.tsx', 'metro.config.ts'],
+      entry: ['src/app/**/*.{ts,tsx}', 'metro.config.ts'],
       project: ['**/*.{ts,tsx,css}'],
       ignoreDependencies: [
         // Native modules must be direct dependencies of the app so Expo autolinking finds them

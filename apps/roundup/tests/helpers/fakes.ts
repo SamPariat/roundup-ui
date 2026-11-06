@@ -4,6 +4,10 @@ import type { IDeps } from '@roundup/core'
 
 import { HttpStatus } from '@roundup/core'
 
+import type { ISquadState } from './squad-backend'
+
+import { SquadBackend } from './squad-backend'
+
 /** The user the stubbed profile route returns. */
 interface IStubUser {
   /** The name; empty until the person sets one. */
@@ -11,7 +15,7 @@ interface IStubUser {
 }
 
 /** What a test says the backend does. */
-export interface IBackend {
+export interface IBackend extends ISquadState {
   /** The profile route's user. */
   user: IStubUser
   /** True to make the refresh route hang, so the session stays in "restoring". */
@@ -174,6 +178,10 @@ export class Fakes {
 
       if (path === '/api/v1/users/me') return Fakes.meAnswer(method, backend)
 
+      const squad = SquadBackend.answer(method, path, Fakes.bodyOf(init), backend)
+
+      if (squad !== undefined) return squad
+
       const answer = await Fakes.signInAnswer(path, backend)
 
       if (answer === undefined) throw new Error(`No stub for ${path}`)
@@ -187,16 +195,33 @@ export class Fakes {
    * that never garbage-collects, whose timer would keep Jest alive.
    * @param token - The saved refresh token; none means a signed-out launch.
    * @param network - The fake network source; defaults to one that stays online.
+   * @param contacts - The fake contacts source; left out, the real one is used and never called.
    * @returns IDeps to pass to CoreProvider.
    */
-  static testDeps(token?: string, network = new FakeNetwork()): Partial<IDeps> {
+  static testDeps(
+    token?: string,
+    network = new FakeNetwork(),
+    contacts?: IDeps['contacts'],
+  ): Partial<IDeps> {
     return {
+      ...(contacts === undefined ? {} : { contacts }),
       network,
       queryClient: new QueryClient({
         defaultOptions: { queries: { gcTime: Infinity, retry: false } },
       }),
       session: new MemoryStore(token),
     }
+  }
+
+  /**
+   * Reads a request's JSON body.
+   * @param init - The request options.
+   * @returns The parsed body, or undefined when there is none.
+   */
+  private static bodyOf(init?: RequestInit): Record<string, string> | undefined {
+    return typeof init?.body === 'string'
+      ? (JSON.parse(init.body) as Record<string, string>)
+      : undefined
   }
 
   /**
