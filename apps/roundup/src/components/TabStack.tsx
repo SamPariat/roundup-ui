@@ -1,4 +1,4 @@
-import type { NativeStackNavigationOptions } from 'expo-router'
+import type { NativeStackHeaderProps, NativeStackNavigationOptions } from 'expo-router'
 import type { ReactElement, ReactNode } from 'react'
 
 import { Stack } from 'expo-router'
@@ -6,7 +6,16 @@ import { useMemo } from 'react'
 
 import { useRoleColor } from '@roundup/ui'
 
+import { TabHeader } from '@/components/TabHeader'
 import { useLayout } from '@/hooks/useLayout'
+
+/**
+ * Renders the web and Android bar for a screen. A plain function, as the stack's header option
+ * expects, that mounts TabHeader as a component so its hooks belong to it.
+ * @param props - The screen's options, route and navigation.
+ * @returns The bar.
+ */
+const renderTabHeader = (props: NativeStackHeaderProps): ReactElement => <TabHeader {...props} />
 
 /** Props for TabStack. */
 export interface ITabStackProps {
@@ -15,10 +24,12 @@ export interface ITabStackProps {
 }
 
 /**
- * The stack inside a tab, so pushed screens keep the tab selected. On iOS every screen gets the
- * system header, the tab's own screen included, so pushing one never shifts the content; its
- * title and back button take the theme's text color. Web and Android draw their bar in AppShell,
- * so the stack has no header there.
+ * The stack inside a tab, so pushed screens keep the tab selected. Every screen gets a header, so
+ * pushing one never shifts the content. Titles are written once, in the stack layout:
+ * - iOS shows the system header with only its back chevron, no title and no back label, plus the
+ *   screen's headerRight; the tab bar already says where the person is.
+ * - Web and Android draw TabHeader from the same options: the title, a back button on a pushed
+ *   screen and the headerRight actions.
  * @returns A Stack whose screens share these header options.
  */
 export const TabStack = ({ children }: ITabStackProps): ReactElement => {
@@ -27,12 +38,15 @@ export const TabStack = ({ children }: ITabStackProps): ReactElement => {
   const foreground = useRoleColor('fg')
 
   const screenOptions = useMemo(
-    (): NativeStackNavigationOptions => ({
-      contentStyle: { backgroundColor: background },
-      headerShown: systemChrome,
-      headerTintColor: foreground,
-      headerTitleStyle: { color: foreground },
-    }),
+    (): NativeStackNavigationOptions =>
+      systemChrome
+        ? {
+            contentStyle: { backgroundColor: background },
+            headerBackButtonDisplayMode: 'minimal',
+            headerTintColor: foreground,
+            headerTitle: '',
+          }
+        : { contentStyle: { backgroundColor: background }, header: renderTabHeader },
     [background, foreground, systemChrome],
   )
 

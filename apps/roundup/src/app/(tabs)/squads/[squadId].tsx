@@ -17,7 +17,6 @@ import { MemberRow } from '@/components/squads/MemberRow'
 import { SquadSheets } from '@/components/squads/SquadSheets'
 import { TabPage } from '@/components/TabPage'
 import { useErrorText } from '@/hooks/useErrorText'
-import { useLayout } from '@/hooks/useLayout'
 import { Paths } from '@/navigation/paths'
 
 /**
@@ -31,7 +30,6 @@ import { Paths } from '@/navigation/paths'
 export default function SquadScreen(): ReactElement {
   const { squadId } = useLocalSearchParams<'/squads/[squadId]'>()
   const { t } = useT()
-  const { systemChrome } = useLayout()
   const router = useRouter()
   const [sheet, setSheet] = useState<TSheet | undefined>()
 
@@ -116,7 +114,6 @@ export default function SquadScreen(): ReactElement {
                     {t('addPeople.title')}
                   </Button>
                 ) : null}
-                {systemChrome ? null : optionsButton}
               </View>
             </View>
             <List>

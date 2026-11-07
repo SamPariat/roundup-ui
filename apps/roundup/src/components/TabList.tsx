@@ -53,7 +53,7 @@ const PLACEHOLDERS = 5
 
 /**
  * The body of a tab screen that is a list: the FlatList sibling of TabPage. It insets below the
- * iOS header, takes the same iOS side gutter and centers the empty state in the visible area. It
+ * iOS header, takes the same width cap and side gutter and centers the empty state in the visible area. It
  * lays items out in one column on phones and more on wider screens. A list must never sit inside
  * TabPage's ScrollView, which would load every item at once.
  * @returns The virtualized list.
@@ -70,11 +70,9 @@ export const TabList = <T,>({
   refreshing = false,
   renderItem,
 }: ITabListProps<T>): ReactElement => {
-  // In the system chrome there is no AppShell to give the gutter, so the list takes it.
-  const { gutterClass, systemChrome } = useLayout()
+  const { gutterClass } = useLayout()
   const { breakpoint } = useBreakpoint()
   const columns = COLUMNS[breakpoint]
-  const sides = systemChrome && gutterClass
 
   const cell = useCallback(
     ({ item }: ListRenderItemInfo<T>): ReactElement => (
@@ -101,7 +99,7 @@ export const TabList = <T,>({
   return (
     <View className="-mx-1.5 flex-1">
       <FlatList
-        contentContainerClassName={cn('grow py-4.5', sides)}
+        contentContainerClassName={cn('mx-auto w-full max-w-content grow py-4.5', gutterClass)}
         contentInsetAdjustmentBehavior="automatic"
         data={data}
         key={columns}

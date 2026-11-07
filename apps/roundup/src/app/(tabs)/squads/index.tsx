@@ -12,7 +12,6 @@ import { Button, EmptyState, Skeleton } from '@roundup/ui'
 import { CreateSquadModal } from '@/components/squads/CreateSquadModal'
 import { SquadListCard } from '@/components/squads/SquadListCard'
 import { TabList } from '@/components/TabList'
-import { useLayout } from '@/hooks/useLayout'
 
 /**
  * The Squads tab: the person's squads as cards, a New squad action, and an empty state that
@@ -26,7 +25,6 @@ export default function SquadsScreen(): ReactElement {
   const { hasMore, loading, loadingMore, loadMore, refresh, squads } = useSquads()
   const [creating, setCreating] = useState<boolean>(false)
   const [refreshing, setRefreshing] = useState<boolean>(false)
-  const { systemChrome } = useLayout()
 
   const handleOpenCreate = useCallback((): void => {
     setCreating(true)
@@ -75,9 +73,7 @@ export default function SquadsScreen(): ReactElement {
     </Button>
   )
 
-  // In the system chrome New squad sits in the header; AppShell has no room there, so it leads the
-  // list instead.
-  const showListAction = !systemChrome && squads.length > 0
+  // New squad sits in the header on every platform: the iOS header, or the bar TabHeader draws.
 
   return (
     <>
@@ -93,7 +89,6 @@ export default function SquadsScreen(): ReactElement {
           />
         }
         footer={loadingMore ? <Skeleton /> : undefined}
-        header={showListAction ? newSquad : undefined}
         keyExtractor={keyOf}
         loading={loading}
         onEndReached={handleLoadNext}

@@ -90,7 +90,6 @@ describe('AppShell', () => {
 
     expect(screen.getByLabelText('Main')).toBeOnTheScreen()
     expect(screen.queryByLabelText('Sidebar')).not.toBeOnTheScreen()
-    expect(screen.getByRole('heading', { name: 'Your squads' })).toBeOnTheScreen()
   })
 
   it.each([1024, 1440])('uses the side nav at %i wide', async (width) => {
@@ -98,7 +97,6 @@ describe('AppShell', () => {
 
     expect(screen.getByLabelText('Sidebar')).toBeOnTheScreen()
     expect(screen.queryByLabelText('Main')).not.toBeOnTheScreen()
-    expect(screen.getByRole('heading', { name: 'Your squads' })).toBeOnTheScreen()
   })
 
   it('offers the same three destinations on every width', async () => {
@@ -115,20 +113,6 @@ describe('AppShell', () => {
     await ShellFixtures.renderShellAt(1440, 'profile')
 
     expect(screen.getByRole('tab', { name: 'Profile' })).toBeSelected()
-  })
-
-  it.each([390, 1440])('titles a nested screen and offers back at %i wide', async (width) => {
-    await ShellFixtures.renderShellAt(width, 'profile', NO_INSETS, '/profile/edit')
-
-    expect(screen.getByRole('heading', { name: 'Edit profile' })).toBeOnTheScreen()
-    expect(screen.getByRole('button', { name: 'Back' })).toBeOnTheScreen()
-    expect(screen.getByRole('tab', { name: 'Profile' })).toBeSelected()
-  })
-
-  it('offers no back button on a tab page', async () => {
-    await ShellFixtures.renderShellAt(390)
-
-    expect(screen.queryByRole('button', { name: 'Back' })).toBeNull()
   })
 
   it('shows the page content', async () => {
