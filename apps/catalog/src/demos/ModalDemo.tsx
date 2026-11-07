@@ -68,7 +68,7 @@ export const ModalDemo = (): ReactElement => {
         </Button>
       </Specimen>
       <Specimen
-        note="Other actions go inert, the body dims and nothing closes it until it ends."
+        note="Only the buttons look disabled; the title and body stay as they are, and nothing closes it until it ends."
         title="busy=true"
       >
         <Button onPress={showBusy} variant="secondary">

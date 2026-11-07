@@ -46,7 +46,8 @@ export interface IModalProps {
    */
   actions?: ReactNode[]
   /**
-   * A request is in flight: other actions disable, the body dims and nothing closes the modal.
+   * A request is in flight: the other actions disable, the body ignores taps without dimming, and
+   * nothing closes the modal.
    * Put `loading` and a `loadingLabel` on the Button that started it.
    */
   busy?: boolean
@@ -129,7 +130,8 @@ const ModalHeader = ({ leading, subtitle, title, titleRef }: IHeaderProps): Reac
 }
 
 /**
- * The modal body: an optional paragraph and the children in a scroll view that dims and goes inert while busy.
+ * The modal body: an optional paragraph and the children in a scroll view that ignores taps while busy.
+ * It does not dim: only the action buttons look disabled while a request is in flight.
  * @returns The scroll view, or null when there is no body and no children.
  */
 const ModalContent = ({
@@ -146,11 +148,10 @@ const ModalContent = ({
 }): null | ReactElement => {
   if (body === undefined && children === undefined) return null
 
-  // Dimming goes on the content, never on the Surface: glass does not render below opacity 1.
   return (
     <ScrollView
       alwaysBounceVertical={false}
-      className={cn('mt-4 shrink', busy && 'opacity-60')}
+      className="mt-4 shrink"
       contentContainerClassName="gap-3"
       pointerEvents={busy ? 'none' : 'auto'}
     >
