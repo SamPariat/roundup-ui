@@ -1,6 +1,6 @@
 import type { ReactElement } from 'react'
 
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { View } from 'react-native'
 
 import { Button, Text } from '@roundup/ui'
@@ -22,11 +22,20 @@ export const ButtonDemo = (): ReactElement => {
 
   const handleSend = useCallback((): void => {
     setSending(true)
+  }, [])
 
-    setTimeout(() => {
+  // The pretend request ends after two seconds; leaving the page clears the timer.
+  useEffect(() => {
+    if (!sending) return
+
+    const timer = setTimeout(() => {
       setSending(false)
     }, 2000)
-  }, [])
+
+    return () => {
+      clearTimeout(timer)
+    }
+  }, [sending])
 
   return (
     <>
