@@ -23,8 +23,10 @@
     "react": "catalog:",
     "react-native": "catalog:",
     "react-native-css": "catalog:",
+    "react-native-reanimated": "catalog:",
     "react-native-safe-area-context": "catalog:",
     "react-native-svg": "catalog:",
+    "react-native-worklets": "catalog:",
     "tailwind-merge": "catalog:"
   },
   "devDependencies": {

@@ -1,11 +1,9 @@
 import type { ComponentRef, ReactElement, ReactNode, RefObject } from 'react'
-import type { ViewStyle } from 'react-native'
 
 import { BlurView } from 'expo-blur'
 import { useCallback, useMemo, useRef } from 'react'
 import {
   AccessibilityInfo,
-  Animated,
   KeyboardAvoidingView,
   Modal as NativeModal,
   Platform,
@@ -13,10 +11,12 @@ import {
   ScrollView,
   View,
 } from 'react-native'
+import Animated from 'react-native-reanimated'
 
 import { useT } from '@roundup/i18n'
 
 import type { IActionContextValue } from '../lib/action-context'
+import type { TMotionStyle } from '../lib/useModalMotion'
 
 import { ActionContext } from '../lib/action-context'
 import { cn } from '../lib/cn'
@@ -187,7 +187,7 @@ interface IBackdropProps {
   /** Called when the backdrop is tapped. */
   onPress: () => void
   /** Its fade, which follows the modal opening and closing. */
-  style: Animated.WithAnimatedValue<ViewStyle>
+  style: TMotionStyle
 }
 
 /**
@@ -200,7 +200,8 @@ const ModalBackdrop = ({ onPress, style }: IBackdropProps): ReactElement => {
   const { name } = useTheme()
 
   return (
-    <Animated.View className="absolute inset-0" style={style}>
+    // NativeWind does not style Reanimated views, so the fill is a style here too.
+    <Animated.View style={[ABSOLUTE_FILL, style]}>
       <Pressable
         accessible={false}
         aria-hidden
@@ -282,53 +283,59 @@ export const Modal = ({
         )}
       >
         <ModalBackdrop onPress={requestClose} style={backdrop} />
-        <Animated.View
+        {/* NativeWind does not style Reanimated views, so the size lives on a plain View and the
+            animated one inside it only moves. */}
+        <View
           className={cn('max-h-[85%]', sheet ? 'mx-auto w-full max-w-140' : 'w-120 max-w-full')}
-          style={panel}
         >
-          <Surface
-            accessibilityLabel={title}
-            accessibilityViewIsModal
-            aria-busy={busy}
-            aria-modal
-            className={cn(
-              'max-h-full border border-glass-edge p-6',
-              sheet ? 'rounded-[32px] shadow-sheet' : 'rounded-[28px] shadow-toast',
-              !sheet && 'bg-glass backdrop-blur-2xl',
-            )}
-            role={confirm ? 'alertdialog' : 'dialog'}
-          >
-            {/* The handle and the header are where a finger drags the sheet down to close it. */}
-            <View {...dragHandlers}>
-              {sheet ? (
-                <View
-                  aria-hidden
-                  className="-mt-3 mb-3 h-1.5 w-10 self-center rounded-full bg-border-strong"
+          <Animated.View className="max-h-full" style={panel}>
+            <Surface
+              accessibilityLabel={title}
+              accessibilityViewIsModal
+              aria-busy={busy}
+              aria-modal
+              className={cn(
+                'max-h-full border border-glass-edge p-6',
+                sheet ? 'rounded-[32px] shadow-sheet' : 'rounded-[28px] shadow-toast',
+                !sheet && 'bg-glass backdrop-blur-2xl',
+              )}
+              role={confirm ? 'alertdialog' : 'dialog'}
+            >
+              {/* The handle and the header are where a finger drags the sheet down to close it. */}
+              <View {...dragHandlers}>
+                {sheet ? (
+                  <View
+                    aria-hidden
+                    className="-mt-3 mb-3 h-1.5 w-10 self-center rounded-full bg-border-strong"
+                  />
+                ) : null}
+                <ModalHeader
+                  leading={leading}
+                  onClose={requestClose}
+                  showClose={showClose}
+                  subtitle={subtitle}
+                  title={title}
+                  titleRef={titleRef}
                 />
+              </View>
+              <ModalContent body={body} busy={busy}>
+                {children}
+              </ModalContent>
+              {actions !== undefined && actions.length > 0 ? (
+                <ActionContext value={actionContext}>
+                  <View
+                    className={cn(
+                      'mt-6 gap-2',
+                      !sheet && 'flex-row-reverse flex-wrap justify-start',
+                    )}
+                  >
+                    {actions}
+                  </View>
+                </ActionContext>
               ) : null}
-              <ModalHeader
-                leading={leading}
-                onClose={requestClose}
-                showClose={showClose}
-                subtitle={subtitle}
-                title={title}
-                titleRef={titleRef}
-              />
-            </View>
-            <ModalContent body={body} busy={busy}>
-              {children}
-            </ModalContent>
-            {actions !== undefined && actions.length > 0 ? (
-              <ActionContext value={actionContext}>
-                <View
-                  className={cn('mt-6 gap-2', !sheet && 'flex-row-reverse flex-wrap justify-start')}
-                >
-                  {actions}
-                </View>
-              </ActionContext>
-            ) : null}
-          </Surface>
-        </Animated.View>
+            </Surface>
+          </Animated.View>
+        </View>
       </KeyboardAvoidingView>
     </NativeModal>
   )

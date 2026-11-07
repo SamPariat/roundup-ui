@@ -6,18 +6,30 @@ import type {
 } from 'react-native'
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { Animated, Easing, PanResponder, useWindowDimensions } from 'react-native'
+import { PanResponder, useWindowDimensions } from 'react-native'
+import {
+  Easing,
+  interpolate,
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+  withTiming,
+} from 'react-native-reanimated'
+import { scheduleOnRN } from 'react-native-worklets'
 
 import { useReducedMotion } from './useReducedMotion'
+
+/** A Reanimated style for an Animated.View. */
+export type TMotionStyle = ReturnType<typeof useAnimatedStyle<ViewStyle>>
 
 /** What the modal needs to move: whether it is up, the animated styles and the drag handlers. */
 export interface IModalMotion {
   /** Whether the native modal host is showing; it stays up until the closing motion ends. */
   mounted: boolean
   /** The backdrop's fade. */
-  backdrop: Animated.WithAnimatedValue<ViewStyle>
+  backdrop: TMotionStyle
   /** The sheet's slide (app) or the card's fade and scale (web). */
-  panel: Animated.WithAnimatedValue<ViewStyle>
+  panel: TMotionStyle
   /** Spread on the part of the sheet a finger drags down: the handle and the header. */
   dragHandlers: GestureResponderHandlers
   /** Asks to close: unless busy, plays the closing motion, then calls onClose. */
@@ -54,6 +66,9 @@ const DISMISS_DISTANCE = 120
 /** How fast, in points per millisecond, a released flick must go to close the sheet. */
 const DISMISS_VELOCITY = 1
 
+/** How the sheet settles back when a drag is let go too early: firm, with no bounce. */
+const SPRING_BACK = { damping: 30, stiffness: 400 }
+
 /** How far a finger must move before the drag takes over from a tap, in points. */
 const DRAG_SLOP = 4
 
@@ -61,7 +76,8 @@ const DRAG_SLOP = 4
 const CARD_FROM = 0.97
 
 /**
- * The opening, closing and drag-to-dismiss motion of a modal. In the app the sheet slides up from
+ * The opening, closing and drag-to-dismiss motion of a modal, run on the UI thread by Reanimated;
+ * the drag is read with PanResponder and written into a shared value. In the app the sheet slides up from
  * below the screen and back down, follows a finger dragging it down, and closes when let go far or
  * fast enough, otherwise springing back. On the web the card fades and grows a little. The backdrop
  * fades with both. With reduced motion nothing slides or grows; only the fades remain.
@@ -72,8 +88,9 @@ export const useModalMotion = (options: IModalMotionOptions): IModalMotion => {
   const { busy, onClose, sheet, visible } = options
   const reduced = useReducedMotion()
   const { height } = useWindowDimensions()
-  const [progress] = useState((): Animated.Value => new Animated.Value(0))
-  const [drag] = useState((): Animated.Value => new Animated.Value(0))
+  // 0 is closed and 1 is open; drag is how far a finger has pulled the sheet down.
+  const progress = useSharedValue(0)
+  const drag = useSharedValue(0)
   // `leaving` keeps the host up while the closing motion plays after the parent hides it;
   // `dismissed` takes it down after a close the person asked for, until the parent shows it again.
   const [leaving, setLeaving] = useState(false)
@@ -89,12 +106,20 @@ export const useModalMotion = (options: IModalMotionOptions): IModalMotion => {
 
   const animateTo = useCallback(
     (toValue: 0 | 1, done?: () => void): void => {
-      Animated.timing(progress, {
-        duration: toValue === 1 ? OPEN_MS : CLOSE_MS,
-        easing: toValue === 1 ? EASE_OUT : EASE_IN,
-        toValue,
-        useNativeDriver: true,
-      }).start(done)
+      progress.set(
+        withTiming(
+          toValue,
+          {
+            duration: toValue === 1 ? OPEN_MS : CLOSE_MS,
+            easing: toValue === 1 ? EASE_OUT : EASE_IN,
+          },
+          (finished?: boolean): void => {
+            'worklet'
+
+            if (finished === true && done !== undefined) scheduleOnRN(done)
+          },
+        ),
+      )
     },
     [progress],
   )
@@ -106,7 +131,7 @@ export const useModalMotion = (options: IModalMotionOptions): IModalMotion => {
   // Plays the opening motion when shown, and the closing one when the parent hides it.
   useEffect(() => {
     if (visible) {
-      drag.setValue(0)
+      drag.set(0)
       animateTo(1)
     } else if (leaving) {
       animateTo(0, finishLeaving)
@@ -123,7 +148,7 @@ export const useModalMotion = (options: IModalMotionOptions): IModalMotion => {
   }, [animateTo, busy, finishDismiss])
 
   const springBack = useCallback((): void => {
-    Animated.spring(drag, { bounciness: 0, toValue: 0, useNativeDriver: true }).start()
+    drag.set(withSpring(0, SPRING_BACK))
   }, [drag])
 
   const shouldDrag = useCallback(
@@ -134,7 +159,7 @@ export const useModalMotion = (options: IModalMotionOptions): IModalMotion => {
 
   const followFinger = useCallback(
     (_event: GestureResponderEvent, gesture: PanResponderGestureState): void => {
-      drag.setValue(Math.max(0, gesture.dy))
+      drag.set(Math.max(0, gesture.dy))
     },
     [drag],
   )
@@ -160,28 +185,19 @@ export const useModalMotion = (options: IModalMotionOptions): IModalMotion => {
     [followFinger, letGo, sheet, shouldDrag, springBack],
   )
 
-  const backdrop = useMemo(
-    (): Animated.WithAnimatedValue<ViewStyle> => ({ opacity: progress }),
-    [progress],
-  )
+  const backdrop = useAnimatedStyle((): ViewStyle => ({ opacity: progress.get() }))
 
-  const panel = useMemo((): Animated.WithAnimatedValue<ViewStyle> => {
+  const panel = useAnimatedStyle((): ViewStyle => {
     if (sheet) {
-      const slide = progress.interpolate({
-        inputRange: [0, 1],
-        outputRange: [reduced ? 0 : height, 0],
-      })
+      const slide = interpolate(progress.get(), [0, 1], [reduced ? 0 : height, 0])
 
-      return { transform: [{ translateY: Animated.add(slide, drag) }] }
+      return { transform: [{ translateY: slide + drag.get() }] }
     }
 
-    const scale = progress.interpolate({
-      inputRange: [0, 1],
-      outputRange: [reduced ? 1 : CARD_FROM, 1],
-    })
+    const scale = interpolate(progress.get(), [0, 1], [reduced ? 1 : CARD_FROM, 1])
 
-    return { opacity: progress, transform: [{ scale }] }
-  }, [drag, height, progress, reduced, sheet])
+    return { opacity: progress.get(), transform: [{ scale }] }
+  })
 
   return {
     backdrop,
