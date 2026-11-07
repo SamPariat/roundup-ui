@@ -2,12 +2,12 @@ import type { ReactElement, ReactNode } from 'react'
 import type { ViewStyle } from 'react-native'
 import type { Edge } from 'react-native-safe-area-context'
 
-import { Platform, ScrollView, View } from 'react-native'
+import { ScrollView, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
 import { cn } from '@roundup/ui'
 
-import { useLayout } from '../hooks/useLayout'
+import { useLayout } from '@/hooks/useLayout'
 
 /** Props for TabPage. */
 export interface ITabPageProps {
@@ -24,22 +24,20 @@ const FILL: ViewStyle = { flex: 1 }
 const VISIBLE: readonly Edge[] = ['top', 'bottom']
 
 /**
- * The body of every screen inside a tab. On iOS the header and the tab bar are glass and float over
- * the screen, so the body keeps clear of both and takes the side gutter, which AppShell gives it
- * elsewhere. It scrolls, and iOS insets it below the header. A centered body does not scroll: it
- * sits in the native safe area, which on iOS already leaves out the header and the tab bar, so the
- * content lands in the middle of what the person can see.
+ * The body of every screen inside a tab: centered at most max-content wide, with the side gutter.
+ * It scrolls, and iOS insets it below its glass header. A centered body does not scroll: on iOS it
+ * sits in the native safe area, which leaves out the floating header and tab bar, so the content
+ * lands in the middle of what the person can see.
  * @returns The scrolling or centered page.
  */
 export const TabPage = ({ centered = false, children }: ITabPageProps): ReactElement => {
-  const { gutter } = useLayout()
-  const ios = Platform.OS === 'ios'
-  const sides = ios && (gutter === 32 ? 'px-8' : 'px-4')
+  const { gutterClass, systemChrome } = useLayout()
+  const frame = cn('mx-auto w-full max-w-content', gutterClass)
 
   if (!centered) {
     return (
       <ScrollView
-        contentContainerClassName={cn('py-6', sides)}
+        contentContainerClassName={cn('py-6', frame)}
         contentInsetAdjustmentBehavior="automatic"
         keyboardShouldPersistTaps="handled"
       >
@@ -48,9 +46,9 @@ export const TabPage = ({ centered = false, children }: ITabPageProps): ReactEle
     )
   }
 
-  const body = <View className={cn('flex-1 justify-center py-6', sides)}>{children}</View>
+  const body = <View className={cn('flex-1 justify-center py-6', frame)}>{children}</View>
 
-  return ios ? (
+  return systemChrome ? (
     <SafeAreaView edges={VISIBLE} style={FILL}>
       {body}
     </SafeAreaView>

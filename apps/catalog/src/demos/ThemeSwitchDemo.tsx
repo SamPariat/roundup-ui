@@ -6,7 +6,7 @@ import type { TThemeChoice } from '@roundup/ui'
 
 import { Text, ThemeSwitch, useTheme } from '@roundup/ui'
 
-import { Specimen } from '../components/Specimen'
+import { Specimen } from '@/components/Specimen'
 
 /**
  * ThemeSwitch with each choice selected, and a live one that is the real theme of this catalog.

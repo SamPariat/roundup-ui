@@ -33,7 +33,7 @@ export const NavTab = ({
   item,
   onChange,
 }: INavTabProps): ReactElement => {
-  const press = useCallback((): void => {
+  const handlePress = useCallback((): void => {
     onChange?.(item.id)
   }, [item.id, onChange])
 
@@ -43,7 +43,7 @@ export const NavTab = ({
       accessibilityRole="tab"
       aria-selected={active}
       className={className}
-      onPress={press}
+      onPress={handlePress}
     >
       {children}
     </Pressable>

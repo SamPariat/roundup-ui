@@ -1,4 +1,4 @@
-import { Layout } from '../../src/hooks/useLayout'
+import { Layout } from '@/hooks/useLayout'
 
 // 360 phone, 466 Duo folded, 626 Duo open portrait, 768 tablet, 890 Duo open landscape, 1024 and 1440 desktop.
 describe('Layout.forWidth', () => {

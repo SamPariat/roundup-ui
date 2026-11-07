@@ -4,7 +4,7 @@ import { View } from 'react-native'
 
 import { Surface, Text, useGlass } from '@roundup/ui'
 
-import { Specimen } from '../components/Specimen'
+import { Specimen } from '@/components/Specimen'
 
 /** The tones of a surface. */
 const TONES = ['raised', 'sunken'] as const

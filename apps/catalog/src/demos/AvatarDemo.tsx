@@ -4,8 +4,8 @@ import { View } from 'react-native'
 
 import { Avatar } from '@roundup/ui'
 
-import { Specimen } from '../components/Specimen'
-import { PEOPLE } from '../fixtures'
+import { Specimen } from '@/components/Specimen'
+import { PEOPLE } from '@/fixtures'
 
 /** The pixel sizes an avatar comes in. */
 const SIZES = [24, 28, 32, 40, 48, 64] as const

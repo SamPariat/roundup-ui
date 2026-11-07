@@ -24,7 +24,8 @@ export default {
     },
     'apps/roundup': {
       // Expo Router discovers routes by file name, so every route is an entry.
-      entry: ['src/app/**/*.{ts,tsx}', 'metro.config.ts'],
+      // The .web.tsx twin of a component is picked by Metro on web; nothing imports it by name.
+      entry: ['src/app/**/*.{ts,tsx}', 'src/components/**/*.web.tsx', 'metro.config.ts'],
       project: ['**/*.{ts,tsx,css}'],
       ignoreDependencies: [
         // Native modules must be direct dependencies of the app so Expo autolinking finds them
@@ -68,8 +69,8 @@ export default {
       project: ['src/**/*.ts', 'tests/**/*.ts', '*.ts'],
     },
     'shared/core': {
-      // Metro picks the .native.ts twin of a file on iOS and Android; nothing imports it by name.
-      entry: ['src/**/*.native.ts'],
+      // Metro picks the .native.ts or .web.ts twin of a file on its platform; nothing imports it by name.
+      entry: ['src/**/*.{native,web}.ts'],
       project: ['src/**/*.{ts,tsx}', 'tests/**/*.{ts,tsx}', '*.ts'],
     },
     'shared/i18n': {

@@ -56,7 +56,7 @@ const ThemeOption = ({ checked, onChange, option }: IThemeOptionProps): ReactEle
   const { t } = useT()
   const label = t(`themeSwitch.${option.id}`)
 
-  const press = useCallback((): void => {
+  const handlePress = useCallback((): void => {
     onChange?.(option.id)
   }, [onChange, option.id])
 
@@ -69,7 +69,7 @@ const ThemeOption = ({ checked, onChange, option }: IThemeOptionProps): ReactEle
         'min-h-12 flex-1 flex-row items-center justify-center gap-2 rounded-lg px-3 focus:outline-2 focus:outline-offset-2 focus:outline-focus-ring',
         checked ? 'border border-border bg-bg-raised' : 'hover:bg-bg-hover',
       )}
-      onPress={press}
+      onPress={handlePress}
     >
       <Icon decorative name={option.icon} size={18} tone={checked ? 'accent' : 'fg-muted'} />
       <Text tone={checked ? 'fg' : 'muted'} variant="label">

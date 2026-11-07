@@ -4,7 +4,7 @@ import { useCallback, useState } from 'react'
 
 import { OtpInput } from '@roundup/ui'
 
-import { Specimen } from '../components/Specimen'
+import { Specimen } from '@/components/Specimen'
 
 /** The code that the interactive specimen accepts. */
 const RIGHT_CODE = '123456'
@@ -19,7 +19,7 @@ export const OtpInputDemo = (): ReactElement => {
   const [resends, setResends] = useState<number>(0)
   const wrong = code.length === RIGHT_CODE.length && code !== RIGHT_CODE
 
-  const resend = useCallback((): void => {
+  const handleResend = useCallback((): void => {
     setResends((count) => count + 1)
     setCode('')
   }, [])
@@ -45,7 +45,7 @@ export const OtpInputDemo = (): ReactElement => {
         <OtpInput
           label="6-digit code"
           onChangeText={setCode}
-          onResend={resend}
+          onResend={handleResend}
           resendIn={0}
           value={code}
           {...(wrong ? { error: 'That code is not right.' } : {})}

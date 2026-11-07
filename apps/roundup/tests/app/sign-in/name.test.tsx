@@ -2,8 +2,8 @@ import { fireEvent, screen, waitFor } from 'expo-router/testing-library'
 
 import type { IBackend } from '../../helpers/fakes'
 
-import NameScreen from '../../../src/app/sign-in/name'
 import { Render } from '../../helpers/render'
+import NameScreen from '@/app/sign-in/name'
 
 /** The backend of the current test. */
 let backend: IBackend

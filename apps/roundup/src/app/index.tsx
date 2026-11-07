@@ -6,8 +6,8 @@ import { ScrollView } from 'react-native'
 
 import { Screen, Welcome } from '@roundup/ui'
 
-import { useRouteGate } from '../hooks/useRouteGate'
-import { Paths } from '../navigation/paths'
+import { useRouteGate } from '@/hooks/useRouteGate'
+import { Paths } from '@/navigation/paths'
 
 /**
  * The "/" of the app. A signed-out visitor sees Welcome, and Start opens the sign-in screens; a
@@ -19,7 +19,7 @@ export default function WelcomeScreen(): ReactElement {
   const router = useRouter()
   const gate = useRouteGate()
 
-  const start = useCallback((): void => {
+  const handleStart = useCallback((): void => {
     router.push(Paths.signInPhone())
   }, [router])
 
@@ -32,7 +32,7 @@ export default function WelcomeScreen(): ReactElement {
   return (
     <Screen>
       <ScrollView contentContainerClassName="grow">
-        <Welcome onStart={start} />
+        <Welcome onStart={handleStart} />
       </ScrollView>
     </Screen>
   )

@@ -6,8 +6,8 @@ import { useNameViewModel } from '@roundup/core'
 import { useT } from '@roundup/i18n'
 import { Button, TextField } from '@roundup/ui'
 
-import { AuthPage } from '../../components/AuthPage'
-import { useErrorText } from '../../hooks/useErrorText'
+import { AuthPage } from '@/components/AuthPage'
+import { useErrorText } from '@/hooks/useErrorText'
 
 /**
  * Sign-in step three, shown to a new person (or one with no name yet): what their squad should
@@ -19,7 +19,7 @@ export default function NameScreen(): ReactElement {
   const { busy, error, name, requestId, setName, submit } = useNameViewModel()
   const errorText = useErrorText(error, requestId)
 
-  const save = useCallback((): void => {
+  const handleSave = useCallback((): void => {
     void submit()
   }, [submit])
 
@@ -36,7 +36,7 @@ export default function NameScreen(): ReactElement {
         block
         loading={busy}
         loadingLabel={t('signIn.name.submitting')}
-        onPress={save}
+        onPress={handleSave}
         size="lg"
       >
         {t('signIn.name.submit')}

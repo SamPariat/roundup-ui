@@ -1,4 +1,4 @@
-import { Paths } from '../../src/navigation/paths'
+import { Paths } from '@/navigation/paths'
 
 describe('Paths', () => {
   it('returns the plain path when there is no query', () => {
@@ -40,6 +40,20 @@ describe('Paths', () => {
     expect(Paths.signInCode({ phone: '+919876543210', ref: 'invite' })).toEqual({
       params: { phone: '+919876543210', ref: 'invite' },
       pathname: '/sign-in/code',
+    })
+  })
+
+  it('builds the squad path with the squad it opens', () => {
+    expect(Paths.squad('s1')).toEqual({
+      params: { squadId: 's1' },
+      pathname: '/squads/[squadId]',
+    })
+  })
+
+  it('carries the squad name as the title query parameter', () => {
+    expect(Paths.squad('s1', 'Weekend Crew')).toEqual({
+      params: { squadId: 's1', title: 'Weekend Crew' },
+      pathname: '/squads/[squadId]',
     })
   })
 })

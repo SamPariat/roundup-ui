@@ -5,7 +5,7 @@ import { View } from 'react-native'
 
 import { Button, Text } from '@roundup/ui'
 
-import { Specimen } from '../components/Specimen'
+import { Specimen } from '@/components/Specimen'
 
 /** The button color treatments. */
 const VARIANTS = ['primary', 'secondary', 'ghost', 'destructive'] as const
@@ -20,7 +20,7 @@ const SIZES = ['sm', 'md', 'lg'] as const
 export const ButtonDemo = (): ReactElement => {
   const [sending, setSending] = useState<boolean>(false)
 
-  const send = useCallback((): void => {
+  const handleSend = useCallback((): void => {
     setSending(true)
 
     setTimeout(() => {
@@ -94,7 +94,7 @@ export const ButtonDemo = (): ReactElement => {
         </Button>
       </Specimen>
       <Specimen note="Press it: it loads for two seconds." title="Interactive">
-        <Button loading={sending} loadingLabel="Sending code…" onPress={send}>
+        <Button loading={sending} loadingLabel="Sending code…" onPress={handleSend}>
           Send code
         </Button>
         <Text tone="muted" variant="caption">

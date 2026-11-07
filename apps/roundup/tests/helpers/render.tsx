@@ -4,14 +4,16 @@ import { Slot } from 'expo-router'
 import { renderRouter } from 'expo-router/testing-library'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 
+import type { IDeps } from '@roundup/core'
+
 import { CoreProvider } from '@roundup/core'
 import { ThemeProvider } from '@roundup/ui'
 
 import type { FakeNetwork, IBackend } from './fakes'
 
-import { AuthStack } from '../../src/components/AuthStack'
-import { OfflineNotice } from '../../src/components/OfflineNotice'
 import { Fakes } from './fakes'
+import { AuthStack } from '@/components/AuthStack'
+import { OfflineNotice } from '@/components/OfflineNotice'
 
 /** Insets and frame of a phone, so the safe-area hooks have values. */
 const METRICS = {
@@ -31,6 +33,8 @@ export interface IAppOptions {
   guarded?: boolean
   /** The network source; a test calls set(false) on it to go offline. Defaults to one that stays online. */
   network?: FakeNetwork
+  /** The contacts source; defaults to the real one, which a test must not reach. */
+  contacts?: IDeps['contacts']
 }
 
 /**
@@ -44,11 +48,11 @@ export class Render {
    * @returns A promise that resolves once the app has rendered.
    */
   static async app(routes: Record<string, ComponentType>, options: IAppOptions): Promise<void> {
-    const { backend, guarded = false, network, saved, url } = options
+    const { backend, contacts, guarded = false, network, saved, url } = options
 
     Fakes.stubBackend(backend)
 
-    const deps = Fakes.testDeps(saved, network)
+    const deps = Fakes.testDeps(saved, network, contacts)
 
     /**
      * The root layout of the test app.

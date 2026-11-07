@@ -16,9 +16,9 @@ import OnestBold from '../../../../assets/fonts/Onest-Bold.ttf'
 import OnestMedium from '../../../../assets/fonts/Onest-Medium.ttf'
 import OnestRegular from '../../../../assets/fonts/Onest-Regular.ttf'
 import OnestSemiBold from '../../../../assets/fonts/Onest-SemiBold.ttf'
-import { AuthStack } from '../components/AuthStack'
-import { OfflineNotice } from '../components/OfflineNotice'
-import { useRouteGate } from '../hooks/useRouteGate'
+import { AuthStack } from '@/components/AuthStack'
+import { OfflineNotice } from '@/components/OfflineNotice'
+import { useRouteGate } from '@/hooks/useRouteGate'
 
 void preventAutoHideAsync()
 

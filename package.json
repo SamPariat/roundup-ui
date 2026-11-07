@@ -50,6 +50,7 @@
     "babel-preset-expo": "catalog:",
     "eslint": "catalog:",
     "eslint-config-expo": "catalog:",
+    "eslint-import-resolver-typescript": "catalog:",
     "eslint-config-prettier": "catalog:",
     "eslint-plugin-better-tailwindcss": "catalog:",
     "eslint-plugin-boundaries": "catalog:",

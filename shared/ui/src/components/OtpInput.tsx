@@ -72,13 +72,13 @@ export const OtpInput = ({
   const boxes = Array.from({ length }, (_, position) => position)
   const inputRef = useRef<TInputElement>(null)
 
-  const focusInput = useCallback((): void => {
+  const handleFocusInput = useCallback((): void => {
     inputRef.current?.focus()
   }, [])
 
   return (
     <View className="items-start gap-3">
-      <Pressable accessible={false} className="relative" onPress={focusInput}>
+      <Pressable accessible={false} className="relative" onPress={handleFocusInput}>
         <View aria-hidden className="flex-row gap-2">
           {boxes.map((position) => (
             <View

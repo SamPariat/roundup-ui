@@ -5,6 +5,8 @@ import type { Config } from 'jest'
 // real artwork.
 export default {
   preset: 'jest-expo',
+  // @/ is the app's src folder, as in tsconfig.json.
+  moduleNameMapper: { '^@/(.*)$': '<rootDir>/src/$1' },
   testMatch: ['<rootDir>/tests/**/*.test.{ts,tsx}'],
   errorOnDeprecated: true,
   // CI runs every package's suite at once on two cores, so the first test of a file, which also

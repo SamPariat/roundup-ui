@@ -4,8 +4,8 @@ import { useCallback, useState } from 'react'
 
 import { VenueCard } from '@roundup/ui'
 
-import { Specimen } from '../components/Specimen'
-import { CLOSED_VENUE, OPEN_VENUE } from '../fixtures'
+import { Specimen } from '@/components/Specimen'
+import { CLOSED_VENUE, OPEN_VENUE } from '@/fixtures'
 
 /**
  * VenueCard open and closed, with the least it can show, with price unknown, and with a save button that works.
@@ -14,7 +14,7 @@ import { CLOSED_VENUE, OPEN_VENUE } from '../fixtures'
 export const VenueCardDemo = (): ReactElement => {
   const [saved, setSaved] = useState<boolean>(false)
 
-  const toggle = useCallback((): void => {
+  const handleToggle = useCallback((): void => {
     setSaved((current) => !current)
   }, [])
 
@@ -43,7 +43,7 @@ export const VenueCardDemo = (): ReactElement => {
           address="12 Church Street, Bengaluru"
           isOpen
           name="Blue Tokai Coffee Roasters"
-          onSave={toggle}
+          onSave={handleToggle}
           priceLevel={2}
           rating={4.6}
           reviews={1280}

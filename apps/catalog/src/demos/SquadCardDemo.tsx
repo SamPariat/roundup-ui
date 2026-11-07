@@ -4,8 +4,8 @@ import { useCallback, useState } from 'react'
 
 import { SquadCard, Text } from '@roundup/ui'
 
-import { Specimen } from '../components/Specimen'
-import { BOOK_CLUB, FRIDAY_FOOTY, PEOPLE } from '../fixtures'
+import { Specimen } from '@/components/Specimen'
+import { BOOK_CLUB, FRIDAY_FOOTY, PEOPLE } from '@/fixtures'
 
 /**
  * SquadCard as admin and member, without members, with a real count beyond the sample, and pressable.
@@ -14,7 +14,7 @@ import { BOOK_CLUB, FRIDAY_FOOTY, PEOPLE } from '../fixtures'
 export const SquadCardDemo = (): ReactElement => {
   const [opened, setOpened] = useState<string>('Nothing yet')
 
-  const open = useCallback((): void => {
+  const handleOpen = useCallback((): void => {
     setOpened('Opened Friday Footy')
   }, [])
 
@@ -45,7 +45,7 @@ export const SquadCardDemo = (): ReactElement => {
           id="s1"
           members={PEOPLE.slice(0, 5)}
           name="Friday Footy"
-          onPress={open}
+          onPress={handleOpen}
           role="ADMIN"
         />
         <Text tone="muted" variant="caption">

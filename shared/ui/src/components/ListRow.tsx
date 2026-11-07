@@ -1,5 +1,6 @@
 import type { ReactElement, ReactNode } from 'react'
 
+import { useCallback } from 'react'
 import { Pressable, View } from 'react-native'
 
 import { useT } from '@roundup/i18n'
@@ -26,6 +27,8 @@ export interface IListRowProps {
   onPress?: () => void
   /** Why the row cannot be pressed right now, while a request is in flight. */
   busy?: boolean
+  /** Whether the row is picked, for a row that ticks like a checkbox. Leave it out for other rows. */
+  selected?: boolean
 }
 
 /**
@@ -38,6 +41,7 @@ export const ListRow = ({
   destructive = false,
   leading,
   onPress,
+  selected,
   subtitle,
   title,
   trailing,
@@ -68,6 +72,11 @@ export const ListRow = ({
 
   const layout = 'min-h-16 w-full flex-row items-center gap-3 px-4 py-2'
 
+  // A press only starts the handler; an async handler's promise is not handed back to the Pressable.
+  const handlePress = useCallback((): void => {
+    onPress?.()
+  }, [onPress])
+
   if (onPress === undefined) return <View className={layout}>{content}</View>
 
   return (
@@ -75,11 +84,12 @@ export const ListRow = ({
       accessibilityLabel={subtitle === undefined ? title : t('listRow.spoken', { subtitle, title })}
       accessibilityRole="button"
       aria-busy={busy}
+      aria-selected={selected}
       className={cn(
         layout,
         'hover:bg-bg-hover focus:outline-2 focus:-outline-offset-2 focus:outline-focus-ring active:bg-bg-hover',
       )}
-      onPress={onPress}
+      onPress={handlePress}
     >
       {content}
     </Pressable>

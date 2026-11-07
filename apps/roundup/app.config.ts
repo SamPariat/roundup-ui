@@ -14,6 +14,8 @@ export default {
   icon: './assets/icon/icon-light.png',
   android: {
     package: process.env.APP_ENV === 'prod' ? 'app.roundup.client' : 'app.roundup.client.beta',
+    // The expo-contacts plugin also asks for WRITE_CONTACTS. The app only reads phone numbers.
+    blockedPermissions: ['android.permission.WRITE_CONTACTS'],
     // The mark on the Latte background. Android 13+ recolors the monochrome layer when the
     // person turns on themed icons.
     adaptiveIcon: {
@@ -48,6 +50,14 @@ export default {
           '../../assets/fonts/Onest-SemiBold.ttf',
           '../../assets/fonts/Onest-Bold.ttf',
         ],
+      },
+    ],
+    [
+      'expo-contacts',
+      {
+        // Shown by iOS in the permission prompt, and READ_CONTACTS is added on Android.
+        contactsPermission:
+          '$(PRODUCT_NAME) reads phone numbers from your contacts to find friends who are already on Roundup. Nothing is stored.',
       },
     ],
     'expo-localization',

@@ -2,8 +2,8 @@ import type { ReactElement } from 'react'
 
 import { TabList, Tabs, TabSlot, TabTrigger } from 'expo-router/ui'
 
-import { AppShell } from '../../components/AppShell'
-import { useCurrentTab, useTabItems } from '../../hooks/useTabItems'
+import { AppShell } from '@/components/AppShell'
+import { useCurrentTab, useTabItems } from '@/hooks/useTabItems'
 
 /**
  * Web and Android: expo-router's headless Tabs own the routing, and AppShell draws the chrome

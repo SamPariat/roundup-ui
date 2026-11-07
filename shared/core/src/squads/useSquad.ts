@@ -34,13 +34,15 @@ const NO_MEMBERS: ISquadMember[] = []
 
 /**
  * Loads one squad with its members and the signed-in person's permissions.
- * @param squadId - Which squad to load.
+ * @param squadId - Which squad to load; leave it undefined to load none, for a screen that only
+ * sometimes shows a squad.
  * @returns The squad and the loading state.
  */
-export const useSquad = (squadId: string): IUseSquad => {
+export const useSquad = (squadId?: string): IUseSquad => {
   const { helpers } = useDeps()
   const signedIn = useSignedIn()
-  const { data, error, isPending } = useGetSquad(squadId, { query: { enabled: signedIn } })
+  const wanted = signedIn && squadId !== undefined
+  const { data, error, isPending } = useGetSquad(squadId ?? '', { query: { enabled: wanted } })
   const detail = data?.data
 
   const members = useMemo(
@@ -59,7 +61,7 @@ export const useSquad = (squadId: string): IUseSquad => {
 
   return {
     error: message?.key,
-    loading: signedIn && isPending,
+    loading: wanted && isPending,
     members: members ?? NO_MEMBERS,
     myRole: detail?.myRole,
     notFound: ApiError.is(error) && error.status === HttpStatus.notFound,

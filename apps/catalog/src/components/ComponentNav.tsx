@@ -5,8 +5,8 @@ import { Pressable, ScrollView, View } from 'react-native'
 
 import { Logo, SafeArea, Text } from '@roundup/ui'
 
-import { GROUPS, Registry } from '../registry'
 import { NavEntry } from './NavEntry'
+import { GROUPS, Registry } from '@/registry'
 
 /** Props for ComponentNav. */
 export interface IComponentNavProps {

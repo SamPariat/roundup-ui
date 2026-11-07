@@ -6,11 +6,11 @@ import { ScrollView, View } from 'react-native'
 
 import { PageHeader, Screen, TopAppBar } from '@roundup/ui'
 
-import { Frame } from '../components/Frame'
-import { NotFound } from '../components/NotFound'
-import { Toolbar } from '../components/Toolbar'
-import { useWide } from '../hooks/useWide'
-import { REGISTRY, Registry } from '../registry'
+import { Frame } from '@/components/Frame'
+import { NotFound } from '@/components/NotFound'
+import { Toolbar } from '@/components/Toolbar'
+import { useWide } from '@/hooks/useWide'
+import { REGISTRY, Registry } from '@/registry'
 
 /**
  * The slugs the static web export renders a page for: one per registry entry.
@@ -32,7 +32,7 @@ export default function ComponentScreen(): ReactElement {
   const wide = useWide()
   const entry = Registry.find(component)
 
-  const back = useCallback((): void => {
+  const handleBack = useCallback((): void => {
     if (router.canGoBack()) router.back()
     else router.replace('/')
   }, [router])
@@ -44,7 +44,7 @@ export default function ComponentScreen(): ReactElement {
   return (
     <>
       <Stack.Screen options={{ title: `${title} · Roundup Catalog` }} />
-      <Screen header={wide ? undefined : <TopAppBar onBack={back} title={title} />}>
+      <Screen header={wide ? undefined : <TopAppBar onBack={handleBack} title={title} />}>
         {/* iOS draws the keyboard over the page: automaticallyAdjustKeyboardInsets scrolls a
             focused field clear of it. Taps on a button reach it while the keyboard is up, and
             dragging the page down dismisses the keyboard. */}

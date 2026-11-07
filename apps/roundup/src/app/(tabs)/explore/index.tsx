@@ -3,7 +3,7 @@ import type { ReactElement } from 'react'
 import { useT } from '@roundup/i18n'
 import { EmptyState } from '@roundup/ui'
 
-import { TabPage } from '../../../components/TabPage'
+import { TabPage } from '@/components/TabPage'
 
 /**
  * The Explore tab. Venue search arrives with the places work; for now it shows an empty state.

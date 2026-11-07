@@ -2,9 +2,9 @@ import type { ReactElement, ReactNode } from 'react'
 
 import { useMemo, useState } from 'react'
 
-import type { IFrameState, TFrameWidth } from '../hooks/useFrame'
+import type { IFrameState, TFrameWidth } from '@/hooks/useFrame'
 
-import { FrameContext } from '../hooks/useFrame'
+import { FrameContext } from '@/hooks/useFrame'
 
 /** Props for FrameProvider. */
 export interface IFrameProviderProps {

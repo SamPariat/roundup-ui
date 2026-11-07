@@ -18,6 +18,14 @@ interface ICodeQuery extends TQuery {
   phone: string
 }
 
+/** The parameter the squad screen needs. */
+interface ISquadParams extends TQuery {
+  /** The squad's ID. */
+  squadId: string
+  /** The squad's name, which the header shows as the page's title. */
+  title?: string
+}
+
 /**
  * Every path the app navigates to. Screens never write a path string themselves: they call a
  * static method from here, so renaming a route is one edit and a typo is a compile error. Without
@@ -88,6 +96,20 @@ export class Paths {
    */
   static tabsProfile<Q extends TQuery | undefined = undefined>(query?: Q): TBuilt<'/profile', Q> {
     return Paths.build('/profile', query)
+  }
+
+  /**
+   * One squad, under the Squads tab. Needs the squad's ID; its name rides along as the title
+   * query parameter, so the page's header shows it at once, before the squad loads.
+   * @param squadId - The squad to open.
+   * @param title - The squad's name, when the caller knows it.
+   * @returns The path with its parameters.
+   */
+  static squad(squadId: string, title?: string): ILink<'/squads/[squadId]', ISquadParams> {
+    return {
+      params: { squadId, ...(title === undefined ? {} : { title }) },
+      pathname: '/squads/[squadId]',
+    }
   }
 
   /**

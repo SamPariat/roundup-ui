@@ -4,8 +4,8 @@ import { useCallback, useState } from 'react'
 
 import { Button, Text, TopAppBar } from '@roundup/ui'
 
-import { Preview } from '../components/Preview'
-import { Specimen } from '../components/Specimen'
+import { Preview } from '@/components/Preview'
+import { Specimen } from '@/components/Specimen'
 
 /**
  * TopAppBar as a top-level bar with the logo, with a back button, with actions and with a large title.
@@ -15,11 +15,11 @@ import { Specimen } from '../components/Specimen'
 export const TopAppBarDemo = (): ReactElement => {
   const [pressed, setPressed] = useState<string>('Nothing yet')
 
-  const back = useCallback((): void => {
+  const handleBack = useCallback((): void => {
     setPressed('Back')
   }, [])
 
-  const add = useCallback((): void => {
+  const handleAdd = useCallback((): void => {
     setPressed('Add')
   }, [])
 
@@ -42,9 +42,15 @@ export const TopAppBarDemo = (): ReactElement => {
         <Preview>
           <TopAppBar
             actions={
-              <Button icon="plus" label="Add member" onPress={add} size="sm" variant="ghost" />
+              <Button
+                icon="plus"
+                label="Add member"
+                onPress={handleAdd}
+                size="sm"
+                variant="ghost"
+              />
             }
-            onBack={back}
+            onBack={handleBack}
             title="Friday Footy"
           />
         </Preview>

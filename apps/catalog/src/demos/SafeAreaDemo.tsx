@@ -5,7 +5,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
 import { SafeArea, Text } from '@roundup/ui'
 
-import { Specimen } from '../components/Specimen'
+import { Specimen } from '@/components/Specimen'
 
 /** An edge of the screen. */
 type TEdge = 'bottom' | 'left' | 'right' | 'top'

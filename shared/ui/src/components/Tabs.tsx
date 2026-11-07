@@ -45,7 +45,7 @@ interface ITabButtonProps {
 const TabButton = ({ active, item, onChange }: ITabButtonProps): ReactElement => {
   const { t } = useT()
 
-  const press = useCallback((): void => {
+  const handlePress = useCallback((): void => {
     onChange?.(item.id)
   }, [item.id, onChange])
 
@@ -62,7 +62,7 @@ const TabButton = ({ active, item, onChange }: ITabButtonProps): ReactElement =>
         'min-h-12 flex-1 flex-row items-center justify-center gap-1 rounded-lg focus:outline-2 focus:outline-offset-2 focus:outline-focus-ring',
         active ? 'border border-border bg-bg-raised' : 'hover:bg-bg-hover',
       )}
-      onPress={press}
+      onPress={handlePress}
     >
       <Text tone={active ? 'fg' : 'muted'} variant="label">
         {item.label}

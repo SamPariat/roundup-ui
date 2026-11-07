@@ -4,7 +4,7 @@ import { useCallback, useState } from 'react'
 
 import { Avatar, Button, PageHeader, Text } from '@roundup/ui'
 
-import { Specimen } from '../components/Specimen'
+import { Specimen } from '@/components/Specimen'
 
 /**
  * PageHeader with a title only, a subtitle, a back link, a leading avatar and actions.
@@ -13,7 +13,7 @@ import { Specimen } from '../components/Specimen'
 export const PageHeaderDemo = (): ReactElement => {
   const [went, setWent] = useState<string>('Nowhere yet')
 
-  const back = useCallback((): void => {
+  const handleBack = useCallback((): void => {
     setWent('Back to Squads')
   }, [])
 
@@ -26,7 +26,7 @@ export const PageHeaderDemo = (): ReactElement => {
         <PageHeader subtitle="12 members" title="Friday Footy" />
       </Specimen>
       <Specimen note="Press the back link." title="back · onBack">
-        <PageHeader back="Squads" onBack={back} title="Friday Footy" />
+        <PageHeader back="Squads" onBack={handleBack} title="Friday Footy" />
         <Text tone="muted" variant="caption">
           {went}
         </Text>

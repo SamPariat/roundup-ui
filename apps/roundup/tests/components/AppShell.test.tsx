@@ -5,9 +5,11 @@ import { renderRouter } from 'expo-router/testing-library'
 import { Text } from 'react-native'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 
+import { CoreProvider } from '@roundup/core'
 import { ThemeProvider } from '@roundup/ui'
 
-import { AppShell } from '../../src/components/AppShell'
+import { Fakes } from '../helpers/fakes'
+import { AppShell } from '@/components/AppShell'
 
 const mockWindow = { width: 390, height: 800, scale: 2, fontScale: 1 }
 
@@ -69,9 +71,11 @@ class ShellFixtures {
         initialMetrics={{ insets: edgeInsets, frame: { x: 0, y: 0, width, height: 800 } }}
       >
         <ThemeProvider>
-          <AppShell current={current}>
-            <Text>Page content</Text>
-          </AppShell>
+          <CoreProvider deps={Fakes.testDeps()}>
+            <AppShell current={current}>
+              <Text>Page content</Text>
+            </AppShell>
+          </CoreProvider>
         </ThemeProvider>
       </SafeAreaProvider>
     )
@@ -86,7 +90,6 @@ describe('AppShell', () => {
 
     expect(screen.getByLabelText('Main')).toBeOnTheScreen()
     expect(screen.queryByLabelText('Sidebar')).not.toBeOnTheScreen()
-    expect(screen.getByRole('heading', { name: 'Your squads' })).toBeOnTheScreen()
   })
 
   it.each([1024, 1440])('uses the side nav at %i wide', async (width) => {
@@ -94,7 +97,6 @@ describe('AppShell', () => {
 
     expect(screen.getByLabelText('Sidebar')).toBeOnTheScreen()
     expect(screen.queryByLabelText('Main')).not.toBeOnTheScreen()
-    expect(screen.getByRole('heading', { name: 'Your squads' })).toBeOnTheScreen()
   })
 
   it('offers the same three destinations on every width', async () => {
@@ -111,20 +113,6 @@ describe('AppShell', () => {
     await ShellFixtures.renderShellAt(1440, 'profile')
 
     expect(screen.getByRole('tab', { name: 'Profile' })).toBeSelected()
-  })
-
-  it.each([390, 1440])('titles a nested screen and offers back at %i wide', async (width) => {
-    await ShellFixtures.renderShellAt(width, 'profile', NO_INSETS, '/profile/edit')
-
-    expect(screen.getByRole('heading', { name: 'Edit profile' })).toBeOnTheScreen()
-    expect(screen.getByRole('button', { name: 'Back' })).toBeOnTheScreen()
-    expect(screen.getByRole('tab', { name: 'Profile' })).toBeSelected()
-  })
-
-  it('offers no back button on a tab page', async () => {
-    await ShellFixtures.renderShellAt(390)
-
-    expect(screen.queryByRole('button', { name: 'Back' })).toBeNull()
   })
 
   it('shows the page content', async () => {

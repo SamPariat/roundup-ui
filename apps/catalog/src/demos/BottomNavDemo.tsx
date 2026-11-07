@@ -4,8 +4,8 @@ import { useState } from 'react'
 
 import { BottomNav, Text } from '@roundup/ui'
 
-import { Preview } from '../components/Preview'
-import { Specimen } from '../components/Specimen'
+import { Preview } from '@/components/Preview'
+import { Specimen } from '@/components/Specimen'
 
 /**
  * BottomNav with its default destinations, the active tab changing as you press. On a phone with a

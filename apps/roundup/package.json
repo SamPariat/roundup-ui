@@ -12,6 +12,7 @@
     "babel-preset-expo": "catalog:",
     "expo": "catalog:",
     "expo-constants": "catalog:",
+    "expo-contacts": "catalog:",
     "expo-dev-client": "catalog:",
     "expo-font": "catalog:",
     "expo-blur": "catalog:",

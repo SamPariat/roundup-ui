@@ -5,11 +5,11 @@ import { fireEvent, screen } from 'expo-router/testing-library'
 
 import type { IBackend } from '../../helpers/fakes'
 
-import EditProfileScreen from '../../../src/app/(tabs)/profile/edit'
-import ProfileScreen from '../../../src/app/(tabs)/profile/index'
-import PreferencesScreen from '../../../src/app/(tabs)/profile/preferences'
-import WelcomeScreen from '../../../src/app/index'
 import { Render } from '../../helpers/render'
+import EditProfileScreen from '@/app/(tabs)/profile/edit'
+import ProfileScreen from '@/app/(tabs)/profile/index'
+import PreferencesScreen from '@/app/(tabs)/profile/preferences'
+import WelcomeScreen from '@/app/index'
 
 /**
  * Stand-in for the tabs layout: renders the active tab.

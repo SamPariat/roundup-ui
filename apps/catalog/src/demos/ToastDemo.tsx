@@ -4,7 +4,7 @@ import { useCallback, useState } from 'react'
 
 import { Button, Text, Toast } from '@roundup/ui'
 
-import { Specimen } from '../components/Specimen'
+import { Specimen } from '@/components/Specimen'
 
 /**
  * Toast in each tone, with and without an action, and one whose action really undoes something.
@@ -13,11 +13,11 @@ import { Specimen } from '../components/Specimen'
 export const ToastDemo = (): ReactElement => {
   const [removed, setRemoved] = useState<boolean>(true)
 
-  const undo = useCallback((): void => {
+  const handleUndo = useCallback((): void => {
     setRemoved(false)
   }, [])
 
-  const reset = useCallback((): void => {
+  const handleReset = useCallback((): void => {
     setRemoved(true)
   }, [])
 
@@ -45,13 +45,13 @@ export const ToastDemo = (): ReactElement => {
       </Specimen>
       <Specimen note="Press Undo." title="Interactive">
         {removed ? (
-          <Toast action="Undo" onAction={undo} tone="success">
+          <Toast action="Undo" onAction={handleUndo} tone="success">
             Aarav removed from Friday Footy.
           </Toast>
         ) : (
           <Text tone="muted">Aarav is back in the squad.</Text>
         )}
-        <Button onPress={reset} size="sm" variant="secondary">
+        <Button onPress={handleReset} size="sm" variant="secondary">
           Remove again
         </Button>
       </Specimen>

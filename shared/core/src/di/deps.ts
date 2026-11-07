@@ -1,8 +1,10 @@
 import { QueryClient } from '@tanstack/react-query'
 
+import type { IContactsSource } from '../contacts/types'
 import type { INetworkSource } from '../network/types'
 import type { ISessionStore } from '../session/types'
 
+import { ContactsSource } from '../contacts/contacts-source'
 import { ErrorKey } from '../helpers/error-key'
 import { Notice } from '../helpers/notice'
 import { OtpCode } from '../helpers/otp-code'
@@ -28,6 +30,8 @@ export interface IDeps {
   }
   /** Whether the device has internet, and when that changes. */
   network: INetworkSource
+  /** The phone numbers in the person's address book, once they allow it. */
+  contacts: IContactsSource
   /** The TanStack Query cache every request goes through. */
   queryClient: QueryClient
   /** The current time in milliseconds, so countdowns can be tested without real waiting. */
@@ -49,11 +53,12 @@ export class Deps {
     Query.shouldRetry(failureCount, error)
 
   /**
-   * Builds the real dependencies: the platform's session store, the network source, a query client and the clock.
+   * Builds the real dependencies: the platform's session store, the network source, the contacts source, a query client and the clock.
    * @returns The dependencies.
    */
   static create(): IDeps {
     return {
+      contacts: ContactsSource.create(),
       helpers: { code: OtpCode, errors: ErrorKey, notice: Notice, phone: Phone },
       /**
        * Reads the system clock.

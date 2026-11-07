@@ -31,6 +31,45 @@ import tseslint from 'typescript-eslint'
  * Syntax banned in every TypeScript file. Each block that sets no-restricted-syntax spreads these,
  * because a later block's setting replaces an earlier one's for the files they share.
  */
+/**
+ * The import bans every file shares. A block that adds its own patterns spreads these, because a
+ * later block's no-restricted-imports replaces an earlier one's for the files they share.
+ */
+const RESTRICTED_IMPORTS = {
+  paths: [
+    {
+      name: 'react-native',
+      importNames: [
+        'StyleSheet',
+        'TouchableOpacity',
+        'TouchableHighlight',
+        'TouchableWithoutFeedback',
+        'TouchableNativeFeedback',
+        'Button',
+      ],
+      message:
+        'Use className with cva for styling, and Pressable (or @roundup/ui Button) for taps.',
+    },
+  ],
+  patterns: [
+    {
+      // The extension is dropped from every relative import; assets (svg, ttf, css) keep theirs.
+      regex: String.raw`^\.{1,2}/.*\.(?:tsx?|jsx?)$`,
+      message: 'Import without the file extension (../lib/cn, not ../lib/cn.ts).',
+    },
+    {
+      // Metro picks svg.native.ts / useRoleColor.native.ts only for an extensionless
+      // import; with `.ts` it loads the web file on iOS and Android too.
+      regex: String.raw`/(svg|useRoleColor)\.ts$`,
+      message:
+        'Import platform-split modules without the extension (../lib/svg) so Metro can pick the .native file.',
+    },
+  ],
+}
+
+/** Every tsconfig, so the import resolver finds the one that owns a file and its @/ paths. */
+const TS_PROJECTS = ['apps/*/tsconfig.json', 'shared/*/tsconfig.json']
+
 const BANNED_EVERYWHERE = [
   {
     selector: 'TSAnyKeyword',
@@ -119,6 +158,15 @@ export default [
     settings: { react: { version: '19' } },
   },
   {
+    // The apps import their own src as @/ (tsconfig paths). The TypeScript resolver reads those
+    // paths, so import-x and the boundaries rules see where an @/ import really points.
+    files: ['**/*.{ts,tsx}'],
+    settings: {
+      'import/resolver': { typescript: { project: TS_PROJECTS } },
+      'import-x/resolver': { typescript: { project: TS_PROJECTS } },
+    },
+  },
+  {
     // The Expo preset uses the legacy import plugin; import-x below does that job better with TS.
     files: ['**/*.{ts,tsx}'],
     rules: {
@@ -168,6 +216,13 @@ export default [
           allowNullableNumber: false,
           allowAny: false,
         },
+      ],
+      // A press handler may be async (async (): Promise<void> => { if (await submit()) close() }):
+      // the view models catch every failure and turn it into a message, so nothing rejects. Every
+      // other place a promise stands in for a void callback is still checked.
+      '@typescript-eslint/no-misused-promises': [
+        'error',
+        { checksVoidReturn: { attributes: false } },
       ],
       // Names say what a thing is: camelCase values, PascalCase types and components, UPPER_CASE constants.
       '@typescript-eslint/naming-convention': [
@@ -273,40 +328,7 @@ export default [
     // Styling goes through className + cva, buttons through Pressable. These bans keep one way of doing each.
     files: ['**/*.{ts,tsx}'],
     rules: {
-      'no-restricted-imports': [
-        'error',
-        {
-          paths: [
-            {
-              name: 'react-native',
-              importNames: [
-                'StyleSheet',
-                'TouchableOpacity',
-                'TouchableHighlight',
-                'TouchableWithoutFeedback',
-                'TouchableNativeFeedback',
-                'Button',
-              ],
-              message:
-                'Use className with cva for styling, and Pressable (or @roundup/ui Button) for taps.',
-            },
-          ],
-          patterns: [
-            {
-              // The extension is dropped from every relative import; assets (svg, ttf, css) keep theirs.
-              regex: String.raw`^\.{1,2}/.*\.(?:tsx?|jsx?)$`,
-              message: 'Import without the file extension (../lib/cn, not ../lib/cn.ts).',
-            },
-            {
-              // Metro picks svg.native.ts / useRoleColor.native.ts only for an extensionless
-              // import; with `.ts` it loads the web file on iOS and Android too.
-              regex: String.raw`/(svg|useRoleColor)\.ts$`,
-              message:
-                'Import platform-split modules without the extension (../lib/svg) so Metro can pick the .native file.',
-            },
-          ],
-        },
-      ],
+      'no-restricted-imports': ['error', RESTRICTED_IMPORTS],
       'no-restricted-syntax': [
         'error',
         {
@@ -450,6 +472,66 @@ export default [
     files: ['apps/catalog/src/**/*.tsx'],
     plugins: { i18next },
     rules: { 'i18next/no-literal-string': 'off' },
+  },
+
+  {
+    // In the files that declare stack routes, a Stack.Screen name is a route file's name, never copy,
+    // so name is read here only on the other attributes.
+    files: ['apps/roundup/src/app/**/_layout*.tsx', 'apps/roundup/src/components/AuthStack.tsx'],
+    rules: {
+      'i18next/no-literal-string': [
+        'error',
+        {
+          mode: 'jsx-only',
+          'jsx-attributes': {
+            exclude: [
+              /^(?!(?:accessibilityLabel|accessibilityHint|aria-label|alt|label|loadingLabel|startLabel|placeholder|title|subtitle|body|helper|error|text)$).*$/,
+            ],
+          },
+        },
+      ],
+    },
+  },
+
+  {
+    // Inside an app, its own files are imported as @/…, never by climbing out with ../; only the
+    // repo-level assets (fonts) and the app's global.css are reached relatively.
+    files: ['apps/*/src/**/*.{ts,tsx}'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          ...RESTRICTED_IMPORTS,
+          patterns: [
+            ...RESTRICTED_IMPORTS.patterns,
+            {
+              regex: String.raw`^\.\./(?!(?:\.\./)*(?:assets/|global\.css$))`,
+              message: "Import the app's own files as @/… (such as @/hooks/useLayout), not ../.",
+            },
+          ],
+        },
+      ],
+    },
+  },
+  {
+    // An app's tests reach its source as @/… too.
+    files: ['apps/*/tests/**/*.{ts,tsx}'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          ...RESTRICTED_IMPORTS,
+          patterns: [
+            ...RESTRICTED_IMPORTS.patterns,
+            {
+              regex: String.raw`^\.\./.*/src/`,
+              message:
+                "Import the app's source as @/… (such as @/hooks/useLayout), not ../../src/.",
+            },
+          ],
+        },
+      ],
+    },
   },
 
   // ── Architecture ────────────────────────────────────────────
@@ -617,10 +699,15 @@ export default [
             ['value-builtin', 'value-external'],
             'type-internal',
             'value-internal',
-            ['type-parent', 'type-sibling', 'type-index'],
-            ['value-parent', 'value-sibling', 'value-index'],
+            ['alias-type', 'type-parent', 'type-sibling', 'type-index'],
+            ['alias-value', 'value-parent', 'value-sibling', 'value-index'],
             'ts-equals-import',
             'unknown',
+          ],
+          // @/ is the app's own src, so it sorts with the relative imports it replaces.
+          customGroups: [
+            { groupName: 'alias-type', elementNamePattern: '^@/', modifiers: ['type'] },
+            { groupName: 'alias-value', elementNamePattern: '^@/', modifiers: ['value'] },
           ],
           internalPattern: ['^@roundup/.+'],
           newlinesBetween: 1,
@@ -663,12 +750,12 @@ export default [
     },
   },
   {
-    // Component files are PascalCase by design (components/Button.tsx); helpers in lib/ stay kebab-case.
+    // Component files are PascalCase by design (components/Button.tsx, and the app's feature folders under it); helpers in lib/ stay kebab-case.
     files: [
       'shared/ui/src/components/*.tsx',
       'shared/ui/tests/components/*.tsx',
-      'apps/roundup/src/components/*.tsx',
-      'apps/roundup/tests/components/*.tsx',
+      'apps/roundup/src/components/**/*.tsx',
+      'apps/roundup/tests/components/**/*.tsx',
       'apps/catalog/src/components/*.tsx',
       'apps/catalog/src/demos/*.tsx',
       'apps/catalog/tests/components/*.tsx',

@@ -1,5 +1,6 @@
 import { HttpStatus } from '@roundup/api'
 
+import type { IContactsSource, TContactsPermission } from '../../src/contacts/types'
 import type { INetworkSource, INetworkState } from '../../src/network/types'
 import type { ISessionStore } from '../../src/session/types'
 
@@ -64,6 +65,51 @@ export class FakeStore implements ISessionStore {
     this.saved.push(refreshToken)
 
     return Promise.resolve()
+  }
+}
+
+/** A contacts source whose answer and numbers a test chooses. */
+export class FakeContacts implements IContactsSource {
+  /** How many times access was asked for. */
+  asked = 0
+
+  /** How many times the numbers were read. */
+  reads = 0
+
+  /** What the person answers when asked. */
+  private readonly permission: TContactsPermission
+
+  /** The numbers in the "address book". */
+  private readonly numbers: string[]
+
+  /**
+   * Builds the source.
+   * @param permission - What the person answers when asked for access.
+   * @param numbers - The numbers in the "address book".
+   */
+  constructor(permission: TContactsPermission = 'granted', numbers: string[] = []) {
+    this.permission = permission
+    this.numbers = numbers
+  }
+
+  /**
+   * Reads the numbers and records the call.
+   * @returns Every number this fake was given.
+   */
+  phoneNumbers(): Promise<string[]> {
+    this.reads += 1
+
+    return Promise.resolve(this.numbers)
+  }
+
+  /**
+   * Answers as the person would and records the call.
+   * @returns Granted or denied, as this fake was set up.
+   */
+  requestPermission(): Promise<TContactsPermission> {
+    this.asked += 1
+
+    return Promise.resolve(this.permission)
   }
 }
 

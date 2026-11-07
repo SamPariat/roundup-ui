@@ -4,14 +4,7 @@ import { Stack } from 'expo-router'
 
 import { useT } from '@roundup/i18n'
 
-import { TabStack } from '../../../components/TabStack'
-
-/** The route names of the profile stack, as the files under profile/ spell them. */
-const ROUTES = {
-  edit: 'edit',
-  home: 'index',
-  preferences: 'preferences',
-} as const
+import { TabStack } from '@/components/TabStack'
 
 /**
  * The stack inside the Profile tab, so Edit profile and Preferences push on top of Profile and the
@@ -24,9 +17,9 @@ export default function ProfileLayout(): ReactElement {
 
   return (
     <TabStack>
-      <Stack.Screen name={ROUTES.home} options={{ title: t('titles.profile') }} />
-      <Stack.Screen name={ROUTES.edit} options={{ title: t('titles.editProfile') }} />
-      <Stack.Screen name={ROUTES.preferences} options={{ title: t('titles.preferences') }} />
+      <Stack.Screen name="index" options={{ title: t('titles.profile') }} />
+      <Stack.Screen name="edit" options={{ title: t('titles.editProfile') }} />
+      <Stack.Screen name="preferences" options={{ title: t('titles.preferences') }} />
     </TabStack>
   )
 }

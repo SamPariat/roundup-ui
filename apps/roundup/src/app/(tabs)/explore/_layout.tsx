@@ -4,10 +4,7 @@ import { Stack } from 'expo-router'
 
 import { useT } from '@roundup/i18n'
 
-import { TabStack } from '../../../components/TabStack'
-
-/** The route name of the tab's own screen, as the file under explore/ spells it. */
-const HOME = 'index'
+import { TabStack } from '@/components/TabStack'
 
 /**
  * The stack inside the Explore tab, so its screen gets the iOS header with its title.
@@ -18,7 +15,7 @@ export default function ExploreLayout(): ReactElement {
 
   return (
     <TabStack>
-      <Stack.Screen name={HOME} options={{ title: t('titles.explore') }} />
+      <Stack.Screen name="index" options={{ title: t('titles.explore') }} />
     </TabStack>
   )
 }

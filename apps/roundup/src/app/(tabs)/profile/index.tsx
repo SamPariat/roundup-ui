@@ -8,8 +8,8 @@ import { useDeps, useProfileViewModel } from '@roundup/core'
 import { useT } from '@roundup/i18n'
 import { Avatar, Icon, List, ListRow, Skeleton, Text } from '@roundup/ui'
 
-import { TabPage } from '../../../components/TabPage'
-import { Paths } from '../../../navigation/paths'
+import { TabPage } from '@/components/TabPage'
+import { Paths } from '@/navigation/paths'
 
 /**
  * The Profile tab: who is signed in, the way to Edit profile and Preferences, and Log out. Logging out ends the session,
@@ -22,15 +22,15 @@ export default function ProfileScreen(): ReactElement {
   const { helpers } = useDeps()
   const { loading, me, signOut } = useProfileViewModel()
 
-  const editProfile = useCallback((): void => {
+  const handleEditProfile = useCallback((): void => {
     router.push(Paths.profileEdit())
   }, [router])
 
-  const openPreferences = useCallback((): void => {
+  const handleOpenPreferences = useCallback((): void => {
     router.push(Paths.profilePreferences())
   }, [router])
 
-  const logOut = useCallback((): void => {
+  const handleLogOut = useCallback((): void => {
     void signOut()
   }, [signOut])
 
@@ -57,14 +57,14 @@ export default function ProfileScreen(): ReactElement {
             <ListRow
               chevron
               leading={<Icon decorative name="edit" />}
-              onPress={editProfile}
+              onPress={handleEditProfile}
               subtitle={t('screens.profile.editProfileHint')}
               title={t('screens.profile.editProfile')}
             />
             <ListRow
               chevron
               leading={<Icon decorative name="device" />}
-              onPress={openPreferences}
+              onPress={handleOpenPreferences}
               subtitle={t('screens.profile.preferencesHint')}
               title={t('screens.profile.preferences')}
             />
@@ -73,7 +73,7 @@ export default function ProfileScreen(): ReactElement {
             <ListRow
               destructive
               leading={<Icon decorative name="logout" tone="danger" />}
-              onPress={logOut}
+              onPress={handleLogOut}
               title={t('screens.profile.logOut')}
             />
           </List>

@@ -30,7 +30,7 @@ describe('Query.shouldRetry', () => {
 })
 
 describe('Deps.create', () => {
-  it('builds the platform store, the network source, a query client and the clock', () => {
+  it('builds the platform store, the network source, the contacts source, a query client and the clock', () => {
     const deps = Deps.create()
 
     const retry = deps.queryClient.getDefaultOptions().queries?.retry
@@ -38,6 +38,7 @@ describe('Deps.create', () => {
     expect(deps.session.cookie).toBe(false)
     expect(typeof retry).toBe('function')
     expect(typeof deps.network.getState).toBe('function')
+    expect(typeof deps.contacts.requestPermission).toBe('function')
     expect(Math.abs(deps.now() - Date.now())).toBeLessThan(1000)
   })
 })

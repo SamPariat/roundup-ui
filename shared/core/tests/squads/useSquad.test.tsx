@@ -69,4 +69,18 @@ describe('useSquad', () => {
     expect(result.current.notFound).toBe(false)
     expect(result.current.requestId).toBe('req-1')
   })
+
+  it('loads nothing without an id', async () => {
+    const network = Fakes.stubNetwork(REFRESH)
+    const { wrapper } = await SquadFixtures.signedInCore()
+    const { result } = await renderHook(() => useSquad(), { wrapper })
+
+    expect(result.current.loading).toBe(false)
+    expect(result.current.squad).toBeUndefined()
+    expect(result.current.notFound).toBe(false)
+
+    expect(network.requests.filter((request) => request.path.startsWith('/api/v1/squads'))).toEqual(
+      [],
+    )
+  })
 })

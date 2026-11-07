@@ -4,8 +4,8 @@ import { useCallback, useState } from 'react'
 
 import { Text, Welcome } from '@roundup/ui'
 
-import { Preview } from '../components/Preview'
-import { Specimen } from '../components/Specimen'
+import { Preview } from '@/components/Preview'
+import { Specimen } from '@/components/Specimen'
 
 /**
  * Welcome as the app shows it, and with its copy replaced. Welcome fills its parent, so each is in a tall box.
@@ -14,7 +14,7 @@ import { Specimen } from '../components/Specimen'
 export const WelcomeDemo = (): ReactElement => {
   const [started, setStarted] = useState<boolean>(false)
 
-  const start = useCallback((): void => {
+  const handleStart = useCallback((): void => {
     setStarted(true)
   }, [])
 
@@ -22,7 +22,7 @@ export const WelcomeDemo = (): ReactElement => {
     <>
       <Specimen note="Press Continue with phone." title="Default copy · onStart">
         <Preview className="min-h-176 border border-border">
-          <Welcome onStart={start} />
+          <Welcome onStart={handleStart} />
         </Preview>
         <Text tone="muted" variant="caption">
           {started ? 'Start was pressed' : 'Start not pressed'}
