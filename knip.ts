@@ -29,6 +29,7 @@ export default {
       ignoreDependencies: [
         // Native modules must be direct dependencies of the app so Expo autolinking finds them
         // (pnpm does not hoist them from shared/ui), even though only shared/ui imports them.
+        'expo-blur',
         'expo-glass-effect',
         'expo-localization',
         // Imported only by shared/core's session store and network source.
@@ -52,6 +53,7 @@ export default {
         // Native modules must be direct dependencies of the app so Expo autolinking finds them
         // (pnpm does not hoist them from shared/ui or shared/i18n), even though only those
         // packages import them.
+        'expo-blur',
         'expo-glass-effect',
         'expo-localization',
         // Named in app.config.ts plugins or loaded by Expo itself, never imported.

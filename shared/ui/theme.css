@@ -50,7 +50,10 @@
   --color-avatar-4: #94e2d54c;
   --color-avatar-5: #89b4fa4c;
   --color-avatar-6: #f5c2e74c;
-  --color-scrim: #11111bb8;
+  --color-scrim: #11111b66;
+  /* Modal glass on the web: the raised color at 72%, and a hairline edge in the text color. */
+  --color-glass: #313244b8;
+  --color-glass-edge: #cdd6f424;
 
   /* The 1200px content column has no default max-w-* class. */
   --container-content: 1200px;
@@ -104,8 +107,11 @@
   --color-avatar-4: #94e2d54c;
   --color-avatar-5: #89b4fa4c;
   --color-avatar-6: #f5c2e74c;
-  /* Modal backdrop. */
-  --color-scrim: #11111bb8;
+  /* Modal backdrop: light, because the screen behind it is blurred. */
+  --color-scrim: #11111b66;
+  /* Modal glass on the web: the raised color at 72%, and a hairline edge in the text color. */
+  --color-glass: #313244b8;
+  --color-glass-edge: #cdd6f424;
 }
 
 /* Latte when the device is in light mode. */
@@ -144,7 +150,10 @@
     --color-avatar-4: #17929938;
     --color-avatar-5: #1e66f538;
     --color-avatar-6: #ea76cb38;
-    --color-scrim: #4c4f6966;
+    --color-scrim: #4c4f6938;
+    /* Modal glass on the web: the raised color at 72%, and a hairline edge in the text color. */
+    --color-glass: #faf4edb8;
+    --color-glass-edge: #4c4f6924;
   }
 }
 
@@ -193,8 +202,11 @@
   --color-avatar-4: #94e2d54c;
   --color-avatar-5: #89b4fa4c;
   --color-avatar-6: #f5c2e74c;
-  /* Modal backdrop. */
-  --color-scrim: #11111bb8;
+  /* Modal backdrop: light, because the screen behind it is blurred. */
+  --color-scrim: #11111b66;
+  /* Modal glass on the web: the raised color at 72%, and a hairline edge in the text color. */
+  --color-glass: #313244b8;
+  --color-glass-edge: #cdd6f424;
 }
 
 :root[data-theme='light'] {
@@ -241,8 +253,11 @@
   --color-avatar-4: #17929938;
   --color-avatar-5: #1e66f538;
   --color-avatar-6: #ea76cb38;
-  /* Modal backdrop. */
-  --color-scrim: #4c4f6966;
+  /* Modal backdrop: light, because the screen behind it is blurred. */
+  --color-scrim: #4c4f6938;
+  /* Modal glass on the web: the raised color at 72%, and a hairline edge in the text color. */
+  --color-glass: #faf4edb8;
+  --color-glass-edge: #4c4f6924;
 }
 
 /* Shadows for floating surfaces. Their color differs per theme, so each theme sets it. */

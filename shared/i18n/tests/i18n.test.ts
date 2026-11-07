@@ -4,7 +4,7 @@ describe('i18n', () => {
   it('is ready synchronously, with English bundled', () => {
     expect(i18n.isInitialized).toBe(true)
     expect(i18n.language).toBe('en')
-    expect(i18n.t('common.close')).toBe('Close')
+    expect(i18n.t('common.back')).toBe('Back')
   })
 
   it('interpolates values', () => {

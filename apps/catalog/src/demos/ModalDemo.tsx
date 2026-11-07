@@ -8,7 +8,7 @@ import { Avatar, Button, Modal, Text } from '@roundup/ui'
 import { Specimen } from '../components/Specimen'
 
 /** Which modal is open, if any. */
-type TOpen = 'busy' | 'confirm' | 'content' | 'locked' | null
+type TOpen = 'busy' | 'confirm' | 'content' | null
 
 /**
  * Modal as content, as a confirmation, busy while a request runs, and without a close button. Each
@@ -31,10 +31,6 @@ export const ModalDemo = (): ReactElement => {
   const showBusy = useCallback((): void => {
     setSaving(false)
     setOpen('busy')
-  }, [])
-
-  const showLocked = useCallback((): void => {
-    setOpen('locked')
   }, [])
 
   const close = useCallback((): void => {
@@ -61,7 +57,7 @@ export const ModalDemo = (): ReactElement => {
 
   return (
     <>
-      <Specimen title="tone=content (default) · leading · subtitle · closable=true">
+      <Specimen title="tone=content (default) · leading · subtitle">
         <Button onPress={showContent} variant="secondary">
           Open a content modal
         </Button>
@@ -72,16 +68,11 @@ export const ModalDemo = (): ReactElement => {
         </Button>
       </Specimen>
       <Specimen
-        note="Other actions go inert, the body dims and the close button hides until it ends."
+        note="Only the buttons look disabled; the title and body stay as they are, and nothing closes it until it ends."
         title="busy=true"
       >
         <Button onPress={showBusy} variant="secondary">
           Open a modal that saves
-        </Button>
-      </Specimen>
-      <Specimen title="closable=false">
-        <Button onPress={showLocked} variant="secondary">
-          Open a modal with no close button
         </Button>
       </Specimen>
       <Modal
@@ -131,18 +122,6 @@ export const ModalDemo = (): ReactElement => {
         onClose={close}
         title="Rename squad"
         visible={open === 'busy'}
-      />
-      <Modal
-        actions={[
-          <Button key="ok" onPress={close}>
-            Got it
-          </Button>,
-        ]}
-        body="Only the action below can close this one."
-        closable={false}
-        onClose={close}
-        title="Heads up"
-        visible={open === 'locked'}
       />
     </>
   )
