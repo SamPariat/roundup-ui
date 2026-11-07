@@ -11,7 +11,7 @@ import { Specimen } from '../components/Specimen'
  * @returns The specimens.
  */
 export const PageHeaderDemo = (): ReactElement => {
-  const [went, setWent] = useState('Nowhere yet')
+  const [went, setWent] = useState<string>('Nowhere yet')
 
   const back = useCallback((): void => {
     setWent('Back to Squads')

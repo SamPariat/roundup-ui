@@ -28,7 +28,7 @@ class Glass {
  * @returns The glass availability and the reduced flag.
  */
 export const useGlass = (): IGlassState => {
-  const [reduced, setReduced] = useState(false)
+  const [reduced, setReduced] = useState<boolean>(false)
 
   useEffect(() => {
     if (Platform.OS !== 'ios') return

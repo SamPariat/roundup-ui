@@ -15,7 +15,7 @@ export interface IFocusState {
  * @returns The focus flag with stable handlers.
  */
 export const useFocus = (): IFocusState => {
-  const [focused, setFocused] = useState(false)
+  const [focused, setFocused] = useState<boolean>(false)
 
   const onFocus = useCallback((): void => {
     setFocused(true)

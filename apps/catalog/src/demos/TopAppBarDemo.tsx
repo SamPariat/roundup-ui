@@ -13,7 +13,7 @@ import { Specimen } from '../components/Specimen'
  * @returns The specimens.
  */
 export const TopAppBarDemo = (): ReactElement => {
-  const [pressed, setPressed] = useState('Nothing yet')
+  const [pressed, setPressed] = useState<string>('Nothing yet')
 
   const back = useCallback((): void => {
     setPressed('Back')

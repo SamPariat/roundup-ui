@@ -47,6 +47,12 @@ const BANNED_EVERYWHERE = [
     message:
       'Give a useMemo or useCallback function its return type, such as (): void => or (): ViewStyle =>.',
   },
+  {
+    selector:
+      'CallExpression[callee.name=/^(useState|useRef|useSharedValue|useReducer|createContext)$/]:not([typeArguments])',
+    message:
+      'Give the hook its type argument, such as useState<boolean>(false) or useRef<string>(name), so the type reads at the call.',
+  },
 ]
 
 /** The shape of a plugin that ships no types: just its rules by name. */

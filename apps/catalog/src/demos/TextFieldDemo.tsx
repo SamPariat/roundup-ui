@@ -12,8 +12,8 @@ import { Specimen } from '../components/Specimen'
  * @returns The specimens.
  */
 export const TextFieldDemo = (): ReactElement => {
-  const [name, setName] = useState('')
-  const [email, setEmail] = useState('aarav@example')
+  const [name, setName] = useState<string>('')
+  const [email, setEmail] = useState<string>('aarav@example')
   const emailValid = /^[^\s@]+@[^\s@.]+\.[^\s@]+$/.test(email)
 
   return (

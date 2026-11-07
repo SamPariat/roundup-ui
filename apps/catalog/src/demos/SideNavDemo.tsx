@@ -14,7 +14,7 @@ import { NAV_USER } from '../fixtures'
  * @returns The specimens.
  */
 export const SideNavDemo = (): ReactElement => {
-  const [value, setValue] = useState('squads')
+  const [value, setValue] = useState<string>('squads')
 
   return (
     <>

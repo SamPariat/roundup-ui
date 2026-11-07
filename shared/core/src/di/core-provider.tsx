@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react'
 
 import { AuthBridge } from '@roundup/api'
 
+import type { ISession } from '../session/session'
 import type { IDeps } from './deps'
 
 import { Session } from '../session/session'
@@ -19,13 +20,21 @@ export interface ICoreProviderProps {
   deps?: Partial<IDeps>
 }
 
+/** What the provider builds once: the dependencies and the session on top of them. */
+interface IBuiltCore {
+  /** The default dependencies with the caller's overrides. */
+  deps: IDeps
+  /** The session, built on those dependencies. */
+  session: ISession
+}
+
 /**
  * Builds the dependencies and the session once, wires the session into the API client, restores
  * the saved session, and provides all of it, plus the query client, to the app.
  * @returns The providers around the children.
  */
 export const CoreProvider = ({ children, deps }: ICoreProviderProps): ReactElement => {
-  const [built] = useState(() => {
+  const [built] = useState<IBuiltCore>((): IBuiltCore => {
     const merged: IDeps = { ...Deps.create(), ...deps }
 
     return {

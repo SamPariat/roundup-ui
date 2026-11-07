@@ -11,7 +11,7 @@ import { Specimen } from '../components/Specimen'
  * @returns The specimens.
  */
 export const ToastDemo = (): ReactElement => {
-  const [removed, setRemoved] = useState(true)
+  const [removed, setRemoved] = useState<boolean>(true)
 
   const undo = useCallback((): void => {
     setRemoved(false)

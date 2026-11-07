@@ -42,8 +42,8 @@ export interface INotifierProps {
  */
 export const Notifier = ({ notice }: INotifierProps): null | ReactElement => {
   const reduced = useReducedMotion()
-  const [progress] = useState(() => new Animated.Value(0))
-  const [shown, setShown] = useState(notice)
+  const [progress] = useState<Animated.Value>((): Animated.Value => new Animated.Value(0))
+  const [shown, setShown] = useState<INotice | undefined>(notice)
 
   // The last notice stays mounted while it slides out, so it does not vanish mid-animation.
   if (notice !== undefined && notice !== shown) setShown(notice)

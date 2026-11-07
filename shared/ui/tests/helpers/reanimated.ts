@@ -44,7 +44,7 @@ export const Easing = {
  * @returns The value with get and set.
  */
 export const useSharedValue = <T>(initial: T): IFakeSharedValue<T> => {
-  const valueRef = useRef(initial)
+  const valueRef = useRef<T>(initial)
 
   return useMemo(
     (): IFakeSharedValue<T> => ({

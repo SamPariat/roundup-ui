@@ -74,7 +74,7 @@ interface IThemeProviderProps {
 export const ThemeProvider = ({ children }: IThemeProviderProps): ReactElement => {
   const device = useColorScheme()
   const [preference, setPreference] = useState<TThemePreference>('system')
-  const [loaded, setLoaded] = useState(false)
+  const [loaded, setLoaded] = useState<boolean>(false)
 
   useEffect(() => {
     let active = true

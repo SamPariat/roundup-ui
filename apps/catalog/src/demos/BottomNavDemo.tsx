@@ -13,7 +13,7 @@ import { Specimen } from '../components/Specimen'
  * @returns The specimens.
  */
 export const BottomNavDemo = (): ReactElement => {
-  const [value, setValue] = useState('squads')
+  const [value, setValue] = useState<string>('squads')
 
   return (
     <>

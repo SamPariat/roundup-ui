@@ -15,8 +15,8 @@ const RIGHT_CODE = '123456'
  * @returns The specimens.
  */
 export const OtpInputDemo = (): ReactElement => {
-  const [code, setCode] = useState('')
-  const [resends, setResends] = useState(0)
+  const [code, setCode] = useState<string>('')
+  const [resends, setResends] = useState<number>(0)
   const wrong = code.length === RIGHT_CODE.length && code !== RIGHT_CODE
 
   const resend = useCallback((): void => {

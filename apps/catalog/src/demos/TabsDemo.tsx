@@ -26,8 +26,8 @@ const COUNTED: ITabItem[] = [
  * @returns The specimens.
  */
 export const TabsDemo = (): ReactElement => {
-  const [plain, setPlain] = useState('upcoming')
-  const [counted, setCounted] = useState('members')
+  const [plain, setPlain] = useState<string>('upcoming')
+  const [counted, setCounted] = useState<string>('members')
 
   return (
     <>
