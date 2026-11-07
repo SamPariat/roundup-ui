@@ -68,18 +68,9 @@ export const useModalMotion = (options: IModalMotionOptions): IModalMotion => {
   const { height } = useWindowDimensions()
   // 0 is closed and 1 is open.
   const progress = useSharedValue(0)
-  // `leaving` keeps the host up while the closing motion plays after the parent hides it;
-  // `dismissed` takes it down after a close the person asked for, until the parent shows it again.
-  const [leaving, setLeaving] = useState(false)
-  const [dismissed, setDismissed] = useState(false)
-  const [shownBefore, setShownBefore] = useState(visible)
-
-  // Reacts to the parent showing or hiding the modal during render, not in an effect.
-  if (visible !== shownBefore) {
-    setShownBefore(visible)
-    setDismissed(false)
-    setLeaving(!visible)
-  }
+  // Whether the modal has finished opening and is up. The host stays mounted while the parent
+  // shows it or while it is still open, so the closing motion can play after the parent hides it.
+  const [opened, setOpened] = useState(false)
 
   const animateTo = useCallback(
     (toValue: 0 | 1, done?: () => void): void => {
@@ -101,27 +92,37 @@ export const useModalMotion = (options: IModalMotionOptions): IModalMotion => {
     [progress],
   )
 
-  const finishLeaving = useCallback((): void => {
-    setLeaving(false)
+  const markOpened = useCallback((): void => {
+    setOpened(true)
   }, [])
 
-  // Plays the opening motion when shown, and the closing one when the parent hides it.
-  useEffect(() => {
-    if (visible) {
-      animateTo(1)
-    } else if (leaving) {
-      animateTo(0, finishLeaving)
-    }
-  }, [animateTo, finishLeaving, leaving, visible])
+  const markClosed = useCallback((): void => {
+    setOpened(false)
+  }, [])
 
-  const finishDismiss = useCallback((): void => {
-    setDismissed(true)
+  // Moves toward what the parent asks for: opens when shown, closes when hidden. Nothing to do
+  // once the two agree. Each motion records where it ended in its end callback.
+  useEffect(() => {
+    if (visible === opened) return
+
+    if (visible) {
+      animateTo(1, markOpened)
+
+      return
+    }
+
+    animateTo(0, markClosed)
+  }, [animateTo, markClosed, markOpened, opened, visible])
+
+  const finishClose = useCallback((): void => {
+    setOpened(false)
     onClose?.()
   }, [onClose])
 
+  // A close the person asks for plays the closing motion first, then tells the parent.
   const requestClose = useCallback((): void => {
-    if (!busy) animateTo(0, finishDismiss)
-  }, [animateTo, busy, finishDismiss])
+    if (!busy) animateTo(0, finishClose)
+  }, [animateTo, busy, finishClose])
 
   const backdrop = useAnimatedStyle((): ViewStyle => ({ opacity: progress.get() }))
 
@@ -139,7 +140,7 @@ export const useModalMotion = (options: IModalMotionOptions): IModalMotion => {
 
   return {
     backdrop,
-    mounted: (visible && !dismissed) || leaving,
+    mounted: visible || opened,
     panel,
     requestClose,
   }
