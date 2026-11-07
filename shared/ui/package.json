@@ -15,6 +15,7 @@
     "@roundup/i18n": "workspace:*",
     "class-variance-authority": "catalog:",
     "clsx": "catalog:",
+    "expo-blur": "catalog:",
     "expo-glass-effect": "catalog:",
     "expo-router": "catalog:",
     "expo-splash-screen": "catalog:",
@@ -22,8 +23,10 @@
     "react": "catalog:",
     "react-native": "catalog:",
     "react-native-css": "catalog:",
+    "react-native-reanimated": "catalog:",
     "react-native-safe-area-context": "catalog:",
     "react-native-svg": "catalog:",
+    "react-native-worklets": "catalog:",
     "tailwind-merge": "catalog:"
   },
   "devDependencies": {

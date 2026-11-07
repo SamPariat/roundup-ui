@@ -9,7 +9,6 @@ export const en = {
     appName: 'Roundup',
     back: 'Back',
     cancel: 'Cancel',
-    close: 'Close',
     loading: 'Loading',
     members_one: '{{count}} member',
     members_other: '{{count}} members',

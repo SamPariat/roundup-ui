@@ -15,6 +15,7 @@
     "expo-contacts": "catalog:",
     "expo-dev-client": "catalog:",
     "expo-font": "catalog:",
+    "expo-blur": "catalog:",
     "expo-glass-effect": "catalog:",
     "expo-linking": "catalog:",
     "expo-localization": "catalog:",
