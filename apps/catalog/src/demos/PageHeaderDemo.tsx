@@ -4,7 +4,7 @@ import { useCallback, useState } from 'react'
 
 import { Avatar, Button, PageHeader, Text } from '@roundup/ui'
 
-import { Specimen } from '../components/Specimen'
+import { Specimen } from '@/components/Specimen'
 
 /**
  * PageHeader with a title only, a subtitle, a back link, a leading avatar and actions.

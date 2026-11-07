@@ -6,7 +6,7 @@ import type { ITabItem } from '@roundup/ui'
 
 import { Tabs, Text } from '@roundup/ui'
 
-import { Specimen } from '../components/Specimen'
+import { Specimen } from '@/components/Specimen'
 
 /** Tabs without counts. */
 const PLAIN: ITabItem[] = [

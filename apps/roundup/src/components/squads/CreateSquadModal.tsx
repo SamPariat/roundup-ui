@@ -7,8 +7,8 @@ import { useCreateSquadViewModel } from '@roundup/core'
 import { useT } from '@roundup/i18n'
 import { Button, Modal, TextField } from '@roundup/ui'
 
-import { useErrorText } from '../../hooks/useErrorText'
-import { Paths } from '../../navigation/paths'
+import { useErrorText } from '@/hooks/useErrorText'
+import { Paths } from '@/navigation/paths'
 
 /** Props for CreateSquadModal. */
 export interface ICreateSquadModalProps {

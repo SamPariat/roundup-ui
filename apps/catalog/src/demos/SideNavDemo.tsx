@@ -4,9 +4,9 @@ import { useState } from 'react'
 
 import { SideNav } from '@roundup/ui'
 
-import { Preview } from '../components/Preview'
-import { Specimen } from '../components/Specimen'
-import { NAV_USER } from '../fixtures'
+import { Preview } from '@/components/Preview'
+import { Specimen } from '@/components/Specimen'
+import { NAV_USER } from '@/fixtures'
 
 /**
  * SideNav without and with the signed-in person pinned to its bottom. The rail is 248 wide and as

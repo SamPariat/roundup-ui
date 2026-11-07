@@ -3,7 +3,7 @@ import type { Href } from 'expo-router'
 import { useRouter } from 'expo-router'
 import { useCallback } from 'react'
 
-import { Paths } from '../navigation/paths'
+import { Paths } from '@/navigation/paths'
 
 /**
  * Goes back one screen. A page opened straight from a link has nothing behind it, so it goes to

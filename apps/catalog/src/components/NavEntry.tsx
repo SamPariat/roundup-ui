@@ -5,7 +5,7 @@ import { Pressable } from 'react-native'
 
 import { cn, Text } from '@roundup/ui'
 
-import type { ICatalogEntry } from '../registry'
+import type { ICatalogEntry } from '@/registry'
 
 /** Props for NavEntry. */
 export interface INavEntryProps {

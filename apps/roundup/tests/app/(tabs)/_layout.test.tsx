@@ -3,7 +3,7 @@ import type { ReactNode } from 'react'
 import { render } from '@testing-library/react-native'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 
-import Ios from '../../../src/app/(tabs)/_layout.ios'
+import Ios from '@/app/(tabs)/_layout.ios'
 
 /** The shape of the layout module. */
 interface ILayoutModule {
@@ -13,7 +13,7 @@ interface ILayoutModule {
 
 // Jest resolves an extensionless path to the .ios file, so the headless (web and Android) layout is
 // loaded by its full name.
-const Shared = jest.requireActual<ILayoutModule>('../../../src/app/(tabs)/_layout.tsx').default
+const Shared = jest.requireActual<ILayoutModule>('@/app/(tabs)/_layout.tsx').default
 
 const mockTriggers: string[] = []
 
@@ -89,7 +89,7 @@ jest.mock('expo-router/ui', () => ({
 
 jest.mock('expo-router', () => ({ usePathname: mockPathname }))
 
-jest.mock('../../../src/components/AppShell', () => ({ AppShell: mockContainer }))
+jest.mock('@/components/AppShell', () => ({ AppShell: mockContainer }))
 
 /**
  * Tab layout test helpers. Static methods only.

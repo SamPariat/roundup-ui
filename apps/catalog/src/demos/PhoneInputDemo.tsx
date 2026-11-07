@@ -4,7 +4,7 @@ import { useState } from 'react'
 
 import { PhoneInput } from '@roundup/ui'
 
-import { Specimen } from '../components/Specimen'
+import { Specimen } from '@/components/Specimen'
 
 /**
  * PhoneInput in its resting, helper, error and disabled states, and one that keeps what is typed.

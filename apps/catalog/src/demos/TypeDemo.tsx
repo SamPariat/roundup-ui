@@ -4,7 +4,7 @@ import type { TTextProps } from '@roundup/ui'
 
 import { Text } from '@roundup/ui'
 
-import { Specimen } from '../components/Specimen'
+import { Specimen } from '@/components/Specimen'
 
 /** One type style. */
 interface IStyle {

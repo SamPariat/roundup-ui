@@ -4,8 +4,8 @@ import { useCallback, useState } from 'react'
 
 import { Button, Text, TopAppBar } from '@roundup/ui'
 
-import { Preview } from '../components/Preview'
-import { Specimen } from '../components/Specimen'
+import { Preview } from '@/components/Preview'
+import { Specimen } from '@/components/Specimen'
 
 /**
  * TopAppBar as a top-level bar with the logo, with a back button, with actions and with a large title.

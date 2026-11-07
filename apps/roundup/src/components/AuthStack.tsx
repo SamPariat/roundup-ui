@@ -4,7 +4,7 @@ import { Stack } from 'expo-router'
 
 import { useRoleColor } from '@roundup/ui'
 
-import { useRouteGate } from '../hooks/useRouteGate'
+import { useRouteGate } from '@/hooks/useRouteGate'
 
 /**
  * The root stack. The guards do the redirects, so no screen calls router.replace for auth: signed

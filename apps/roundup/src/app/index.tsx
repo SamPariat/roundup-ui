@@ -6,8 +6,8 @@ import { ScrollView } from 'react-native'
 
 import { Screen, Welcome } from '@roundup/ui'
 
-import { useRouteGate } from '../hooks/useRouteGate'
-import { Paths } from '../navigation/paths'
+import { useRouteGate } from '@/hooks/useRouteGate'
+import { Paths } from '@/navigation/paths'
 
 /**
  * The "/" of the app. A signed-out visitor sees Welcome, and Start opens the sign-in screens; a

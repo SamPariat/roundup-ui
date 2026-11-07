@@ -6,7 +6,7 @@ import type { TIconName } from '@roundup/ui'
 import { useSquad } from '@roundup/core'
 import { useT } from '@roundup/i18n'
 
-import { Paths } from '../navigation/paths'
+import { Paths } from '@/navigation/paths'
 
 /** The i18n key of a tab's name in the nav. */
 type TLabelKey = `nav.tabs.${keyof typeof en.nav.tabs}`

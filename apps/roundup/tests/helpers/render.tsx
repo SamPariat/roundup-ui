@@ -11,9 +11,9 @@ import { ThemeProvider } from '@roundup/ui'
 
 import type { FakeNetwork, IBackend } from './fakes'
 
-import { AuthStack } from '../../src/components/AuthStack'
-import { OfflineNotice } from '../../src/components/OfflineNotice'
 import { Fakes } from './fakes'
+import { AuthStack } from '@/components/AuthStack'
+import { OfflineNotice } from '@/components/OfflineNotice'
 
 /** Insets and frame of a phone, so the safe-area hooks have values. */
 const METRICS = {

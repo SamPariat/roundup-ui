@@ -4,9 +4,9 @@ import { HttpStatus } from '@roundup/core'
 
 import type { IBackend } from '../../helpers/fakes'
 
-import EditProfileScreen from '../../../src/app/(tabs)/profile/edit'
-import ProfileScreen from '../../../src/app/(tabs)/profile/index'
 import { Render } from '../../helpers/render'
+import EditProfileScreen from '@/app/(tabs)/profile/edit'
+import ProfileScreen from '@/app/(tabs)/profile/index'
 
 /** The backend of the current test. */
 let backend: IBackend

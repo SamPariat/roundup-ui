@@ -7,9 +7,9 @@ import { useCodeViewModel, useDeps } from '@roundup/core'
 import { useT } from '@roundup/i18n'
 import { Button, OtpInput } from '@roundup/ui'
 
-import { AuthPage } from '../../components/AuthPage'
-import { useErrorText } from '../../hooks/useErrorText'
-import { Paths } from '../../navigation/paths'
+import { AuthPage } from '@/components/AuthPage'
+import { useErrorText } from '@/hooks/useErrorText'
+import { Paths } from '@/navigation/paths'
 
 /** Props for CodeForm. */
 interface ICodeFormProps {

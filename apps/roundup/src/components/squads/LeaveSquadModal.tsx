@@ -6,7 +6,7 @@ import { useSquadMembersViewModel } from '@roundup/core'
 import { useT } from '@roundup/i18n'
 import { Button, Modal, Toast } from '@roundup/ui'
 
-import { useErrorText } from '../../hooks/useErrorText'
+import { useErrorText } from '@/hooks/useErrorText'
 
 /** Props for LeaveSquadModal. */
 export interface ILeaveSquadModalProps {

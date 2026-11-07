@@ -5,7 +5,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context'
 
 import { ThemeProvider } from '@roundup/ui'
 
-import { FrameProvider } from '../../src/components/FrameProvider'
+import { FrameProvider } from '@/components/FrameProvider'
 
 /**
  * Rendering helpers for the catalog tests. Static methods only.

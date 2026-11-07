@@ -1,7 +1,7 @@
 import { fireEvent, screen } from 'expo-router/testing-library'
 
-import PreferencesScreen from '../../../src/app/(tabs)/profile/preferences'
 import { Render } from '../../helpers/render'
+import PreferencesScreen from '@/app/(tabs)/profile/preferences'
 
 /**
  * Preferences test helpers. Static methods only.

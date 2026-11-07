@@ -1,4 +1,4 @@
-import { Paths } from '../../src/navigation/paths'
+import { Paths } from '@/navigation/paths'
 
 describe('Paths', () => {
   it('returns the plain path when there is no query', () => {

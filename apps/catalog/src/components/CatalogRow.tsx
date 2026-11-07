@@ -5,7 +5,7 @@ import { useCallback } from 'react'
 
 import { ListRow } from '@roundup/ui'
 
-import type { ICatalogEntry } from '../registry'
+import type { ICatalogEntry } from '@/registry'
 
 /** Props for CatalogRow. */
 export interface ICatalogRowProps {

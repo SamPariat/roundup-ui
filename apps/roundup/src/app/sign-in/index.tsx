@@ -7,9 +7,9 @@ import { usePhoneViewModel } from '@roundup/core'
 import { useT } from '@roundup/i18n'
 import { Button, PhoneInput, Text } from '@roundup/ui'
 
-import { AuthPage } from '../../components/AuthPage'
-import { useErrorText } from '../../hooks/useErrorText'
-import { Paths } from '../../navigation/paths'
+import { AuthPage } from '@/components/AuthPage'
+import { useErrorText } from '@/hooks/useErrorText'
+import { Paths } from '@/navigation/paths'
 
 /**
  * Sign-in step one: the phone number. Sending the code opens the code screen.

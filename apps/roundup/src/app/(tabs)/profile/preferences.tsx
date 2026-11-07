@@ -5,7 +5,7 @@ import { View } from 'react-native'
 import { useT } from '@roundup/i18n'
 import { List, ListRow, Text, ThemeSwitch, useTheme } from '@roundup/ui'
 
-import { TabPage } from '../../../components/TabPage'
+import { TabPage } from '@/components/TabPage'
 
 /**
  * Preferences: the theme and the language. English is the only language, so its row is plain

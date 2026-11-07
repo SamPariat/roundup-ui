@@ -2,8 +2,8 @@ import type { ReactElement } from 'react'
 
 import { AvatarGroup } from '@roundup/ui'
 
-import { Specimen } from '../components/Specimen'
-import { PEOPLE } from '../fixtures'
+import { Specimen } from '@/components/Specimen'
+import { PEOPLE } from '@/fixtures'
 
 /**
  * AvatarGroup with few people, many people, a real count larger than the sample, and larger avatars.

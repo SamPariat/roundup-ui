@@ -31,6 +31,45 @@ import tseslint from 'typescript-eslint'
  * Syntax banned in every TypeScript file. Each block that sets no-restricted-syntax spreads these,
  * because a later block's setting replaces an earlier one's for the files they share.
  */
+/**
+ * The import bans every file shares. A block that adds its own patterns spreads these, because a
+ * later block's no-restricted-imports replaces an earlier one's for the files they share.
+ */
+const RESTRICTED_IMPORTS = {
+  paths: [
+    {
+      name: 'react-native',
+      importNames: [
+        'StyleSheet',
+        'TouchableOpacity',
+        'TouchableHighlight',
+        'TouchableWithoutFeedback',
+        'TouchableNativeFeedback',
+        'Button',
+      ],
+      message:
+        'Use className with cva for styling, and Pressable (or @roundup/ui Button) for taps.',
+    },
+  ],
+  patterns: [
+    {
+      // The extension is dropped from every relative import; assets (svg, ttf, css) keep theirs.
+      regex: String.raw`^\.{1,2}/.*\.(?:tsx?|jsx?)$`,
+      message: 'Import without the file extension (../lib/cn, not ../lib/cn.ts).',
+    },
+    {
+      // Metro picks svg.native.ts / useRoleColor.native.ts only for an extensionless
+      // import; with `.ts` it loads the web file on iOS and Android too.
+      regex: String.raw`/(svg|useRoleColor)\.ts$`,
+      message:
+        'Import platform-split modules without the extension (../lib/svg) so Metro can pick the .native file.',
+    },
+  ],
+}
+
+/** Every tsconfig, so the import resolver finds the one that owns a file and its @/ paths. */
+const TS_PROJECTS = ['apps/*/tsconfig.json', 'shared/*/tsconfig.json']
+
 const BANNED_EVERYWHERE = [
   {
     selector: 'TSAnyKeyword',
@@ -111,6 +150,15 @@ export default [
   {
     // eslint-plugin-react reads this to pick rules for the installed React major (set after Expo's 'detect').
     settings: { react: { version: '19' } },
+  },
+  {
+    // The apps import their own src as @/ (tsconfig paths). The TypeScript resolver reads those
+    // paths, so import-x and the boundaries rules see where an @/ import really points.
+    files: ['**/*.{ts,tsx}'],
+    settings: {
+      'import/resolver': { typescript: { project: TS_PROJECTS } },
+      'import-x/resolver': { typescript: { project: TS_PROJECTS } },
+    },
   },
   {
     // The Expo preset uses the legacy import plugin; import-x below does that job better with TS.
@@ -274,40 +322,7 @@ export default [
     // Styling goes through className + cva, buttons through Pressable. These bans keep one way of doing each.
     files: ['**/*.{ts,tsx}'],
     rules: {
-      'no-restricted-imports': [
-        'error',
-        {
-          paths: [
-            {
-              name: 'react-native',
-              importNames: [
-                'StyleSheet',
-                'TouchableOpacity',
-                'TouchableHighlight',
-                'TouchableWithoutFeedback',
-                'TouchableNativeFeedback',
-                'Button',
-              ],
-              message:
-                'Use className with cva for styling, and Pressable (or @roundup/ui Button) for taps.',
-            },
-          ],
-          patterns: [
-            {
-              // The extension is dropped from every relative import; assets (svg, ttf, css) keep theirs.
-              regex: String.raw`^\.{1,2}/.*\.(?:tsx?|jsx?)$`,
-              message: 'Import without the file extension (../lib/cn, not ../lib/cn.ts).',
-            },
-            {
-              // Metro picks svg.native.ts / useRoleColor.native.ts only for an extensionless
-              // import; with `.ts` it loads the web file on iOS and Android too.
-              regex: String.raw`/(svg|useRoleColor)\.ts$`,
-              message:
-                'Import platform-split modules without the extension (../lib/svg) so Metro can pick the .native file.',
-            },
-          ],
-        },
-      ],
+      'no-restricted-imports': ['error', RESTRICTED_IMPORTS],
       'no-restricted-syntax': [
         'error',
         {
@@ -467,6 +482,47 @@ export default [
               /^(?!(?:accessibilityLabel|accessibilityHint|aria-label|alt|label|loadingLabel|startLabel|placeholder|title|subtitle|body|helper|error|text)$).*$/,
             ],
           },
+        },
+      ],
+    },
+  },
+
+  {
+    // Inside an app, its own files are imported as @/…, never by climbing out with ../; only the
+    // repo-level assets (fonts) and the app's global.css are reached relatively.
+    files: ['apps/*/src/**/*.{ts,tsx}'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          ...RESTRICTED_IMPORTS,
+          patterns: [
+            ...RESTRICTED_IMPORTS.patterns,
+            {
+              regex: String.raw`^\.\./(?!(?:\.\./)*(?:assets/|global\.css$))`,
+              message: "Import the app's own files as @/… (such as @/hooks/useLayout), not ../.",
+            },
+          ],
+        },
+      ],
+    },
+  },
+  {
+    // An app's tests reach its source as @/… too.
+    files: ['apps/*/tests/**/*.{ts,tsx}'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          ...RESTRICTED_IMPORTS,
+          patterns: [
+            ...RESTRICTED_IMPORTS.patterns,
+            {
+              regex: String.raw`^\.\./.*/src/`,
+              message:
+                "Import the app's source as @/… (such as @/hooks/useLayout), not ../../src/.",
+            },
+          ],
         },
       ],
     },
@@ -637,10 +693,15 @@ export default [
             ['value-builtin', 'value-external'],
             'type-internal',
             'value-internal',
-            ['type-parent', 'type-sibling', 'type-index'],
-            ['value-parent', 'value-sibling', 'value-index'],
+            ['alias-type', 'type-parent', 'type-sibling', 'type-index'],
+            ['alias-value', 'value-parent', 'value-sibling', 'value-index'],
             'ts-equals-import',
             'unknown',
+          ],
+          // @/ is the app's own src, so it sorts with the relative imports it replaces.
+          customGroups: [
+            { groupName: 'alias-type', elementNamePattern: '^@/', modifiers: ['type'] },
+            { groupName: 'alias-value', elementNamePattern: '^@/', modifiers: ['value'] },
           ],
           internalPattern: ['^@roundup/.+'],
           newlinesBetween: 1,

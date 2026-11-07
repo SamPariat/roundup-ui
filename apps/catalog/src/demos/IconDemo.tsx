@@ -4,8 +4,8 @@ import { View } from 'react-native'
 
 import { Icon, Text } from '@roundup/ui'
 
-import { Specimen } from '../components/Specimen'
-import { ICON_NAMES } from '../fixtures'
+import { Specimen } from '@/components/Specimen'
+import { ICON_NAMES } from '@/fixtures'
 
 /** The role colors an icon can take. */
 const TONES = [

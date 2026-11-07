@@ -5,7 +5,7 @@ import { View } from 'react-native'
 
 import { Avatar, Button, Modal, Text } from '@roundup/ui'
 
-import { Specimen } from '../components/Specimen'
+import { Specimen } from '@/components/Specimen'
 
 /** Which modal is open, if any. */
 type TOpen = 'busy' | 'confirm' | 'content' | null

@@ -4,7 +4,7 @@ import { Stack } from 'expo-router'
 
 import { useT } from '@roundup/i18n'
 
-import { TabStack } from '../../../components/TabStack'
+import { TabStack } from '@/components/TabStack'
 
 /**
  * The stack inside the Squads tab, so Squads and a squad's page get the iOS header with their

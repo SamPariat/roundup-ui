@@ -9,10 +9,10 @@ import { useSquads } from '@roundup/core'
 import { useT } from '@roundup/i18n'
 import { Button, EmptyState, Skeleton } from '@roundup/ui'
 
-import { CreateSquadModal } from '../../../components/squads/CreateSquadModal'
-import { SquadListCard } from '../../../components/squads/SquadListCard'
-import { TabList } from '../../../components/TabList'
-import { useLayout } from '../../../hooks/useLayout'
+import { CreateSquadModal } from '@/components/squads/CreateSquadModal'
+import { SquadListCard } from '@/components/squads/SquadListCard'
+import { TabList } from '@/components/TabList'
+import { useLayout } from '@/hooks/useLayout'
 
 /**
  * The Squads tab: the person's squads as cards, a New squad action, and an empty state that

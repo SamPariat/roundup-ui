@@ -4,8 +4,8 @@ import { useCallback, useState } from 'react'
 
 import { Avatar, Button, List, ListRow, Skeleton } from '@roundup/ui'
 
-import { Specimen } from '../components/Specimen'
-import { PEOPLE } from '../fixtures'
+import { Specimen } from '@/components/Specimen'
+import { PEOPLE } from '@/fixtures'
 
 /**
  * Skeleton as one row, several rows and a venue card, then a list that swaps between its skeleton and its rows.

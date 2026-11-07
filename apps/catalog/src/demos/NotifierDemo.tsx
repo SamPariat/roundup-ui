@@ -7,7 +7,7 @@ import type { INotice } from '@roundup/ui'
 
 import { Button, Notifier } from '@roundup/ui'
 
-import { Specimen } from '../components/Specimen'
+import { Specimen } from '@/components/Specimen'
 
 /** The notice the offline specimens show. */
 const OFFLINE: INotice = {

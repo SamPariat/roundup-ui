@@ -5,11 +5,11 @@ import { View } from 'react-native'
 import { useT } from '@roundup/i18n'
 import { BottomNav, cn, PageHeader, SideNav, TopAppBar } from '@roundup/ui'
 
-import type { ITabItem } from '../hooks/useTabItems'
+import type { ITabItem } from '@/hooks/useTabItems'
 
-import { useBack } from '../hooks/useBack'
-import { useLayout } from '../hooks/useLayout'
-import { useNestedTitle, useTabItem, useTabItems } from '../hooks/useTabItems'
+import { useBack } from '@/hooks/useBack'
+import { useLayout } from '@/hooks/useLayout'
+import { useNestedTitle, useTabItem, useTabItems } from '@/hooks/useTabItems'
 
 /** Props for AppShell. */
 export interface IAppShellProps {

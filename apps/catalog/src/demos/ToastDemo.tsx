@@ -4,7 +4,7 @@ import { useCallback, useState } from 'react'
 
 import { Button, Text, Toast } from '@roundup/ui'
 
-import { Specimen } from '../components/Specimen'
+import { Specimen } from '@/components/Specimen'
 
 /**
  * Toast in each tone, with and without an action, and one whose action really undoes something.

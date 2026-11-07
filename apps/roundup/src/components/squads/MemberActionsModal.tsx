@@ -8,7 +8,7 @@ import { Role, useSquadMembersViewModel } from '@roundup/core'
 import { useT } from '@roundup/i18n'
 import { Avatar, Button, Icon, List, ListRow, Modal, Toast } from '@roundup/ui'
 
-import { useErrorText } from '../../hooks/useErrorText'
+import { useErrorText } from '@/hooks/useErrorText'
 
 /** Something the person may do to another member. */
 /** What can be done to a member, as a constant object in the same shape orval gives Role. */

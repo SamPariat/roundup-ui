@@ -6,7 +6,7 @@ import { useMemo } from 'react'
 
 import { useRoleColor } from '@roundup/ui'
 
-import { useLayout } from '../hooks/useLayout'
+import { useLayout } from '@/hooks/useLayout'
 
 /** Props for TabStack. */
 export interface ITabStackProps {

@@ -5,8 +5,8 @@ import { ScrollView } from 'react-native'
 
 import { Screen, TopAppBar } from '@roundup/ui'
 
-import { CatalogIndex } from '../components/CatalogIndex'
-import { useWide } from '../hooks/useWide'
+import { CatalogIndex } from '@/components/CatalogIndex'
+import { useWide } from '@/hooks/useWide'
 
 /**
  * The component index. On a phone it is a screen of its own with a top bar; from 1024 wide the

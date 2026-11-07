@@ -4,7 +4,7 @@ import { Stack } from 'expo-router'
 
 import { useT } from '@roundup/i18n'
 
-import { TabStack } from '../../../components/TabStack'
+import { TabStack } from '@/components/TabStack'
 
 /**
  * The stack inside the Explore tab, so its screen gets the iOS header with its title.

@@ -6,9 +6,9 @@ import { Text } from 'react-native'
 
 import type { IBackend } from '../helpers/fakes'
 
-import WelcomeScreen from '../../src/app/index'
 import { FakeNetwork } from '../helpers/fakes'
 import { Render } from '../helpers/render'
+import WelcomeScreen from '@/app/index'
 
 /**
  * Stand-in for the tabs layout: renders the active tab.

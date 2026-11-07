@@ -6,7 +6,7 @@ import { useMemo } from 'react'
 
 import { useRoleColor } from '@roundup/ui'
 
-import { useTabItems } from '../../hooks/useTabItems'
+import { useTabItems } from '@/hooks/useTabItems'
 
 /**
  * iOS draws the system tab bar: Liquid Glass on iOS 26+, and a sidebar on iPad and on the open

@@ -7,7 +7,7 @@ import type { ISquadCard } from '@roundup/core'
 
 import { SquadCard } from '@roundup/ui'
 
-import { Paths } from '../../navigation/paths'
+import { Paths } from '@/navigation/paths'
 
 /** Props for SquadListCard. */
 export interface ISquadListCardProps {

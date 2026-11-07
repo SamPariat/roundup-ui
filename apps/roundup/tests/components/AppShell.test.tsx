@@ -8,8 +8,8 @@ import { SafeAreaProvider } from 'react-native-safe-area-context'
 import { CoreProvider } from '@roundup/core'
 import { ThemeProvider } from '@roundup/ui'
 
-import { AppShell } from '../../src/components/AppShell'
 import { Fakes } from '../helpers/fakes'
+import { AppShell } from '@/components/AppShell'
 
 const mockWindow = { width: 390, height: 800, scale: 2, fontScale: 1 }
 

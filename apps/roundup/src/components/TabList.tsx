@@ -8,7 +8,7 @@ import type { TBreakpoint } from '@roundup/ui'
 
 import { cn, Skeleton, useBreakpoint } from '@roundup/ui'
 
-import { useLayout } from '../hooks/useLayout'
+import { useLayout } from '@/hooks/useLayout'
 
 /** Props for TabList. */
 export interface ITabListProps<T> {

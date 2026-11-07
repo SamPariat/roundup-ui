@@ -10,9 +10,9 @@ import { ThemeProvider } from '@roundup/ui'
 
 import type { IBackend } from '../helpers/fakes'
 
-import WelcomeScreen from '../../src/app/index'
-import { AuthStack } from '../../src/components/AuthStack'
 import { Fakes } from '../helpers/fakes'
+import WelcomeScreen from '@/app/index'
+import { AuthStack } from '@/components/AuthStack'
 
 /** Insets and frame of a phone, so the safe-area hooks have values. */
 const METRICS = {

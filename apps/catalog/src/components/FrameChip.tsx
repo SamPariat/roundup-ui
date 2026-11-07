@@ -4,7 +4,7 @@ import { useCallback } from 'react'
 
 import { Chip } from '@roundup/ui'
 
-import type { IFrameOption, TFrameWidth } from '../hooks/useFrame'
+import type { IFrameOption, TFrameWidth } from '@/hooks/useFrame'
 
 /** Props for FrameChip. */
 export interface IFrameChipProps {

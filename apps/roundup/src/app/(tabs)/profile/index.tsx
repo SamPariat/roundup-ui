@@ -8,8 +8,8 @@ import { useDeps, useProfileViewModel } from '@roundup/core'
 import { useT } from '@roundup/i18n'
 import { Avatar, Icon, List, ListRow, Skeleton, Text } from '@roundup/ui'
 
-import { TabPage } from '../../../components/TabPage'
-import { Paths } from '../../../navigation/paths'
+import { TabPage } from '@/components/TabPage'
+import { Paths } from '@/navigation/paths'
 
 /**
  * The Profile tab: who is signed in, the way to Edit profile and Preferences, and Log out. Logging out ends the session,

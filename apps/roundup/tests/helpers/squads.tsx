@@ -8,10 +8,10 @@ import type { IContactsSource, TContactsPermission } from '@roundup/core'
 import type { IBackend } from './fakes'
 import type { IStubMember, IStubSquad } from './squad-backend'
 
-import SquadScreen from '../../src/app/(tabs)/squads/[squadId]'
-import SquadsScreen from '../../src/app/(tabs)/squads/index'
-import { AddPeopleModal } from '../../src/components/squads/AddPeopleModal.web'
 import { Render } from './render'
+import SquadScreen from '@/app/(tabs)/squads/[squadId]'
+import SquadsScreen from '@/app/(tabs)/squads/index'
+import { AddPeopleModal } from '@/components/squads/AddPeopleModal.web'
 
 /**
  * The squads stack of a test: the same screens as the app, in a Stack so going back and

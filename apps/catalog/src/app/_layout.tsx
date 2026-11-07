@@ -16,9 +16,9 @@ import OnestBold from '../../../../assets/fonts/Onest-Bold.ttf'
 import OnestMedium from '../../../../assets/fonts/Onest-Medium.ttf'
 import OnestRegular from '../../../../assets/fonts/Onest-Regular.ttf'
 import OnestSemiBold from '../../../../assets/fonts/Onest-SemiBold.ttf'
-import { ComponentNav } from '../components/ComponentNav'
-import { FrameProvider } from '../components/FrameProvider'
-import { useWide } from '../hooks/useWide'
+import { ComponentNav } from '@/components/ComponentNav'
+import { FrameProvider } from '@/components/FrameProvider'
+import { useWide } from '@/hooks/useWide'
 
 void preventAutoHideAsync()
 

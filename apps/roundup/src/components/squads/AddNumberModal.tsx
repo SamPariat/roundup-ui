@@ -6,7 +6,7 @@ import { useAddMemberViewModel } from '@roundup/core'
 import { useT } from '@roundup/i18n'
 import { Button, Modal, PhoneInput } from '@roundup/ui'
 
-import { useErrorText } from '../../hooks/useErrorText'
+import { useErrorText } from '@/hooks/useErrorText'
 
 /** Props for AddNumberModal. */
 export interface IAddNumberModalProps {

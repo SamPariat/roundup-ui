@@ -4,7 +4,7 @@ import { View } from 'react-native'
 
 import { Text } from '@roundup/ui'
 
-import { Specimen } from '../components/Specimen'
+import { Specimen } from '@/components/Specimen'
 
 /** One role color and the class that paints it. */
 interface ISwatch {

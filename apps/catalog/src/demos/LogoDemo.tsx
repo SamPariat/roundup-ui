@@ -4,7 +4,7 @@ import { View } from 'react-native'
 
 import { Logo } from '@roundup/ui'
 
-import { Specimen } from '../components/Specimen'
+import { Specimen } from '@/components/Specimen'
 
 /** The three artworks. */
 const TYPES = ['lockup', 'mark', 'wordmark'] as const

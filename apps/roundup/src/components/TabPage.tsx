@@ -7,7 +7,7 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 
 import { cn } from '@roundup/ui'
 
-import { useLayout } from '../hooks/useLayout'
+import { useLayout } from '@/hooks/useLayout'
 
 /** Props for TabPage. */
 export interface ITabPageProps {

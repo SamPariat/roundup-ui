@@ -5,7 +5,7 @@ import { View } from 'react-native'
 
 import { Chip } from '@roundup/ui'
 
-import { Specimen } from '../components/Specimen'
+import { Specimen } from '@/components/Specimen'
 
 /** The filters of the interactive group. */
 const FILTERS = ['Cafes', 'Bars', 'Open now', 'Under ₹500'] as const

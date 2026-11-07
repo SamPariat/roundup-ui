@@ -7,8 +7,8 @@ import { useContactPickerViewModel } from '@roundup/core'
 import { useT } from '@roundup/i18n'
 import { Button, Icon, List, ListRow, Modal, Skeleton, Text, TextField, Toast } from '@roundup/ui'
 
-import { useErrorText } from '../../hooks/useErrorText'
 import { PersonRow } from './PersonRow'
+import { useErrorText } from '@/hooks/useErrorText'
 
 /** Props for ContactPickerModal. */
 export interface IContactPickerModalProps {

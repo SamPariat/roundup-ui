@@ -6,11 +6,11 @@ import { ScrollView, View } from 'react-native'
 
 import { PageHeader, Screen, TopAppBar } from '@roundup/ui'
 
-import { Frame } from '../components/Frame'
-import { NotFound } from '../components/NotFound'
-import { Toolbar } from '../components/Toolbar'
-import { useWide } from '../hooks/useWide'
-import { REGISTRY, Registry } from '../registry'
+import { Frame } from '@/components/Frame'
+import { NotFound } from '@/components/NotFound'
+import { Toolbar } from '@/components/Toolbar'
+import { useWide } from '@/hooks/useWide'
+import { REGISTRY, Registry } from '@/registry'
 
 /**
  * The slugs the static web export renders a page for: one per registry entry.

@@ -6,7 +6,7 @@ import { useRenameSquadViewModel } from '@roundup/core'
 import { useT } from '@roundup/i18n'
 import { Button, Modal, TextField } from '@roundup/ui'
 
-import { useErrorText } from '../../hooks/useErrorText'
+import { useErrorText } from '@/hooks/useErrorText'
 
 /** Props for RenameSquadModal. */
 export interface IRenameSquadModalProps {

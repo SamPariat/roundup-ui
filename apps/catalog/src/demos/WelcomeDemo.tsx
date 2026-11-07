@@ -4,8 +4,8 @@ import { useCallback, useState } from 'react'
 
 import { Text, Welcome } from '@roundup/ui'
 
-import { Preview } from '../components/Preview'
-import { Specimen } from '../components/Specimen'
+import { Preview } from '@/components/Preview'
+import { Specimen } from '@/components/Specimen'
 
 /**
  * Welcome as the app shows it, and with its copy replaced. Welcome fills its parent, so each is in a tall box.

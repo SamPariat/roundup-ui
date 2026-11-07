@@ -7,8 +7,8 @@ import { useNameViewModel } from '@roundup/core'
 import { useT } from '@roundup/i18n'
 import { Avatar, Button, TextField } from '@roundup/ui'
 
-import { useBack } from '../hooks/useBack'
-import { useErrorText } from '../hooks/useErrorText'
+import { useBack } from '@/hooks/useBack'
+import { useErrorText } from '@/hooks/useErrorText'
 
 /** Props for EditProfileForm. */
 export interface IEditProfileFormProps {

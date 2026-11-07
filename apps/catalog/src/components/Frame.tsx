@@ -4,7 +4,7 @@ import { Platform, View } from 'react-native'
 
 import { cn } from '@roundup/ui'
 
-import { FRAME_OPTIONS, useFrame } from '../hooks/useFrame'
+import { FRAME_OPTIONS, useFrame } from '@/hooks/useFrame'
 
 /** Props for Frame. */
 export interface IFrameProps {

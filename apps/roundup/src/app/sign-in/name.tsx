@@ -6,8 +6,8 @@ import { useNameViewModel } from '@roundup/core'
 import { useT } from '@roundup/i18n'
 import { Button, TextField } from '@roundup/ui'
 
-import { AuthPage } from '../../components/AuthPage'
-import { useErrorText } from '../../hooks/useErrorText'
+import { AuthPage } from '@/components/AuthPage'
+import { useErrorText } from '@/hooks/useErrorText'
 
 /**
  * Sign-in step three, shown to a new person (or one with no name yet): what their squad should

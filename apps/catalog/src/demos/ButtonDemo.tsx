@@ -5,7 +5,7 @@ import { View } from 'react-native'
 
 import { Button, Text } from '@roundup/ui'
 
-import { Specimen } from '../components/Specimen'
+import { Specimen } from '@/components/Specimen'
 
 /** The button color treatments. */
 const VARIANTS = ['primary', 'secondary', 'ghost', 'destructive'] as const

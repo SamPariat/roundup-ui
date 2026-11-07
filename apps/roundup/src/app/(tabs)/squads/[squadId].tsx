@@ -10,15 +10,15 @@ import { useSquad } from '@roundup/core'
 import { useT } from '@roundup/i18n'
 import { Avatar, Button, EmptyState, List, Skeleton, Text } from '@roundup/ui'
 
-import type { TSheet } from '../../../components/squads/SquadSheets'
+import type { TSheet } from '@/components/squads/SquadSheets'
 
-import { MemberActions } from '../../../components/squads/MemberActionsModal'
-import { MemberRow } from '../../../components/squads/MemberRow'
-import { SquadSheets } from '../../../components/squads/SquadSheets'
-import { TabPage } from '../../../components/TabPage'
-import { useErrorText } from '../../../hooks/useErrorText'
-import { useLayout } from '../../../hooks/useLayout'
-import { Paths } from '../../../navigation/paths'
+import { MemberActions } from '@/components/squads/MemberActionsModal'
+import { MemberRow } from '@/components/squads/MemberRow'
+import { SquadSheets } from '@/components/squads/SquadSheets'
+import { TabPage } from '@/components/TabPage'
+import { useErrorText } from '@/hooks/useErrorText'
+import { useLayout } from '@/hooks/useLayout'
+import { Paths } from '@/navigation/paths'
 
 /**
  * One squad: its avatar and member count, then the members with an Admin badge on admins. What a

@@ -4,7 +4,7 @@ import { Stack } from 'expo-router'
 
 import { useT } from '@roundup/i18n'
 
-import { TabStack } from '../../../components/TabStack'
+import { TabStack } from '@/components/TabStack'
 
 /**
  * The stack inside the Profile tab, so Edit profile and Preferences push on top of Profile and the

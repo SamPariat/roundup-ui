@@ -6,7 +6,7 @@ import { View } from 'react-native'
 import { useT } from '@roundup/i18n'
 import { EmptyState, Text } from '@roundup/ui'
 
-import { Paths } from '../navigation/paths'
+import { Paths } from '@/navigation/paths'
 
 /**
  * Expo Router's fallback for any URL that matches no route, with a link back to the squads.
