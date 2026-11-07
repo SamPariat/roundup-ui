@@ -76,6 +76,20 @@ describe('Modal', () => {
     })
   })
 
+  it('has no close button, so its own actions close it', async () => {
+    await Render.withTheme(
+      <Modal
+        actions={[<Button key="leave">Leave</Button>]}
+        body="You can rejoin later."
+        title="Leave squad?"
+        tone="confirm"
+      />,
+    )
+
+    expect(screen.queryByRole('button', { name: 'Close' })).not.toBeOnTheScreen()
+    expect(screen.getByRole('button', { name: 'Leave' })).toBeOnTheScreen()
+  })
+
   it('is a dialog named by its title', async () => {
     await Render.withTheme(
       <Modal title="Add member">
@@ -119,46 +133,6 @@ describe('Modal', () => {
     })
   })
 
-  it('closes from its Close button', async () => {
-    const onClose = jest.fn()
-
-    await Render.withTheme(
-      <Modal onClose={onClose} title="Add member">
-        <Text>Body</Text>
-      </Modal>,
-    )
-
-    await fireEvent.press(screen.getByRole('button', { name: 'Close' }))
-
-    await waitFor(() => {
-      expect(onClose).toHaveBeenCalledTimes(1)
-    })
-  })
-
-  it('has no Close button on a confirmation', async () => {
-    await Render.withTheme(
-      <Modal
-        actions={[<Button key="leave">Leave</Button>]}
-        body="You can rejoin later."
-        title="Leave squad?"
-        tone="confirm"
-      />,
-    )
-
-    expect(screen.queryByRole('button', { name: 'Close' })).not.toBeOnTheScreen()
-    expect(screen.getByRole('button', { name: 'Leave' })).toBeOnTheScreen()
-  })
-
-  it('can hide its Close button', async () => {
-    await Render.withTheme(
-      <Modal closable={false} title="Add member">
-        <Text>Body</Text>
-      </Modal>,
-    )
-
-    expect(screen.queryByRole('button', { name: 'Close' })).not.toBeOnTheScreen()
-  })
-
   it('shows nothing while not visible', async () => {
     await Render.withTheme(<Modal title="Add member" visible={false} />)
 
@@ -183,12 +157,6 @@ describe('Modal', () => {
         <Text>Body</Text>
       </Modal>
     )
-
-    it('hides the close button', async () => {
-      await Render.withTheme(busyModal)
-
-      expect(screen.queryByRole('button', { name: 'Close' })).not.toBeOnTheScreen()
-    })
 
     it('disables every action except the one that is loading', async () => {
       await Render.withTheme(busyModal)

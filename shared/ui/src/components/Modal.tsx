@@ -1,4 +1,5 @@
 import type { ComponentRef, ReactElement, ReactNode, RefObject } from 'react'
+import type { ViewStyle } from 'react-native'
 
 import { BlurView } from 'expo-blur'
 import { useCallback, useMemo, useRef } from 'react'
@@ -12,8 +13,7 @@ import {
   View,
 } from 'react-native'
 import Animated from 'react-native-reanimated'
-
-import { useT } from '@roundup/i18n'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
 import type { IActionContextValue } from '../lib/action-context'
 import type { TMotionStyle } from '../lib/useModalMotion'
@@ -23,7 +23,6 @@ import { cn } from '../lib/cn'
 import { ABSOLUTE_FILL } from '../lib/fill'
 import { useModalMotion } from '../lib/useModalMotion'
 import { useTheme } from '../theme/theme'
-import { Button } from './Button'
 import { Surface } from './Surface'
 import { Text } from './Text'
 
@@ -35,26 +34,30 @@ export interface IModalProps {
   subtitle?: string
   /** The subject the modal is about, e.g. an Avatar. */
   leading?: ReactNode
-  /** `confirm` is a short question with two actions and no close button. Default `content`. */
+  /** `confirm` is a short question with two actions. Default `content`. */
   tone?: 'confirm' | 'content'
   /** One plain-text paragraph under the header (confirmations). */
   body?: string
   /** Custom body content, in a scroll view under the header. */
   children?: ReactNode
-  /** Footer buttons, primary first. Stacked on a phone, right-aligned on a wide screen. */
+  /**
+   * Footer buttons, primary first. Stacked in the app's sheet, right-aligned in the web card. There
+   * is no close button, so include one that dismisses (Cancel, Done) for screen-reader users.
+   */
   actions?: ReactNode[]
   /**
-   * A request is in flight: other actions disable, the body dims and the close button hides.
+   * A request is in flight: other actions disable, the body dims and nothing closes the modal.
    * Put `loading` and a `loadingLabel` on the Button that started it.
    */
   busy?: boolean
-  /** Show the close button (content modals only). Default true. */
-  closable?: boolean
   /** Whether it is showing. The modal mounts its content only while visible. */
   visible?: boolean
-  /** Called when the close button, Esc, the Android back button or a tap on the backdrop asks to close. Not called while busy. */
+  /** Called when a tap on the backdrop, Esc or the Android back button asks to close. Not called while busy. */
   onClose?: () => void
 }
+
+/** The padding inside the modal, in points; the sheet adds the home indicator's inset below it. */
+const PADDING = 24
 
 /** How strongly the screen behind is blurred, on expo-blur's 0 to 100 scale. */
 const BACKDROP_BLUR = 24
@@ -93,32 +96,19 @@ class ModalFocus {
 interface IHeaderProps {
   /** The subject the modal is about. */
   leading?: ReactNode
-  /** Called when the close button is pressed. */
-  onClose?: (() => void) | undefined
   /** The line under the title. */
   subtitle?: string | undefined
   /** The title text. */
   title: string
-  /** Whether the close button is drawn. */
-  showClose: boolean
   /** Ref to the focusable title wrapper. */
   titleRef: RefObject<null | TTitleElement>
 }
 
 /**
- * The modal header: the subject, the title with its subtitle, and the close button.
+ * The modal header: the subject, and the title with its subtitle.
  * @returns The header row.
  */
-const ModalHeader = ({
-  leading,
-  onClose,
-  showClose,
-  subtitle,
-  title,
-  titleRef,
-}: IHeaderProps): ReactElement => {
-  const { t } = useT()
-
+const ModalHeader = ({ leading, subtitle, title, titleRef }: IHeaderProps): ReactElement => {
   return (
     <View className="flex-row items-center gap-3">
       {leading}
@@ -134,15 +124,6 @@ const ModalHeader = ({
           </Text>
         )}
       </View>
-      {showClose ? (
-        <Button
-          icon="close"
-          label={t('common.close')}
-          onPress={onClose}
-          size="sm"
-          variant="ghost"
-        />
-      ) : null}
     </View>
   )
 }
@@ -168,6 +149,7 @@ const ModalContent = ({
   // Dimming goes on the content, never on the Surface: glass does not render below opacity 1.
   return (
     <ScrollView
+      alwaysBounceVertical={false}
       className={cn('mt-4 shrink', busy && 'opacity-60')}
       contentContainerClassName="gap-3"
       pointerEvents={busy ? 'none' : 'auto'}
@@ -192,7 +174,7 @@ interface IBackdropProps {
 
 /**
  * The screen behind the modal, blurred under a light scrim. Tapping it asks the modal to close.
- * It is hidden from assistive technology, which closes the modal with its close button, Esc or the
+ * It is hidden from assistive technology, which closes the modal with its actions, Esc or the
  * Android back button instead. Android cannot blur another window, so it gets the scrim alone.
  * @returns The pressable, blurred backdrop.
  */
@@ -222,12 +204,13 @@ const ModalBackdrop = ({ onPress, style }: IBackdropProps): ReactElement => {
 }
 
 /**
- * A dialog, drawn as glass over a blurred backdrop that closes it when tapped. In the app it is a
- * bottom sheet at every width, floating 8 points in from the edges with corners that follow the
- * device's, like the system sheets. On the web it is a centered card at every width, where a sheet
- * at the bottom of a browser window reads as broken. Identical content on web and app. It traps
- * focus, closes on Esc and the Android back button, and tells assistive technology it is a
- * (alert)dialog and when it is busy; while busy nothing closes it.
+ * A dialog, drawn as glass over a blurred backdrop that closes it when tapped. There is no close
+ * button and no drag: it also closes on Esc, the Android back button and its own actions. In the
+ * app it is a bottom sheet at every width, edge to edge with rounded top corners and padded clear
+ * of the home indicator, 560 points wide at most on a tablet. On the web it is a centered card at
+ * every width, where a sheet at the bottom of a browser window reads as broken. Identical content
+ * on web and app. It traps focus and tells assistive technology it is a (alert)dialog and when it
+ * is busy; while busy nothing closes it.
  * @returns The native modal host with its sheet or card.
  */
 export const Modal = ({
@@ -235,7 +218,6 @@ export const Modal = ({
   body,
   busy = false,
   children,
-  closable = true,
   leading,
   onClose,
   subtitle,
@@ -246,19 +228,26 @@ export const Modal = ({
   const titleRef = useRef<TTitleElement>(null)
   const sheet = Platform.OS !== 'web'
   const confirm = tone === 'confirm'
-  const showClose = !confirm && !busy && closable
 
   // While a request is in flight only the loading Button stays active; Buttons read this context.
   const actionContext = useMemo((): IActionContextValue => ({ busy, block: sheet }), [busy, sheet])
 
-  // Every way of closing plays the closing motion first: the backdrop, the close button, a drag,
-  // Esc and the Android back button. While busy none of them does anything.
-  const { backdrop, dragHandlers, mounted, panel, requestClose } = useModalMotion({
+  // Every way of closing plays the closing motion first: the backdrop, Esc and the Android back
+  // button. While busy none of them does anything.
+  const { backdrop, mounted, panel, requestClose } = useModalMotion({
     busy,
     onClose,
     sheet,
     visible,
   })
+
+  // The sheet runs to the bottom edge, so its last action stays clear of the home indicator.
+  const { bottom } = useSafeAreaInsets()
+
+  const sheetPadding = useMemo(
+    (): undefined | ViewStyle => (sheet ? { paddingBottom: PADDING + bottom } : undefined),
+    [bottom, sheet],
+  )
 
   const focusTitle = useCallback((): void => {
     ModalFocus.moveFocusTo(titleRef.current)
@@ -277,10 +266,7 @@ export const Modal = ({
           padding by the keyboard's height lifts the sheet. Android resizes the window itself. */}
       <KeyboardAvoidingView
         behavior={Platform.select({ ios: 'padding' })}
-        className={cn(
-          'flex-1',
-          sheet ? 'justify-end px-2 pb-2' : 'items-center justify-center p-6',
-        )}
+        className={cn('flex-1', sheet ? 'justify-end' : 'items-center justify-center p-6')}
       >
         <ModalBackdrop onPress={requestClose} style={backdrop} />
         {/* NativeWind does not style Reanimated views, so the size lives on a plain View and the
@@ -295,29 +281,21 @@ export const Modal = ({
               aria-busy={busy}
               aria-modal
               className={cn(
-                'max-h-full border border-glass-edge p-6',
-                sheet ? 'rounded-[32px] shadow-sheet' : 'rounded-[28px] shadow-toast',
-                !sheet && 'bg-glass backdrop-blur-2xl',
+                'max-h-full border border-glass-edge px-6 pt-6',
+                sheet
+                  ? 'rounded-t-[20px] border-x-0 border-b-0 shadow-sheet'
+                  : 'rounded-[20px] shadow-toast',
+                !sheet && 'bg-glass pb-6 backdrop-blur-2xl',
               )}
               role={confirm ? 'alertdialog' : 'dialog'}
+              style={sheetPadding}
             >
-              {/* The handle and the header are where a finger drags the sheet down to close it. */}
-              <View {...dragHandlers}>
-                {sheet ? (
-                  <View
-                    aria-hidden
-                    className="-mt-3 mb-3 h-1.5 w-10 self-center rounded-full bg-border-strong"
-                  />
-                ) : null}
-                <ModalHeader
-                  leading={leading}
-                  onClose={requestClose}
-                  showClose={showClose}
-                  subtitle={subtitle}
-                  title={title}
-                  titleRef={titleRef}
-                />
-              </View>
+              <ModalHeader
+                leading={leading}
+                subtitle={subtitle}
+                title={title}
+                titleRef={titleRef}
+              />
               <ModalContent body={body} busy={busy}>
                 {children}
               </ModalContent>

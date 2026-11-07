@@ -8,7 +8,6 @@ export const en = {
   common: {
     appName: 'Roundup',
     back: 'Back',
-    close: 'Close',
     loading: 'Loading',
     members_one: '{{count}} member',
     members_other: '{{count}} members',
