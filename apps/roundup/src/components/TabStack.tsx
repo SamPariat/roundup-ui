@@ -26,8 +26,8 @@ export interface ITabStackProps {
 /**
  * The stack inside a tab, so pushed screens keep the tab selected. Every screen gets a header, so
  * pushing one never shifts the content. Titles are written once, in the stack layout:
- * - iOS shows the system header with only its back chevron, no title and no back label, plus the
- *   screen's headerRight; the tab bar already says where the person is.
+ * - iOS shows the system header with the title, a back chevron without a label on a pushed screen
+ *   and the screen's headerRight.
  * - Web and Android draw TabHeader from the same options: the title, a back button on a pushed
  *   screen and the headerRight actions.
  * @returns A Stack whose screens share these header options.
@@ -44,7 +44,6 @@ export const TabStack = ({ children }: ITabStackProps): ReactElement => {
             contentStyle: { backgroundColor: background },
             headerBackButtonDisplayMode: 'minimal',
             headerTintColor: foreground,
-            headerTitle: '',
           }
         : { contentStyle: { backgroundColor: background }, header: renderTabHeader },
     [background, foreground, systemChrome],
