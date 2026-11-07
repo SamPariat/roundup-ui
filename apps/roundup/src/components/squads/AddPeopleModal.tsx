@@ -26,7 +26,7 @@ export const AddPeopleModal = ({
   squadId,
   squadName,
 }: IAddPeopleModalProps): ReactElement => {
-  const [typing, setTyping] = useState(false)
+  const [typing, setTyping] = useState<boolean>(false)
 
   const typeNumber = useCallback((): void => {
     setTyping(true)

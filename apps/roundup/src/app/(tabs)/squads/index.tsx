@@ -24,8 +24,8 @@ import { TabList } from '../../../components/TabList'
 export default function SquadsScreen(): ReactElement {
   const { t } = useT()
   const { hasMore, loading, loadingMore, loadMore, refresh, squads } = useSquads()
-  const [creating, setCreating] = useState(false)
-  const [refreshing, setRefreshing] = useState(false)
+  const [creating, setCreating] = useState<boolean>(false)
+  const [refreshing, setRefreshing] = useState<boolean>(false)
   const ios = Platform.OS === 'ios'
 
   const openCreate = useCallback((): void => {

@@ -51,7 +51,7 @@ export const useContactPickerViewModel = (squadId: string): IContactPickerViewMo
   const [phase, setPhase] = useState<TPickerPhase>('loading')
   const [found, setFound] = useState<IContactMatch[]>([])
   const [picked, setPicked] = useState<ReadonlySet<string>>(() => new Set())
-  const [query, setQuery] = useState('')
+  const [query, setQuery] = useState<string>('')
 
   const find = useEffectEvent((numbers: string[]) => lookup.lookup(numbers))
 
