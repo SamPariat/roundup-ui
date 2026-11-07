@@ -67,7 +67,6 @@ export const RenameSquadModal = ({
       title={t('screens.squad.rename.title')}
     >
       <TextField
-        disabled={busy}
         helper={t('screens.squad.rename.nameHelper')}
         label={t('screens.squad.rename.nameLabel')}
         onChangeText={setName}

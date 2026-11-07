@@ -60,7 +60,6 @@ export const CreateSquadModal = ({ onClose }: ICreateSquadModalProps): ReactElem
       title={t('screens.squads.create.title')}
     >
       <TextField
-        disabled={busy}
         helper={t('screens.squads.create.nameHelper')}
         label={t('screens.squads.create.nameLabel')}
         onChangeText={setName}

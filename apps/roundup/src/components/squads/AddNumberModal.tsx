@@ -57,7 +57,6 @@ export const AddNumberModal = ({
       title={t('addPeople.number.title')}
     >
       <PhoneInput
-        disabled={busy}
         helper={t('addPeople.number.helper')}
         label={t('addPeople.number.label')}
         onChangeText={setPhone}
