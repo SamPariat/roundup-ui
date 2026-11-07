@@ -3,7 +3,7 @@ import type { ReactElement } from 'react'
 import type { ISquadInfo, ISquadPermissions, TRole } from '@roundup/core'
 
 import { useT } from '@roundup/i18n'
-import { Avatar, Icon, List, ListRow, Modal } from '@roundup/ui'
+import { Avatar, Button, Icon, List, ListRow, Modal } from '@roundup/ui'
 
 /** Props for SquadOptionsModal. */
 export interface ISquadOptionsModalProps {
@@ -42,8 +42,16 @@ export const SquadOptionsModal = ({
       ? t('screens.squad.optionsSubtitleAdmin', { members })
       : t('screens.squad.optionsSubtitleMember', { members })
 
+  // Modals have no close button, so a ghost Cancel dismisses this one.
+  const actions = [
+    <Button key="cancel" onPress={onClose} variant="ghost">
+      {t('common.cancel')}
+    </Button>,
+  ]
+
   return (
     <Modal
+      actions={actions}
       leading={
         <Avatar
           id={squad.id}

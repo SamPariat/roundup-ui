@@ -105,8 +105,16 @@ export const MemberActionsModal = ({
       </Button>
     ) : undefined
 
+  // Modals have no close button, so a ghost Cancel dismisses this one.
+  const actions = [
+    <Button key="cancel" onPress={onClose} variant="ghost">
+      {t('common.cancel')}
+    </Button>,
+  ]
+
   return (
     <Modal
+      actions={actions}
       busy={busy}
       leading={
         <Avatar
