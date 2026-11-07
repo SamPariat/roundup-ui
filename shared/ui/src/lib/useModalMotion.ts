@@ -3,6 +3,7 @@ import type { ViewStyle } from 'react-native'
 import { useCallback, useEffect, useState } from 'react'
 import { useWindowDimensions } from 'react-native'
 import {
+  cancelAnimation,
   Easing,
   interpolate,
   useAnimatedStyle,
@@ -113,6 +114,14 @@ export const useModalMotion = (options: IModalMotionOptions): IModalMotion => {
 
     animateTo(0, markClosed)
   }, [animateTo, markClosed, markOpened, opened, visible])
+
+  const stopMotion = useCallback((): void => {
+    cancelAnimation(progress)
+  }, [progress])
+
+  // An animation still running when the modal unmounts is cancelled, so it does not keep running
+  // on the UI thread or call back into a component that is gone.
+  useEffect((): (() => void) => stopMotion, [stopMotion])
 
   const finishClose = useCallback((): void => {
     setOpened(false)

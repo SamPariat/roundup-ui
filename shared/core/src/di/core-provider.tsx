@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react'
 
 import { AuthBridge } from '@roundup/api'
 
+import type { INetworkSource } from '../network/types'
 import type { ISession } from '../session/session'
 import type { IDeps } from './deps'
 
@@ -18,6 +19,40 @@ export interface ICoreProviderProps {
   children: ReactNode
   /** Replaces any of the real dependencies, which tests use to pass fakes. */
   deps?: Partial<IDeps>
+}
+
+/** Tells TanStack Query whether the device is online. */
+type TSetOnline = (online: boolean) => void
+
+/**
+ * Connects TanStack Query's online state to the network source. Static methods only.
+ */
+class OnlineBridge {
+  /**
+   * Builds the listener setup for onlineManager: it reports the current state, then every change,
+   * and returns the unsubscribe that onlineManager calls when the listener is replaced.
+   * @param network - Where the connection state comes from.
+   * @returns The setup function onlineManager takes.
+   */
+  static listenTo(network: INetworkSource): (setOnline: TSetOnline) => () => void {
+    return (setOnline: TSetOnline): (() => void) => {
+      void network.getState().then(({ online }) => {
+        setOnline(online)
+      })
+
+      return network.subscribe(({ online }) => {
+        setOnline(online)
+      })
+    }
+  }
+
+  /**
+   * A setup that listens to nothing. Installing it makes onlineManager call the previous
+   * listener's unsubscribe, which is how the network subscription is let go.
+   */
+  static readonly none = (): undefined => {
+    // Subscribes to nothing, so there is nothing to undo.
+  }
 }
 
 /** What the provider builds once: the dependencies and the session on top of them. */
@@ -52,18 +87,13 @@ export const CoreProvider = ({ children, deps }: ICoreProviderProps): ReactEleme
     void built.session.restore()
 
     // Queries pause while offline and refetch when the connection returns.
-    onlineManager.setEventListener((setOnline) => {
-      void built.deps.network.getState().then(({ online }) => {
-        setOnline(online)
-      })
-
-      return built.deps.network.subscribe(({ online }) => {
-        setOnline(online)
-      })
-    })
+    onlineManager.setEventListener(OnlineBridge.listenTo(built.deps.network))
 
     return () => {
       AuthBridge.set(undefined)
+      // onlineManager is global and outlives this provider; without this it keeps the network
+      // subscription, and with it the dependencies this provider built.
+      onlineManager.setEventListener(OnlineBridge.none)
     }
   }, [built])
 

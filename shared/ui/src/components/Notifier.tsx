@@ -51,13 +51,21 @@ export const Notifier = ({ notice }: INotifierProps): null | ReactElement => {
   const visible = notice !== undefined
 
   useEffect(() => {
-    Animated.timing(progress, {
+    const slide = Animated.timing(progress, {
       duration: reduced ? 0 : DURATION,
       toValue: visible ? 1 : 0,
       useNativeDriver: NATIVE_DRIVER,
-    }).start(({ finished }) => {
+    })
+
+    slide.start(({ finished }) => {
       if (finished && !visible) setShown(undefined)
     })
+
+    // A new notice, or the Notifier going away, stops the slide still running, so it does not
+    // keep animating, or hold this component, after it is no longer wanted.
+    return () => {
+      slide.stop()
+    }
   }, [visible, reduced, progress])
 
   if (shown === undefined) return null

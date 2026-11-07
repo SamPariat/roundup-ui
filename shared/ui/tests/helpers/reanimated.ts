@@ -87,6 +87,14 @@ export const withTiming = (toValue: number, _config?: object, callback?: TFinish
 }
 
 /**
+ * Stops a running animation; nothing runs in the stand-in, so there is nothing to stop.
+ * @param _value - The shared value whose animation would stop.
+ */
+export const cancelAnimation = (_value: unknown): void => {
+  // Animations end at once here, so none is ever running.
+}
+
+/**
  * Ends at once on the target.
  * @param toValue - Where the spring settles.
  * @returns The target.
@@ -114,6 +122,7 @@ export const interpolate = (value: number, input: number[], output: number[]): n
 export const reanimatedModule = {
   __esModule: true,
   Animated,
+  cancelAnimation,
   default: Animated,
   Easing,
   interpolate,

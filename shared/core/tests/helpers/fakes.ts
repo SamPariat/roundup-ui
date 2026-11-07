@@ -84,6 +84,14 @@ export class FakeNetwork implements INetworkSource {
   }
 
   /**
+   * How many are listening, so a test can check every subscription was let go.
+   * @returns The number of listeners.
+   */
+  get listenerCount(): number {
+    return this.listeners.size
+  }
+
+  /**
    * Changes the state and tells the listeners.
    * @param online - Whether the device is now online.
    */
