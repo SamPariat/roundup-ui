@@ -49,4 +49,11 @@ describe('Paths', () => {
       pathname: '/squads/[squadId]',
     })
   })
+
+  it('carries the squad name as the title query parameter', () => {
+    expect(Paths.squad('s1', 'Weekend Crew')).toEqual({
+      params: { squadId: 's1', title: 'Weekend Crew' },
+      pathname: '/squads/[squadId]',
+    })
+  })
 })

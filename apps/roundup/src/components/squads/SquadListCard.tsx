@@ -23,8 +23,8 @@ export const SquadListCard = ({ squad }: ISquadListCardProps): ReactElement => {
   const router = useRouter()
 
   const handleOpen = useCallback((): void => {
-    router.push(Paths.squad(squad.id))
-  }, [router, squad.id])
+    router.push(Paths.squad(squad.id, squad.name))
+  }, [router, squad.id, squad.name])
 
   return (
     <SquadCard

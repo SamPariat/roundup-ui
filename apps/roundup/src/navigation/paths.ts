@@ -22,6 +22,8 @@ interface ICodeQuery extends TQuery {
 interface ISquadParams extends TQuery {
   /** The squad's ID. */
   squadId: string
+  /** The squad's name, which the header shows as the page's title. */
+  title?: string
 }
 
 /**
@@ -97,12 +99,17 @@ export class Paths {
   }
 
   /**
-   * One squad, under the Squads tab. Needs the squad's ID.
+   * One squad, under the Squads tab. Needs the squad's ID; its name rides along as the title
+   * query parameter, so the page's header shows it at once, before the squad loads.
    * @param squadId - The squad to open.
+   * @param title - The squad's name, when the caller knows it.
    * @returns The path with its parameters.
    */
-  static squad(squadId: string): ILink<'/squads/[squadId]', ISquadParams> {
-    return { params: { squadId }, pathname: '/squads/[squadId]' }
+  static squad(squadId: string, title?: string): ILink<'/squads/[squadId]', ISquadParams> {
+    return {
+      params: { squadId, ...(title === undefined ? {} : { title }) },
+      pathname: '/squads/[squadId]',
+    }
   }
 
   /**

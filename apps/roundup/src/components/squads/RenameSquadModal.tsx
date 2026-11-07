@@ -1,5 +1,6 @@
 import type { ReactElement } from 'react'
 
+import { useRouter } from 'expo-router'
 import { useCallback } from 'react'
 
 import { useRenameSquadViewModel } from '@roundup/core'
@@ -30,6 +31,7 @@ export const RenameSquadModal = ({
   squadId,
 }: IRenameSquadModalProps): ReactElement => {
   const { t } = useT()
+  const router = useRouter()
 
   const { busy, error, name, requestId, setName, submit } = useRenameSquadViewModel(
     squadId,
@@ -38,9 +40,13 @@ export const RenameSquadModal = ({
 
   const errorText = useErrorText(error, requestId)
 
+  // The squad page's title rides in its title query parameter, so a saved name updates it there.
   const handleSave = useCallback(async (): Promise<void> => {
-    if (await submit()) onClose()
-  }, [onClose, submit])
+    if (!(await submit())) return
+
+    router.setParams({ title: name.trim() })
+    onClose()
+  }, [name, onClose, router, submit])
 
   const actions = [
     <Button

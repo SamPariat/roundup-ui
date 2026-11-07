@@ -91,7 +91,7 @@ export default function SquadScreen(): ReactElement {
 
   return (
     <>
-      <Stack.Screen options={{ headerRight: renderHeaderRight, title: squad.name }} />
+      <Stack.Screen options={{ headerRight: renderHeaderRight }} />
       <TabPage>
         <View className="max-w-160 gap-6">
           <View className="flex-row items-center gap-4">
