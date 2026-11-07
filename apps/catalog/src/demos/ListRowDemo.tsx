@@ -11,7 +11,7 @@ import { Specimen } from '../components/Specimen'
  * @returns The specimens.
  */
 export const ListRowDemo = (): ReactElement => {
-  const [presses, setPresses] = useState(0)
+  const [presses, setPresses] = useState<number>(0)
 
   const press = useCallback((): void => {
     setPresses((count) => count + 1)

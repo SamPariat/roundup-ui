@@ -67,10 +67,10 @@ export const useModalMotion = (options: IModalMotionOptions): IModalMotion => {
   const reduced = useReducedMotion()
   const { height } = useWindowDimensions()
   // 0 is closed and 1 is open.
-  const progress = useSharedValue(0)
+  const progress = useSharedValue<number>(0)
   // Whether the modal has finished opening and is up. The host stays mounted while the parent
   // shows it or while it is still open, so the closing motion can play after the parent hides it.
-  const [opened, setOpened] = useState(false)
+  const [opened, setOpened] = useState<boolean>(false)
 
   const animateTo = useCallback(
     (toValue: 0 | 1, done?: () => void): void => {

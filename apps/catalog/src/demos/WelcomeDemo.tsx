@@ -12,7 +12,7 @@ import { Specimen } from '../components/Specimen'
  * @returns The specimens.
  */
 export const WelcomeDemo = (): ReactElement => {
-  const [started, setStarted] = useState(false)
+  const [started, setStarted] = useState<boolean>(false)
 
   const start = useCallback((): void => {
     setStarted(true)

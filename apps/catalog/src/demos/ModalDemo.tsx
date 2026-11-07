@@ -18,7 +18,7 @@ type TOpen = 'busy' | 'confirm' | 'content' | null
  */
 export const ModalDemo = (): ReactElement => {
   const [open, setOpen] = useState<TOpen>(null)
-  const [saving, setSaving] = useState(false)
+  const [saving, setSaving] = useState<boolean>(false)
 
   const showContent = useCallback((): void => {
     setOpen('content')

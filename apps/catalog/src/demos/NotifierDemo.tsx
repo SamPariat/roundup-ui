@@ -40,7 +40,7 @@ const Stage = ({ notice }: IStageProps): ReactElement => (
  * @returns The specimens.
  */
 export const NotifierDemo = (): ReactElement => {
-  const [offline, setOffline] = useState(false)
+  const [offline, setOffline] = useState<boolean>(false)
 
   const toggle = useCallback((): void => {
     setOffline((current) => !current)

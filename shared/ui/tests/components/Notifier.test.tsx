@@ -28,7 +28,7 @@ interface IHostProps {
  * @returns The notifier and the button.
  */
 const Host = ({ first, next }: IHostProps): ReactElement => {
-  const [notice, setNotice] = useState(first)
+  const [notice, setNotice] = useState<INotice | undefined>(first)
 
   const change = useCallback((): void => {
     setNotice(next)

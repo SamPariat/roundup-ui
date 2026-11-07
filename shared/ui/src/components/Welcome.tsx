@@ -62,7 +62,7 @@ const WelcomeArt = (): ReactElement => {
  */
 export const Welcome = ({ body, onStart, startLabel, title }: IWelcomeProps): ReactElement => {
   const { t } = useT()
-  const [width, setWidth] = useState(0)
+  const [width, setWidth] = useState<number>(0)
   const wide = Breakpoint.of(width) !== 'phone'
 
   const handleLayout = useCallback((event: LayoutChangeEvent): void => {

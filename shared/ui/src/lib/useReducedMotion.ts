@@ -6,7 +6,7 @@ import { AccessibilityInfo } from 'react-native'
  * @returns Whether motion should be reduced; false until the setting has been read.
  */
 export const useReducedMotion = (): boolean => {
-  const [reduced, setReduced] = useState(false)
+  const [reduced, setReduced] = useState<boolean>(false)
 
   useEffect(() => {
     let active = true

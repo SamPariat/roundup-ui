@@ -18,7 +18,7 @@ const SIZES = ['sm', 'md', 'lg'] as const
  * @returns The specimens.
  */
 export const ButtonDemo = (): ReactElement => {
-  const [sending, setSending] = useState(false)
+  const [sending, setSending] = useState<boolean>(false)
 
   const send = useCallback((): void => {
     setSending(true)

@@ -12,7 +12,7 @@ import { PEOPLE } from '../fixtures'
  * @returns The specimens.
  */
 export const SkeletonDemo = (): ReactElement => {
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState<boolean>(true)
 
   const toggle = useCallback((): void => {
     setLoading((current) => !current)

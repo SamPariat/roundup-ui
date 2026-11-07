@@ -12,7 +12,7 @@ import { CLOSED_VENUE, OPEN_VENUE } from '../fixtures'
  * @returns The specimens.
  */
 export const VenueCardDemo = (): ReactElement => {
-  const [saved, setSaved] = useState(false)
+  const [saved, setSaved] = useState<boolean>(false)
 
   const toggle = useCallback((): void => {
     setSaved((current) => !current)

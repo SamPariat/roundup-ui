@@ -46,9 +46,9 @@ export const useCodeViewModel = (phone: string): ICodeViewModel => {
   const codeHelper = helpers.code
   const { signIn } = useSession()
   const { busy, clear, error, fail, requestId, run } = useAttempt()
-  const [typed, setTyped] = useState('')
-  const [sentAt, setSentAt] = useState(now)
-  const [current, setCurrent] = useState(now)
+  const [typed, setTyped] = useState<string>('')
+  const [sentAt, setSentAt] = useState<number>(now)
+  const [current, setCurrent] = useState<number>(now)
   const resendIn = Math.max(0, RESEND_SECONDS - Math.floor((current - sentAt) / SECOND))
 
   const expired = resendIn === 0

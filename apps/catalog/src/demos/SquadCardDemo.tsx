@@ -12,7 +12,7 @@ import { BOOK_CLUB, FRIDAY_FOOTY, PEOPLE } from '../fixtures'
  * @returns The specimens.
  */
 export const SquadCardDemo = (): ReactElement => {
-  const [opened, setOpened] = useState('Nothing yet')
+  const [opened, setOpened] = useState<string>('Nothing yet')
 
   const open = useCallback((): void => {
     setOpened('Opened Friday Footy')

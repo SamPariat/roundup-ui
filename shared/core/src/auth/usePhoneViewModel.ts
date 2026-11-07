@@ -30,7 +30,7 @@ export interface IPhoneViewModel {
 export const usePhoneViewModel = (): IPhoneViewModel => {
   const { helpers } = useDeps()
   const phoneHelper = helpers.phone
-  const [digits, setDigits] = useState('')
+  const [digits, setDigits] = useState<string>('')
   const { busy, clear, error, fail, requestId, run } = useAttempt()
 
   const setPhone = useCallback(

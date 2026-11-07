@@ -11,7 +11,7 @@ import { Specimen } from '../components/Specimen'
  * @returns The specimens.
  */
 export const PhoneInputDemo = (): ReactElement => {
-  const [phone, setPhone] = useState('')
+  const [phone, setPhone] = useState<string>('')
 
   return (
     <>
