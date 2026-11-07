@@ -2,7 +2,6 @@ import type { ReactElement } from 'react'
 
 import { Stack } from 'expo-router'
 import { useCallback, useState } from 'react'
-import { Platform } from 'react-native'
 
 import type { ISquadCard } from '@roundup/core'
 
@@ -13,6 +12,7 @@ import { Button, EmptyState, Skeleton } from '@roundup/ui'
 import { CreateSquadModal } from '../../../components/squads/CreateSquadModal'
 import { SquadListCard } from '../../../components/squads/SquadListCard'
 import { TabList } from '../../../components/TabList'
+import { useLayout } from '../../../hooks/useLayout'
 
 /**
  * The Squads tab: the person's squads as cards, a New squad action, and an empty state that
@@ -26,25 +26,27 @@ export default function SquadsScreen(): ReactElement {
   const { hasMore, loading, loadingMore, loadMore, refresh, squads } = useSquads()
   const [creating, setCreating] = useState<boolean>(false)
   const [refreshing, setRefreshing] = useState<boolean>(false)
-  const ios = Platform.OS === 'ios'
+  const { systemChrome } = useLayout()
 
-  const openCreate = useCallback((): void => {
+  const handleOpenCreate = useCallback((): void => {
     setCreating(true)
   }, [])
 
-  const closeCreate = useCallback((): void => {
+  const handleCloseCreate = useCallback((): void => {
     setCreating(false)
   }, [])
 
-  const reload = useCallback((): void => {
+  const handleReload = useCallback(async (): Promise<void> => {
     setRefreshing(true)
 
-    void refresh().finally(() => {
+    try {
+      await refresh()
+    } finally {
       setRefreshing(false)
-    })
+    }
   }, [refresh])
 
-  const loadNext = useCallback((): void => {
+  const handleLoadNext = useCallback((): void => {
     if (hasMore) loadMore()
   }, [hasMore, loadMore])
 
@@ -60,24 +62,26 @@ export default function SquadsScreen(): ReactElement {
       <Button
         icon="plus"
         label={t('screens.squads.newSquad')}
-        onPress={openCreate}
+        onPress={handleOpenCreate}
         variant="ghost"
       />
     ),
-    [openCreate, t],
+    [handleOpenCreate, t],
   )
 
   const newSquad = (
-    <Button icon="plus" onPress={openCreate}>
+    <Button icon="plus" onPress={handleOpenCreate}>
       {t('screens.squads.newSquad')}
     </Button>
   )
 
-  const showHeaderAction = !ios && squads.length > 0
+  // In the system chrome New squad sits in the header; AppShell has no room there, so it leads the
+  // list instead.
+  const showListAction = !systemChrome && squads.length > 0
 
   return (
     <>
-      {ios ? <Stack.Screen options={{ headerRight: renderHeaderRight }} /> : null}
+      <Stack.Screen options={{ headerRight: renderHeaderRight }} />
       <TabList
         data={squads}
         empty={
@@ -89,15 +93,15 @@ export default function SquadsScreen(): ReactElement {
           />
         }
         footer={loadingMore ? <Skeleton /> : undefined}
-        header={showHeaderAction ? newSquad : undefined}
+        header={showListAction ? newSquad : undefined}
         keyExtractor={keyOf}
         loading={loading}
-        onEndReached={loadNext}
-        onRefresh={reload}
+        onEndReached={handleLoadNext}
+        onRefresh={handleReload}
         refreshing={refreshing}
         renderItem={renderCard}
       />
-      {creating ? <CreateSquadModal onClose={closeCreate} /> : null}
+      {creating ? <CreateSquadModal onClose={handleCloseCreate} /> : null}
     </>
   )
 }

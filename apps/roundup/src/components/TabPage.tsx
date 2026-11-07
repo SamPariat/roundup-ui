@@ -2,7 +2,7 @@ import type { ReactElement, ReactNode } from 'react'
 import type { ViewStyle } from 'react-native'
 import type { Edge } from 'react-native-safe-area-context'
 
-import { Platform, ScrollView, View } from 'react-native'
+import { ScrollView, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
 import { cn } from '@roundup/ui'
@@ -32,9 +32,9 @@ const VISIBLE: readonly Edge[] = ['top', 'bottom']
  * @returns The scrolling or centered page.
  */
 export const TabPage = ({ centered = false, children }: ITabPageProps): ReactElement => {
-  const { gutter } = useLayout()
-  const ios = Platform.OS === 'ios'
-  const sides = ios && (gutter === 32 ? 'px-8' : 'px-4')
+  // In the system chrome there is no AppShell to give the gutter, so the page takes it.
+  const { gutterClass, systemChrome } = useLayout()
+  const sides = systemChrome && gutterClass
 
   if (!centered) {
     return (
@@ -50,7 +50,7 @@ export const TabPage = ({ centered = false, children }: ITabPageProps): ReactEle
 
   const body = <View className={cn('flex-1 justify-center py-6', sides)}>{children}</View>
 
-  return ios ? (
+  return systemChrome ? (
     <SafeAreaView edges={VISIBLE} style={FILL}>
       {body}
     </SafeAreaView>

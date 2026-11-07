@@ -163,6 +163,13 @@ export default [
           allowAny: false,
         },
       ],
+      // A press handler may be async (async (): Promise<void> => { if (await submit()) close() }):
+      // the view models catch every failure and turn it into a message, so nothing rejects. Every
+      // other place a promise stands in for a void callback is still checked.
+      '@typescript-eslint/no-misused-promises': [
+        'error',
+        { checksVoidReturn: { attributes: false } },
+      ],
       // Names say what a thing is: camelCase values, PascalCase types and components, UPPER_CASE constants.
       '@typescript-eslint/naming-convention': [
         'error',
@@ -444,6 +451,25 @@ export default [
     files: ['apps/catalog/src/**/*.tsx'],
     plugins: { i18next },
     rules: { 'i18next/no-literal-string': 'off' },
+  },
+
+  {
+    // In the files that declare stack routes, a Stack.Screen name is a route file's name, never copy,
+    // so name is read here only on the other attributes.
+    files: ['apps/roundup/src/app/**/_layout*.tsx', 'apps/roundup/src/components/AuthStack.tsx'],
+    rules: {
+      'i18next/no-literal-string': [
+        'error',
+        {
+          mode: 'jsx-only',
+          'jsx-attributes': {
+            exclude: [
+              /^(?!(?:accessibilityLabel|accessibilityHint|aria-label|alt|label|loadingLabel|startLabel|placeholder|title|subtitle|body|helper|error|text)$).*$/,
+            ],
+          },
+        },
+      ],
+    },
   },
 
   // ── Architecture ────────────────────────────────────────────

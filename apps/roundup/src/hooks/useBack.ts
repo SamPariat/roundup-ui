@@ -15,7 +15,12 @@ export const useBack = (fallback: Href = Paths.tabsProfile()): (() => void) => {
   const router = useRouter()
 
   return useCallback((): void => {
-    if (router.canGoBack()) router.back()
-    else router.replace(fallback)
+    if (!router.canGoBack()) {
+      router.replace(fallback)
+
+      return
+    }
+
+    router.back()
   }, [fallback, router])
 }

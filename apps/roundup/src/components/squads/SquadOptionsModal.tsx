@@ -2,6 +2,7 @@ import type { ReactElement } from 'react'
 
 import type { ISquadInfo, ISquadPermissions, TRole } from '@roundup/core'
 
+import { Role } from '@roundup/core'
 import { useT } from '@roundup/i18n'
 import { Avatar, Button, Icon, List, ListRow, Modal } from '@roundup/ui'
 
@@ -38,7 +39,7 @@ export const SquadOptionsModal = ({
   const members = t('common.members', { count: squad.memberCount })
 
   const subtitle =
-    myRole === 'ADMIN'
+    myRole === Role.ADMIN
       ? t('screens.squad.optionsSubtitleAdmin', { members })
       : t('screens.squad.optionsSubtitleMember', { members })
 

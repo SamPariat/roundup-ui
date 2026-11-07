@@ -5,10 +5,9 @@ import { Linking, View } from 'react-native'
 
 import { useContactPickerViewModel } from '@roundup/core'
 import { useT } from '@roundup/i18n'
-import { Button, Icon, List, ListRow, Modal, Skeleton, Text, TextField } from '@roundup/ui'
+import { Button, Icon, List, ListRow, Modal, Skeleton, Text, TextField, Toast } from '@roundup/ui'
 
 import { useErrorText } from '../../hooks/useErrorText'
-import { InlineError } from '../InlineError'
 import { PersonRow } from './PersonRow'
 
 /** Props for ContactPickerModal. */
@@ -37,21 +36,19 @@ export const ContactPickerModal = ({
   const picker = useContactPickerViewModel(squadId)
   const errorText = useErrorText(picker.error, picker.requestId)
 
-  const openSettings = useCallback((): void => {
+  const handleOpenSettings = useCallback((): void => {
     void Linking.openSettings()
   }, [])
 
-  const add = useCallback((): void => {
-    void picker.add().then((added) => {
-      if (added) onClose()
-    })
+  const handleAdd = useCallback(async (): Promise<void> => {
+    if (await picker.add()) onClose()
   }, [onClose, picker])
 
   if (picker.phase === 'denied') {
     return (
       <Modal
         actions={[
-          <Button key="settings" onPress={openSettings}>
+          <Button key="settings" onPress={handleOpenSettings}>
             {t('addPeople.denied.openSettings')}
           </Button>,
           <Button key="type" onPress={onTypeNumber} variant="ghost">
@@ -73,7 +70,7 @@ export const ContactPickerModal = ({
       key="add"
       loading={picker.busy && picker.phase === 'ready'}
       loadingLabel={t('addPeople.adding', { count })}
-      onPress={add}
+      onPress={handleAdd}
     >
       {count === 0 ? t('addPeople.addNone') : t('addPeople.add', { count })}
     </Button>,
@@ -117,7 +114,7 @@ export const ContactPickerModal = ({
           ))}
         </List>
       ) : null}
-      <InlineError message={errorText} />
+      {errorText === undefined ? null : <Toast tone="error">{errorText}</Toast>}
       <View aria-disabled className="opacity-50" pointerEvents="none">
         <List>
           <ListRow

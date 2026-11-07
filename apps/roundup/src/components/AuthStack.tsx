@@ -6,15 +6,6 @@ import { useRoleColor } from '@roundup/ui'
 
 import { useRouteGate } from '../hooks/useRouteGate'
 
-/** The route names of the root stack, as the files under src/app spell them. */
-const ROUTES = {
-  code: 'sign-in/code',
-  name: 'sign-in/name',
-  phone: 'sign-in/index',
-  tabs: '(tabs)',
-  welcome: 'index',
-} as const
-
 /**
  * The root stack. The guards do the redirects, so no screen calls router.replace for auth: signed
  * out can reach the sign-in screens, a signed-in person with no name can reach only the name step,
@@ -32,16 +23,16 @@ export const AuthStack = (): null | ReactElement => {
   return (
     <Stack screenOptions={{ contentStyle: { backgroundColor: background }, headerShown: false }}>
       {/* Welcome is "/", which every launch starts at, so it is always routable: it sends a signed-in person on to the app itself. */}
-      <Stack.Screen name={ROUTES.welcome} />
+      <Stack.Screen name="index" />
       <Stack.Protected guard={gate === 'signedOut'}>
-        <Stack.Screen name={ROUTES.phone} />
-        <Stack.Screen name={ROUTES.code} />
+        <Stack.Screen name="sign-in/index" />
+        <Stack.Screen name="sign-in/code" />
       </Stack.Protected>
       <Stack.Protected guard={gate === 'needsName'}>
-        <Stack.Screen name={ROUTES.name} />
+        <Stack.Screen name="sign-in/name" />
       </Stack.Protected>
       <Stack.Protected guard={gate === 'signedIn'}>
-        <Stack.Screen name={ROUTES.tabs} />
+        <Stack.Screen name="(tabs)" />
       </Stack.Protected>
     </Stack>
   )

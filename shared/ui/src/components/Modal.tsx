@@ -250,7 +250,7 @@ export const Modal = ({
     [bottom, sheet],
   )
 
-  const focusTitle = useCallback((): void => {
+  const handleFocusTitle = useCallback((): void => {
     ModalFocus.moveFocusTo(titleRef.current)
   }, [])
 
@@ -258,7 +258,7 @@ export const Modal = ({
     <NativeModal
       animationType="none"
       onRequestClose={requestClose}
-      onShow={focusTitle}
+      onShow={handleFocusTitle}
       statusBarTranslucent
       transparent
       visible={mounted}

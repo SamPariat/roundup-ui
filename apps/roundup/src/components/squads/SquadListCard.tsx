@@ -22,7 +22,7 @@ export interface ISquadListCardProps {
 export const SquadListCard = ({ squad }: ISquadListCardProps): ReactElement => {
   const router = useRouter()
 
-  const open = useCallback((): void => {
+  const handleOpen = useCallback((): void => {
     router.push(Paths.squad(squad.id))
   }, [router, squad.id])
 
@@ -32,7 +32,7 @@ export const SquadListCard = ({ squad }: ISquadListCardProps): ReactElement => {
       memberCount={squad.memberCount}
       members={squad.members}
       name={squad.name}
-      onPress={open}
+      onPress={handleOpen}
       role={squad.role}
       {...(squad.avatarURL === undefined ? {} : { avatarURL: squad.avatarURL })}
     />

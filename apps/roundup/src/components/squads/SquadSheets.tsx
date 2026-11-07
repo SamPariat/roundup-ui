@@ -55,26 +55,31 @@ export const SquadSheets = ({
   sheet,
   squad,
 }: ISquadSheetsProps): null | ReactElement => {
-  const close = useCallback((): void => {
+  const handleClose = useCallback((): void => {
     onSheet()
   }, [onSheet])
 
-  const rename = useCallback((): void => {
+  const handleRename = useCallback((): void => {
     onSheet({ kind: 'rename' })
   }, [onSheet])
 
-  const leave = useCallback((): void => {
+  const handleLeave = useCallback((): void => {
     onSheet({ kind: 'leave' })
   }, [onSheet])
 
   switch (sheet?.kind) {
     case 'add': {
-      return <AddPeopleModal onClose={close} squadId={squad.id} squadName={squad.name} />
+      return <AddPeopleModal onClose={handleClose} squadId={squad.id} squadName={squad.name} />
     }
 
     case 'leave': {
       return (
-        <LeaveSquadModal name={squad.name} onClose={close} onLeft={onLeft} squadId={squad.id} />
+        <LeaveSquadModal
+          name={squad.name}
+          onClose={handleClose}
+          onLeft={onLeft}
+          squadId={squad.id}
+        />
       )
     }
 
@@ -84,7 +89,7 @@ export const SquadSheets = ({
       return member === undefined ? null : (
         <MemberActionsModal
           member={member}
-          onClose={close}
+          onClose={handleClose}
           permissions={permissions}
           squadId={squad.id}
         />
@@ -95,9 +100,9 @@ export const SquadSheets = ({
       return (
         <SquadOptionsModal
           myRole={myRole}
-          onClose={close}
-          onLeave={leave}
-          onRename={rename}
+          onClose={handleClose}
+          onLeave={handleLeave}
+          onRename={handleRename}
           permissions={permissions}
           squad={squad}
         />
@@ -105,7 +110,7 @@ export const SquadSheets = ({
     }
 
     case 'rename': {
-      return <RenameSquadModal currentName={squad.name} onClose={close} squadId={squad.id} />
+      return <RenameSquadModal currentName={squad.name} onClose={handleClose} squadId={squad.id} />
     }
 
     case undefined: {

@@ -25,17 +25,6 @@ describe('Tab.nestedTitleKey', () => {
   })
 })
 
-describe('Tab.squadId', () => {
-  it.each([
-    ['/squads/s1', 's1'],
-    ['/squads', undefined],
-    ['/squads/s1/members', undefined],
-    ['/profile/edit', undefined],
-  ] as const)('maps %s to %s', (path, id) => {
-    expect(Tab.squadId(path)).toBe(id)
-  })
-})
-
 describe('useTabItems', () => {
   it('lists the destinations in order with their English labels and page titles', async () => {
     const { result } = await renderHook(() => useTabItems())

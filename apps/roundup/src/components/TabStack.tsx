@@ -3,9 +3,10 @@ import type { ReactElement, ReactNode } from 'react'
 
 import { Stack } from 'expo-router'
 import { useMemo } from 'react'
-import { Platform } from 'react-native'
 
 import { useRoleColor } from '@roundup/ui'
+
+import { useLayout } from '../hooks/useLayout'
 
 /** Props for TabStack. */
 export interface ITabStackProps {
@@ -21,17 +22,18 @@ export interface ITabStackProps {
  * @returns A Stack whose screens share these header options.
  */
 export const TabStack = ({ children }: ITabStackProps): ReactElement => {
+  const { systemChrome } = useLayout()
   const background = useRoleColor('bg')
   const foreground = useRoleColor('fg')
 
   const screenOptions = useMemo(
     (): NativeStackNavigationOptions => ({
       contentStyle: { backgroundColor: background },
-      headerShown: Platform.OS === 'ios',
+      headerShown: systemChrome,
       headerTintColor: foreground,
       headerTitleStyle: { color: foreground },
     }),
-    [background, foreground],
+    [background, foreground, systemChrome],
   )
 
   return <Stack screenOptions={screenOptions}>{children}</Stack>

@@ -4,15 +4,22 @@ import { useCallback, useState } from 'react'
 
 import type { ISquadMember, ISquadPermissions } from '@roundup/core'
 
-import { useSquadMembersViewModel } from '@roundup/core'
+import { Role, useSquadMembersViewModel } from '@roundup/core'
 import { useT } from '@roundup/i18n'
-import { Avatar, Button, Icon, List, ListRow, Modal } from '@roundup/ui'
+import { Avatar, Button, Icon, List, ListRow, Modal, Toast } from '@roundup/ui'
 
 import { useErrorText } from '../../hooks/useErrorText'
-import { InlineError } from '../InlineError'
 
 /** Something the person may do to another member. */
-export type TMemberAction = 'makeAdmin' | 'remove' | 'removeAdmin'
+/** What can be done to a member, as a constant object in the same shape orval gives Role. */
+const MemberAction = {
+  MAKE_ADMIN: 'makeAdmin',
+  REMOVE: 'remove',
+  REMOVE_ADMIN: 'removeAdmin',
+} as const
+
+/** One of the member actions. */
+export type TMemberAction = (typeof MemberAction)[keyof typeof MemberAction]
 
 /**
  * Member action helpers. Static methods only.
@@ -28,11 +35,12 @@ export class MemberActions {
   static available(member: ISquadMember, permissions: ISquadPermissions): TMemberAction[] {
     if (member.isMe) return []
 
-    const roleChange: TMemberAction = member.role === 'ADMIN' ? 'removeAdmin' : 'makeAdmin'
+    const roleChange: TMemberAction =
+      member.role === Role.ADMIN ? MemberAction.REMOVE_ADMIN : MemberAction.MAKE_ADMIN
 
     return [
       ...(permissions.canChangeRoles ? [roleChange] : []),
-      ...(permissions.canRemoveMembers ? (['remove'] as TMemberAction[]) : []),
+      ...(permissions.canRemoveMembers ? [MemberAction.REMOVE] : []),
     ]
   }
 }
@@ -71,27 +79,28 @@ export const MemberActionsModal = ({
   const busy = busyUserId === member.id
 
   const perform = useCallback(
-    (action: TMemberAction, request: () => Promise<boolean>): void => {
+    async (action: TMemberAction, request: () => Promise<boolean>): Promise<void> => {
       setChosen(action)
 
-      void request().then((done) => {
-        if (done) onClose()
-      })
+      if (await request()) onClose()
     },
     [onClose],
   )
 
-  const promote = useCallback((): void => {
-    perform('makeAdmin', () => makeAdmin(member.id))
-  }, [makeAdmin, member.id, perform])
+  const handlePromote = useCallback(
+    (): Promise<void> => perform(MemberAction.MAKE_ADMIN, () => makeAdmin(member.id)),
+    [makeAdmin, member.id, perform],
+  )
 
-  const demote = useCallback((): void => {
-    perform('removeAdmin', () => removeAdmin(member.id))
-  }, [member.id, perform, removeAdmin])
+  const handleDemote = useCallback(
+    (): Promise<void> => perform(MemberAction.REMOVE_ADMIN, () => removeAdmin(member.id)),
+    [member.id, perform, removeAdmin],
+  )
 
-  const kick = useCallback((): void => {
-    perform('remove', () => remove(member.id))
-  }, [member.id, perform, remove])
+  const handleKick = useCallback(
+    (): Promise<void> => perform(MemberAction.REMOVE, () => remove(member.id)),
+    [member.id, perform, remove],
+  )
 
   /**
    * The spinner shown on the row the person pressed while its request runs.
@@ -126,45 +135,45 @@ export const MemberActionsModal = ({
       }
       onClose={onClose}
       subtitle={
-        member.role === 'ADMIN'
+        member.role === Role.ADMIN
           ? t('screens.squad.member.roleAdmin')
           : t('screens.squad.member.roleMember')
       }
       title={member.name}
     >
       <List>
-        {available.includes('makeAdmin') ? (
+        {available.includes(MemberAction.MAKE_ADMIN) ? (
           <ListRow
             busy={busy}
             leading={<Icon decorative name="shield" />}
-            onPress={promote}
+            onPress={handlePromote}
             subtitle={t('screens.squad.member.makeAdminHint')}
             title={t('screens.squad.member.makeAdmin')}
-            trailing={working('makeAdmin')}
+            trailing={working(MemberAction.MAKE_ADMIN)}
           />
         ) : null}
-        {available.includes('removeAdmin') ? (
+        {available.includes(MemberAction.REMOVE_ADMIN) ? (
           <ListRow
             busy={busy}
             leading={<Icon decorative name="shield" />}
-            onPress={demote}
+            onPress={handleDemote}
             subtitle={t('screens.squad.member.removeAdminHint')}
             title={t('screens.squad.member.removeAdmin')}
-            trailing={working('removeAdmin')}
+            trailing={working(MemberAction.REMOVE_ADMIN)}
           />
         ) : null}
-        {available.includes('remove') ? (
+        {available.includes(MemberAction.REMOVE) ? (
           <ListRow
             busy={busy}
             destructive
             leading={<Icon decorative name="trash" tone="danger" />}
-            onPress={kick}
+            onPress={handleKick}
             title={t('screens.squad.member.remove')}
-            trailing={working('remove')}
+            trailing={working(MemberAction.REMOVE)}
           />
         ) : null}
       </List>
-      <InlineError message={errorText} />
+      {errorText === undefined ? null : <Toast tone="error">{errorText}</Toast>}
     </Modal>
   )
 }

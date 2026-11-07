@@ -28,13 +28,13 @@ export const CreateSquadModal = ({ onClose }: ICreateSquadModalProps): ReactElem
   const { busy, error, name, requestId, setName, submit } = useCreateSquadViewModel()
   const errorText = useErrorText(error, requestId)
 
-  const create = useCallback((): void => {
-    void submit().then((id) => {
-      if (id === undefined) return
+  const handleCreate = useCallback(async (): Promise<void> => {
+    const id = await submit()
 
-      onClose()
-      router.push(Paths.squad(id))
-    })
+    if (id === undefined) return
+
+    onClose()
+    router.push(Paths.squad(id))
   }, [onClose, router, submit])
 
   const actions = [
@@ -42,7 +42,7 @@ export const CreateSquadModal = ({ onClose }: ICreateSquadModalProps): ReactElem
       key="create"
       loading={busy}
       loadingLabel={t('screens.squads.create.submitting')}
-      onPress={create}
+      onPress={handleCreate}
     >
       {t('screens.squads.create.submit')}
     </Button>,

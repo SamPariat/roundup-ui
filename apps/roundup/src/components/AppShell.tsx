@@ -9,7 +9,7 @@ import type { ITabItem } from '../hooks/useTabItems'
 
 import { useBack } from '../hooks/useBack'
 import { useLayout } from '../hooks/useLayout'
-import { useNestedTitle, useTabItems } from '../hooks/useTabItems'
+import { useNestedTitle, useTabItem, useTabItems } from '../hooks/useTabItems'
 
 /** Props for AppShell. */
 export interface IAppShellProps {
@@ -26,13 +26,13 @@ export interface IAppShellProps {
  * @returns The page frame: nav, title and content.
  */
 export const AppShell = ({ children, current }: IAppShellProps): ReactElement => {
-  const { gutter, nav } = useLayout()
+  const { gutterClass, nav } = useLayout()
   const items = useTabItems()
   const { t } = useT()
-  const tab = items.find((item) => item.id === current)
-  const goBack = useBack(tab?.href)
+  const tab = useTabItem(current)
+  const goBack = useBack(tab.href)
   const nestedTitle = useNestedTitle()
-  const title = nestedTitle ?? tab?.title ?? ''
+  const title = nestedTitle ?? tab.title
   const backProps = nestedTitle === undefined ? {} : { onBack: goBack }
 
   const headerBackProps =
@@ -45,9 +45,7 @@ export const AppShell = ({ children, current }: IAppShellProps): ReactElement =>
         {nav === 'bottom' ? (
           <TopAppBar {...backProps} logo={nestedTitle === undefined} title={title} />
         ) : null}
-        <View
-          className={cn('mx-auto w-full max-w-content flex-1', gutter === 32 ? 'px-8' : 'px-4')}
-        >
+        <View className={cn('mx-auto w-full max-w-content flex-1', gutterClass)}>
           {nav === 'side' ? (
             <View className="pt-8 pb-6">
               <PageHeader {...headerBackProps} title={title} />

@@ -1,5 +1,6 @@
 import type { ReactElement, ReactNode } from 'react'
 
+import { useCallback } from 'react'
 import { Pressable, View } from 'react-native'
 
 import { useT } from '@roundup/i18n'
@@ -71,6 +72,11 @@ export const ListRow = ({
 
   const layout = 'min-h-16 w-full flex-row items-center gap-3 px-4 py-2'
 
+  // A press only starts the handler; an async handler's promise is not handed back to the Pressable.
+  const handlePress = useCallback((): void => {
+    onPress?.()
+  }, [onPress])
+
   if (onPress === undefined) return <View className={layout}>{content}</View>
 
   return (
@@ -83,7 +89,7 @@ export const ListRow = ({
         layout,
         'hover:bg-bg-hover focus:outline-2 focus:-outline-offset-2 focus:outline-focus-ring active:bg-bg-hover',
       )}
-      onPress={onPress}
+      onPress={handlePress}
     >
       {content}
     </Pressable>

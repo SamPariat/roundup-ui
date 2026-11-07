@@ -21,10 +21,10 @@ export default function PhoneScreen(): ReactElement {
   const { busy, error, phone, requestId, setPhone, submit } = usePhoneViewModel()
   const errorText = useErrorText(error, requestId)
 
-  const send = useCallback((): void => {
-    void submit().then((e164) => {
-      if (e164 !== undefined) router.push(Paths.signInCode({ phone: e164 }))
-    })
+  const handleSend = useCallback(async (): Promise<void> => {
+    const e164 = await submit()
+
+    if (e164 !== undefined) router.push(Paths.signInCode({ phone: e164 }))
   }, [router, submit])
 
   return (
@@ -40,7 +40,7 @@ export default function PhoneScreen(): ReactElement {
         block
         loading={busy}
         loadingLabel={t('signIn.phone.submitting')}
-        onPress={send}
+        onPress={handleSend}
         size="lg"
       >
         {t('signIn.phone.submit')}

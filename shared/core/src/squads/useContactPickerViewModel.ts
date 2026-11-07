@@ -1,5 +1,7 @@
-import { useCallback, useEffect, useEffectEvent, useMemo, useState } from 'react'
+import { useQuery } from '@tanstack/react-query'
+import { useCallback, useMemo, useState } from 'react'
 
+import type { IContactsSource } from '../contacts/types'
 import type { TErrorKey } from '../helpers/error-key'
 import type { IContactMatch } from './types'
 
@@ -36,11 +38,42 @@ export interface IContactPickerViewModel {
   add: () => Promise<boolean>
 }
 
+/** What opening the picker found: whether access was refused, and the people on Roundup. */
+interface IPickerLoad {
+  /** True when the person did not allow access to their contacts. */
+  denied: boolean
+  /** The people on Roundup among the contacts who are not yet in the squad. */
+  matches: IContactMatch[]
+}
+
+/** Looks up phone numbers on Roundup; resolves undefined when the lookup failed. */
+type TFind = (numbers: string[]) => Promise<IContactMatch[] | undefined>
+
+/**
+ * Contact picker helpers. Static methods only.
+ */
+class Picker {
+  /**
+   * Asks for access to the contacts, reads their phone numbers and looks them up on Roundup.
+   * @param contacts - The device's address book.
+   * @param find - The lookup on Roundup.
+   * @returns Whether access was refused, and the people found.
+   */
+  static async load(contacts: IContactsSource, find: TFind): Promise<IPickerLoad> {
+    if ((await contacts.requestPermission()) === 'denied') return { denied: true, matches: [] }
+
+    const matches = await find(await contacts.phoneNumbers())
+
+    return { denied: false, matches: matches ?? [] }
+  }
+}
+
 /**
  * The view model of the contact picker. When it opens it asks for access to the contacts, reads
  * the phone numbers, asks Roundup which of them are people on it and not yet in the squad, and
- * lists those. Numbers are looked up once, at that moment, and nothing is kept afterwards. Adding
- * goes through the same request as typing a number, once for each person ticked.
+ * lists those. That load is a query that runs once per opening and is dropped when the picker
+ * closes (gcTime 0), so no number is kept. Adding goes through the same request as typing a
+ * number, once for each person ticked.
  * @param squadId - The squad people are being added to.
  * @returns The state and the actions.
  */
@@ -48,48 +81,35 @@ export const useContactPickerViewModel = (squadId: string): IContactPickerViewMo
   const { contacts } = useDeps()
   const lookup = useContactLookup(squadId)
   const adding = useAddMemberViewModel(squadId)
-  const [phase, setPhase] = useState<TPickerPhase>('loading')
-  const [found, setFound] = useState<IContactMatch[]>([])
   const [picked, setPicked] = useState<ReadonlySet<string>>(() => new Set())
+  const [added, setAdded] = useState<ReadonlySet<string>>(() => new Set())
   const [query, setQuery] = useState<string>('')
 
-  const find = useEffectEvent((numbers: string[]) => lookup.lookup(numbers))
+  const load = useCallback(
+    (): Promise<IPickerLoad> => Picker.load(contacts, lookup.lookup),
+    [contacts, lookup.lookup],
+  )
 
-  useEffect(() => {
-    let active = true
+  const { data, isPending } = useQuery<IPickerLoad>({
+    gcTime: 0,
+    queryFn: load,
+    queryKey: ['contact-picker', squadId],
+    refetchOnWindowFocus: false,
+    retry: false,
+    staleTime: Infinity,
+  })
 
-    /**
-     * Whether the picker is still open.
-     * @returns False once the effect has been cleaned up.
-     */
-    const open = (): boolean => active
+  const phase = useMemo((): TPickerPhase => {
+    if (isPending) return 'loading'
 
-    /** Asks for access, reads the numbers and looks them up, unless the picker has closed. */
-    const load = async (): Promise<void> => {
-      const permission = await contacts.requestPermission()
+    return data?.denied === true ? 'denied' : 'ready'
+  }, [data, isPending])
 
-      if (!open()) return
-
-      if (permission === 'denied') {
-        setPhase('denied')
-
-        return
-      }
-
-      const matches = await find(await contacts.phoneNumbers())
-
-      if (!open()) return
-
-      setFound(matches ?? [])
-      setPhase('ready')
-    }
-
-    void load()
-
-    return () => {
-      active = false
-    }
-  }, [contacts])
+  // The people found, less those added while the picker is open.
+  const found = useMemo(
+    (): IContactMatch[] => (data?.matches ?? []).filter((match) => !added.has(match.id)),
+    [added, data],
+  )
 
   const people = useMemo((): IContactMatch[] => {
     const needle = query.trim().toLowerCase()
@@ -113,7 +133,7 @@ export const useContactPickerViewModel = (squadId: string): IContactPickerViewMo
     for (const person of found.filter((match) => picked.has(match.id))) {
       if (!(await adding.addNumber(person.phone))) return false
 
-      setFound((current) => current.filter((match) => match.id !== person.id))
+      setAdded((current) => new Set(current).add(person.id))
 
       setPicked((current) => {
         const next = new Set(current)

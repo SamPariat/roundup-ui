@@ -38,10 +38,8 @@ export const RenameSquadModal = ({
 
   const errorText = useErrorText(error, requestId)
 
-  const save = useCallback((): void => {
-    void submit().then((saved) => {
-      if (saved) onClose()
-    })
+  const handleSave = useCallback(async (): Promise<void> => {
+    if (await submit()) onClose()
   }, [onClose, submit])
 
   const actions = [
@@ -49,7 +47,7 @@ export const RenameSquadModal = ({
       key="save"
       loading={busy}
       loadingLabel={t('screens.squad.rename.submitting')}
-      onPress={save}
+      onPress={handleSave}
     >
       {t('screens.squad.rename.submit')}
     </Button>,

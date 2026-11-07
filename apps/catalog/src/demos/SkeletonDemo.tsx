@@ -14,7 +14,7 @@ import { PEOPLE } from '../fixtures'
 export const SkeletonDemo = (): ReactElement => {
   const [loading, setLoading] = useState(true)
 
-  const toggle = useCallback((): void => {
+  const handleToggle = useCallback((): void => {
     setLoading((current) => !current)
   }, [])
 
@@ -46,7 +46,7 @@ export const SkeletonDemo = (): ReactElement => {
             ))}
           </List>
         )}
-        <Button onPress={toggle} size="sm" variant="secondary">
+        <Button onPress={handleToggle} size="sm" variant="secondary">
           {loading ? 'Finish loading' : 'Load again'}
         </Button>
       </Specimen>

@@ -13,7 +13,7 @@ import { Specimen } from '../components/Specimen'
 export const ListRowDemo = (): ReactElement => {
   const [presses, setPresses] = useState(0)
 
-  const press = useCallback((): void => {
+  const handlePress = useCallback((): void => {
     setPresses((count) => count + 1)
   }, [])
 
@@ -28,7 +28,7 @@ export const ListRowDemo = (): ReactElement => {
         <List>
           <ListRow
             leading={<Avatar name="Meera Iyer" size={40} />}
-            onPress={press}
+            onPress={handlePress}
             selected
             title="Meera Iyer"
             trailing={<Icon label="Picked" name="check" />}
@@ -64,7 +64,7 @@ export const ListRowDemo = (): ReactElement => {
         <List>
           <ListRow
             chevron
-            onPress={press}
+            onPress={handlePress}
             subtitle={`Pressed ${String(presses)} times`}
             title="Notifications"
           />
@@ -75,14 +75,14 @@ export const ListRowDemo = (): ReactElement => {
           <ListRow
             destructive
             leading={<Icon decorative name="logout" tone="danger" />}
-            onPress={press}
+            onPress={handlePress}
             title="Sign out"
           />
         </List>
       </Specimen>
       <Specimen note="Busy: a request from this row is in flight." title="busy=true">
         <List>
-          <ListRow busy chevron onPress={press} title="Syncing contacts" />
+          <ListRow busy chevron onPress={handlePress} title="Syncing contacts" />
         </List>
       </Specimen>
     </>

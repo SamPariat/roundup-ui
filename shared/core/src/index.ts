@@ -44,4 +44,6 @@ export { useSquadMembersViewModel } from './squads/useSquadMembersViewModel'
 export type { ISquadMembersViewModel } from './squads/useSquadMembersViewModel'
 export { useSquads } from './squads/useSquads'
 export type { IUseSquads } from './squads/useSquads'
-export { HttpStatus } from '@roundup/api'
+// Values from the API client the app needs without importing it: HTTP status names, and the squad
+// roles as orval generates them, so the app compares against Role.ADMIN.
+export { HttpStatus, Role } from '@roundup/api'

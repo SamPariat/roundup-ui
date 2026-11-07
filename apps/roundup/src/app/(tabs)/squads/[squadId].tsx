@@ -2,7 +2,7 @@ import type { ReactElement } from 'react'
 
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router'
 import { useCallback, useMemo, useState } from 'react'
-import { Platform, View } from 'react-native'
+import { View } from 'react-native'
 
 import type { ISquadMember } from '@roundup/core'
 
@@ -17,6 +17,7 @@ import { MemberRow } from '../../../components/squads/MemberRow'
 import { SquadSheets } from '../../../components/squads/SquadSheets'
 import { TabPage } from '../../../components/TabPage'
 import { useErrorText } from '../../../hooks/useErrorText'
+import { useLayout } from '../../../hooks/useLayout'
 import { Paths } from '../../../navigation/paths'
 
 /**
@@ -30,6 +31,7 @@ import { Paths } from '../../../navigation/paths'
 export default function SquadScreen(): ReactElement {
   const { squadId } = useLocalSearchParams<'/squads/[squadId]'>()
   const { t } = useT()
+  const { systemChrome } = useLayout()
   const router = useRouter()
   const [sheet, setSheet] = useState<TSheet | undefined>()
 
@@ -38,15 +40,15 @@ export default function SquadScreen(): ReactElement {
 
   const errorText = useErrorText(error, requestId)
 
-  const goToSquads = useCallback((): void => {
+  const handleGoToSquads = useCallback((): void => {
     router.dismissTo(Paths.tabsSquads())
   }, [router])
 
-  const openOptions = useCallback((): void => {
+  const handleOpenOptions = useCallback((): void => {
     setSheet({ kind: 'options' })
   }, [])
 
-  const openAdd = useCallback((): void => {
+  const handleOpenAdd = useCallback((): void => {
     setSheet({ kind: 'add' })
   }, [])
 
@@ -59,11 +61,11 @@ export default function SquadScreen(): ReactElement {
       <Button
         icon="more"
         label={t('screens.squad.options')}
-        onPress={openOptions}
+        onPress={handleOpenOptions}
         variant="ghost"
       />
     ),
-    [openOptions, t],
+    [handleOpenOptions, t],
   )
 
   const renderHeaderRight = useCallback((): ReactElement => optionsButton, [optionsButton])
@@ -72,7 +74,7 @@ export default function SquadScreen(): ReactElement {
     return (
       <TabPage centered>
         <EmptyState
-          action={<Button onPress={goToSquads}>{t('screens.squad.notFoundAction')}</Button>}
+          action={<Button onPress={handleGoToSquads}>{t('screens.squad.notFoundAction')}</Button>}
           art="search"
           title={notFound ? t('screens.squad.notFoundTitle') : t('screens.squad.errorTitle')}
           {...(errorText === undefined ? {} : { body: errorText })}
@@ -89,13 +91,9 @@ export default function SquadScreen(): ReactElement {
     )
   }
 
-  const ios = Platform.OS === 'ios'
-
   return (
     <>
-      <Stack.Screen
-        options={{ title: squad.name, ...(ios ? { headerRight: renderHeaderRight } : {}) }}
-      />
+      <Stack.Screen options={{ headerRight: renderHeaderRight, title: squad.name }} />
       <TabPage>
         <View className="max-w-160 gap-6">
           <View className="flex-row items-center gap-4">
@@ -114,11 +112,11 @@ export default function SquadScreen(): ReactElement {
               </Text>
               <View className="flex-row items-center gap-2">
                 {permissions.canAddMembers ? (
-                  <Button icon="plus" onPress={openAdd} size="sm" variant="secondary">
+                  <Button icon="plus" onPress={handleOpenAdd} size="sm" variant="secondary">
                     {t('addPeople.title')}
                   </Button>
                 ) : null}
-                {ios ? null : optionsButton}
+                {systemChrome ? null : optionsButton}
               </View>
             </View>
             <List>
@@ -138,7 +136,7 @@ export default function SquadScreen(): ReactElement {
       <SquadSheets
         members={members}
         myRole={myRole}
-        onLeft={goToSquads}
+        onLeft={handleGoToSquads}
         onSheet={setSheet}
         permissions={permissions}
         sheet={sheet}

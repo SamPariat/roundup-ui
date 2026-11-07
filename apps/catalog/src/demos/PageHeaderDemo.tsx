@@ -13,7 +13,7 @@ import { Specimen } from '../components/Specimen'
 export const PageHeaderDemo = (): ReactElement => {
   const [went, setWent] = useState('Nowhere yet')
 
-  const back = useCallback((): void => {
+  const handleBack = useCallback((): void => {
     setWent('Back to Squads')
   }, [])
 
@@ -26,7 +26,7 @@ export const PageHeaderDemo = (): ReactElement => {
         <PageHeader subtitle="12 members" title="Friday Footy" />
       </Specimen>
       <Specimen note="Press the back link." title="back · onBack">
-        <PageHeader back="Squads" onBack={back} title="Friday Footy" />
+        <PageHeader back="Squads" onBack={handleBack} title="Friday Footy" />
         <Text tone="muted" variant="caption">
           {went}
         </Text>

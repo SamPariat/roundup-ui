@@ -33,14 +33,17 @@ export const AddNumberModal = ({
   const { busy, error, phone, requestId, setPhone, submit } = useAddMemberViewModel(squadId)
   const errorText = useErrorText(error, requestId)
 
-  const add = useCallback((): void => {
-    void submit().then((added) => {
-      if (added) onClose()
-    })
+  const handleAdd = useCallback(async (): Promise<void> => {
+    if (await submit()) onClose()
   }, [onClose, submit])
 
   const actions = [
-    <Button key="add" loading={busy} loadingLabel={t('addPeople.number.submitting')} onPress={add}>
+    <Button
+      key="add"
+      loading={busy}
+      loadingLabel={t('addPeople.number.submitting')}
+      onPress={handleAdd}
+    >
       {t('addPeople.number.submit')}
     </Button>,
     <Button key="cancel" onPress={onClose} variant="ghost">

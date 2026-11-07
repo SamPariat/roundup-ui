@@ -13,11 +13,11 @@ import { Specimen } from '../components/Specimen'
 export const ToastDemo = (): ReactElement => {
   const [removed, setRemoved] = useState(true)
 
-  const undo = useCallback((): void => {
+  const handleUndo = useCallback((): void => {
     setRemoved(false)
   }, [])
 
-  const reset = useCallback((): void => {
+  const handleReset = useCallback((): void => {
     setRemoved(true)
   }, [])
 
@@ -45,13 +45,13 @@ export const ToastDemo = (): ReactElement => {
       </Specimen>
       <Specimen note="Press Undo." title="Interactive">
         {removed ? (
-          <Toast action="Undo" onAction={undo} tone="success">
+          <Toast action="Undo" onAction={handleUndo} tone="success">
             Aarav removed from Friday Footy.
           </Toast>
         ) : (
           <Text tone="muted">Aarav is back in the squad.</Text>
         )}
-        <Button onPress={reset} size="sm" variant="secondary">
+        <Button onPress={handleReset} size="sm" variant="secondary">
           Remove again
         </Button>
       </Specimen>

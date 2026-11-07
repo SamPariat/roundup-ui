@@ -28,11 +28,11 @@ export const AddPeopleModal = ({
 }: IAddPeopleModalProps): ReactElement => {
   const [typing, setTyping] = useState<boolean>(false)
 
-  const typeNumber = useCallback((): void => {
+  const handleTypeNumber = useCallback((): void => {
     setTyping(true)
   }, [])
 
   if (typing) return <AddNumberModal onClose={onClose} squadId={squadId} squadName={squadName} />
 
-  return <ContactPickerModal onClose={onClose} onTypeNumber={typeNumber} squadId={squadId} />
+  return <ContactPickerModal onClose={onClose} onTypeNumber={handleTypeNumber} squadId={squadId} />
 }

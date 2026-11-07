@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react'
 
-import { changeSquadMemberRole, removeSquadMember } from '@roundup/api'
+import { changeSquadMemberRole, removeSquadMember, Role } from '@roundup/api'
 
 import type { TErrorContext, TErrorKey } from '../helpers/error-key'
 import type { TRole } from './types'
@@ -73,12 +73,12 @@ export const useSquadMembersViewModel = (squadId: string): ISquadMembersViewMode
   )
 
   const makeAdmin = useCallback(
-    (userId: string): Promise<boolean> => changeRole(userId, 'ADMIN'),
+    (userId: string): Promise<boolean> => changeRole(userId, Role.ADMIN),
     [changeRole],
   )
 
   const removeAdmin = useCallback(
-    (userId: string): Promise<boolean> => changeRole(userId, 'MEMBER'),
+    (userId: string): Promise<boolean> => changeRole(userId, Role.MEMBER),
     [changeRole],
   )
 

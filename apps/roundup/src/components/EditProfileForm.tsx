@@ -25,15 +25,13 @@ export interface IEditProfileFormProps {
  */
 export const EditProfileForm = ({ id, name }: IEditProfileFormProps): ReactElement => {
   const { t } = useT()
-  const goBack = useBack()
+  const handleGoBack = useBack()
   const { busy, error, name: typed, requestId, setName, submit } = useNameViewModel(name)
   const errorText = useErrorText(error, requestId)
 
-  const save = useCallback((): void => {
-    void submit().then((saved) => {
-      if (saved) goBack()
-    })
-  }, [goBack, submit])
+  const handleSave = useCallback(async (): Promise<void> => {
+    if (await submit()) handleGoBack()
+  }, [handleGoBack, submit])
 
   return (
     <View className="max-w-160 gap-6">
@@ -50,13 +48,13 @@ export const EditProfileForm = ({ id, name }: IEditProfileFormProps): ReactEleme
           block={Platform.OS !== 'web'}
           loading={busy}
           loadingLabel={t('screens.editProfile.saving')}
-          onPress={save}
+          onPress={handleSave}
           size="lg"
         >
           {t('screens.editProfile.save')}
         </Button>
         {Platform.OS === 'web' ? (
-          <Button onPress={goBack} variant="ghost">
+          <Button onPress={handleGoBack} variant="ghost">
             {t('screens.editProfile.cancel')}
           </Button>
         ) : null}

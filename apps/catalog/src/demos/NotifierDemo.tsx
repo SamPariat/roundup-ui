@@ -42,7 +42,7 @@ const Stage = ({ notice }: IStageProps): ReactElement => (
 export const NotifierDemo = (): ReactElement => {
   const [offline, setOffline] = useState(false)
 
-  const toggle = useCallback((): void => {
+  const handleToggle = useCallback((): void => {
     setOffline((current) => !current)
   }, [])
 
@@ -65,7 +65,7 @@ export const NotifierDemo = (): ReactElement => {
       </Specimen>
       <Specimen note="Slides in and out, or just appears under Reduce Motion." title="Interactive">
         <Stage notice={offline ? OFFLINE : undefined} />
-        <Button onPress={toggle} size="sm" variant="secondary">
+        <Button onPress={handleToggle} size="sm" variant="secondary">
           Toggle offline
         </Button>
       </Specimen>

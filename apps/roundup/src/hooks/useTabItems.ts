@@ -1,4 +1,4 @@
-import { usePathname } from 'expo-router'
+import { useGlobalSearchParams, usePathname } from 'expo-router'
 
 import type { en } from '@roundup/i18n'
 import type { TIconName } from '@roundup/ui'
@@ -66,6 +66,18 @@ const TAB_DEFINITIONS: readonly ITabDefinition[] = [
   },
 ]
 
+/** The route parameters of a squad's page. */
+interface ISquadRouteParams extends Record<string, string | undefined> {
+  /** The squad's ID, from the [squadId] segment; undefined on every other route. */
+  squadId?: string
+}
+
+/** The same tabs keyed by id, so one can be read directly rather than searched for. */
+const TAB_BY_ID = Object.fromEntries(TAB_DEFINITIONS.map((tab) => [tab.id, tab])) as Record<
+  ITabItem['id'],
+  ITabDefinition
+>
+
 /** A screen pushed inside a tab, which has its own title and a back button. */
 interface INestedDefinition {
   /** The route of the screen. */
@@ -79,9 +91,6 @@ const NESTED_DEFINITIONS: readonly INestedDefinition[] = [
   { href: Paths.profileEdit(), titleKey: 'titles.editProfile' },
   { href: Paths.profilePreferences(), titleKey: 'titles.preferences' },
 ]
-
-/** A squad's page: the Squads tab's path, then the squad's ID. */
-const SQUAD_PATH = /^\/squads\/([^/]+)$/
 
 /**
  * Tab helpers. Static methods only.
@@ -104,16 +113,6 @@ export class Tab {
   static nestedTitleKey(pathname: string): TTitleKey | undefined {
     return NESTED_DEFINITIONS.find((item) => item.href === pathname)?.titleKey
   }
-
-  /**
-   * Finds which squad a path opens. A squad's title is its name, which no fixed key can hold, so
-   * its page is told apart from the screens in NESTED_DEFINITIONS here.
-   * @param pathname - The current URL path.
-   * @returns The squad's ID, or undefined when the path is not a squad's page.
-   */
-  static squadId(pathname: string): string | undefined {
-    return SQUAD_PATH.exec(pathname)?.[1]
-  }
 }
 
 /**
@@ -131,6 +130,18 @@ export const useTabItems = (): readonly ITabItem[] => {
 }
 
 /**
+ * One tab, looked up directly by its id, with its name and page title in the current language.
+ * @param id - The tab's route name.
+ * @returns Its icon, route, translated name and page title.
+ */
+export const useTabItem = (id: ITabItem['id']): ITabItem => {
+  const { t } = useT()
+  const { labelKey, titleKey, ...item } = TAB_BY_ID[id]
+
+  return { ...item, label: t(labelKey), title: t(titleKey) }
+}
+
+/**
  * The tab the current route belongs to.
  * @returns The id of the active tab.
  */
@@ -144,7 +155,8 @@ export const useCurrentTab = (): ITabItem['id'] => Tab.idForPath(usePathname())
 export const useNestedTitle = (): string | undefined => {
   const { t } = useT()
   const pathname = usePathname()
-  const squadId = Tab.squadId(pathname)
+  // The router reads the squad's ID from its [squadId] segment; no other route has that segment.
+  const { squadId } = useGlobalSearchParams<ISquadRouteParams>()
   const { squad } = useSquad(squadId)
   const key = Tab.nestedTitleKey(pathname)
 

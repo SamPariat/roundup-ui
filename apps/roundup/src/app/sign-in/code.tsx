@@ -31,29 +31,29 @@ const CodeForm = ({ phone }: ICodeFormProps): ReactElement => {
 
   const errorText = useErrorText(error, requestId)
 
-  const back = useCallback((): void => {
+  const handleBack = useCallback((): void => {
     router.back()
   }, [router])
 
-  const verify = useCallback((): void => {
+  const handleVerify = useCallback((): void => {
     void submit()
   }, [submit])
 
-  const sendAgain = useCallback((): void => {
+  const handleSendAgain = useCallback((): void => {
     void resend()
   }, [resend])
 
   return (
     <AuthPage
       body={t('signIn.code.body', { phone: helpers.phone.format(phone) })}
-      onBack={back}
+      onBack={handleBack}
       title={t('signIn.code.title')}
     >
       <OtpInput
         autoFocus
         label={t('signIn.code.label')}
         onChangeText={setCode}
-        onResend={sendAgain}
+        onResend={handleSendAgain}
         resendIn={resendIn}
         value={code}
         {...(errorText === undefined ? {} : { error: errorText })}
@@ -62,12 +62,12 @@ const CodeForm = ({ phone }: ICodeFormProps): ReactElement => {
         block
         loading={busy}
         loadingLabel={t('signIn.code.submitting')}
-        onPress={verify}
+        onPress={handleVerify}
         size="lg"
       >
         {t('signIn.code.submit')}
       </Button>
-      <Button block onPress={back} variant="ghost">
+      <Button block onPress={handleBack} variant="ghost">
         {t('signIn.code.changeNumber')}
       </Button>
     </AuthPage>

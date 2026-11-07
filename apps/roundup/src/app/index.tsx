@@ -19,7 +19,7 @@ export default function WelcomeScreen(): ReactElement {
   const router = useRouter()
   const gate = useRouteGate()
 
-  const start = useCallback((): void => {
+  const handleStart = useCallback((): void => {
     router.push(Paths.signInPhone())
   }, [router])
 
@@ -32,7 +32,7 @@ export default function WelcomeScreen(): ReactElement {
   return (
     <Screen>
       <ScrollView contentContainerClassName="grow">
-        <Welcome onStart={start} />
+        <Welcome onStart={handleStart} />
       </ScrollView>
     </Screen>
   )

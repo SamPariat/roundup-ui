@@ -4,10 +4,9 @@ import { useCallback } from 'react'
 
 import { useSquadMembersViewModel } from '@roundup/core'
 import { useT } from '@roundup/i18n'
-import { Button, Modal } from '@roundup/ui'
+import { Button, Modal, Toast } from '@roundup/ui'
 
 import { useErrorText } from '../../hooks/useErrorText'
-import { InlineError } from '../InlineError'
 
 /** Props for LeaveSquadModal. */
 export interface ILeaveSquadModalProps {
@@ -41,10 +40,10 @@ export const LeaveSquadModal = ({
   const errorText = useErrorText(error, requestId)
   const busy = busyUserId !== undefined
 
-  const confirm = useCallback((): void => {
-    void leave().then((left) => {
-      if (left) onLeft()
-    })
+  // onLeft runs straight after the request resolves, before React renders this modal's own state
+  // change, so the squad page never re-renders without its squad.
+  const handleConfirm = useCallback(async (): Promise<void> => {
+    if (await leave()) onLeft()
   }, [leave, onLeft])
 
   const actions = [
@@ -52,7 +51,7 @@ export const LeaveSquadModal = ({
       key="leave"
       loading={busy}
       loadingLabel={t('screens.squad.leave.submitting')}
-      onPress={confirm}
+      onPress={handleConfirm}
       variant="destructive"
     >
       {t('screens.squad.leave.submit')}
@@ -71,7 +70,7 @@ export const LeaveSquadModal = ({
       title={t('screens.squad.leave.title', { name })}
       tone="confirm"
     >
-      <InlineError message={errorText} />
+      {errorText === undefined ? null : <Toast tone="error">{errorText}</Toast>}
     </Modal>
   )
 }

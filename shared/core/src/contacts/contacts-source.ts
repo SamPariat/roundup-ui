@@ -16,15 +16,17 @@ export class ContactsSource {
   static create(): IContactsSource {
     return {
       /**
-       * Reads the numbers of every contact the app may see.
-       * @returns The numbers, as written in the address book.
+       * Reads the numbers of every contact the app may see, as one flat list: a contact holds a list
+       * of phones, and each phone may or may not have a number.
+       * @returns Every number in the address book, as written there.
        */
-      phoneNumbers: async () => {
+      phoneNumbers: async (): Promise<string[]> => {
         const contacts = await Contact.getAllDetails([ContactField.PHONES])
+        const phones = contacts.flatMap((contact) => contact.phones)
 
-        return contacts.flatMap((contact) =>
-          contact.phones.flatMap((phone) => (phone.number === undefined ? [] : [phone.number])),
-        )
+        return phones
+          .map((phone) => phone.number)
+          .filter((number): number is string => number !== undefined)
       },
       /**
        * Shows the system prompt the first time, and reports the saved answer afterwards.

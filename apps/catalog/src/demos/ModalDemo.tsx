@@ -20,24 +20,24 @@ export const ModalDemo = (): ReactElement => {
   const [open, setOpen] = useState<TOpen>(null)
   const [saving, setSaving] = useState(false)
 
-  const showContent = useCallback((): void => {
+  const handleShowContent = useCallback((): void => {
     setOpen('content')
   }, [])
 
-  const showConfirm = useCallback((): void => {
+  const handleShowConfirm = useCallback((): void => {
     setOpen('confirm')
   }, [])
 
-  const showBusy = useCallback((): void => {
+  const handleShowBusy = useCallback((): void => {
     setSaving(false)
     setOpen('busy')
   }, [])
 
-  const close = useCallback((): void => {
+  const handleClose = useCallback((): void => {
     setOpen(null)
   }, [])
 
-  const save = useCallback((): void => {
+  const handleSave = useCallback((): void => {
     setSaving(true)
   }, [])
 
@@ -58,12 +58,12 @@ export const ModalDemo = (): ReactElement => {
   return (
     <>
       <Specimen title="tone=content (default) · leading · subtitle">
-        <Button onPress={showContent} variant="secondary">
+        <Button onPress={handleShowContent} variant="secondary">
           Open a content modal
         </Button>
       </Specimen>
       <Specimen title="tone=confirm · body">
-        <Button onPress={showConfirm} variant="secondary">
+        <Button onPress={handleShowConfirm} variant="secondary">
           Open a confirmation
         </Button>
       </Specimen>
@@ -71,18 +71,18 @@ export const ModalDemo = (): ReactElement => {
         note="Only the buttons look disabled; the title and body stay as they are, and nothing closes it until it ends."
         title="busy=true"
       >
-        <Button onPress={showBusy} variant="secondary">
+        <Button onPress={handleShowBusy} variant="secondary">
           Open a modal that saves
         </Button>
       </Specimen>
       <Modal
         actions={[
-          <Button key="done" onPress={close}>
+          <Button key="done" onPress={handleClose}>
             Done
           </Button>,
         ]}
         leading={<Avatar name="Friday Footy" size={40} />}
-        onClose={close}
+        onClose={handleClose}
         subtitle="12 members"
         title="Friday Footy"
         visible={open === 'content'}
@@ -95,31 +95,31 @@ export const ModalDemo = (): ReactElement => {
       </Modal>
       <Modal
         actions={[
-          <Button key="leave" onPress={close} variant="destructive">
+          <Button key="leave" onPress={handleClose} variant="destructive">
             Leave squad
           </Button>,
-          <Button key="stay" onPress={close} variant="secondary">
+          <Button key="stay" onPress={handleClose} variant="secondary">
             Stay
           </Button>,
         ]}
         body="You will stop seeing its plans and bills."
-        onClose={close}
+        onClose={handleClose}
         title="Leave Friday Footy?"
         tone="confirm"
         visible={open === 'confirm'}
       />
       <Modal
         actions={[
-          <Button key="save" loading={saving} loadingLabel="Saving…" onPress={save}>
+          <Button key="save" loading={saving} loadingLabel="Saving…" onPress={handleSave}>
             Save changes
           </Button>,
-          <Button key="cancel" onPress={close} variant="secondary">
+          <Button key="cancel" onPress={handleClose} variant="secondary">
             Cancel
           </Button>,
         ]}
         body="Press Save changes: the modal goes busy for two seconds, then closes."
         busy={saving}
-        onClose={close}
+        onClose={handleClose}
         title="Rename squad"
         visible={open === 'busy'}
       />

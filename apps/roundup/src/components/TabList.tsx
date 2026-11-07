@@ -2,7 +2,7 @@ import type { ReactElement, ReactNode } from 'react'
 import type { ListRenderItemInfo } from 'react-native'
 
 import { useCallback } from 'react'
-import { FlatList, Platform, RefreshControl, View } from 'react-native'
+import { FlatList, RefreshControl, View } from 'react-native'
 
 import type { TBreakpoint } from '@roundup/ui'
 
@@ -70,10 +70,11 @@ export const TabList = <T,>({
   refreshing = false,
   renderItem,
 }: ITabListProps<T>): ReactElement => {
-  const { gutter } = useLayout()
+  // In the system chrome there is no AppShell to give the gutter, so the list takes it.
+  const { gutterClass, systemChrome } = useLayout()
   const { breakpoint } = useBreakpoint()
   const columns = COLUMNS[breakpoint]
-  const sides = Platform.OS === 'ios' && (gutter === 32 ? 'px-8' : 'px-4')
+  const sides = systemChrome && gutterClass
 
   const cell = useCallback(
     ({ item }: ListRenderItemInfo<T>): ReactElement => (

@@ -2,7 +2,7 @@ import type { VariantProps } from 'class-variance-authority'
 import type { ReactElement, ReactNode } from 'react'
 
 import { cva } from 'class-variance-authority'
-import { use, useEffect } from 'react'
+import { use, useCallback, useEffect } from 'react'
 import { AccessibilityInfo, Pressable, View } from 'react-native'
 
 import type { TIconName } from '../lib/icons'
@@ -218,6 +218,12 @@ export const Button = ({
   const name = label ?? (typeof children === 'string' ? children : undefined)
   const status = loading ? loadingLabel : undefined
 
+  // A press only starts the handler: an async handler's promise is not handed back to the
+  // Pressable, so nothing downstream (such as a test's press) waits on the request it starts.
+  const handlePress = useCallback((): void => {
+    onPress?.()
+  }, [onPress])
+
   useEffect(() => {
     // iOS has no live regions, so say it out loud when the request starts.
     if (status !== undefined) AccessibilityInfo.announceForAccessibility(status)
@@ -232,7 +238,7 @@ export const Button = ({
       className={cn(buttonVariants({ variant, size, block, iconOnly, inactive }), className)}
       disabled={inactive}
       hitSlop={size === 'sm' ? 6 : 0}
-      onPress={onPress}
+      onPress={handlePress}
     >
       {loading ? (
         <LoadingContent loadingLabel={loadingLabel} size={size}>

@@ -25,12 +25,12 @@ interface IFilterChipProps {
  * @returns The chip, filled when its filter is on.
  */
 const FilterChip = ({ label, onToggle, selected }: IFilterChipProps): ReactElement => {
-  const toggle = useCallback((): void => {
+  const handleToggle = useCallback((): void => {
     onToggle(label)
   }, [label, onToggle])
 
   return (
-    <Chip onPress={toggle} selected={selected}>
+    <Chip onPress={handleToggle} selected={selected}>
       {label}
     </Chip>
   )
@@ -43,7 +43,7 @@ const FilterChip = ({ label, onToggle, selected }: IFilterChipProps): ReactEleme
 export const ChipDemo = (): ReactElement => {
   const [chosen, setChosen] = useState<readonly string[]>(['Cafes'])
 
-  const toggle = useCallback((label: string): void => {
+  const handleToggle = useCallback((label: string): void => {
     setChosen((current) =>
       current.includes(label) ? current.filter((item) => item !== label) : [...current, label],
     )
@@ -74,7 +74,7 @@ export const ChipDemo = (): ReactElement => {
             <FilterChip
               key={label}
               label={label}
-              onToggle={toggle}
+              onToggle={handleToggle}
               selected={chosen.includes(label)}
             />
           ))}

@@ -27,7 +27,7 @@ export const PersonRow = ({ onToggle, person, picked }: IPersonRowProps): ReactE
   const { t } = useT()
   const { helpers } = useDeps()
 
-  const toggle = useCallback((): void => {
+  const handleToggle = useCallback((): void => {
     onToggle(person.id)
   }, [onToggle, person.id])
 
@@ -41,7 +41,7 @@ export const PersonRow = ({ onToggle, person, picked }: IPersonRowProps): ReactE
           {...(person.src === undefined ? {} : { src: person.src })}
         />
       }
-      onPress={toggle}
+      onPress={handleToggle}
       selected={picked}
       subtitle={helpers.phone.format(person.phone)}
       title={person.name}

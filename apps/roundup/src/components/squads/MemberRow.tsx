@@ -4,6 +4,7 @@ import { useCallback } from 'react'
 
 import type { ISquadMember } from '@roundup/core'
 
+import { Role } from '@roundup/core'
 import { useT } from '@roundup/i18n'
 import { Avatar, Badge, ListRow } from '@roundup/ui'
 
@@ -39,7 +40,9 @@ export const MemberRow = ({ member, onSelect }: IMemberRowProps): ReactElement =
       }
       title={member.isMe ? t('screens.squad.you', { name: member.name }) : member.name}
       trailing={
-        member.role === 'ADMIN' ? <Badge tone="highlight">{t('screens.squad.admin')}</Badge> : null
+        member.role === Role.ADMIN ? (
+          <Badge tone="highlight">{t('screens.squad.admin')}</Badge>
+        ) : null
       }
       {...(onSelect === undefined ? {} : { onPress: select })}
     />

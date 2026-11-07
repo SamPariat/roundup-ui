@@ -20,9 +20,9 @@ export interface ICatalogRowProps {
 export const CatalogRow = ({ entry }: ICatalogRowProps): ReactElement => {
   const router = useRouter()
 
-  const open = useCallback((): void => {
+  const handleOpen = useCallback((): void => {
     router.push({ pathname: '/[component]', params: { component: entry.slug } })
   }, [entry.slug, router])
 
-  return <ListRow chevron onPress={open} subtitle={entry.summary} title={entry.title} />
+  return <ListRow chevron onPress={handleOpen} subtitle={entry.summary} title={entry.title} />
 }
