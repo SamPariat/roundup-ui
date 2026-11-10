@@ -1,3 +1,4 @@
+import type { NativeStackHeaderItem, NativeStackNavigationOptions } from 'expo-router'
 import type { ReactElement } from 'react'
 
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router'
@@ -68,6 +69,28 @@ export default function SquadScreen(): ReactElement {
 
   const renderHeaderRight = useCallback((): ReactElement => optionsButton, [optionsButton])
 
+  // iOS draws the options as a native bar button, in the same glass as the back button; web and
+  // Android draw headerRight in their own bar.
+  const renderHeaderItems = useCallback(
+    (): NativeStackHeaderItem[] => [
+      {
+        icon: { name: 'ellipsis', type: 'sfSymbol' },
+        label: t('screens.squad.options'),
+        onPress: handleOpenOptions,
+        type: 'button',
+      },
+    ],
+    [handleOpenOptions, t],
+  )
+
+  const headerOptions = useMemo(
+    (): NativeStackNavigationOptions => ({
+      headerRight: renderHeaderRight,
+      unstable_headerRightItems: renderHeaderItems,
+    }),
+    [renderHeaderItems, renderHeaderRight],
+  )
+
   if (notFound || (squad === undefined && error !== undefined)) {
     return (
       <TabPage centered>
@@ -97,7 +120,7 @@ export default function SquadScreen(): ReactElement {
 
   return (
     <>
-      <Stack.Screen options={{ headerRight: renderHeaderRight }} />
+      <Stack.Screen options={headerOptions} />
       <TabPage fab={addPeople}>
         <View className="max-w-160 gap-6">
           <View className="flex-row items-center gap-4">
