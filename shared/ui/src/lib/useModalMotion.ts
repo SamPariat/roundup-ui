@@ -14,18 +14,25 @@ import { scheduleOnRN } from 'react-native-worklets'
 
 import { useReducedMotion } from './useReducedMotion'
 
+/**
+ * A view style that can also blur what is behind it. The web supports backdropFilter; React
+ * Native's types do not list it.
+ */
+interface IGlassStyle extends ViewStyle {
+  /** A CSS backdrop-filter, such as `blur(12px)`. */
+  backdropFilter?: string
+}
+
 /** A Reanimated style for an Animated.View. */
-export type TMotionStyle = ReturnType<typeof useAnimatedStyle<ViewStyle>>
+export type TMotionStyle = ReturnType<typeof useAnimatedStyle<IGlassStyle>>
 
 /** What the modal needs to move: whether it is up, the animated styles and the close request. */
 export interface IModalMotion {
   /** Whether the native modal host is showing; it stays up until the closing motion ends. */
   mounted: boolean
-  /** True once the opening motion has finished, until the modal closes. */
-  opened: boolean
-  /** The backdrop's fade. */
+  /** The backdrop's fade, and on the web its blur. */
   backdrop: TMotionStyle
-  /** The sheet's slide (app) or the card's fade and scale (web). */
+  /** The sheet's slide (app), or the card's fade, scale and blur (web). */
   panel: TMotionStyle
   /** Asks to close: unless busy, plays the closing motion, then calls onClose. */
   requestClose: () => void
@@ -58,10 +65,21 @@ const EASE_IN = Easing.bezier(0.32, 0, 0.67, 0)
 /** The scale the web card grows from as it fades in. */
 const CARD_FROM = 0.97
 
+/** How far the web blurs the page behind the card, in pixels, once it is open. */
+const BACKDROP_BLUR_PX = 12
+
+/** How far the web card blurs what is behind it, in pixels, once it is open. */
+const CARD_BLUR_PX = 40
+
 /**
  * The opening and closing motion of a modal, run on the UI thread by Reanimated. In the app the sheet slides up from
  * below the screen and back down. On the web the card fades and grows a little. The backdrop
  * fades with both. With reduced motion nothing slides or grows; only the fades remain.
+ *
+ * On the web the blurs (behind the backdrop and the card) grow with the same progress. Chrome
+ * works a backdrop blur out once under a parent that is fading in, while it is still clear, and
+ * keeps that unblurred picture; a blur that changes on every frame of the motion is always fresh.
+ * The app's blur is expo-blur's native view, which has no such problem.
  * @param options - Whether it shows, its kind, whether it is busy and what closing calls.
  * @returns Whether it is up, the animated styles and the close request.
  */
@@ -135,9 +153,16 @@ export const useModalMotion = (options: IModalMotionOptions): IModalMotion => {
     if (!busy) animateTo(0, finishClose)
   }, [animateTo, busy, finishClose])
 
-  const backdrop = useAnimatedStyle((): ViewStyle => ({ opacity: progress.get() }))
+  const backdrop = useAnimatedStyle((): IGlassStyle => {
+    if (sheet) return { opacity: progress.get() }
 
-  const panel = useAnimatedStyle((): ViewStyle => {
+    return {
+      backdropFilter: `blur(${progress.get() * BACKDROP_BLUR_PX}px)`,
+      opacity: progress.get(),
+    }
+  })
+
+  const panel = useAnimatedStyle((): IGlassStyle => {
     if (sheet) {
       const slide = interpolate(progress.get(), [0, 1], [reduced ? 0 : height, 0])
 
@@ -146,13 +171,16 @@ export const useModalMotion = (options: IModalMotionOptions): IModalMotion => {
 
     const scale = interpolate(progress.get(), [0, 1], [reduced ? 1 : CARD_FROM, 1])
 
-    return { opacity: progress.get(), transform: [{ scale }] }
+    return {
+      backdropFilter: `blur(${progress.get() * CARD_BLUR_PX}px) saturate(1.5)`,
+      opacity: progress.get(),
+      transform: [{ scale }],
+    }
   })
 
   return {
     backdrop,
     mounted: visible || opened,
-    opened,
     panel,
     requestClose,
   }
