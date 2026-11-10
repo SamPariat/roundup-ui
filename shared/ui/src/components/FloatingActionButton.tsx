@@ -1,10 +1,12 @@
 import type { ReactElement } from 'react'
 
-import { View } from 'react-native'
+import { Platform, View } from 'react-native'
 
 import type { TIconName } from '../lib/icons'
 
+import { cn } from '../lib/cn'
 import { Button } from './Button'
+import { Surface } from './Surface'
 
 /** Props for FloatingActionButton. */
 export interface IFloatingActionButtonProps {
@@ -19,8 +21,17 @@ export interface IFloatingActionButtonProps {
 }
 
 /**
+ * The web's glass: the accent at three quarters over a blur of the page. iOS draws Liquid Glass
+ * through Surface instead, and Android a solid accent.
+ */
+const WEB_GLASS = Platform.select({
+  default: '',
+  web: 'bg-accent/75 backdrop-blur-xl backdrop-saturate-150',
+})
+
+/**
  * The one create action of a screen, floating in the bottom-right corner above its content: a large
- * primary Button with an icon and a label, raised by a shadow. It positions itself against the
+ * Button with an icon and a label on accent-tinted glass, raised by a shadow. It positions itself against the
  * nearest parent, 16 points above its bottom edge, so the parent decides how wide the area is and
  * what it clears (the app's TabPage and TabList keep it inside the content column and above the
  * iOS tab bar). Taps around it reach the content beneath.
@@ -33,14 +44,20 @@ export const FloatingActionButton = ({
   onPress,
 }: IFloatingActionButtonProps): ReactElement => (
   <View className="absolute right-0 bottom-4" pointerEvents="box-none">
-    <Button
-      className="shadow-toast"
-      icon={icon}
-      onPress={onPress}
-      size="lg"
-      {...(label === undefined ? {} : { label })}
+    <Surface
+      className={cn('rounded-xl border border-glass-edge shadow-toast', WEB_GLASS)}
+      tone="accent"
     >
-      {children}
-    </Button>
+      {/* The Surface is the fill, so the Button's own accent comes off. */}
+      <Button
+        className="bg-transparent"
+        icon={icon}
+        onPress={onPress}
+        size="lg"
+        {...(label === undefined ? {} : { label })}
+      >
+        {children}
+      </Button>
+    </Surface>
   </View>
 )

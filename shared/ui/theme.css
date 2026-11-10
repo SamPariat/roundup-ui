@@ -51,8 +51,8 @@
   --color-avatar-5: #89b4fa4c;
   --color-avatar-6: #f5c2e74c;
   --color-scrim: #11111b66;
-  /* Modal glass on the web: the raised color at 72%, and a hairline edge in the text color. */
-  --color-glass: #313244b8;
+  /* Modal glass on the web: the raised color at 60%, and a hairline edge in the text color. */
+  --color-glass: #31324499;
   --color-glass-edge: #cdd6f424;
 
   /* The 1200px content column has no default max-w-* class. */
@@ -109,8 +109,8 @@
   --color-avatar-6: #f5c2e74c;
   /* Modal backdrop: light, because the screen behind it is blurred. */
   --color-scrim: #11111b66;
-  /* Modal glass on the web: the raised color at 72%, and a hairline edge in the text color. */
-  --color-glass: #313244b8;
+  /* Modal glass on the web: the raised color at 60%, and a hairline edge in the text color. */
+  --color-glass: #31324499;
   --color-glass-edge: #cdd6f424;
 }
 
@@ -151,8 +151,8 @@
     --color-avatar-5: #1e66f538;
     --color-avatar-6: #ea76cb38;
     --color-scrim: #4c4f6938;
-    /* Modal glass on the web: the raised color at 72%, and a hairline edge in the text color. */
-    --color-glass: #faf4edb8;
+    /* Modal glass on the web: the raised color at 60%, and a hairline edge in the text color. */
+    --color-glass: #faf4ed99;
     --color-glass-edge: #4c4f6924;
   }
 }
@@ -204,8 +204,8 @@
   --color-avatar-6: #f5c2e74c;
   /* Modal backdrop: light, because the screen behind it is blurred. */
   --color-scrim: #11111b66;
-  /* Modal glass on the web: the raised color at 72%, and a hairline edge in the text color. */
-  --color-glass: #313244b8;
+  /* Modal glass on the web: the raised color at 60%, and a hairline edge in the text color. */
+  --color-glass: #31324499;
   --color-glass-edge: #cdd6f424;
 }
 
@@ -255,8 +255,8 @@
   --color-avatar-6: #ea76cb38;
   /* Modal backdrop: light, because the screen behind it is blurred. */
   --color-scrim: #4c4f6938;
-  /* Modal glass on the web: the raised color at 72%, and a hairline edge in the text color. */
-  --color-glass: #faf4edb8;
+  /* Modal glass on the web: the raised color at 60%, and a hairline edge in the text color. */
+  --color-glass: #faf4ed99;
   --color-glass-edge: #4c4f6924;
 }
 

@@ -21,6 +21,8 @@ export type TMotionStyle = ReturnType<typeof useAnimatedStyle<ViewStyle>>
 export interface IModalMotion {
   /** Whether the native modal host is showing; it stays up until the closing motion ends. */
   mounted: boolean
+  /** True once the opening motion has finished, until the modal closes. */
+  opened: boolean
   /** The backdrop's fade. */
   backdrop: TMotionStyle
   /** The sheet's slide (app) or the card's fade and scale (web). */
@@ -150,6 +152,7 @@ export const useModalMotion = (options: IModalMotionOptions): IModalMotion => {
   return {
     backdrop,
     mounted: visible || opened,
+    opened,
     panel,
     requestClose,
   }

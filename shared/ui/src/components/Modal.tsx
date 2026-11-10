@@ -60,8 +60,21 @@ export interface IModalProps {
 /** The padding inside the modal, in points; the sheet adds the home indicator's inset below it. */
 const PADDING = 24
 
-/** How strongly the screen behind is blurred, on expo-blur's 0 to 100 scale. */
-const BACKDROP_BLUR = 24
+/**
+ * How strongly the screen behind is blurred, on expo-blur's 0 to 100 scale. The web turns it into a
+ * CSS blur of a fifth as many pixels, which is faint, so it gets more.
+ */
+const BACKDROP_BLUR = Platform.select({ default: 24, web: 60 })
+
+/**
+ * Eases the web's blur in once the card has opened. Chrome works out a backdrop blur under a
+ * fading parent while the parent is still clear and keeps that unblurred picture after the fade,
+ * so the web card and backdrop only turn their blur on when the opening motion ends.
+ */
+const BLUR_EASE: ViewStyle = Platform.select<ViewStyle>({
+  default: {},
+  web: { transitionDuration: '200ms', transitionProperty: 'backdrop-filter' } as ViewStyle,
+})
 
 /** The native element behind the title wrapper, which gets focus on open. */
 type TTitleElement = ComponentRef<typeof View>
@@ -171,6 +184,8 @@ interface IBackdropProps {
   onPress: () => void
   /** Its fade, which follows the modal opening and closing. */
   style: TMotionStyle
+  /** Whether to blur the screen yet: on the web only once the modal has opened (see BLUR_EASE). */
+  blurred: boolean
 }
 
 /**
@@ -179,7 +194,7 @@ interface IBackdropProps {
  * Android back button instead. Android cannot blur another window, so it gets the scrim alone.
  * @returns The pressable, blurred backdrop.
  */
-const ModalBackdrop = ({ onPress, style }: IBackdropProps): ReactElement => {
+const ModalBackdrop = ({ blurred, onPress, style }: IBackdropProps): ReactElement => {
   const { name } = useTheme()
 
   return (
@@ -194,8 +209,8 @@ const ModalBackdrop = ({ onPress, style }: IBackdropProps): ReactElement => {
         onPress={onPress}
       >
         <BlurView
-          intensity={BACKDROP_BLUR}
-          style={ABSOLUTE_FILL}
+          intensity={blurred ? BACKDROP_BLUR : 0}
+          style={[ABSOLUTE_FILL, BLUR_EASE]}
           tint={name === 'latte' ? 'light' : 'dark'}
         />
         <View className="absolute inset-0 bg-scrim" />
@@ -235,7 +250,7 @@ export const Modal = ({
 
   // Every way of closing plays the closing motion first: the backdrop, Esc and the Android back
   // button. While busy none of them does anything.
-  const { backdrop, mounted, panel, requestClose } = useModalMotion({
+  const { backdrop, mounted, opened, panel, requestClose } = useModalMotion({
     busy,
     onClose,
     sheet,
@@ -269,7 +284,7 @@ export const Modal = ({
         behavior={Platform.select({ ios: 'padding' })}
         className={cn('flex-1', sheet ? 'justify-end' : 'items-center justify-center p-6')}
       >
-        <ModalBackdrop onPress={requestClose} style={backdrop} />
+        <ModalBackdrop blurred={sheet || opened} onPress={requestClose} style={backdrop} />
         {/* NativeWind does not style Reanimated views, so the size lives on a plain View and the
             animated one inside it only moves. */}
         <View
@@ -286,7 +301,10 @@ export const Modal = ({
                 sheet
                   ? 'rounded-t-[20px] border-x-0 border-b-0 shadow-sheet'
                   : 'rounded-[20px] shadow-toast',
-                !sheet && 'bg-glass pb-6 backdrop-blur-2xl',
+                !sheet &&
+                  'bg-glass pb-6 backdrop-saturate-150 transition-[backdrop-filter] duration-200',
+                // See BLUR_EASE: the web card's blur waits for it to finish opening.
+                !sheet && opened && 'backdrop-blur-2xl',
               )}
               role={confirm ? 'alertdialog' : 'dialog'}
               style={sheetPadding}
