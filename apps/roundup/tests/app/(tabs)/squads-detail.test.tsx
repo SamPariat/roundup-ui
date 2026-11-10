@@ -110,7 +110,7 @@ describe('squad page', () => {
   it('renames the squad', async () => {
     await SquadsFixtures.open(backend, '/squads/s1')
     await fireEvent.press(await screen.findByRole('button', { name: 'Squad options' }))
-    await fireEvent.press(await screen.findByRole('button', { name: 'Rename squad' }))
+    await fireEvent.press(await screen.findByRole('menuitem', { name: 'Rename squad' }))
 
     const field = await screen.findByLabelText('Squad name')
 
@@ -135,8 +135,8 @@ describe('squad page', () => {
     await SquadsFixtures.open(backend, '/squads/s1')
     await fireEvent.press(await screen.findByRole('button', { name: 'Squad options' }))
 
-    expect(await screen.findByRole('button', { name: /^Leave squad/ })).toBeOnTheScreen()
-    expect(screen.queryByRole('button', { name: 'Rename squad' })).toBeNull()
+    expect(await screen.findByRole('menuitem', { name: 'Leave squad' })).toBeOnTheScreen()
+    expect(screen.queryByRole('menuitem', { name: 'Rename squad' })).toBeNull()
   })
 
   it('confirms before leaving, then goes back to the list without a not-found flash', async () => {
@@ -146,7 +146,7 @@ describe('squad page', () => {
 
     await SquadsFixtures.open(backend, '/squads/s1')
     await fireEvent.press(await screen.findByRole('button', { name: 'Squad options' }))
-    await fireEvent.press(await screen.findByRole('button', { name: /^Leave squad/ }))
+    await fireEvent.press(await screen.findByRole('menuitem', { name: 'Leave squad' }))
 
     expect(await screen.findByText('Leave Friday crew?')).toBeOnTheScreen()
 

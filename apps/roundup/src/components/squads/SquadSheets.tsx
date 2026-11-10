@@ -2,13 +2,12 @@ import type { ReactElement } from 'react'
 
 import { useCallback } from 'react'
 
-import type { ISquadInfo, ISquadMember, ISquadPermissions, TRole } from '@roundup/core'
+import type { ISquadInfo, ISquadMember, ISquadPermissions } from '@roundup/core'
 
 import { AddPeopleModal } from './AddPeopleModal'
 import { LeaveSquadModal } from './LeaveSquadModal'
 import { MemberActionsModal } from './MemberActionsModal'
 import { RenameSquadModal } from './RenameSquadModal'
-import { SquadOptionsModal } from './SquadOptionsModal'
 
 /** Which dialog is open on a squad's page. */
 export type TSheet =
@@ -20,7 +19,7 @@ export type TSheet =
     }
   | {
       /** One of the dialogs that needs nothing more. */
-      kind: 'add' | 'leave' | 'options' | 'rename'
+      kind: 'add' | 'leave' | 'rename'
     }
 
 /** Props for SquadSheets. */
@@ -35,20 +34,17 @@ export interface ISquadSheetsProps {
   members: ISquadMember[]
   /** What the signed-in person may do in the squad. */
   permissions: ISquadPermissions
-  /** The signed-in person's role in the squad. */
-  myRole: TRole | undefined
   /** Called once the person has left the squad. */
   onLeft: () => void
 }
 
 /**
  * The dialogs of a squad's page. Only the open one is mounted, so each starts fresh when opened.
- * The options menu hands over to Rename squad and Leave squad.
+ * The options Menu opens Rename squad and Leave squad.
  * @returns The open dialog, or null.
  */
 export const SquadSheets = ({
   members,
-  myRole,
   onLeft,
   onSheet,
   permissions,
@@ -57,14 +53,6 @@ export const SquadSheets = ({
 }: ISquadSheetsProps): null | ReactElement => {
   const handleClose = useCallback((): void => {
     onSheet()
-  }, [onSheet])
-
-  const handleRename = useCallback((): void => {
-    onSheet({ kind: 'rename' })
-  }, [onSheet])
-
-  const handleLeave = useCallback((): void => {
-    onSheet({ kind: 'leave' })
   }, [onSheet])
 
   switch (sheet?.kind) {
@@ -92,19 +80,6 @@ export const SquadSheets = ({
           onClose={handleClose}
           permissions={permissions}
           squadId={squad.id}
-        />
-      )
-    }
-
-    case 'options': {
-      return (
-        <SquadOptionsModal
-          myRole={myRole}
-          onClose={handleClose}
-          onLeave={handleLeave}
-          onRename={handleRename}
-          permissions={permissions}
-          squad={squad}
         />
       )
     }

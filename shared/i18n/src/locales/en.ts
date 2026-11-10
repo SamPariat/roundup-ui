@@ -200,11 +200,8 @@ export const en = {
       notFoundAction: 'Go to your squads',
       errorTitle: "Couldn't load this squad",
       options: 'Squad options',
-      optionsSubtitleAdmin: "{{members}} · you're an admin",
-      optionsSubtitleMember: '{{members}}',
       renameRow: 'Rename squad',
       leaveRow: 'Leave squad',
-      leaveRowHint: 'You can be added back by anyone in it',
       rename: {
         title: 'Rename squad',
         subtitle: 'Only admins can rename a squad',
