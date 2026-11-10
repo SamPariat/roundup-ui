@@ -21,7 +21,7 @@ import { useErrorText } from '@/hooks/useErrorText'
 import { Paths } from '@/navigation/paths'
 
 /**
- * One squad: its avatar and member count, then the members with an Admin badge on admins. What a
+ * One squad: its avatar, name and member count, then the members with an Admin badge on admins. What a
  * person can do comes from the server's permissions: admins open a member's actions and get Add
  * people as a floating button, and everyone has the options button in the header for Rename squad
  * and Leave squad. A squad that does not exist, or that the person is not in, shows a not-found
@@ -130,7 +130,14 @@ export default function SquadScreen(): ReactElement {
               size={64}
               {...(squad.avatarURL === undefined ? {} : { src: squad.avatarURL })}
             />
-            <Text variant="body-strong">{t('common.members', { count: squad.memberCount })}</Text>
+            <View className="min-w-0 flex-1">
+              <Text heading={1} numberOfLines={1} variant="heading">
+                {squad.name}
+              </Text>
+              <Text numberOfLines={1} tone="muted" variant="body">
+                {t('common.members', { count: squad.memberCount })}
+              </Text>
+            </View>
           </View>
           <View className="gap-3">
             <Text heading={2} variant="heading">
