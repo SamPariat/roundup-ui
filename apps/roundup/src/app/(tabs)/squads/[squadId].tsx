@@ -1,8 +1,4 @@
-import type {
-  NativeStackHeaderItem,
-  NativeStackHeaderItemMenuAction,
-  NativeStackNavigationOptions,
-} from 'expo-router'
+import type { NativeStackHeaderItem, NativeStackNavigationOptions } from 'expo-router'
 import type { ReactElement } from 'react'
 
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router'
@@ -73,42 +69,19 @@ export default function SquadScreen(): ReactElement {
 
   const renderHeaderRight = useCallback((): ReactElement => optionsButton, [optionsButton])
 
-  const handleOpenRename = useCallback((): void => {
-    setSheet({ kind: 'rename' })
-  }, [])
-
-  const handleOpenLeave = useCallback((): void => {
-    setSheet({ kind: 'leave' })
-  }, [])
-
-  // iOS draws the options as a native bar button, in the same glass as the back button, whose
-  // pull-down menu holds what the options sheet lists: Rename squad (when the server allows it)
-  // and Leave squad. Web and Android draw headerRight, which opens the sheet, in their own bar.
-  const renderHeaderItems = useCallback((): NativeStackHeaderItem[] => {
-    const rename: NativeStackHeaderItemMenuAction = {
-      icon: { name: 'pencil', type: 'sfSymbol' },
-      label: t('screens.squad.renameRow'),
-      onPress: handleOpenRename,
-      type: 'action',
-    }
-
-    const leave: NativeStackHeaderItemMenuAction = {
-      destructive: true,
-      icon: { name: 'rectangle.portrait.and.arrow.right', type: 'sfSymbol' },
-      label: t('screens.squad.leaveRow'),
-      onPress: handleOpenLeave,
-      type: 'action',
-    }
-
-    return [
+  // iOS draws the options as a native bar button, in the same glass as the back button; web and
+  // Android draw headerRight in their own bar.
+  const renderHeaderItems = useCallback(
+    (): NativeStackHeaderItem[] => [
       {
         icon: { name: 'ellipsis', type: 'sfSymbol' },
         label: t('screens.squad.options'),
-        menu: { items: permissions?.canEditSquad === true ? [rename, leave] : [leave] },
-        type: 'menu',
+        onPress: handleOpenOptions,
+        type: 'button',
       },
-    ]
-  }, [handleOpenLeave, handleOpenRename, permissions, t])
+    ],
+    [handleOpenOptions, t],
+  )
 
   const headerOptions = useMemo(
     (): NativeStackNavigationOptions => ({
