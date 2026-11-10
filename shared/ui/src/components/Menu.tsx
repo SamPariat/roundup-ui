@@ -1,12 +1,15 @@
-import type { ReactElement } from 'react'
+import type { ComponentRef, ReactElement, Ref } from 'react'
 import type { ViewStyle } from 'react-native'
 
-import { useCallback, useEffect, useMemo } from 'react'
-import { BackHandler, Platform, Pressable, View } from 'react-native'
+import { useCallback, useImperativeHandle, useMemo, useRef, useState } from 'react'
+import { Modal, Platform, Pressable, useWindowDimensions, View } from 'react-native'
+import Animated from 'react-native-reanimated'
 
 import type { TIconName } from '../lib/icons'
 
 import { cn } from '../lib/cn'
+import { useMenuMotion } from '../lib/useMenuMotion'
+import { Button } from './Button'
 import { Icon } from './Icon'
 import { Surface } from './Surface'
 import { Text } from './Text'
@@ -25,45 +28,73 @@ export interface IMenuItem {
 
 /** Props for Menu. */
 export interface IMenuProps {
-  /** Whether the menu is open. */
-  visible: boolean
   /** The actions, in order; destructive ones are moved last. */
   items: readonly IMenuItem[]
-  /** The menu's accessible name, such as "Squad options". */
+  /** The name of the ⋯ button and of the menu, such as "Squad options". */
   label: string
-  /** How far below the top of its parent the card sits, in points. Defaults to 8. */
-  top?: number
   /**
-   * Classes of the column the card lines up with, such as the content's max width and side gutter:
-   * its right edge sits on that column's right edge, under the ⋯ button. Defaults to a 16 gutter.
+   * Where the card opens when something else draws the ⋯ button, such as the iOS header's native
+   * button, which calls `open` on the ref. Leaving it out renders the Menu's own ⋯ button, and the
+   * card opens under it.
    */
-  column?: string
-  /** Called by a tap outside, Esc, the Android back button and after a row is picked. */
-  onClose: () => void
+  anchor?: IMenuPlace
+  /** Opens the menu from outside, for a ⋯ button the Menu does not draw. */
+  ref?: Ref<IMenuHandle>
+}
+
+/** What a Menu lets its owner do: open it from a ⋯ button it does not draw. */
+export interface IMenuHandle {
+  /** Opens the menu at its anchor. */
+  open: () => void
 }
 
 /** Props for one row. */
 interface IMenuRowProps {
   /** The action. */
   item: IMenuItem
-  /** Closes the menu before the action runs. */
-  onClose: () => void
+  /** Closes the menu, then runs the action. */
+  onPick: (action: () => void) => void
 }
 
-/** The web's glass: the raised color at 60% over a blur. iOS draws Liquid Glass through Surface. */
-const WEB_GLASS = Platform.select({ default: '', web: 'bg-glass backdrop-blur-2xl' })
+/** Where the open card sits in the window: its top and its distance from the right edge. */
+export interface IMenuPlace {
+  /** Points from the top of the window. */
+  top: number
+  /** Points from the right edge of the window. */
+  right: number
+}
+
+/** The gap between the trigger and the card, and the least margin the card keeps from the edge. */
+const GAP = 8
+
+/** The least room the card keeps from the right edge of the window. */
+const EDGE = 16
+
+/**
+ * The web's glass fill, the raised color at 60%; its blur is part of the motion (useMenuMotion).
+ * iOS draws Liquid Glass through Surface.
+ */
+const WEB_FILL = Platform.select({ default: '', web: 'bg-glass' })
+
+/** The card's corners, on the animated view too, so the web blur it carries is clipped to them. */
+const CARD_SHAPE: ViewStyle = { borderRadius: 16 }
+
+/**
+ * iOS cannot present a Modal while another one is still being dismissed, so there a picked action
+ * waits for the menu's own Modal to finish closing. Elsewhere it runs straight away.
+ */
+const WAIT_FOR_DISMISS = Platform.OS === 'ios'
 
 /**
  * One action: an icon and a label, 48 tall; red when destructive.
  * @returns The pressable row.
  */
-const MenuRow = ({ item, onClose }: IMenuRowProps): ReactElement => {
+const MenuRow = ({ item, onPick }: IMenuRowProps): ReactElement => {
   const { destructive = false, icon, label, onPress } = item
 
   const handlePress = useCallback((): void => {
-    onClose()
-    onPress()
-  }, [onClose, onPress])
+    onPick(onPress)
+  }, [onPick, onPress])
 
   return (
     <Pressable
@@ -83,99 +114,135 @@ const MenuRow = ({ item, onClose }: IMenuRowProps): ReactElement => {
 }
 
 /**
- * Closes the menu on the Android back button and on Esc on the web, while it is open.
- * @param visible - Whether the menu is open.
- * @param onClose - Closes it.
+ * The options behind a ⋯ button, the same on web, Android and iOS. It renders the button itself and
+ * keeps its own open state: pressing it opens a glass card 8 below the button, its right edge on
+ * the button's right edge, one row per action, destructive rows last after a divider. The card
+ * grows from its corner like an iOS context menu and shrinks away on close. It floats in a
+ * transparent Modal over the whole window, so a tap anywhere (the header, the tab bar, the button
+ * again), Esc or the Android back button closes it. Picking a row closes it, then runs the action,
+ * so a Modal the action opens never overlaps it. Where a native ⋯ button stands in for its own
+ * (the iOS header), pass an `anchor` and call `open` on the ref.
+ * @returns The trigger (unless anchored), and the menu while open.
  */
-const useDismissKeys = (visible: boolean, onClose: () => void): void => {
-  const handleBack = useCallback((): boolean => {
-    onClose()
+export const Menu = ({ anchor, items, label, ref }: IMenuProps): ReactElement => {
+  const triggerRef = useRef<ComponentRef<typeof View>>(null)
+  // The action picked, run once the menu has gone; undefined when it closed without a pick.
+  const pendingRef = useRef<(() => void) | undefined>(undefined)
+  const [open, setOpen] = useState<boolean>(false)
+  // Where the card goes, once the trigger has been measured.
+  const [place, setPlace] = useState<IMenuPlace | undefined>()
+  const { width } = useWindowDimensions()
+  const motion = useMenuMotion(Platform.OS === 'web')
+  const { open: playOpen } = motion
 
-    return true
-  }, [onClose])
+  const handleOpen = useCallback((): void => {
+    setOpen(true)
 
-  const handleKey = useCallback(
-    (event: KeyboardEvent): void => {
-      if (event.key === 'Escape') onClose()
+    if (anchor !== undefined) {
+      setPlace(anchor)
+      playOpen()
+
+      return
+    }
+
+    triggerRef.current?.measureInWindow(
+      (x: number, y: number, triggerWidth: number, triggerHeight: number): void => {
+        setPlace({ right: Math.max(EDGE, width - x - triggerWidth), top: y + triggerHeight + GAP })
+        playOpen()
+      },
+    )
+  }, [anchor, playOpen, width])
+
+  useImperativeHandle(ref, (): IMenuHandle => ({ open: handleOpen }), [handleOpen])
+
+  const runPending = useCallback((): void => {
+    const action = pendingRef.current
+
+    pendingRef.current = undefined
+    action?.()
+  }, [])
+
+  // The closing motion has ended: hide the Modal, and run the picked action unless iOS has to
+  // wait for the Modal to finish going (see handleDismiss).
+  const handleClosed = useCallback((): void => {
+    setOpen(false)
+    setPlace(undefined)
+
+    if (!WAIT_FOR_DISMISS) runPending()
+  }, [runPending])
+
+  const { close: playClose } = motion
+
+  const handleClose = useCallback((): void => {
+    pendingRef.current = undefined
+    playClose(handleClosed)
+  }, [handleClosed, playClose])
+
+  const handlePick = useCallback(
+    (action: () => void): void => {
+      pendingRef.current = action
+      playClose(handleClosed)
     },
-    [onClose],
+    [handleClosed, playClose],
   )
 
-  useEffect(() => {
-    if (!visible) return
+  const cardPlace = useMemo(
+    (): ViewStyle =>
+      place === undefined
+        ? { ...CARD_SHAPE, opacity: 0, position: 'absolute' }
+        : { ...CARD_SHAPE, position: 'absolute', right: place.right, top: place.top },
+    [place],
+  )
 
-    if (Platform.OS === 'web') {
-      globalThis.addEventListener('keydown', handleKey)
-
-      return () => {
-        globalThis.removeEventListener('keydown', handleKey)
-      }
-    }
-
-    const subscription = BackHandler.addEventListener('hardwareBackPress', handleBack)
-
-    return () => {
-      subscription.remove()
-    }
-  }, [handleBack, handleKey, visible])
-}
-
-/**
- * The options behind a ⋯ button: a glass card at the top of its parent (the screen, just under
- * its header), its right edge on the right edge of the given column, so it sits under the button, one row per action, destructive rows last after a divider. It is the same on
- * web, Android and iOS. The screen behind is not dimmed: a tap anywhere outside, Esc or the
- * Android back button closes it, and picking a row closes it, then runs the action, so a Modal the
- * action opens never overlaps it. Put it last in the screen, so it covers the content.
- * @returns The menu while open, or nothing.
- */
-export const Menu = ({
-  items,
-  label,
-  onClose,
-  column = 'px-4',
-  top = 8,
-  visible,
-}: IMenuProps): null | ReactElement => {
-  useDismissKeys(visible, onClose)
-
-  const place = useMemo((): ViewStyle => ({ top }), [top])
   const plain = items.filter((item) => item.destructive !== true)
   const danger = items.filter((item) => item.destructive === true)
 
-  if (!visible) return null
+  const button =
+    anchor === undefined ? (
+      <Button icon="more" label={label} onPress={handleOpen} variant="ghost" />
+    ) : null
 
   return (
-    <View className="absolute inset-0 z-10">
-      <Pressable
-        accessible={false}
-        aria-hidden
-        className="absolute inset-0"
-        focusable={false}
-        importantForAccessibility="no-hide-descendants"
-        onPress={onClose}
-      />
-      <View className="absolute inset-x-0 items-center" pointerEvents="box-none" style={place}>
-        <View className={cn('w-full items-end', column)} pointerEvents="box-none">
+    <View collapsable={false} ref={triggerRef}>
+      {button}
+      <Modal
+        animationType="none"
+        onDismiss={runPending}
+        onRequestClose={handleClose}
+        statusBarTranslucent
+        transparent
+        visible={open}
+      >
+        <Pressable
+          accessible={false}
+          aria-hidden
+          className="absolute inset-0"
+          focusable={false}
+          importantForAccessibility="no-hide-descendants"
+          onPress={handleClose}
+        />
+        {/* NativeWind does not style Reanimated views, so the place, corners and motion are styles. */}
+        <Animated.View style={[cardPlace, motion.style]}>
           <Surface
             accessibilityLabel={label}
             className={cn(
               'max-w-80 min-w-55 rounded-2xl border border-glass-edge p-1.5 shadow-toast',
-              WEB_GLASS,
+              WEB_FILL,
             )}
             role="menu"
           >
             {plain.map((item) => (
-              <MenuRow item={item} key={item.label} onClose={onClose} />
+              <MenuRow item={item} key={item.label} onPick={handlePick} />
             ))}
             {plain.length > 0 && danger.length > 0 ? (
               <View className="mx-3 my-1.5 h-px bg-border" role="separator" />
             ) : null}
             {danger.map((item) => (
-              <MenuRow item={item} key={item.label} onClose={onClose} />
+              <MenuRow item={item} key={item.label} onPick={handlePick} />
             ))}
           </Surface>
-        </View>
-      </View>
+        </Animated.View>
+      </Modal>
     </View>
   )
 }

@@ -3,17 +3,16 @@ import type { ReactElement } from 'react'
 
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router'
 import { useHeaderHeight } from 'expo-router/react-navigation'
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useMemo, useRef, useState } from 'react'
 import { View } from 'react-native'
 
 import type { ISquadMember } from '@roundup/core'
-import type { IMenuItem } from '@roundup/ui'
+import type { IMenuHandle, IMenuItem, IMenuPlace } from '@roundup/ui'
 
 import { useSquad } from '@roundup/core'
 import { useT } from '@roundup/i18n'
 import {
   Button,
-  cn,
   EmptyState,
   FloatingActionButton,
   IdentityHeader,
@@ -33,15 +32,18 @@ import { useErrorText } from '@/hooks/useErrorText'
 import { useLayout } from '@/hooks/useLayout'
 import { Paths } from '@/navigation/paths'
 
-/** How far below the header the options Menu sits, in points. */
+/** How far the iOS header's buttons sit from the screen's right edge, in points. */
+const HEADER_EDGE = 16
+
+/** How far below the iOS header the options Menu opens, in points. */
 const MENU_GAP = 8
 
 /**
- * One squad: its avatar, name and member count, then the members with an Admin badge on admins. What a
- * person can do comes from the server's permissions: admins open a member's actions and get Add
- * people as a floating button, and everyone has the options button in the header, whose Menu
- * holds Rename squad (when allowed) and Leave squad. A squad that does not exist, or that the person is not in, shows a not-found
- * state with a way back.
+ * One squad: its avatar, name and member count, then the members with an Admin badge on admins.
+ * What a person can do comes from the server's permissions: admins open a member's actions and get
+ * Add people as a floating button, and everyone has the options Menu in the header, with Rename
+ * squad (when allowed) and Leave squad. A squad that does not exist, or that the person is not in,
+ * shows a not-found state with a way back.
  * @returns The squad, a placeholder while it loads, or the not-found state.
  */
 export default function SquadScreen(): ReactElement {
@@ -49,13 +51,15 @@ export default function SquadScreen(): ReactElement {
   const { t } = useT()
   const router = useRouter()
   const [sheet, setSheet] = useState<TSheet | undefined>()
-  const [menuOpen, setMenuOpen] = useState<boolean>(false)
-  const { gutterClass, systemChrome } = useLayout()
+  const menuRef = useRef<IMenuHandle>(null)
+  const { systemChrome } = useLayout()
   const headerHeight = useHeaderHeight()
-  // The Menu lines up with the content column, whose right edge the ⋯ button sits on, 8 below the
-  // header. iOS lays the screen out under its glass header; web and Android start below their bar.
-  const column = cn('max-w-content', gutterClass)
-  const menuTop = (systemChrome ? headerHeight : 0) + MENU_GAP
+
+  // Under the iOS header's ⋯, which sits at the bar's right edge, 16 in.
+  const iosAnchor = useMemo(
+    (): IMenuPlace => ({ right: HEADER_EDGE, top: headerHeight + MENU_GAP }),
+    [headerHeight],
+  )
 
   const { error, loading, members, notFound, permissions, requestId, squad } = useSquad(squadId)
 
@@ -64,14 +68,6 @@ export default function SquadScreen(): ReactElement {
   const handleGoToSquads = useCallback((): void => {
     router.dismissTo(Paths.tabsSquads())
   }, [router])
-
-  const handleOpenOptions = useCallback((): void => {
-    setMenuOpen(true)
-  }, [])
-
-  const handleCloseOptions = useCallback((): void => {
-    setMenuOpen(false)
-  }, [])
 
   const handleOpenRename = useCallback((): void => {
     setSheet({ kind: 'rename' })
@@ -103,22 +99,17 @@ export default function SquadScreen(): ReactElement {
     setSheet({ kind: 'member', memberId: member.id })
   }, [])
 
-  const optionsButton = useMemo(
-    (): ReactElement => (
-      <Button
-        icon="more"
-        label={t('screens.squad.options')}
-        onPress={handleOpenOptions}
-        variant="ghost"
-      />
-    ),
-    [handleOpenOptions, t],
+  // Web and Android draw headerRight, the Menu with its own ⋯, in their own bar. iOS draws a native
+  // ⋯ in the same glass as the back button, which opens the same Menu, anchored under it.
+  const renderHeaderRight = useCallback(
+    (): ReactElement => <Menu items={options} label={t('screens.squad.options')} />,
+    [options, t],
   )
 
-  const renderHeaderRight = useCallback((): ReactElement => optionsButton, [optionsButton])
+  const handleOpenOptions = useCallback((): void => {
+    menuRef.current?.open()
+  }, [])
 
-  // iOS draws the options button natively, in the same glass as the back button; web and Android
-  // draw headerRight in their own bar. Both open the same Menu.
   const renderHeaderItems = useCallback(
     (): NativeStackHeaderItem[] => [
       {
@@ -198,14 +189,9 @@ export default function SquadScreen(): ReactElement {
           </View>
         </View>
       </TabPage>
-      <Menu
-        column={column}
-        items={options}
-        label={t('screens.squad.options')}
-        onClose={handleCloseOptions}
-        top={menuTop}
-        visible={menuOpen}
-      />
+      {systemChrome ? (
+        <Menu anchor={iosAnchor} items={options} label={t('screens.squad.options')} ref={menuRef} />
+      ) : null}
       <SquadSheets
         members={members}
         onLeft={handleGoToSquads}

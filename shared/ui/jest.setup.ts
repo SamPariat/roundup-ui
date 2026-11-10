@@ -26,3 +26,14 @@ jest.mock(
       reanimatedModule: object
     }>('./tests/helpers/reanimated').reanimatedModule,
 )
+
+// React Native's Modal mock never calls onDismiss; this stand-in does once it hides, as iOS does,
+// so code that waits for one Modal to go before opening another runs as it does on a phone.
+jest.mock(
+  'react-native/Libraries/Modal/Modal',
+  () =>
+    jest.requireActual<{
+      /** The stand-in's module. */
+      modalModule: object
+    }>('./tests/helpers/modal').modalModule,
+)

@@ -1,6 +1,7 @@
-import { fireEvent, screen } from '@testing-library/react-native'
+import { act, fireEvent, screen } from '@testing-library/react-native'
+import { createRef } from 'react'
 
-import type { IMenuItem } from '../../src/components/Menu'
+import type { IMenuHandle, IMenuItem } from '../../src/components/Menu'
 
 import { Menu } from '../../src/components/Menu'
 import { Render } from '../helpers/render'
@@ -35,28 +36,28 @@ class MenuFixtures {
       },
     ]
   }
+
+  /**
+   * Renders the menu and presses its ⋯ button.
+   * @param ran - Where each picked row's label is recorded.
+   * @returns A promise that resolves once the menu is open.
+   */
+  static async open(ran: string[] = []): Promise<void> {
+    await Render.withTheme(<Menu items={MenuFixtures.items(ran)} label="Squad options" />)
+    await fireEvent.press(screen.getByRole('button', { name: 'Squad options' }))
+  }
 }
 
 describe('Menu', () => {
-  it('draws nothing while closed', async () => {
-    await Render.withTheme(
-      <Menu
-        items={MenuFixtures.items([])}
-        label="Squad options"
-        onClose={jest.fn()}
-        visible={false}
-      />,
-    )
+  it('shows only its ⋯ button until pressed', async () => {
+    await Render.withTheme(<Menu items={MenuFixtures.items([])} label="Squad options" />)
 
-    expect(screen.queryByLabelText('Squad options')).toBeNull()
+    expect(screen.getByRole('button', { name: 'Squad options' })).toBeOnTheScreen()
+    expect(screen.queryByRole('menuitem')).toBeNull()
   })
 
-  it('lists its actions as menu items, destructive ones last', async () => {
-    await Render.withTheme(
-      <Menu items={MenuFixtures.items([])} label="Squad options" onClose={jest.fn()} visible />,
-    )
-
-    expect(screen.getByLabelText('Squad options')).toHaveProp('role', 'menu')
+  it('opens with its actions as menu items, destructive ones last', async () => {
+    await MenuFixtures.open()
 
     const names = screen
       .getAllByRole('menuitem')
@@ -67,15 +68,32 @@ describe('Menu', () => {
 
   it('closes, then runs the action that was picked', async () => {
     const ran: string[] = []
-    const onClose = jest.fn()
 
-    await Render.withTheme(
-      <Menu items={MenuFixtures.items(ran)} label="Squad options" onClose={onClose} visible />,
-    )
-
+    await MenuFixtures.open(ran)
     await fireEvent.press(screen.getByRole('menuitem', { name: 'Rename squad' }))
 
-    expect(onClose).toHaveBeenCalledTimes(1)
+    expect(screen.queryByRole('menuitem')).toBeNull()
     expect(ran).toEqual(['rename'])
+  })
+
+  it('opens from its handle at an anchor, for a ⋯ button it does not draw', async () => {
+    const menu = createRef<IMenuHandle>()
+
+    await Render.withTheme(
+      <Menu
+        anchor={{ right: 16, top: 100 }}
+        items={MenuFixtures.items([])}
+        label="Squad options"
+        ref={menu}
+      />,
+    )
+
+    expect(screen.queryByRole('button', { name: 'Squad options' })).toBeNull()
+
+    await act(() => {
+      menu.current?.open()
+    })
+
+    expect(screen.getAllByRole('menuitem')).toHaveLength(2)
   })
 })
