@@ -8,6 +8,7 @@ import { ButtonDemo } from './demos/ButtonDemo'
 import { ChipDemo } from './demos/ChipDemo'
 import { ColorsDemo } from './demos/ColorsDemo'
 import { EmptyStateDemo } from './demos/EmptyStateDemo'
+import { FloatingActionButtonDemo } from './demos/FloatingActionButtonDemo'
 import { IconDemo } from './demos/IconDemo'
 import { ListDemo } from './demos/ListDemo'
 import { ListRowDemo } from './demos/ListRowDemo'
@@ -90,6 +91,12 @@ const ENTRIES: readonly TEntryInput[] = [
     group: 'Actions',
     summary: 'Primary, secondary, ghost and destructive actions, with a loading state.',
     Demo: ButtonDemo,
+  },
+  {
+    title: 'FloatingActionButton',
+    group: 'Actions',
+    summary: "A screen's one create action, floating in the bottom-right corner.",
+    Demo: FloatingActionButtonDemo,
   },
   {
     title: 'Chip',

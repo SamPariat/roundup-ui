@@ -1,23 +1,21 @@
 import type { ReactElement } from 'react'
 
-import { Stack } from 'expo-router'
 import { useCallback, useState } from 'react'
 
 import type { ISquadCard } from '@roundup/core'
 
 import { useSquads } from '@roundup/core'
 import { useT } from '@roundup/i18n'
-import { Button, EmptyState, Skeleton } from '@roundup/ui'
+import { EmptyState, FloatingActionButton, Skeleton } from '@roundup/ui'
 
 import { CreateSquadModal } from '@/components/squads/CreateSquadModal'
 import { SquadListCard } from '@/components/squads/SquadListCard'
 import { TabList } from '@/components/TabList'
 
 /**
- * The Squads tab: the person's squads as cards, a New squad action, and an empty state that
- * offers the same. It loads more squads as the end of the list comes into view and reloads on a
- * pull. On iOS the action sits in the header; on web and Android, which draw their own bar, it is
- * the first line of the list.
+ * The Squads tab: the person's squads as cards, with New squad as a floating button on every
+ * platform, also over the empty state. It loads more squads as the end of the list comes into view
+ * and reloads on a pull.
  * @returns The list, or its placeholders or empty state, and the New squad modal when it is open.
  */
 export default function SquadsScreen(): ReactElement {
@@ -55,38 +53,21 @@ export default function SquadsScreen(): ReactElement {
 
   const keyOf = useCallback((squad: ISquadCard): string => squad.id, [])
 
-  const renderHeaderRight = useCallback(
-    (): ReactElement => (
-      <Button
-        icon="plus"
-        label={t('screens.squads.newSquad')}
-        onPress={handleOpenCreate}
-        variant="ghost"
-      />
-    ),
-    [handleOpenCreate, t],
-  )
-
-  const newSquad = (
-    <Button icon="plus" onPress={handleOpenCreate}>
-      {t('screens.squads.newSquad')}
-    </Button>
-  )
-
-  // New squad sits in the header on every platform: the iOS header, or the bar TabHeader draws.
-
   return (
     <>
-      <Stack.Screen options={{ headerRight: renderHeaderRight }} />
       <TabList
         data={squads}
         empty={
           <EmptyState
-            action={newSquad}
             art="squads"
             body={t('screens.squads.emptyBody')}
             title={t('screens.squads.emptyTitle')}
           />
+        }
+        fab={
+          <FloatingActionButton icon="plus" onPress={handleOpenCreate}>
+            {t('screens.squads.newSquad')}
+          </FloatingActionButton>
         }
         footer={loadingMore ? <Skeleton /> : undefined}
         keyExtractor={keyOf}

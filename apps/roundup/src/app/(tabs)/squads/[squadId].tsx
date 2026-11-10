@@ -8,7 +8,7 @@ import type { ISquadMember } from '@roundup/core'
 
 import { useSquad } from '@roundup/core'
 import { useT } from '@roundup/i18n'
-import { Avatar, Button, EmptyState, List, Skeleton, Text } from '@roundup/ui'
+import { Avatar, Button, EmptyState, FloatingActionButton, List, Skeleton, Text } from '@roundup/ui'
 
 import type { TSheet } from '@/components/squads/SquadSheets'
 
@@ -21,10 +21,10 @@ import { Paths } from '@/navigation/paths'
 
 /**
  * One squad: its avatar and member count, then the members with an Admin badge on admins. What a
- * person can do comes from the server's permissions: admins open a member's actions, and everyone
- * has the options menu for Rename squad and Leave squad. A squad that does not exist, or that the
- * person is not in, shows a not-found state with a way back. On iOS the header carries the squad's
- * name and the options button; elsewhere the options button sits beside the Members heading.
+ * person can do comes from the server's permissions: admins open a member's actions and get Add
+ * people as a floating button, and everyone has the options button in the header for Rename squad
+ * and Leave squad. A squad that does not exist, or that the person is not in, shows a not-found
+ * state with a way back.
  * @returns The squad, a placeholder while it loads, or the not-found state.
  */
 export default function SquadScreen(): ReactElement {
@@ -89,10 +89,16 @@ export default function SquadScreen(): ReactElement {
     )
   }
 
+  const addPeople = permissions.canAddMembers ? (
+    <FloatingActionButton icon="plus" onPress={handleOpenAdd}>
+      {t('addPeople.title')}
+    </FloatingActionButton>
+  ) : undefined
+
   return (
     <>
       <Stack.Screen options={{ headerRight: renderHeaderRight }} />
-      <TabPage>
+      <TabPage fab={addPeople}>
         <View className="max-w-160 gap-6">
           <View className="flex-row items-center gap-4">
             <Avatar
@@ -104,18 +110,9 @@ export default function SquadScreen(): ReactElement {
             <Text variant="body-strong">{t('common.members', { count: squad.memberCount })}</Text>
           </View>
           <View className="gap-3">
-            <View className="flex-row items-center justify-between gap-3">
-              <Text heading={2} variant="heading">
-                {t('screens.squad.members')}
-              </Text>
-              <View className="flex-row items-center gap-2">
-                {permissions.canAddMembers ? (
-                  <Button icon="plus" onPress={handleOpenAdd} size="sm" variant="secondary">
-                    {t('addPeople.title')}
-                  </Button>
-                ) : null}
-              </View>
-            </View>
+            <Text heading={2} variant="heading">
+              {t('screens.squad.members')}
+            </Text>
             <List>
               {members.map((member) => (
                 <MemberRow

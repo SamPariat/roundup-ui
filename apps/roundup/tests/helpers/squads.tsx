@@ -86,13 +86,11 @@ export class SquadsFixtures {
   }
 
   /**
-   * Presses the first New squad button, which is the header's on iOS.
+   * Presses the floating New squad button.
    * @returns A promise that resolves once the press is handled.
    */
   static async pressNewSquad(): Promise<void> {
-    const [button] = await screen.findAllByRole('button', { name: 'New squad' })
-
-    if (button !== undefined) await fireEvent.press(button)
+    await fireEvent.press(await screen.findByRole('button', { name: 'New squad' }))
   }
 
   /**
