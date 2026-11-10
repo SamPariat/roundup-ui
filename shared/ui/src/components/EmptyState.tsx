@@ -127,6 +127,7 @@ export const EmptyState = ({
         {body}
       </Text>
     )}
-    {action}
+    {/* A Button aligns itself to the start, so the wrapper is what gets centered. */}
+    {action === undefined ? null : <View>{action}</View>}
   </View>
 )
