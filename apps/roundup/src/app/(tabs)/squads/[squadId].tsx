@@ -9,7 +9,15 @@ import type { ISquadMember } from '@roundup/core'
 
 import { useSquad } from '@roundup/core'
 import { useT } from '@roundup/i18n'
-import { Avatar, Button, EmptyState, FloatingActionButton, List, Skeleton, Text } from '@roundup/ui'
+import {
+  Button,
+  EmptyState,
+  FloatingActionButton,
+  IdentityHeader,
+  List,
+  Skeleton,
+  Text,
+} from '@roundup/ui'
 
 import type { TSheet } from '@/components/squads/SquadSheets'
 
@@ -123,22 +131,15 @@ export default function SquadScreen(): ReactElement {
       <Stack.Screen options={headerOptions} />
       <TabPage fab={addPeople}>
         <View className="max-w-160 gap-6">
-          <View className="flex-row items-center gap-4">
-            <Avatar
-              id={squad.id}
-              name={squad.name}
-              size={64}
-              {...(squad.avatarURL === undefined ? {} : { src: squad.avatarURL })}
-            />
-            <View className="min-w-0 flex-1">
-              <Text heading={1} numberOfLines={1} variant="heading">
-                {squad.name}
-              </Text>
-              <Text numberOfLines={1} tone="muted" variant="body">
-                {t('common.members', { count: squad.memberCount })}
-              </Text>
-            </View>
-          </View>
+          <IdentityHeader
+            avatar={{
+              id: squad.id,
+              name: squad.name,
+              ...(squad.avatarURL === undefined ? {} : { src: squad.avatarURL }),
+            }}
+            subtitle={t('common.members', { count: squad.memberCount })}
+            title={squad.name}
+          />
           <View className="gap-3">
             <Text heading={2} variant="heading">
               {t('screens.squad.members')}

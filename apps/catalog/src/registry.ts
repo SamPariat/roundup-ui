@@ -10,6 +10,7 @@ import { ColorsDemo } from './demos/ColorsDemo'
 import { EmptyStateDemo } from './demos/EmptyStateDemo'
 import { FloatingActionButtonDemo } from './demos/FloatingActionButtonDemo'
 import { IconDemo } from './demos/IconDemo'
+import { IdentityHeaderDemo } from './demos/IdentityHeaderDemo'
 import { ListDemo } from './demos/ListDemo'
 import { ListRowDemo } from './demos/ListRowDemo'
 import { LogoDemo } from './demos/LogoDemo'
@@ -151,6 +152,12 @@ const ENTRIES: readonly TEntryInput[] = [
     group: 'Display',
     summary: 'A person or squad as a photo or tinted initials.',
     Demo: AvatarDemo,
+  },
+  {
+    title: 'IdentityHeader',
+    group: 'Display',
+    summary: 'The avatar beside a name and one muted line, at the top of a profile or a squad.',
+    Demo: IdentityHeaderDemo,
   },
   {
     title: 'AvatarGroup',
