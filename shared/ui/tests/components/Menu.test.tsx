@@ -76,16 +76,11 @@ describe('Menu', () => {
     expect(ran).toEqual(['rename'])
   })
 
-  it('opens from its handle at an anchor, for a ⋯ button it does not draw', async () => {
+  it('opens from its handle under the header, for a ⋯ button the header draws', async () => {
     const menu = createRef<IMenuHandle>()
 
     await Render.withTheme(
-      <Menu
-        anchor={{ right: 16, top: 100 }}
-        items={MenuFixtures.items([])}
-        label="Squad options"
-        ref={menu}
-      />,
+      <Menu anchor="header" items={MenuFixtures.items([])} label="Squad options" ref={menu} />,
     )
 
     expect(screen.queryByRole('button', { name: 'Squad options' })).toBeNull()

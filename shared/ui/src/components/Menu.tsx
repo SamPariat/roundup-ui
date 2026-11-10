@@ -1,9 +1,11 @@
 import type { ComponentRef, ReactElement, Ref } from 'react'
 import type { ViewStyle } from 'react-native'
 
-import { useCallback, useImperativeHandle, useMemo, useRef, useState } from 'react'
+import { HeaderHeightContext } from 'expo-router/react-navigation'
+import { use, useCallback, useImperativeHandle, useMemo, useRef, useState } from 'react'
 import { Modal, Platform, Pressable, useWindowDimensions, View } from 'react-native'
 import Animated from 'react-native-reanimated'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
 import type { TIconName } from '../lib/icons'
 
@@ -33,11 +35,11 @@ export interface IMenuProps {
   /** The name of the ⋯ button and of the menu, such as "Squad options". */
   label: string
   /**
-   * Where the card opens when something else draws the ⋯ button, such as the iOS header's native
-   * button, which calls `open` on the ref. Leaving it out renders the Menu's own ⋯ button, and the
-   * card opens under it.
+   * `header` when the screen header draws the ⋯ button itself (the iOS header's native button),
+   * which calls `open` on the ref: the Menu draws no button and opens under the header's right
+   * end. Leaving it out renders the Menu's own ⋯ button, and the card opens under it.
    */
-  anchor?: IMenuPlace
+  anchor?: 'header'
   /** Opens the menu from outside, for a ⋯ button the Menu does not draw. */
   ref?: Ref<IMenuHandle>
 }
@@ -57,7 +59,7 @@ interface IMenuRowProps {
 }
 
 /** Where the open card sits in the window: its top and its distance from the right edge. */
-export interface IMenuPlace {
+interface IMenuPlace {
   /** Points from the top of the window. */
   top: number
   /** Points from the right edge of the window. */
@@ -120,8 +122,8 @@ const MenuRow = ({ item, onPick }: IMenuRowProps): ReactElement => {
  * grows from its corner like an iOS context menu and shrinks away on close. It floats in a
  * transparent Modal over the whole window, so a tap anywhere (the header, the tab bar, the button
  * again), Esc or the Android back button closes it. Picking a row closes it, then runs the action,
- * so a Modal the action opens never overlaps it. Where a native ⋯ button stands in for its own
- * (the iOS header), pass an `anchor` and call `open` on the ref.
+ * so a Modal the action opens never overlaps it. Where the header draws a native ⋯ (iOS), pass
+ * `anchor="header"` and call `open` on the ref.
  * @returns The trigger (unless anchored), and the menu while open.
  */
 export const Menu = ({ anchor, items, label, ref }: IMenuProps): ReactElement => {
@@ -132,14 +134,19 @@ export const Menu = ({ anchor, items, label, ref }: IMenuProps): ReactElement =>
   // Where the card goes, once the trigger has been measured.
   const [place, setPlace] = useState<IMenuPlace | undefined>()
   const { width } = useWindowDimensions()
+  // The screen's header height, read from its context so a Menu outside a navigator (a test, the
+  // catalog) falls back to the top safe area instead of throwing as useHeaderHeight would.
+  const headerHeight = use(HeaderHeightContext)
+  const { top: safeTop } = useSafeAreaInsets()
   const motion = useMenuMotion(Platform.OS === 'web')
   const { open: playOpen } = motion
 
   const handleOpen = useCallback((): void => {
     setOpen(true)
 
-    if (anchor !== undefined) {
-      setPlace(anchor)
+    if (anchor === 'header') {
+      // The header's own buttons sit 16 in from its right end.
+      setPlace({ right: EDGE, top: (headerHeight ?? safeTop) + GAP })
       playOpen()
 
       return
@@ -151,7 +158,7 @@ export const Menu = ({ anchor, items, label, ref }: IMenuProps): ReactElement =>
         playOpen()
       },
     )
-  }, [anchor, playOpen, width])
+  }, [anchor, headerHeight, playOpen, safeTop, width])
 
   useImperativeHandle(ref, (): IMenuHandle => ({ open: handleOpen }), [handleOpen])
 

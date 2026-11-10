@@ -2,12 +2,11 @@ import type { NativeStackHeaderItem, NativeStackNavigationOptions } from 'expo-r
 import type { ReactElement } from 'react'
 
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router'
-import { useHeaderHeight } from 'expo-router/react-navigation'
 import { useCallback, useMemo, useRef, useState } from 'react'
 import { View } from 'react-native'
 
 import type { ISquadMember } from '@roundup/core'
-import type { IMenuHandle, IMenuItem, IMenuPlace } from '@roundup/ui'
+import type { IMenuHandle, IMenuItem } from '@roundup/ui'
 
 import { useSquad } from '@roundup/core'
 import { useT } from '@roundup/i18n'
@@ -32,12 +31,6 @@ import { useErrorText } from '@/hooks/useErrorText'
 import { useLayout } from '@/hooks/useLayout'
 import { Paths } from '@/navigation/paths'
 
-/** How far the iOS header's buttons sit from the screen's right edge, in points. */
-const HEADER_EDGE = 16
-
-/** How far below the iOS header the options Menu opens, in points. */
-const MENU_GAP = 8
-
 /**
  * One squad: its avatar, name and member count, then the members with an Admin badge on admins.
  * What a person can do comes from the server's permissions: admins open a member's actions and get
@@ -53,13 +46,6 @@ export default function SquadScreen(): ReactElement {
   const [sheet, setSheet] = useState<TSheet | undefined>()
   const menuRef = useRef<IMenuHandle>(null)
   const { systemChrome } = useLayout()
-  const headerHeight = useHeaderHeight()
-
-  // Under the iOS header's ⋯, which sits at the bar's right edge, 16 in.
-  const iosAnchor = useMemo(
-    (): IMenuPlace => ({ right: HEADER_EDGE, top: headerHeight + MENU_GAP }),
-    [headerHeight],
-  )
 
   const { error, loading, members, notFound, permissions, requestId, squad } = useSquad(squadId)
 
@@ -190,7 +176,7 @@ export default function SquadScreen(): ReactElement {
         </View>
       </TabPage>
       {systemChrome ? (
-        <Menu anchor={iosAnchor} items={options} label={t('screens.squad.options')} ref={menuRef} />
+        <Menu anchor="header" items={options} label={t('screens.squad.options')} ref={menuRef} />
       ) : null}
       <SquadSheets
         members={members}
