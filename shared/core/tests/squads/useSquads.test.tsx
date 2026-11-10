@@ -1,11 +1,30 @@
+import { QueryClient } from '@tanstack/react-query'
 import { act, renderHook, waitFor } from '@testing-library/react-native'
+
+import type { SquadSummary } from '@roundup/api'
 
 import { HttpStatus } from '@roundup/api'
 
+import type { ISquadCard } from '../../src/squads/types'
+
+import { Deps } from '../../src/di/deps'
+import { Squads } from '../../src/helpers/squads'
 import { useSquads } from '../../src/squads/useSquads'
 import { Fakes } from '../helpers/fakes'
 import { SquadFixtures } from '../helpers/squad-fixtures'
 import { TestCore } from '../helpers/wrapper'
+
+/** Squad helpers that mark every card they map, to show which helpers a hook used. */
+class TaggedSquads extends Squads {
+  /**
+   * Maps a list item as the real helpers do, then marks its name.
+   * @param summary - The list item.
+   * @returns The card, its name tagged.
+   */
+  override toCard(summary: SquadSummary): ISquadCard {
+    return { ...super.toCard(summary), name: `tagged ${summary.name}` }
+  }
+}
 
 /** The refresh answer every signed-in test needs. */
 const REFRESH = { 'POST /api/v1/auth/refresh': Fakes.ok(Fakes.pair('a2', 'r2')) }
@@ -157,5 +176,31 @@ describe('useSquads', () => {
     })
 
     expect(result.current.requestId).toBe('req-1')
+  })
+
+  it('maps the cards with the squad helpers useDeps gives it', async () => {
+    Fakes.stubNetwork({
+      ...REFRESH,
+      'GET /api/v1/squads?limit=25': Fakes.ok(SquadFixtures.page([SquadFixtures.summary('s1')])),
+    })
+
+    // No garbage collection, whose timer would keep Jest alive.
+    const queryClient = new QueryClient({
+      defaultOptions: { queries: { gcTime: Infinity, retry: false } },
+    })
+
+    const helpers = {
+      ...Deps.create({ queryClient }).helpers,
+      squads: new TaggedSquads(queryClient),
+    }
+
+    const core = TestCore.create({ helpers, queryClient })
+
+    await core.store.save('r1')
+    const { result } = await renderHook(() => useSquads(), { wrapper: core.wrapper })
+
+    await waitFor(() => {
+      expect(result.current.squads[0]?.name).toBe('tagged Squad s1')
+    })
   })
 })

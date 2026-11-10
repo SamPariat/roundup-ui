@@ -6,7 +6,6 @@ import type { TErrorKey } from '../helpers/error-key'
 import type { ISquadInfo, ISquadMember, ISquadPermissions, TRole } from './types'
 
 import { useDeps } from '../di/useDeps'
-import { Squads } from '../helpers/squads'
 import { useSignedIn } from '../session/useSignedIn'
 
 /** What the squad detail screen shows. */
@@ -40,21 +39,26 @@ const NO_MEMBERS: ISquadMember[] = []
  */
 export const useSquad = (squadId?: string): IUseSquad => {
   const { helpers } = useDeps()
+  const squadsHelper = helpers.squads
   const signedIn = useSignedIn()
   const wanted = signedIn && squadId !== undefined
   const { data, error, isPending } = useGetSquad(squadId ?? '', { query: { enabled: wanted } })
   const detail = data?.data
 
   const members = useMemo(
-    (): ISquadMember[] | undefined => detail?.members.map((member) => Squads.toMember(member)),
-    [detail],
+    (): ISquadMember[] | undefined =>
+      detail?.members.map((member) => squadsHelper.toMember(member)),
+    [detail, squadsHelper],
   )
 
-  const squad = useMemo((): ISquadInfo | undefined => detail && Squads.toInfo(detail), [detail])
+  const squad = useMemo(
+    (): ISquadInfo | undefined => detail && squadsHelper.toInfo(detail),
+    [detail, squadsHelper],
+  )
 
   const permissions = useMemo(
-    (): ISquadPermissions | undefined => detail && Squads.toPermissions(detail),
-    [detail],
+    (): ISquadPermissions | undefined => detail && squadsHelper.toPermissions(detail),
+    [detail, squadsHelper],
   )
 
   const message = error === null ? undefined : helpers.errors.toMessage(error, 'squad')

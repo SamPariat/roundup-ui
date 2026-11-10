@@ -5,7 +5,6 @@ import { updateSquad } from '@roundup/api'
 import type { TErrorKey } from '../helpers/error-key'
 
 import { useDeps } from '../di/useDeps'
-import { Squads } from '../helpers/squads'
 import { useSquadName } from './useSquadName'
 
 /** What the Rename squad modal shows and does. */
@@ -35,7 +34,8 @@ export const useRenameSquadViewModel = (
   squadId: string,
   currentName: string,
 ): IRenameSquadViewModel => {
-  const { queryClient } = useDeps()
+  const { helpers } = useDeps()
+  const squadsHelper = helpers.squads
   const { attempt, name, setName, validName } = useSquadName(currentName)
   const { busy, error, requestId, run } = attempt
 
@@ -48,13 +48,13 @@ export const useRenameSquadViewModel = (
 
     const saved = await run('squadName', async () => {
       await updateSquad(squadId, { name: trimmed })
-      await Squads.changed(queryClient, squadId)
+      await squadsHelper.changed(squadId)
 
       return true
     })
 
     return saved === true
-  }, [currentName, queryClient, run, squadId, validName])
+  }, [currentName, run, squadId, squadsHelper, validName])
 
   return { busy, error, name, requestId, setName, submit }
 }

@@ -2,8 +2,8 @@
 export type TPhase = 'back' | 'offline' | 'online'
 
 /**
- * Connection notice helpers. Static methods only; the dependency container holds the class, so a
- * test can swap it.
+ * Connection notice helpers. Deps creates one; reach it through useDeps().helpers.notice, so a
+ * test can pass its own.
  */
 export class Notice {
   /**
@@ -12,7 +12,7 @@ export class Notice {
    * @param online - Whether the device is online.
    * @returns The next phase.
    */
-  static next(current: TPhase, online: boolean): TPhase {
+  next(current: TPhase, online: boolean): TPhase {
     if (!online) return 'offline'
 
     return current === 'offline' ? 'back' : current

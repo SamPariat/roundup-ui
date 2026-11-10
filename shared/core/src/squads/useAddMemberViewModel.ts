@@ -6,7 +6,6 @@ import type { TErrorKey } from '../helpers/error-key'
 
 import { useAttempt } from '../auth/useAttempt'
 import { useDeps } from '../di/useDeps'
-import { Squads } from '../helpers/squads'
 
 /** What adding someone to a squad shows and does. */
 export interface IAddMemberViewModel {
@@ -33,8 +32,9 @@ export interface IAddMemberViewModel {
  * @returns The state and the actions.
  */
 export const useAddMemberViewModel = (squadId: string): IAddMemberViewModel => {
-  const { helpers, queryClient } = useDeps()
+  const { helpers } = useDeps()
   const phoneHelper = helpers.phone
+  const squadsHelper = helpers.squads
   const [digits, setDigits] = useState<string>('')
   const { busy, clear, error, fail, requestId, run } = useAttempt()
 
@@ -56,14 +56,14 @@ export const useAddMemberViewModel = (squadId: string): IAddMemberViewModel => {
 
       const added = await run('addMember', async () => {
         await addSquadMember(squadId, { phone: phoneHelper.toE164(national) })
-        await Squads.changed(queryClient, squadId)
+        await squadsHelper.changed(squadId)
 
         return true
       })
 
       return added === true
     },
-    [fail, phoneHelper, queryClient, run, squadId],
+    [fail, phoneHelper, run, squadId, squadsHelper],
   )
 
   const submit = useCallback((): Promise<boolean> => add(digits), [add, digits])

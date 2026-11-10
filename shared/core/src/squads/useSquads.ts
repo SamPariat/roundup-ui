@@ -9,7 +9,6 @@ import type { TErrorKey } from '../helpers/error-key'
 import type { ISquadCard } from './types'
 
 import { useDeps } from '../di/useDeps'
-import { Squads } from '../helpers/squads'
 import { useSignedIn } from '../session/useSignedIn'
 
 /** How many squads a page asks for. */
@@ -65,6 +64,7 @@ export interface IUseSquads {
  */
 export const useSquads = (): IUseSquads => {
   const { helpers } = useDeps()
+  const squadsHelper = helpers.squads
   const signedIn = useSignedIn()
 
   const { data, error, fetchNextPage, hasNextPage, isFetchingNextPage, isPending, refetch } =
@@ -78,8 +78,9 @@ export const useSquads = (): IUseSquads => {
 
   const squads = useMemo(
     (): ISquadCard[] =>
-      data?.pages.flatMap((page) => page.data.squads.map((squad) => Squads.toCard(squad))) ?? [],
-    [data],
+      data?.pages.flatMap((page) => page.data.squads.map((squad) => squadsHelper.toCard(squad))) ??
+      [],
+    [data, squadsHelper],
   )
 
   const loadMore = useCallback((): void => {

@@ -4,7 +4,7 @@ import { ApiError, HttpStatus } from '@roundup/api'
 const MAX_RETRIES = 2
 
 /**
- * Query client policy helpers. Static methods only; the dependency container holds the class.
+ * Query client policy helpers. Deps creates one and builds the query client's retry on it.
  */
 export class Query {
   /**
@@ -14,7 +14,7 @@ export class Query {
    * @param error - What it failed with.
    * @returns True to try again.
    */
-  static shouldRetry(failureCount: number, error: unknown): boolean {
+  shouldRetry(failureCount: number, error: unknown): boolean {
     if (failureCount >= MAX_RETRIES) return false
 
     return (

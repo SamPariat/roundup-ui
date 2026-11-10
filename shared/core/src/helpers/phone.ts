@@ -11,8 +11,8 @@ const NATIONAL_LENGTH = 10
 const COUNTRY = '91'
 
 /**
- * Phone number helpers for Indian mobile numbers. Static methods only; the dependency container
- * holds the class, so a test can swap it.
+ * Phone number helpers for Indian mobile numbers. Deps creates one; reach it through
+ * useDeps().helpers.phone, so a test can pass its own.
  */
 export class Phone {
   /**
@@ -21,7 +21,7 @@ export class Phone {
    * @param text - Whatever the field now holds.
    * @returns Up to ten digits.
    */
-  static toNationalDigits(text: string): string {
+  toNationalDigits(text: string): string {
     const digits = text.replaceAll(/\D/g, '')
 
     const national =
@@ -35,7 +35,7 @@ export class Phone {
    * @param digits - The national digits.
    * @returns True for ten digits starting 6 to 9.
    */
-  static isValidMobile(digits: string): boolean {
+  isValidMobile(digits: string): boolean {
     return NATIONAL_INDIA.test(digits)
   }
 
@@ -44,7 +44,7 @@ export class Phone {
    * @param digits - The ten national digits.
    * @returns For example +919876543210.
    */
-  static toE164(digits: string): string {
+  toE164(digits: string): string {
     return `+${COUNTRY}${digits}`
   }
 
@@ -53,7 +53,7 @@ export class Phone {
    * @param value - A route parameter or any other string.
    * @returns True when it is +91 and a valid mobile number.
    */
-  static isE164(value: string | undefined): value is string {
+  isE164(value: string | undefined): value is string {
     return value !== undefined && E164_INDIA.test(value)
   }
 
@@ -62,7 +62,7 @@ export class Phone {
    * @param e164 - A valid E.164 Indian mobile number.
    * @returns For example +91 98765 43210.
    */
-  static format(e164: string): string {
+  format(e164: string): string {
     return `+${COUNTRY} ${e164.slice(3, 8)} ${e164.slice(8)}`
   }
 }

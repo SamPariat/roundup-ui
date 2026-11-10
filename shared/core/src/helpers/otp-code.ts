@@ -2,8 +2,8 @@
 export const CODE_LENGTH = 6
 
 /**
- * Sign-in code helpers. Static methods only; the dependency container holds the class, so a test
- * can swap it.
+ * Sign-in code helpers. Deps creates one; reach it through useDeps().helpers.code, so a test can
+ * pass its own.
  */
 export class OtpCode {
   /**
@@ -11,7 +11,7 @@ export class OtpCode {
    * @param text - Whatever the field now holds.
    * @returns Up to six digits.
    */
-  static toDigits(text: string): string {
+  toDigits(text: string): string {
     return text.replaceAll(/\D/g, '').slice(0, CODE_LENGTH)
   }
 }
