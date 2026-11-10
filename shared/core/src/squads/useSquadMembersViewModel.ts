@@ -7,7 +7,6 @@ import type { TRole } from './types'
 
 import { useAttempt } from '../auth/useAttempt'
 import { useDeps } from '../di/useDeps'
-import { Squads } from '../helpers/squads'
 import { useSquad } from './useSquad'
 
 /** What the member actions of a squad show and do. */
@@ -35,7 +34,8 @@ export interface ISquadMembersViewModel {
  * @returns The state and the actions.
  */
 export const useSquadMembersViewModel = (squadId: string): ISquadMembersViewModel => {
-  const { queryClient } = useDeps()
+  const { helpers } = useDeps()
+  const squadsHelper = helpers.squads
   const { members } = useSquad(squadId)
   const { busy, error, fail, requestId, run } = useAttempt()
   const [busyUserId, setBusyUserId] = useState<string | undefined>()
@@ -67,9 +67,9 @@ export const useSquadMembersViewModel = (squadId: string): ISquadMembersViewMode
     (userId: string, role: TRole): Promise<boolean> =>
       act(userId, 'role', async () => {
         await changeSquadMemberRole(squadId, userId, { role })
-        await Squads.changed(queryClient, squadId)
+        await squadsHelper.changed(squadId)
       }),
-    [act, queryClient, squadId],
+    [act, squadId, squadsHelper],
   )
 
   const makeAdmin = useCallback(
@@ -86,9 +86,9 @@ export const useSquadMembersViewModel = (squadId: string): ISquadMembersViewMode
     (userId: string): Promise<boolean> =>
       act(userId, 'squad', async () => {
         await removeSquadMember(squadId, userId)
-        await Squads.changed(queryClient, squadId)
+        await squadsHelper.changed(squadId)
       }),
-    [act, queryClient, squadId],
+    [act, squadId, squadsHelper],
   )
 
   const leave = useCallback(async (): Promise<boolean> => {
@@ -102,9 +102,9 @@ export const useSquadMembersViewModel = (squadId: string): ISquadMembersViewMode
 
     return act(me.id, 'squad', async () => {
       await removeSquadMember(squadId, me.id)
-      await Squads.left(queryClient, squadId)
+      await squadsHelper.left(squadId)
     })
-  }, [act, fail, members, queryClient, squadId])
+  }, [act, fail, members, squadId, squadsHelper])
 
   return { busyUserId, error, leave, makeAdmin, remove, removeAdmin, requestId }
 }

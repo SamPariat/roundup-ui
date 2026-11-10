@@ -34,7 +34,7 @@ export interface IErrorMessage {
 }
 
 /**
- * Maps errors to messages. Static methods only; the dependency container holds the class.
+ * Maps errors to messages. Deps creates one; reach it through useDeps().helpers.errors.
  */
 export class ErrorKey {
   /**
@@ -46,14 +46,14 @@ export class ErrorKey {
    * @param context - Which step failed.
    * @returns The key to translate and the request ID to fill in.
    */
-  static toMessage(error: unknown, context: TErrorContext): IErrorMessage {
+  toMessage(error: unknown, context: TErrorContext): IErrorMessage {
     if (!ApiError.is(error)) return { key: 'errors.generic', requestId: undefined }
 
     const { requestId, status } = error
 
     if (status === HttpStatus.noResponse) return { key: 'errors.offline', requestId: undefined }
 
-    const key = ErrorKey.forContext(status, error.message, context)
+    const key = this.forContext(status, error.message, context)
 
     if (key !== undefined) return { key, requestId: undefined }
 
@@ -76,7 +76,7 @@ export class ErrorKey {
    * @param context - Which step failed.
    * @returns The message key, or undefined when the status means the same on every step.
    */
-  private static forContext(
+  private forContext(
     status: number,
     message: string,
     context: TErrorContext,

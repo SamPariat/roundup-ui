@@ -5,7 +5,6 @@ import { createSquad } from '@roundup/api'
 import type { TErrorKey } from '../helpers/error-key'
 
 import { useDeps } from '../di/useDeps'
-import { Squads } from '../helpers/squads'
 import { useSquadName } from './useSquadName'
 
 /** What the New squad modal shows and does. */
@@ -30,7 +29,8 @@ export interface ICreateSquadViewModel {
  * @returns The state and the actions.
  */
 export const useCreateSquadViewModel = (): ICreateSquadViewModel => {
-  const { queryClient } = useDeps()
+  const { helpers } = useDeps()
+  const squadsHelper = helpers.squads
   const { attempt, name, setName, validName } = useSquadName('')
   const { busy, error, requestId, run } = attempt
 
@@ -42,13 +42,13 @@ export const useCreateSquadViewModel = (): ICreateSquadViewModel => {
     const created = await run('squadName', async () => {
       const { data } = await createSquad({ name: trimmed })
 
-      await Squads.changed(queryClient)
+      await squadsHelper.changed()
 
       return data.id
     })
 
     return created
-  }, [queryClient, run, validName])
+  }, [run, squadsHelper, validName])
 
   return { busy, error, name, requestId, setName, submit }
 }

@@ -70,7 +70,7 @@ interface IBuiltCore {
  */
 export const CoreProvider = ({ children, deps }: ICoreProviderProps): ReactElement => {
   const [built] = useState<IBuiltCore>((): IBuiltCore => {
-    const merged: IDeps = { ...Deps.create(), ...deps }
+    const merged = Deps.create(deps)
 
     return {
       deps: merged,

@@ -7,7 +7,6 @@ import type { IContactMatch } from './types'
 
 import { useAttempt } from '../auth/useAttempt'
 import { useDeps } from '../di/useDeps'
-import { Squads } from '../helpers/squads'
 import { useSquad } from './useSquad'
 
 /** The most numbers one lookup request takes. */
@@ -37,6 +36,7 @@ export interface IContactLookup {
 export const useContactLookup = (squadId: string): IContactLookup => {
   const { helpers } = useDeps()
   const phoneHelper = helpers.phone
+  const squadsHelper = helpers.squads
   const { members } = useSquad(squadId)
   const { busy, error, requestId, run } = useAttempt()
 
@@ -61,7 +61,7 @@ export const useContactLookup = (squadId: string): IContactLookup => {
 
           for (const user of data.users) {
             if (!inSquad.has(user.id)) {
-              matches.push(Squads.toMatch(user))
+              matches.push(squadsHelper.toMatch(user))
             }
           }
         }
@@ -69,7 +69,7 @@ export const useContactLookup = (squadId: string): IContactLookup => {
         return matches
       })
     },
-    [members, phoneHelper, run],
+    [members, phoneHelper, run, squadsHelper],
   )
 
   return { busy, error, lookup, requestId }
