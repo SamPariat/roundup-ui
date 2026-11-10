@@ -14,8 +14,8 @@ describe('squads list', () => {
 
     expect(await screen.findByRole('heading', { name: 'No squads yet' })).toBeOnTheScreen()
 
-    // One in the header and one in the empty state.
-    expect(screen.getAllByRole('button', { name: 'New squad' })).toHaveLength(2)
+    // The floating button is the one create action: the empty state has none of its own.
+    expect(screen.getAllByRole('button', { name: 'New squad' })).toHaveLength(1)
   })
 
   it('shows each squad as a card named by its name, members and role', async () => {
@@ -31,6 +31,7 @@ describe('squads list', () => {
     ).toBeOnTheScreen()
 
     expect(screen.getByRole('button', { name: 'Goa trip, 3 members' })).toBeOnTheScreen()
+    expect(screen.getByRole('button', { name: 'New squad' })).toBeOnTheScreen()
     expect(screen.queryByRole('heading', { name: 'No squads yet' })).toBeNull()
   })
 

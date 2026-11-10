@@ -52,9 +52,12 @@ export const PhoneInput = ({
       <View aria-hidden className="h-6 flex-row items-center gap-2 border-r border-border pr-3">
         <Text variant="label">{t('phoneInput.countryCode')}</Text>
       </View>
+      {/* The field is a fixed 52 points tall, so its text (and placeholder) keeps its size instead
+          of following the device's text size, which would clip it. The label and helper scale. */}
       <TextInput
         accessibilityHint={error ?? helper}
         accessibilityLabel={label}
+        allowFontScaling={false}
         aria-disabled={disabled}
         aria-invalid={error !== undefined}
         autoComplete="tel-national"

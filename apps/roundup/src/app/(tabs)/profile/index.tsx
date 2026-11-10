@@ -6,7 +6,7 @@ import { View } from 'react-native'
 
 import { useDeps, useProfileViewModel } from '@roundup/core'
 import { useT } from '@roundup/i18n'
-import { Avatar, Icon, List, ListRow, Skeleton, Text } from '@roundup/ui'
+import { Icon, IdentityHeader, List, ListRow, Skeleton } from '@roundup/ui'
 
 import { TabPage } from '@/components/TabPage'
 import { Paths } from '@/navigation/paths'
@@ -40,17 +40,11 @@ export default function ProfileScreen(): ReactElement {
         {loading || me === undefined ? (
           <Skeleton variant="row" />
         ) : (
-          <View className="flex-row items-center gap-4">
-            <Avatar id={me.id} name={me.name} size={64} />
-            <View className="min-w-0 flex-1">
-              <Text heading={1} numberOfLines={1} variant="heading">
-                {me.name}
-              </Text>
-              <Text numberOfLines={1} tone="muted" variant="body">
-                {helpers.phone.isE164(me.phone) ? helpers.phone.format(me.phone) : me.phone}
-              </Text>
-            </View>
-          </View>
+          <IdentityHeader
+            avatar={{ id: me.id, name: me.name }}
+            subtitle={helpers.phone.isE164(me.phone) ? helpers.phone.format(me.phone) : me.phone}
+            title={me.name}
+          />
         )}
         <View className="max-w-160 gap-6">
           <List>

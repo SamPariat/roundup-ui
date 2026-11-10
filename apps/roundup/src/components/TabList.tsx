@@ -8,6 +8,7 @@ import type { TBreakpoint } from '@roundup/ui'
 
 import { cn, Skeleton, useBreakpoint } from '@roundup/ui'
 
+import { TabFabLayer } from '@/components/TabFabLayer'
 import { useLayout } from '@/hooks/useLayout'
 
 /** Props for TabList. */
@@ -32,6 +33,8 @@ export interface ITabListProps<T> {
   onRefresh?: () => void
   /** Called when the end of the list comes into view. */
   onEndReached?: () => void
+  /** The screen's FloatingActionButton, floated over the bottom-right of the list. */
+  fab?: ReactElement | undefined
 }
 
 /** How many columns each layout step has. */
@@ -55,12 +58,14 @@ const PLACEHOLDERS = 5
  * The body of a tab screen that is a list: the FlatList sibling of TabPage. It insets below the
  * iOS header, takes the same width cap and side gutter and centers the empty state in the visible area. It
  * lays items out in one column on phones and more on wider screens. A list must never sit inside
- * TabPage's ScrollView, which would load every item at once.
+ * TabPage's ScrollView, which would load every item at once. With a floating button the list
+ * leaves room below its last row, so that row scrolls clear of the button.
  * @returns The virtualized list.
  */
 export const TabList = <T,>({
   data,
   empty,
+  fab,
   footer,
   header,
   keyExtractor,
@@ -97,26 +102,33 @@ export const TabList = <T,>({
   )
 
   return (
-    <View className="-mx-1.5 flex-1">
-      <FlatList
-        contentContainerClassName={cn('mx-auto w-full max-w-content grow py-4.5', gutterClass)}
-        contentInsetAdjustmentBehavior="automatic"
-        data={data}
-        key={columns}
-        keyboardShouldPersistTaps="handled"
-        keyExtractor={keyExtractor}
-        ListEmptyComponent={placeholder}
-        ListFooterComponent={footer}
-        ListHeaderComponent={headerBox}
-        numColumns={columns}
-        onEndReached={onEndReached}
-        refreshControl={
-          onRefresh === undefined ? undefined : (
-            <RefreshControl onRefresh={onRefresh} refreshing={refreshing} />
-          )
-        }
-        renderItem={cell}
-      />
+    <View className="flex-1">
+      <View className="-mx-1.5 flex-1">
+        <FlatList
+          contentContainerClassName={cn(
+            'mx-auto w-full max-w-content grow pt-4.5',
+            fab === undefined ? 'pb-4.5' : 'pb-24',
+            gutterClass,
+          )}
+          contentInsetAdjustmentBehavior="automatic"
+          data={data}
+          key={columns}
+          keyboardShouldPersistTaps="handled"
+          keyExtractor={keyExtractor}
+          ListEmptyComponent={placeholder}
+          ListFooterComponent={footer}
+          ListHeaderComponent={headerBox}
+          numColumns={columns}
+          onEndReached={onEndReached}
+          refreshControl={
+            onRefresh === undefined ? undefined : (
+              <RefreshControl onRefresh={onRefresh} refreshing={refreshing} />
+            )
+          }
+          renderItem={cell}
+        />
+      </View>
+      {fab === undefined ? null : <TabFabLayer>{fab}</TabFabLayer>}
     </View>
   )
 }

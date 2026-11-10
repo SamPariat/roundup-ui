@@ -52,6 +52,7 @@ class ShellFixtures {
    * @param current - Which tab is showing.
    * @param edgeInsets - The simulated safe-area insets.
    * @param url - The route the app opens at.
+   * @param deps - The test dependencies; signed out unless a saved session is given.
    * @returns The router test renderer's result.
    */
   static renderShellAt(
@@ -59,6 +60,7 @@ class ShellFixtures {
     current: 'explore' | 'profile' | 'squads' = 'squads',
     edgeInsets: IInsets = NO_INSETS,
     url = '/',
+    deps = Fakes.testDeps(),
   ) {
     mockWindow.width = width
 
@@ -71,7 +73,7 @@ class ShellFixtures {
         initialMetrics={{ insets: edgeInsets, frame: { x: 0, y: 0, width, height: 800 } }}
       >
         <ThemeProvider>
-          <CoreProvider deps={Fakes.testDeps()}>
+          <CoreProvider deps={deps}>
             <AppShell current={current}>
               <Text>Page content</Text>
             </AppShell>
@@ -113,6 +115,14 @@ describe('AppShell', () => {
     await ShellFixtures.renderShellAt(1440, 'profile')
 
     expect(screen.getByRole('tab', { name: 'Profile' })).toBeSelected()
+  })
+
+  it('shows the signed-in person at the foot of the side nav', async () => {
+    Fakes.stubBackend({ paths: [], user: { name: 'Asha Rao' } })
+    await ShellFixtures.renderShellAt(1440, 'squads', NO_INSETS, '/', Fakes.testDeps('r1'))
+
+    expect(await screen.findByText('Asha Rao')).toBeOnTheScreen()
+    expect(screen.getByText('+91 98765 43210')).toBeOnTheScreen()
   })
 
   it('shows the page content', async () => {

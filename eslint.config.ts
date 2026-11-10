@@ -298,7 +298,10 @@ export default [
     },
     rules: {
       // Our own components wrap string children in <Text>, so raw text inside them is fine.
-      'react-native/no-raw-text': ['error', { skip: ['Badge', 'Button', 'Chip', 'Text', 'Toast'] }],
+      'react-native/no-raw-text': [
+        'error',
+        { skip: ['Badge', 'Button', 'Chip', 'FloatingActionButton', 'Text', 'Toast'] },
+      ],
       'react-native/no-color-literals': 'error',
     },
   },

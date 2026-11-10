@@ -60,8 +60,11 @@ export interface IModalProps {
 /** The padding inside the modal, in points; the sheet adds the home indicator's inset below it. */
 const PADDING = 24
 
-/** How strongly the screen behind is blurred, on expo-blur's 0 to 100 scale. */
+/** How strongly the app blurs the screen behind the sheet, on expo-blur's 0 to 100 scale. */
 const BACKDROP_BLUR = 24
+
+/** The web card's corners, on the animated view that carries its blur so the blur is clipped too. */
+const CARD_CORNERS: ViewStyle = { borderRadius: 20 }
 
 /** The native element behind the title wrapper, which gets focus on open. */
 type TTitleElement = ComponentRef<typeof View>
@@ -169,8 +172,10 @@ const ModalContent = ({
 interface IBackdropProps {
   /** Called when the backdrop is tapped. */
   onPress: () => void
-  /** Its fade, which follows the modal opening and closing. */
+  /** Its fade (and on the web its blur), which follows the modal opening and closing. */
   style: TMotionStyle
+  /** Whether to draw expo-blur's view: the app's sheet. The web blurs through the motion style. */
+  native: boolean
 }
 
 /**
@@ -179,7 +184,7 @@ interface IBackdropProps {
  * Android back button instead. Android cannot blur another window, so it gets the scrim alone.
  * @returns The pressable, blurred backdrop.
  */
-const ModalBackdrop = ({ onPress, style }: IBackdropProps): ReactElement => {
+const ModalBackdrop = ({ native, onPress, style }: IBackdropProps): ReactElement => {
   const { name } = useTheme()
 
   return (
@@ -193,11 +198,13 @@ const ModalBackdrop = ({ onPress, style }: IBackdropProps): ReactElement => {
         importantForAccessibility="no-hide-descendants"
         onPress={onPress}
       >
-        <BlurView
-          intensity={BACKDROP_BLUR}
-          style={ABSOLUTE_FILL}
-          tint={name === 'latte' ? 'light' : 'dark'}
-        />
+        {native ? (
+          <BlurView
+            intensity={BACKDROP_BLUR}
+            style={ABSOLUTE_FILL}
+            tint={name === 'latte' ? 'light' : 'dark'}
+          />
+        ) : null}
         <View className="absolute inset-0 bg-scrim" />
       </Pressable>
     </Animated.View>
@@ -269,13 +276,13 @@ export const Modal = ({
         behavior={Platform.select({ ios: 'padding' })}
         className={cn('flex-1', sheet ? 'justify-end' : 'items-center justify-center p-6')}
       >
-        <ModalBackdrop onPress={requestClose} style={backdrop} />
+        <ModalBackdrop native={sheet} onPress={requestClose} style={backdrop} />
         {/* NativeWind does not style Reanimated views, so the size lives on a plain View and the
             animated one inside it only moves. */}
         <View
           className={cn('max-h-[85%]', sheet ? 'mx-auto w-full max-w-140' : 'w-120 max-w-full')}
         >
-          <Animated.View className="max-h-full" style={panel}>
+          <Animated.View className="max-h-full" style={sheet ? panel : [panel, CARD_CORNERS]}>
             <Surface
               accessibilityLabel={title}
               accessibilityViewIsModal
@@ -286,7 +293,7 @@ export const Modal = ({
                 sheet
                   ? 'rounded-t-[20px] border-x-0 border-b-0 shadow-sheet'
                   : 'rounded-[20px] shadow-toast',
-                !sheet && 'bg-glass pb-6 backdrop-blur-2xl',
+                !sheet && 'bg-glass pb-6',
               )}
               role={confirm ? 'alertdialog' : 'dialog'}
               style={sheetPadding}

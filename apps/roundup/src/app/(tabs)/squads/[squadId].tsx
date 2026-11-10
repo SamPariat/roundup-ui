@@ -1,3 +1,4 @@
+import type { NativeStackHeaderItem, NativeStackNavigationOptions } from 'expo-router'
 import type { ReactElement } from 'react'
 
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router'
@@ -8,7 +9,15 @@ import type { ISquadMember } from '@roundup/core'
 
 import { useSquad } from '@roundup/core'
 import { useT } from '@roundup/i18n'
-import { Avatar, Button, EmptyState, List, Skeleton, Text } from '@roundup/ui'
+import {
+  Button,
+  EmptyState,
+  FloatingActionButton,
+  IdentityHeader,
+  List,
+  Skeleton,
+  Text,
+} from '@roundup/ui'
 
 import type { TSheet } from '@/components/squads/SquadSheets'
 
@@ -20,11 +29,11 @@ import { useErrorText } from '@/hooks/useErrorText'
 import { Paths } from '@/navigation/paths'
 
 /**
- * One squad: its avatar and member count, then the members with an Admin badge on admins. What a
- * person can do comes from the server's permissions: admins open a member's actions, and everyone
- * has the options menu for Rename squad and Leave squad. A squad that does not exist, or that the
- * person is not in, shows a not-found state with a way back. On iOS the header carries the squad's
- * name and the options button; elsewhere the options button sits beside the Members heading.
+ * One squad: its avatar, name and member count, then the members with an Admin badge on admins. What a
+ * person can do comes from the server's permissions: admins open a member's actions and get Add
+ * people as a floating button, and everyone has the options button in the header for Rename squad
+ * and Leave squad. A squad that does not exist, or that the person is not in, shows a not-found
+ * state with a way back.
  * @returns The squad, a placeholder while it loads, or the not-found state.
  */
 export default function SquadScreen(): ReactElement {
@@ -68,6 +77,28 @@ export default function SquadScreen(): ReactElement {
 
   const renderHeaderRight = useCallback((): ReactElement => optionsButton, [optionsButton])
 
+  // iOS draws the options as a native bar button, in the same glass as the back button; web and
+  // Android draw headerRight in their own bar.
+  const renderHeaderItems = useCallback(
+    (): NativeStackHeaderItem[] => [
+      {
+        icon: { name: 'ellipsis', type: 'sfSymbol' },
+        label: t('screens.squad.options'),
+        onPress: handleOpenOptions,
+        type: 'button',
+      },
+    ],
+    [handleOpenOptions, t],
+  )
+
+  const headerOptions = useMemo(
+    (): NativeStackNavigationOptions => ({
+      headerRight: renderHeaderRight,
+      unstable_headerRightItems: renderHeaderItems,
+    }),
+    [renderHeaderItems, renderHeaderRight],
+  )
+
   if (notFound || (squad === undefined && error !== undefined)) {
     return (
       <TabPage centered>
@@ -89,33 +120,30 @@ export default function SquadScreen(): ReactElement {
     )
   }
 
+  const addPeople = permissions.canAddMembers ? (
+    <FloatingActionButton icon="plus" onPress={handleOpenAdd}>
+      {t('addPeople.title')}
+    </FloatingActionButton>
+  ) : undefined
+
   return (
     <>
-      <Stack.Screen options={{ headerRight: renderHeaderRight }} />
-      <TabPage>
+      <Stack.Screen options={headerOptions} />
+      <TabPage fab={addPeople}>
         <View className="max-w-160 gap-6">
-          <View className="flex-row items-center gap-4">
-            <Avatar
-              id={squad.id}
-              name={squad.name}
-              size={64}
-              {...(squad.avatarURL === undefined ? {} : { src: squad.avatarURL })}
-            />
-            <Text variant="body-strong">{t('common.members', { count: squad.memberCount })}</Text>
-          </View>
+          <IdentityHeader
+            avatar={{
+              id: squad.id,
+              name: squad.name,
+              ...(squad.avatarURL === undefined ? {} : { src: squad.avatarURL }),
+            }}
+            subtitle={t('common.members', { count: squad.memberCount })}
+            title={squad.name}
+          />
           <View className="gap-3">
-            <View className="flex-row items-center justify-between gap-3">
-              <Text heading={2} variant="heading">
-                {t('screens.squad.members')}
-              </Text>
-              <View className="flex-row items-center gap-2">
-                {permissions.canAddMembers ? (
-                  <Button icon="plus" onPress={handleOpenAdd} size="sm" variant="secondary">
-                    {t('addPeople.title')}
-                  </Button>
-                ) : null}
-              </View>
-            </View>
+            <Text heading={2} variant="heading">
+              {t('screens.squad.members')}
+            </Text>
             <List>
               {members.map((member) => (
                 <MemberRow
