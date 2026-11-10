@@ -18,7 +18,7 @@ import { useReducedMotion } from './useReducedMotion'
  * A view style that can also blur what is behind it. The web supports backdropFilter; React
  * Native's types do not list it.
  */
-interface IGlassStyle extends ViewStyle {
+export interface IGlassStyle extends ViewStyle {
   /** A CSS backdrop-filter, such as `blur(12px)`. */
   backdropFilter?: string
 }

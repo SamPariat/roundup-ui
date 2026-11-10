@@ -14,6 +14,7 @@ import { IdentityHeaderDemo } from './demos/IdentityHeaderDemo'
 import { ListDemo } from './demos/ListDemo'
 import { ListRowDemo } from './demos/ListRowDemo'
 import { LogoDemo } from './demos/LogoDemo'
+import { MenuDemo } from './demos/MenuDemo'
 import { ModalDemo } from './demos/ModalDemo'
 import { NotifierDemo } from './demos/NotifierDemo'
 import { OtpInputDemo } from './demos/OtpInputDemo'
@@ -212,6 +213,12 @@ const ENTRIES: readonly TEntryInput[] = [
     group: 'Feedback',
     summary: 'A dialog for content or a confirmation, with a busy state.',
     Demo: ModalDemo,
+  },
+  {
+    title: 'Menu',
+    group: 'Feedback',
+    summary: 'The options behind a ⋯ button, as a glass card under the header.',
+    Demo: MenuDemo,
   },
   {
     title: 'List',
