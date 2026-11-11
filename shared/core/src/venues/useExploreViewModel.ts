@@ -14,11 +14,14 @@ import { useLocation } from '../location/useLocation'
 import { useSignedIn } from '../session/useSignedIn'
 import { useDebounced } from './useDebounced'
 
-/** How far from the person the search looks, in meters. */
-const RADIUS = 3000
+/** The radii the person can pick, in kilometers. Google's search reaches 50 km at most. */
+export const RADIUS_STEPS_KM: readonly number[] = [1, 2, 3, 5, 10, 25, 50]
 
-/** The search radius in kilometers, as the caption words it. */
-const RADIUS_KM = RADIUS / 1000
+/** The radius the search starts with, in kilometers. */
+const DEFAULT_RADIUS_KM = 3
+
+/** Meters in a kilometer, which the API's radius is in. */
+const METERS_PER_KM = 1000
 
 /** How long typing must pause before the search runs, in milliseconds. */
 const DEBOUNCE = 400
@@ -63,8 +66,12 @@ export interface IExploreViewModel {
   filter: TVenueType | undefined
   /** Selects a kind of place, or clears the filter when it is already selected. */
   toggleFilter: (type: TVenueType) => void
-  /** The search radius in kilometers, for the caption. */
+  /** The search radius in kilometers; 3 until the person picks another step. */
   radiusKm: number
+  /** The radii to pick from, in kilometers. */
+  radiusSteps: readonly number[]
+  /** Picks the search radius; the search starts again from the first page. */
+  setRadiusKm: (km: number) => void
   /** The venues loaded so far, nearest the search's own order. */
   venues: IVenueCard[]
   /** True while the first page loads, including while the typed words settle. */
@@ -85,8 +92,8 @@ export interface IExploreViewModel {
 
 /**
  * The view model of the Explore tab: finds the person, then searches for places within 3 km of
- * them a page at a time, by what they typed (once typing pauses) and the kind of place they
- * picked.
+ * them (or within the radius they pick) a page at a time, by what they typed (once typing
+ * pauses) and the kind of place they picked.
  * @returns The state and the actions.
  */
 export const useExploreViewModel = (): IExploreViewModel => {
@@ -96,17 +103,18 @@ export const useExploreViewModel = (): IExploreViewModel => {
   const { coordinates, phase, retry } = useLocation()
   const [query, setQuery] = useState<string>('')
   const [filter, setFilter] = useState<TVenueType | undefined>()
+  const [radiusKm, setRadiusKm] = useState<number>(DEFAULT_RADIUS_KM)
   const words = useDebounced(query.trim(), DEBOUNCE)
 
   const params = useMemo(
     (): SearchVenuesParams | undefined =>
       coordinates && {
         ...coordinates,
-        radius: RADIUS,
+        radius: radiusKm * METERS_PER_KM,
         ...(words === '' ? {} : { query: words }),
         ...(filter === undefined ? {} : { type: filter }),
       },
-    [coordinates, filter, words],
+    [coordinates, filter, radiusKm, words],
   )
 
   const { data, error, fetchNextPage, hasNextPage, isFetchingNextPage, isPending, refetch } =
@@ -149,11 +157,13 @@ export const useExploreViewModel = (): IExploreViewModel => {
     loadMore,
     phase,
     query,
-    radiusKm: RADIUS_KM,
+    radiusKm,
+    radiusSteps: RADIUS_STEPS_KM,
     refresh,
     requestId: message?.requestId,
     retryLocation: retry,
     setQuery,
+    setRadiusKm,
     toggleFilter,
     venues,
   }

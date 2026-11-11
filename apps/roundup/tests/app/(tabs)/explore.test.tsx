@@ -30,6 +30,25 @@ describe('explore', () => {
     expect(VenuesFixtures.searches(backend)).toEqual([BASE])
   })
 
+  it('searches again within the radius picked from the menu, and names the control by it', async () => {
+    backend = VenuesFixtures.backend([VenuesFixtures.venue('v1', 'Skyline Bar')])
+
+    await VenuesFixtures.open(backend, '/explore')
+    await screen.findByRole('button', { name: 'Skyline Bar' })
+    await fireEvent.press(screen.getByRole('button', { name: 'Search radius, 3 km' }))
+
+    expect(screen.getByRole('menuitem', { name: '3 km', selected: true })).toBeOnTheScreen()
+
+    await fireEvent.press(screen.getByRole('menuitem', { name: '25 km' }))
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: 'Search radius, 25 km' })).toBeOnTheScreen()
+    })
+
+    expect(screen.getByText(/^Within 25 km · /)).toBeOnTheScreen()
+    expect(VenuesFixtures.searches(backend)).toContain(BASE.replace('radius=3000', 'radius=25000'))
+  })
+
   it('filters by the chosen kind of place and clears the filter on a second press', async () => {
     backend = VenuesFixtures.backend([
       VenuesFixtures.venue('v1', 'Skyline Bar'),

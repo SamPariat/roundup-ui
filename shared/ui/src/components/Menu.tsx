@@ -12,6 +12,7 @@ import type { TIconName } from '../lib/icons'
 import { cn } from '../lib/cn'
 import { useMenuMotion } from '../lib/useMenuMotion'
 import { Button } from './Button'
+import { Chip } from './Chip'
 import { Icon } from './Icon'
 import { Surface } from './Surface'
 import { Text } from './Text'
@@ -24,6 +25,8 @@ export interface IMenuItem {
   icon?: TIconName
   /** Draws the row in danger and groups it last, after a divider. Follow it with a confirm Modal. */
   destructive?: boolean
+  /** Marks the row as the current choice: it shows a check and is announced as selected. */
+  selected?: boolean
   /** Runs once the menu has closed. */
   onPress: () => void
 }
@@ -34,6 +37,11 @@ export interface IMenuProps {
   items: readonly IMenuItem[]
   /** The name of the ⋯ button and of the menu, such as "Squad options". */
   label: string
+  /**
+   * Draws the trigger as a Chip with this text and a chevron, named by `label`, instead of the ⋯
+   * button, for a menu that picks one value such as "Within 3 km".
+   */
+  chip?: string
   /**
    * `header` when the screen header draws the ⋯ button itself (the iOS header's native button),
    * which calls `open` on the ref: the Menu draws no button and opens under the header's right
@@ -87,12 +95,35 @@ const CARD_SHAPE: ViewStyle = { borderRadius: 16 }
  */
 const WAIT_FOR_DISMISS = Platform.OS === 'ios'
 
+/** Props for the trigger. */
+interface IMenuTriggerProps {
+  /** The text of a chip trigger; undefined draws the ⋯ button. */
+  chip: string | undefined
+  /** The trigger's accessible name. */
+  label: string
+  /** Opens the menu. */
+  onOpen: () => void
+}
+
+/**
+ * The control that opens the menu: the ⋯ button, or a chip with a chevron when `chip` is set.
+ * @returns The pressable trigger.
+ */
+const MenuTrigger = ({ chip, label, onOpen }: IMenuTriggerProps): ReactElement =>
+  chip === undefined ? (
+    <Button icon="more" label={label} onPress={onOpen} variant="ghost" />
+  ) : (
+    <Chip label={label} menu onPress={onOpen}>
+      {chip}
+    </Chip>
+  )
+
 /**
  * One action: an icon and a label, 48 tall; red when destructive.
  * @returns The pressable row.
  */
 const MenuRow = ({ item, onPick }: IMenuRowProps): ReactElement => {
-  const { destructive = false, icon, label, onPress } = item
+  const { destructive = false, icon, label, onPress, selected = false } = item
 
   const handlePress = useCallback((): void => {
     onPick(onPress)
@@ -102,6 +133,7 @@ const MenuRow = ({ item, onPick }: IMenuRowProps): ReactElement => {
     <Pressable
       accessibilityLabel={label}
       accessibilityRole="menuitem"
+      aria-selected={selected}
       className="min-h-12 flex-row items-center gap-3 rounded-lg px-3 active:bg-bg-hover"
       onPress={handlePress}
     >
@@ -111,6 +143,7 @@ const MenuRow = ({ item, onPick }: IMenuRowProps): ReactElement => {
       <Text className="min-w-0 flex-1" numberOfLines={1} tone={destructive ? 'danger' : 'fg'}>
         {label}
       </Text>
+      {selected ? <Icon decorative name="check" tone="accent" /> : null}
     </Pressable>
   )
 }
@@ -126,7 +159,7 @@ const MenuRow = ({ item, onPick }: IMenuRowProps): ReactElement => {
  * `anchor="header"` and call `open` on the ref.
  * @returns The trigger (unless anchored), and the menu while open.
  */
-export const Menu = ({ anchor, items, label, ref }: IMenuProps): ReactElement => {
+export const Menu = ({ anchor, chip, items, label, ref }: IMenuProps): ReactElement => {
   const triggerRef = useRef<ComponentRef<typeof View>>(null)
   // The action picked, run once the menu has gone; undefined when it closed without a pick.
   const pendingRef = useRef<(() => void) | undefined>(undefined)
@@ -205,9 +238,7 @@ export const Menu = ({ anchor, items, label, ref }: IMenuProps): ReactElement =>
   const danger = items.filter((item) => item.destructive === true)
 
   const button =
-    anchor === undefined ? (
-      <Button icon="more" label={label} onPress={handleOpen} variant="ghost" />
-    ) : null
+    anchor === undefined ? <MenuTrigger chip={chip} label={label} onOpen={handleOpen} /> : null
 
   return (
     <View collapsable={false} ref={triggerRef}>

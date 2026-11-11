@@ -12,6 +12,7 @@ import { Button, EmptyState, Skeleton, Text, TextField } from '@roundup/ui'
 import { TabList } from '@/components/TabList'
 import { TabPage } from '@/components/TabPage'
 import { FilterChip } from '@/components/venues/FilterChip'
+import { RadiusMenu } from '@/components/venues/RadiusMenu'
 import { VenueListCard } from '@/components/venues/VenueListCard'
 import { useErrorText } from '@/hooks/useErrorText'
 import { useWhenActive } from '@/hooks/useWhenActive'
@@ -44,10 +45,12 @@ export default function ExploreScreen(): ReactElement {
     phase,
     query,
     radiusKm,
+    radiusSteps,
     refresh,
     requestId,
     retryLocation,
     setQuery,
+    setRadiusKm,
     toggleFilter,
     venues,
   } = useExploreViewModel()
@@ -134,7 +137,7 @@ export default function ExploreScreen(): ReactElement {
         </View>
         <View
           accessibilityLabel={t('screens.explore.filters.label')}
-          className="flex-row flex-wrap gap-2"
+          className="max-w-full flex-row flex-wrap gap-2"
           role="group"
         >
           {filters.map((item) => (
@@ -146,6 +149,7 @@ export default function ExploreScreen(): ReactElement {
               type={item.type}
             />
           ))}
+          <RadiusMenu onChange={setRadiusKm} steps={radiusSteps} value={radiusKm} />
         </View>
       </View>
       <Text aria-live="polite" tone="muted" variant="caption">

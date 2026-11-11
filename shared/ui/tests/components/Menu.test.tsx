@@ -91,4 +91,25 @@ describe('Menu', () => {
 
     expect(screen.getAllByRole('menuitem')).toHaveLength(2)
   })
+
+  it('draws a chip trigger named by its label, with the current choice selected', async () => {
+    const items: IMenuItem[] = [
+      {
+        label: '1 km',
+        onPress: jest.fn(),
+      },
+      {
+        label: '3 km',
+        onPress: jest.fn(),
+        selected: true,
+      },
+    ]
+
+    await Render.withTheme(<Menu chip="Within 3 km" items={items} label="Search radius, 3 km" />)
+    await fireEvent.press(screen.getByRole('button', { name: 'Search radius, 3 km' }))
+
+    expect(screen.getByText('Within 3 km')).toBeOnTheScreen()
+    expect(screen.getByRole('menuitem', { name: '3 km', selected: true })).toBeOnTheScreen()
+    expect(screen.getByRole('menuitem', { name: '1 km', selected: false })).toBeOnTheScreen()
+  })
 })

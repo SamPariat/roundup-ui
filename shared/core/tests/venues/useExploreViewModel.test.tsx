@@ -47,6 +47,40 @@ describe('useExploreViewModel', () => {
     expect(searches(network)).toEqual([VenueFixtures.base])
   })
 
+  it('searches again from the first page within the radius the person picks', async () => {
+    const network = Fakes.stubNetwork({
+      ...REFRESH,
+      [`GET ${VenueFixtures.base}`]: Fakes.ok(VenueFixtures.page([VenueFixtures.venue('v1')])),
+      [`GET ${VenueFixtures.base.replace('radius=3000', 'radius=10000')}`]: Fakes.ok(
+        VenueFixtures.page([VenueFixtures.venue('v1'), VenueFixtures.venue('v2')]),
+      ),
+    })
+
+    const { wrapper } = await VenueFixtures.signedInCore()
+    const { result } = await renderHook(() => useExploreViewModel(), { wrapper })
+
+    await waitFor(() => {
+      expect(result.current.venues).toHaveLength(1)
+    })
+
+    expect(result.current.radiusSteps).toEqual([1, 2, 3, 5, 10, 25, 50])
+
+    await act(() => {
+      result.current.setRadiusKm(10)
+    })
+
+    await waitFor(() => {
+      expect(result.current.venues).toHaveLength(2)
+    })
+
+    expect(result.current.radiusKm).toBe(10)
+
+    expect(searches(network)).toEqual([
+      VenueFixtures.base,
+      VenueFixtures.base.replace('radius=3000', 'radius=10000'),
+    ])
+  })
+
   it('does not search, or load, while the location is denied', async () => {
     const network = Fakes.stubNetwork({ ...REFRESH })
     const { wrapper } = await VenueFixtures.signedInCore(new FakeLocation('denied'))
