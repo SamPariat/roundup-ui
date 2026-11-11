@@ -101,4 +101,35 @@ describe('squad favorites', () => {
     expect(await screen.findByRole('button', { name: /^Brew Cafe/ })).toBeOnTheScreen()
     expect(screen.queryByRole('button', { name: /^Skyline Bar/ })).toBeNull()
   })
+
+  it('keeps the selected tab in the URL, and leaves the default tab out', async () => {
+    await VenuesFixtures.openWithSquads(backend, '/squads/s1')
+    await fireEvent.press(await screen.findByRole('tab', { name: /^Favorites/ }))
+
+    await waitFor(() => {
+      expect(screen).toHaveSearchParams({ squadId: 's1', tab: 'favorites' })
+    })
+
+    await fireEvent.press(screen.getByRole('tab', { name: /^Members/ }))
+
+    await waitFor(() => {
+      expect(screen).toHaveSearchParams({ squadId: 's1' })
+    })
+
+    expect(await screen.findByRole('heading', { name: 'Members' })).toBeOnTheScreen()
+  })
+
+  it('opens on the tab the link names', async () => {
+    await VenuesFixtures.openWithSquads(backend, '/squads/s1?tab=favorites')
+
+    expect(await screen.findByRole('button', { name: /^Skyline Bar/ })).toBeOnTheScreen()
+    expect(screen.getByRole('tab', { name: /^Favorites/ })).toBeSelected()
+  })
+
+  it('opens on the members for a tab it does not know', async () => {
+    await VenuesFixtures.openWithSquads(backend, '/squads/s1?tab=photos')
+
+    expect(await screen.findByRole('heading', { name: 'Members' })).toBeOnTheScreen()
+    expect(screen.getByRole('tab', { name: /^Members/ })).toBeSelected()
+  })
 })

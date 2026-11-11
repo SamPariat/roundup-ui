@@ -2,6 +2,9 @@ import { act, renderHook, waitFor } from '@testing-library/react-native'
 
 import { HttpStatus } from '@roundup/api'
 
+import type { IExploreInputs, IExploreViewModel } from '../../src/venues/useExploreViewModel'
+import type { ITestCore } from '../helpers/wrapper'
+
 import { useExploreViewModel } from '../../src/venues/useExploreViewModel'
 import { FakeLocation, Fakes } from '../helpers/fakes'
 import { VenueFixtures } from '../helpers/venue-fixtures'
@@ -9,6 +12,22 @@ import { TestCore } from '../helpers/wrapper'
 
 /** The refresh answer every signed-in test needs. */
 const REFRESH = { 'POST /api/v1/auth/refresh': Fakes.ok(Fakes.pair('a2', 'r2')) }
+
+/** The inputs of a search that has just opened: no words, no kind of place, 3 km. */
+const DEFAULTS: IExploreInputs = { filter: undefined, query: '', radiusKm: 3 }
+
+/**
+ * Renders the view model with inputs a test can change by rerendering.
+ * @param wrapper - The core providers of the test.
+ * @returns The rendered hook.
+ */
+const renderExplore = (
+  wrapper: ITestCore['wrapper'],
+): ReturnType<typeof renderHook<IExploreViewModel, IExploreInputs>> =>
+  renderHook((inputs: IExploreInputs) => useExploreViewModel(inputs), {
+    initialProps: DEFAULTS,
+    wrapper,
+  })
 
 /**
  * Lists the search requests a test made.
@@ -34,14 +53,13 @@ describe('useExploreViewModel', () => {
     })
 
     const { wrapper } = await VenueFixtures.signedInCore()
-    const { result } = await renderHook(() => useExploreViewModel(), { wrapper })
+    const { result } = await renderExplore(wrapper)
 
     await waitFor(() => {
       expect(result.current.venues).toHaveLength(2)
     })
 
     expect(result.current.phase).toBe('ready')
-    expect(result.current.radiusKm).toBe(3)
     expect(result.current.venues[0]).toMatchObject({ id: 'v1', name: 'Venue v1', rating: 4.5 })
     expect(result.current.loading).toBe(false)
     expect(searches(network)).toEqual([VenueFixtures.base])
@@ -57,23 +75,17 @@ describe('useExploreViewModel', () => {
     })
 
     const { wrapper } = await VenueFixtures.signedInCore()
-    const { result } = await renderHook(() => useExploreViewModel(), { wrapper })
+    const { rerender, result } = await renderExplore(wrapper)
 
     await waitFor(() => {
       expect(result.current.venues).toHaveLength(1)
     })
 
-    expect(result.current.radiusSteps).toEqual([1, 2, 3, 5, 10, 25, 50])
-
-    await act(() => {
-      result.current.setRadiusKm(10)
-    })
+    await rerender({ ...DEFAULTS, radiusKm: 10 })
 
     await waitFor(() => {
       expect(result.current.venues).toHaveLength(2)
     })
-
-    expect(result.current.radiusKm).toBe(10)
 
     expect(searches(network)).toEqual([
       VenueFixtures.base,
@@ -84,7 +96,7 @@ describe('useExploreViewModel', () => {
   it('does not search, or load, while the location is denied', async () => {
     const network = Fakes.stubNetwork({ ...REFRESH })
     const { wrapper } = await VenueFixtures.signedInCore(new FakeLocation('denied'))
-    const { result } = await renderHook(() => useExploreViewModel(), { wrapper })
+    const { result } = await renderExplore(wrapper)
 
     await waitFor(() => {
       expect(result.current.phase).toBe('denied')
@@ -104,7 +116,7 @@ describe('useExploreViewModel', () => {
     })
 
     const { wrapper } = await VenueFixtures.signedInCore(location)
-    const { result } = await renderHook(() => useExploreViewModel(), { wrapper })
+    const { result } = await renderExplore(wrapper)
 
     await waitFor(() => {
       expect(result.current.phase).toBe('denied')
@@ -124,7 +136,7 @@ describe('useExploreViewModel', () => {
   it('does not search while signed out', async () => {
     const network = Fakes.stubNetwork({})
     const { wrapper } = TestCore.create({ location: new FakeLocation() })
-    const { result } = await renderHook(() => useExploreViewModel(), { wrapper })
+    const { result } = await renderExplore(wrapper)
 
     await waitFor(() => {
       expect(result.current.phase).toBe('ready')
@@ -134,7 +146,7 @@ describe('useExploreViewModel', () => {
     expect(searches(network)).toEqual([])
   })
 
-  it('searches for the typed words only once typing pauses', async () => {
+  it('searches for the words it is given, trimmed', async () => {
     const network = Fakes.stubNetwork({
       ...REFRESH,
       [`GET ${VenueFixtures.base}`]: Fakes.ok(VenueFixtures.page([VenueFixtures.venue('v1')])),
@@ -144,36 +156,13 @@ describe('useExploreViewModel', () => {
     })
 
     const { wrapper } = await VenueFixtures.signedInCore()
-    const { result } = await renderHook(() => useExploreViewModel(), { wrapper })
+    const { rerender, result } = await renderExplore(wrapper)
 
     await waitFor(() => {
       expect(result.current.venues).toHaveLength(1)
     })
 
-    jest.useFakeTimers()
-
-    await act(() => {
-      result.current.setQuery('roof')
-    })
-
-    await act(() => {
-      jest.advanceTimersByTime(200)
-    })
-
-    await act(() => {
-      result.current.setQuery('  rooftop bar ')
-    })
-
-    await act(() => {
-      jest.advanceTimersByTime(200)
-    })
-
-    // Neither "roof" nor the first 200 ms of waiting sent a request.
-    expect(searches(network)).toEqual([VenueFixtures.base])
-
-    await act(() => {
-      jest.advanceTimersByTime(400)
-    })
+    await rerender({ ...DEFAULTS, query: '  rooftop bar ' })
 
     await waitFor(() => {
       expect(result.current.venues.map((venue) => venue.id)).toEqual(['v9'])
@@ -183,11 +172,30 @@ describe('useExploreViewModel', () => {
       VenueFixtures.base,
       `${VenueFixtures.base}&query=rooftop+bar`,
     ])
-
-    expect(result.current.query).toBe('  rooftop bar ')
   })
 
-  it('sends the chosen kind as the type, and clears it when chosen again', async () => {
+  it('opens with the words, the kind and the radius it is given', async () => {
+    const network = Fakes.stubNetwork({
+      ...REFRESH,
+      [`GET ${VenueFixtures.base.replace('radius=3000', 'radius=10000')}&query=brew&type=cafe`]:
+        Fakes.ok(VenueFixtures.page([VenueFixtures.venue('v3')])),
+    })
+
+    const { wrapper } = await VenueFixtures.signedInCore()
+
+    const { result } = await renderHook(
+      () => useExploreViewModel({ filter: 'cafe', query: 'brew', radiusKm: 10 }),
+      { wrapper },
+    )
+
+    await waitFor(() => {
+      expect(result.current.venues.map((venue) => venue.id)).toEqual(['v3'])
+    })
+
+    expect(searches(network)).toHaveLength(1)
+  })
+
+  it('sends the chosen kind as the type, and stops when it is cleared', async () => {
     const network = Fakes.stubNetwork({
       ...REFRESH,
       [`GET ${VenueFixtures.base}`]: Fakes.ok(VenueFixtures.page([VenueFixtures.venue('v1')])),
@@ -197,31 +205,23 @@ describe('useExploreViewModel', () => {
     })
 
     const { wrapper } = await VenueFixtures.signedInCore()
-    const { result } = await renderHook(() => useExploreViewModel(), { wrapper })
+    const { rerender, result } = await renderExplore(wrapper)
 
     await waitFor(() => {
       expect(result.current.venues).toHaveLength(1)
     })
 
-    await act(() => {
-      result.current.toggleFilter('night_club')
-    })
+    await rerender({ ...DEFAULTS, filter: 'night_club' })
 
     await waitFor(() => {
       expect(result.current.venues.map((venue) => venue.id)).toEqual(['v7'])
     })
 
-    expect(result.current.filter).toBe('night_club')
-
-    await act(() => {
-      result.current.toggleFilter('night_club')
-    })
+    await rerender(DEFAULTS)
 
     await waitFor(() => {
       expect(result.current.venues.map((venue) => venue.id)).toEqual(['v1'])
     })
-
-    expect(result.current.filter).toBeUndefined()
 
     // Clearing the filter reads the first search's results again, as the cache is stale by then.
     expect(searches(network)).toEqual([
@@ -243,7 +243,7 @@ describe('useExploreViewModel', () => {
     })
 
     const { wrapper } = await VenueFixtures.signedInCore()
-    const { result } = await renderHook(() => useExploreViewModel(), { wrapper })
+    const { result } = await renderExplore(wrapper)
 
     await waitFor(() => {
       expect(result.current.hasMore).toBe(true)
@@ -274,7 +274,7 @@ describe('useExploreViewModel', () => {
     })
 
     const { wrapper } = await VenueFixtures.signedInCore()
-    const { result } = await renderHook(() => useExploreViewModel(), { wrapper })
+    const { result } = await renderExplore(wrapper)
 
     await waitFor(() => {
       expect(result.current.venues).toHaveLength(1)
@@ -300,7 +300,7 @@ describe('useExploreViewModel', () => {
     })
 
     const { wrapper } = await VenueFixtures.signedInCore()
-    const { result } = await renderHook(() => useExploreViewModel(), { wrapper })
+    const { result } = await renderExplore(wrapper)
 
     await waitFor(() => {
       expect(result.current.error).toBe('errors.genericWithId')

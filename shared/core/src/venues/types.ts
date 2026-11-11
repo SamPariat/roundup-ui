@@ -119,3 +119,9 @@ export const VenueType = {
 
 /** One of the venue types. */
 export type TVenueType = (typeof VenueType)[keyof typeof VenueType]
+
+/** The radii the person can pick, in kilometers. Google's search reaches 50 km at most. */
+export const RADIUS_STEPS_KM: readonly number[] = [1, 2, 3, 5, 10, 25, 50]
+
+/** The radius the search starts with, in kilometers. */
+export const DEFAULT_RADIUS_KM = 3

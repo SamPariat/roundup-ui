@@ -23,7 +23,6 @@ import {
 } from '@roundup/ui'
 
 import type { TSheet } from '@/components/squads/SquadSheets'
-import type { TSquadTab } from '@/navigation/squad-tab'
 
 import { MemberActions } from '@/components/squads/MemberActionsModal'
 import { MemberRow } from '@/components/squads/MemberRow'
@@ -33,6 +32,7 @@ import { TabPage } from '@/components/TabPage'
 import { useErrorText } from '@/hooks/useErrorText'
 import { useLayout } from '@/hooks/useLayout'
 import { Paths } from '@/navigation/paths'
+import { SquadTab } from '@/navigation/squad-tab'
 
 /**
  * One squad: its avatar, name and member count, then the members with an Admin badge on admins. On a phone Tabs switch between the members and the
@@ -44,13 +44,13 @@ import { Paths } from '@/navigation/paths'
  * @returns The squad, a placeholder while it loads, or the not-found state.
  */
 export default function SquadScreen(): ReactElement {
-  const { squadId } = useLocalSearchParams<'/squads/[squadId]'>()
+  const { squadId, tab: tabParam } = useLocalSearchParams<'/squads/[squadId]'>()
   const { t } = useT()
   const router = useRouter()
   const [sheet, setSheet] = useState<TSheet | undefined>()
   const menuRef = useRef<IMenuHandle>(null)
   const { nav, systemChrome } = useLayout()
-  const [tab, setTab] = useState<TSquadTab>('members')
+  const tab = SquadTab.parse(tabParam)
   const wide = nav === 'side'
 
   const { error, loading, members, notFound, permissions, requestId, squad } = useSquad(squadId)
@@ -84,9 +84,12 @@ export default function SquadScreen(): ReactElement {
     return [{ icon: 'edit', label: t('screens.squad.renameRow'), onPress: handleOpenRename }, leave]
   }, [handleOpenLeave, handleOpenRename, permissions, t])
 
-  const handleSelectTab = useCallback((id: string): void => {
-    setTab(id === 'favorites' ? 'favorites' : 'members')
-  }, [])
+  const handleSelectTab = useCallback(
+    (id: string): void => {
+      router.setParams({ tab: SquadTab.serialize(SquadTab.parse(id)) })
+    },
+    [router],
+  )
 
   const tabs = useMemo(
     (): ITabItem[] => [

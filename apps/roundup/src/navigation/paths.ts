@@ -1,3 +1,7 @@
+import type { TSquadTab } from '@/navigation/squad-tab'
+
+import { SquadTab } from '@/navigation/squad-tab'
+
 /** Extra query parameters a path may carry, such as ?ref=invite. */
 export type TQuery = Record<string, string | undefined>
 
@@ -18,12 +22,32 @@ interface ICodeQuery extends TQuery {
   phone: string
 }
 
-/** The parameter the squad screen needs. */
+/** What Explore keeps in its query: the search words, the kind of place and the radius in km. */
+export interface IExploreQuery extends TQuery {
+  /** The words to search for. */
+  q?: string | undefined
+  /** The radius in kilometers; left out for the default. */
+  radius?: string | undefined
+  /** The kind of place: bar, restaurant, cafe or night_club. */
+  type?: string | undefined
+}
+
+/** The parameters the squad screen takes. */
 interface ISquadParams extends TQuery {
   /** The squad's ID. */
   squadId: string
   /** The squad's name, which the header shows as the page's title. */
   title?: string
+  /** The tab: members (left out) or favorites. */
+  tab?: string
+}
+
+/** What a link to a squad may carry besides its ID. */
+export interface ISquadOptions {
+  /** The squad's name, when the caller knows it. */
+  title?: string
+  /** The tab to open; members when left out. */
+  tab?: TSquadTab
 }
 
 /** The parameter the venue screen needs. */
@@ -89,11 +113,13 @@ export class Paths {
   }
 
   /**
-   * The Explore tab.
-   * @param query - Extra query parameters, if any.
+   * The Explore tab, optionally with a search, which ExploreParams.serialize writes.
+   * @param query - The search words, kind of place and radius, if any.
    * @returns The path, or the path with its parameters.
    */
-  static tabsExplore<Q extends TQuery | undefined = undefined>(query?: Q): TBuilt<'/explore', Q> {
+  static tabsExplore<Q extends IExploreQuery | undefined = undefined>(
+    query?: Q,
+  ): TBuilt<'/explore', Q> {
     return Paths.build('/explore', query)
   }
 
@@ -110,12 +136,21 @@ export class Paths {
    * One squad, under the Squads tab. Needs the squad's ID; its name rides along as the title
    * query parameter, so the page's header shows it at once, before the squad loads.
    * @param squadId - The squad to open.
-   * @param title - The squad's name, when the caller knows it.
+   * @param options - The squad's name, when the caller knows it, and the tab to open.
    * @returns The path with its parameters.
    */
-  static squad(squadId: string, title?: string): ILink<'/squads/[squadId]', ISquadParams> {
+  static squad(
+    squadId: string,
+    options: ISquadOptions = {},
+  ): ILink<'/squads/[squadId]', ISquadParams> {
+    const tab = SquadTab.serialize(options.tab ?? SquadTab.defaultTab)
+
     return {
-      params: { squadId, ...(title === undefined ? {} : { title }) },
+      params: {
+        squadId,
+        ...(options.title === undefined ? {} : { title: options.title }),
+        ...(tab === undefined ? {} : { tab }),
+      },
       pathname: '/squads/[squadId]',
     }
   }
