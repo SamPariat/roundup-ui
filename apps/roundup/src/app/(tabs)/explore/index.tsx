@@ -1,6 +1,6 @@
 import type { ReactElement } from 'react'
 
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useMemo } from 'react'
 import { Linking, Platform, View } from 'react-native'
 
 import type { IVenueCard, TVenueType } from '@roundup/core'
@@ -15,6 +15,7 @@ import { FilterChip } from '@/components/venues/FilterChip'
 import { RadiusMenu } from '@/components/venues/RadiusMenu'
 import { VenueListCard } from '@/components/venues/VenueListCard'
 import { useErrorText } from '@/hooks/useErrorText'
+import { usePullRefresh } from '@/hooks/usePullRefresh'
 import { useWhenActive } from '@/hooks/useWhenActive'
 
 /** One chip of the filter row. */
@@ -55,7 +56,7 @@ export default function ExploreScreen(): ReactElement {
     venues,
   } = useExploreViewModel()
 
-  const [refreshing, setRefreshing] = useState<boolean>(false)
+  const { handleReload, refreshing } = usePullRefresh(refresh)
   const errorText = useErrorText(error, requestId)
 
   const filters = useMemo(
@@ -78,16 +79,6 @@ export default function ExploreScreen(): ReactElement {
   }, [phase, retryLocation])
 
   useWhenActive(handleReturn)
-
-  const handleReload = useCallback(async (): Promise<void> => {
-    setRefreshing(true)
-
-    try {
-      await refresh()
-    } finally {
-      setRefreshing(false)
-    }
-  }, [refresh])
 
   const handleLoadNext = useCallback((): void => {
     if (hasMore) loadMore()

@@ -11,6 +11,7 @@ import { EmptyState, FloatingActionButton } from '@roundup/ui'
 import { CreateSquadModal } from '@/components/squads/CreateSquadModal'
 import { SquadListCard } from '@/components/squads/SquadListCard'
 import { TabList } from '@/components/TabList'
+import { usePullRefresh } from '@/hooks/usePullRefresh'
 
 /**
  * The Squads tab: the person's squads as cards, with New squad as a floating button on every
@@ -22,7 +23,7 @@ export default function SquadsScreen(): ReactElement {
   const { t } = useT()
   const { hasMore, loading, loadingMore, loadMore, refresh, squads } = useSquads()
   const [creating, setCreating] = useState<boolean>(false)
-  const [refreshing, setRefreshing] = useState<boolean>(false)
+  const { handleReload, refreshing } = usePullRefresh(refresh)
 
   const handleOpenCreate = useCallback((): void => {
     setCreating(true)
@@ -31,16 +32,6 @@ export default function SquadsScreen(): ReactElement {
   const handleCloseCreate = useCallback((): void => {
     setCreating(false)
   }, [])
-
-  const handleReload = useCallback(async (): Promise<void> => {
-    setRefreshing(true)
-
-    try {
-      await refresh()
-    } finally {
-      setRefreshing(false)
-    }
-  }, [refresh])
 
   const handleLoadNext = useCallback((): void => {
     if (hasMore) loadMore()
