@@ -23,6 +23,14 @@ export interface IVenueCard {
   photo?: string
 }
 
+/** One photo of a venue's page, at the two sizes its tiles draw it. */
+export interface IVenuePhoto {
+  /** For the large tile of the photo grid, an absolute URL. */
+  large: string
+  /** For a small tile of the photo grid, an absolute URL. */
+  small: string
+}
+
 /** One review of a venue. */
 export interface IVenueReview {
   /** Who wrote it. */
@@ -57,8 +65,8 @@ export interface IVenueInfo extends IVenueCard {
   phone?: string
   /** The website; left out when empty. */
   website?: string
-  /** Every photo as an absolute URL, the first being the card's; empty when there are none. */
-  photos: string[]
+  /** Every photo, the first being the card's, each sized for the page's tiles; empty when there are none. */
+  photos: IVenuePhoto[]
   /** The reviews the API sent, up to five, newest as it orders them; empty when there are none. */
   reviewList: IVenueReview[]
   /** One entry per squad the person is in. */

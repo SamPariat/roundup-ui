@@ -2,10 +2,12 @@ import type { ReactElement } from 'react'
 
 import { Image, View } from 'react-native'
 
+import type { IVenuePhoto } from '@roundup/core'
+
 /** Props for VenuePhotoGrid. */
 export interface IVenuePhotoGridProps {
-  /** The photos' URLs; the first is the large one, and up to four more follow. */
-  photos: string[]
+  /** The photos; the first is the large one, and up to four more follow. */
+  photos: IVenuePhoto[]
 }
 
 /** How many small photos sit beside the large one. */
@@ -28,7 +30,7 @@ export const VenuePhotoGrid = ({ photos }: IVenuePhotoGridProps): null | ReactEl
         accessibilityIgnoresInvertColors
         alt=""
         className="h-full flex-1 bg-bg-sunken"
-        source={{ uri: first }}
+        source={{ uri: first.large }}
       />
       {rest.length === 0 ? null : (
         <View className="h-full flex-1 flex-row flex-wrap content-between justify-between">
@@ -37,8 +39,8 @@ export const VenuePhotoGrid = ({ photos }: IVenuePhotoGridProps): null | ReactEl
               accessibilityIgnoresInvertColors
               alt=""
               className="h-40 w-[49%] bg-bg-sunken"
-              key={photo}
-              source={{ uri: photo }}
+              key={photo.small}
+              source={{ uri: photo.small }}
             />
           ))}
         </View>

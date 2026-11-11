@@ -52,6 +52,7 @@ export type {
   ISavedIn,
   IVenueCard,
   IVenueInfo,
+  IVenuePhoto,
   IVenueReview,
   TPriceLevel,
   TVenueType,
