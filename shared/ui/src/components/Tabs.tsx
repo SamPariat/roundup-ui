@@ -36,13 +36,15 @@ interface ITabButtonProps {
   item: ITabItem
   /** Called with the segment's id when pressed. */
   onChange?: ((id: string) => void) | undefined
+  /** Whether any segment has a count, so the others keep room for one and do not shift when it arrives. */
+  reserveCount: boolean
 }
 
 /**
  * One segment of the tab bar: label, optional count, selected state.
  * @returns The pressable segment.
  */
-const TabButton = ({ active, item, onChange }: ITabButtonProps): ReactElement => {
+const TabButton = ({ active, item, onChange, reserveCount }: ITabButtonProps): ReactElement => {
   const { t } = useT()
 
   const handlePress = useCallback((): void => {
@@ -67,23 +69,38 @@ const TabButton = ({ active, item, onChange }: ITabButtonProps): ReactElement =>
       <Text tone={active ? 'fg' : 'muted'} variant="label">
         {item.label}
       </Text>
-      {item.count === undefined ? null : (
-        <Text tone="muted" variant="caption">
-          {String(item.count)}
+      {reserveCount ? (
+        <Text
+          aria-hidden
+          className={cn('min-w-4', item.count === undefined && 'opacity-0')}
+          tone="muted"
+          variant="caption"
+        >
+          {String(item.count ?? 0)}
         </Text>
-      )}
+      ) : null}
     </Pressable>
   )
 }
 
 /**
- * A segmented control that switches between views, announced as a tablist whose tabs are selected or not.
+ * A segmented control that switches between views, announced as a tablist whose tabs are selected or not. When any segment has a count, every segment holds room for one, so a count that arrives late moves nothing.
  * @returns The segmented bar.
  */
-export const Tabs = ({ items, onChange, value }: ITabsProps): ReactElement => (
-  <View className="flex-row gap-1 rounded-xl bg-bg-sunken p-1" role="tablist">
-    {items.map((item) => (
-      <TabButton active={item.id === value} item={item} key={item.id} onChange={onChange} />
-    ))}
-  </View>
-)
+export const Tabs = ({ items, onChange, value }: ITabsProps): ReactElement => {
+  const reserveCount = items.some((item) => item.count !== undefined)
+
+  return (
+    <View className="flex-row gap-1 rounded-xl bg-bg-sunken p-1" role="tablist">
+      {items.map((item) => (
+        <TabButton
+          active={item.id === value}
+          item={item}
+          key={item.id}
+          onChange={onChange}
+          reserveCount={reserveCount}
+        />
+      ))}
+    </View>
+  )
+}

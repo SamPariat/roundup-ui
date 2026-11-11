@@ -23,18 +23,16 @@ import {
 } from '@roundup/ui'
 
 import type { TSheet } from '@/components/squads/SquadSheets'
+import type { TSquadTab } from '@/navigation/squad-tab'
 
 import { MemberActions } from '@/components/squads/MemberActionsModal'
 import { MemberRow } from '@/components/squads/MemberRow'
-import { FavoritesAside, PhoneFavorites } from '@/components/squads/SquadFavorites'
+import { FavoritesAside, PhoneSquad } from '@/components/squads/SquadFavorites'
 import { SquadSheets } from '@/components/squads/SquadSheets'
 import { TabPage } from '@/components/TabPage'
 import { useErrorText } from '@/hooks/useErrorText'
 import { useLayout } from '@/hooks/useLayout'
 import { Paths } from '@/navigation/paths'
-
-/** The two views of a squad on a phone. */
-type TSquadTab = 'favorites' | 'members'
 
 /**
  * One squad: its avatar, name and member count, then the members with an Admin badge on admins. On a phone Tabs switch between the members and the
@@ -203,45 +201,34 @@ export default function SquadScreen(): ReactElement {
     </View>
   )
 
-  let content: ReactElement
+  const phoneHeader = (
+    <View className="gap-4">
+      {identity}
+      <Tabs items={tabs} onChange={handleSelectTab} value={tab} />
+    </View>
+  )
 
-  if (wide) {
-    content = (
-      <TabPage fab={addPeople}>
-        <View className="gap-6">
-          {identity}
-          <View className="flex-row items-start gap-8">
-            <View className="max-w-160 min-w-0 flex-1">{memberList}</View>
-            <View className="w-90 shrink-0">
-              <FavoritesAside state={favorites} />
-            </View>
+  const content = wide ? (
+    <TabPage fab={addPeople}>
+      <View className="gap-6">
+        {identity}
+        <View className="flex-row items-start gap-8">
+          <View className="max-w-160 min-w-0 flex-1">{memberList}</View>
+          <View className="w-90 shrink-0">
+            <FavoritesAside state={favorites} />
           </View>
         </View>
-      </TabPage>
-    )
-  } else if (tab === 'favorites') {
-    content = (
-      <PhoneFavorites
-        header={
-          <View className="gap-4">
-            {identity}
-            <Tabs items={tabs} onChange={handleSelectTab} value={tab} />
-          </View>
-        }
-        state={favorites}
-      />
-    )
-  } else {
-    content = (
-      <TabPage fab={addPeople}>
-        <View className="max-w-160 gap-6">
-          {identity}
-          <Tabs items={tabs} onChange={handleSelectTab} value={tab} />
-          {memberList}
-        </View>
-      </TabPage>
-    )
-  }
+      </View>
+    </TabPage>
+  ) : (
+    <PhoneSquad
+      fab={addPeople}
+      header={phoneHeader}
+      members={memberList}
+      state={favorites}
+      tab={tab}
+    />
+  )
 
   return (
     <>

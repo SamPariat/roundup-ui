@@ -32,11 +32,13 @@ export interface ITabListProps<T> {
   /** True while a pull to refresh runs. */
   refreshing?: boolean
   /** Called when the person pulls the list down. Leaving it out turns pull to refresh off. */
-  onRefresh?: () => void
+  onRefresh?: (() => void) | undefined
   /** Called when the end of the list comes into view. */
-  onEndReached?: () => void
+  onEndReached?: (() => void) | undefined
   /** The screen's FloatingActionButton, floated over the bottom-right of the list. */
   fab?: ReactElement | undefined
+  /** Forces this many columns instead of fitting as many cards as the width allows, for a list that is not a grid of cards. */
+  columns?: number | undefined
 }
 
 /** How many placeholder rows the first load draws. */
@@ -69,6 +71,7 @@ const STICKY_HEADER: number[] = [0]
  * @returns The virtualized list.
  */
 export const TabList = <T,>({
+  columns: columnsProp,
   data,
   empty,
   fab,
@@ -85,7 +88,7 @@ export const TabList = <T,>({
 }: ITabListProps<T>): ReactElement => {
   const { gutter, gutterClass } = useLayout()
   const [width, setWidth] = useState<number>(0)
-  const columns = Layout.columnsFor(width, gutter)
+  const columns = columnsProp ?? Layout.columnsFor(width, gutter)
 
   const handleLayout = useCallback((event: LayoutChangeEvent): void => {
     setWidth(event.nativeEvent.layout.width)

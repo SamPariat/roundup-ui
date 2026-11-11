@@ -9,6 +9,8 @@ import type { IFavoriteRow, IUseSquadFavorites } from '@roundup/core'
 import { useT } from '@roundup/i18n'
 import { Button, EmptyState, List, Skeleton, Text } from '@roundup/ui'
 
+import type { TSquadTab } from '@/navigation/squad-tab'
+
 import { FavoriteRowItem } from '@/components/squads/FavoriteRow'
 import { TabList } from '@/components/TabList'
 import { useErrorText } from '@/hooks/useErrorText'
@@ -158,43 +160,80 @@ const FavoritesFailed = ({ text }: IFavoritesFailedProps): ReactElement => {
   return <EmptyState art="favorites" body={text} title={t('screens.squad.favorites.errorTitle')} />
 }
 
-/** Props for PhoneFavorites. */
-export interface IPhoneFavoritesProps {
+/** The one row of the list while the Members tab shows: the whole members block. */
+interface IMembersRow {
+  /** Tells it from a favorite. */
+  kind: 'members'
+}
+
+/** What the phone's list holds: the members block, or the favorites. */
+type TPhoneRow = IFavoriteRow | IMembersRow
+
+/** The members block as the list's only row. */
+const MEMBERS_ROW: IMembersRow = { kind: 'members' }
+
+/** The list's rows on the Members tab. */
+const MEMBERS_ROWS: readonly IMembersRow[] = [MEMBERS_ROW]
+
+/** Props for PhoneSquad. */
+export interface IPhoneSquadProps {
   /** The squad's favorites, as useSquadFavorites gives them. */
   state: TFavorites & Pick<IUseSquadFavorites, 'refresh'>
   /** What sits above the rows: the squad's header and its tabs. */
   header: ReactElement
+  /** Which tab shows below the header. */
+  tab: TSquadTab
+  /** The members block, drawn while the Members tab shows. */
+  members: ReactElement
+  /** The floating Add people button, when the person may add members. */
+  fab?: ReactElement | undefined
 }
 
 /**
- * The favorites on a phone: a list that loads more as its end comes into view and reloads on a
- * pull, under the squad's header. Failed loads and the empty list have their own states.
+ * The squad's body on a phone: one list under the squad's header and tabs, so switching tabs
+ * changes only the rows below them. The Members tab is the members block as the list's single
+ * row. The Favorites tab loads more as its end comes into view and reloads on a pull; failed
+ * loads and the empty list have their own states.
  * @returns The virtualized list.
  */
-export const PhoneFavorites = ({ header, state }: IPhoneFavoritesProps): ReactElement => {
+export const PhoneSquad = ({
+  fab,
+  header,
+  members,
+  state,
+  tab,
+}: IPhoneSquadProps): ReactElement => {
   const errorText = useErrorText(state.error, state.requestId)
   const { handleReload, refreshing } = usePullRefresh(state.refresh)
   const { remove, removingId } = state
+  const showingFavorites = tab === 'favorites'
 
-  const renderCard = useCallback(
-    (favorite: IFavoriteRow): ReactElement => renderFavorite(favorite, remove, removingId),
-    [remove, removingId],
+  const renderRow = useCallback(
+    (row: TPhoneRow): ReactElement =>
+      'kind' in row ? (
+        <View className="max-w-160">{members}</View>
+      ) : (
+        renderFavorite(row, remove, removingId)
+      ),
+    [members, remove, removingId],
   )
 
-  const keyOf = useCallback((favorite: IFavoriteRow): string => favorite.id, [])
+  const keyOf = useCallback((row: TPhoneRow): string => ('kind' in row ? row.kind : row.id), [])
 
   return (
-    <TabList
-      data={state.favorites}
+    <TabList<TPhoneRow>
+      columns={showingFavorites ? undefined : 1}
+      data={showingFavorites ? state.favorites : MEMBERS_ROWS}
       empty={errorText === undefined ? <NoFavorites /> : <FavoritesFailed text={errorText} />}
+      fab={showingFavorites ? undefined : fab}
       header={header}
       keyExtractor={keyOf}
-      loading={state.loading}
-      loadingMore={state.loadingMore}
-      onEndReached={state.loadMore}
-      onRefresh={handleReload}
+      loading={showingFavorites && state.loading}
+      loadingMore={showingFavorites && state.loadingMore}
+      onEndReached={showingFavorites ? state.loadMore : undefined}
+      onRefresh={showingFavorites ? handleReload : undefined}
       refreshing={refreshing}
-      renderItem={renderCard}
+      renderItem={renderRow}
     />
   )
 }
