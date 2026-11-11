@@ -160,7 +160,7 @@ export const VenueCard = ({
   saved,
   types = NO_TYPES,
 }: IVenueCardProps): ReactElement => (
-  <View className="overflow-hidden rounded-2xl border border-border bg-bg-raised">
+  <View className="overflow-hidden rounded-2xl bg-bg-raised">
     <VenueMedia onSave={onSave} photo={photo} saved={saved} />
     <View className="gap-1 px-4 pt-3 pb-4">
       <Text heading={3} variant="body-strong">
@@ -185,5 +185,13 @@ export const VenueCard = ({
         </View>
       ) : null}
     </View>
+    {/* The border is its own layer over the content: on iOS a border on a clipped, rounded card
+        showed as a flat line across the top of the first card in a list. */}
+    <View
+      aria-hidden
+      className="absolute inset-0 rounded-2xl border border-border"
+      importantForAccessibility="no-hide-descendants"
+      pointerEvents="none"
+    />
   </View>
 )
