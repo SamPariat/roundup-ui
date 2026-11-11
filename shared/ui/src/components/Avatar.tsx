@@ -5,6 +5,7 @@ import { cva } from 'class-variance-authority'
 import { Image, View } from 'react-native'
 
 import type { TAvatarTint } from '../lib/avatar-tint'
+import type { TTextProps } from './Text'
 
 import { AvatarTint } from '../lib/avatar-tint'
 import { cn } from '../lib/cn'
@@ -51,14 +52,15 @@ export interface IAvatarProps {
   className?: string
 }
 
-const INITIALS_TEXT = {
-  24: 'text-[9px]',
-  28: 'text-[11px]',
-  32: 'text-xs',
-  40: 'text-[15px]',
-  48: 'text-lg',
-  64: 'text-2xl',
-} as const satisfies Record<TAvatarSize, string>
+/** The type style of the initials at each avatar size, all from the type scale. */
+const INITIALS_VARIANT: Record<TAvatarSize, TTextProps['variant']> = {
+  24: 'caption',
+  28: 'caption',
+  32: 'caption',
+  40: 'label',
+  48: 'body-strong',
+  64: 'title',
+}
 
 /**
  * A round photo of a person or squad, falling back to tinted initials.
@@ -79,7 +81,7 @@ export const Avatar = ({
     role="img"
   >
     {src === undefined ? (
-      <Text aria-hidden className={INITIALS_TEXT[size]} maxFontSizeMultiplier={1.2} variant="label">
+      <Text aria-hidden maxFontSizeMultiplier={1.2} variant={INITIALS_VARIANT[size]}>
         {AvatarTint.initialsOf(name)}
       </Text>
     ) : (

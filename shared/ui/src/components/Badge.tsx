@@ -52,8 +52,6 @@ export const Badge = ({ children, dot = true, tone }: TBadgeProps): ReactElement
   <View className={badgeVariants({ tone })}>
     {dot ? <View aria-hidden className={dotVariants({ tone })} /> : null}
     {/* Capped at 1.3x so a large system font does not break the pill. */}
-    <Text maxFontSizeMultiplier={1.3} variant="caption">
-      {children}
-    </Text>
+    <Text variant="caption">{children}</Text>
   </View>
 )

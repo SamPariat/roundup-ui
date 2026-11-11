@@ -2,7 +2,7 @@ import type { ReactElement } from 'react'
 import type { LayoutChangeEvent } from 'react-native'
 
 import { useCallback, useState } from 'react'
-import { Text as NativeText, View } from 'react-native'
+import { View } from 'react-native'
 
 import { useT } from '@roundup/i18n'
 
@@ -94,13 +94,9 @@ export const Welcome = ({ body, onStart, startLabel, title }: IWelcomeProps): Re
           )}
         >
           <View className={cn('gap-4', wide && 'min-w-0 flex-1')}>
-            <NativeText
-              accessibilityRole="header"
-              aria-level={1}
-              className={cn('text-fg', wide ? 'type-hero-wide' : 'type-hero')}
-            >
+            <Text heading={1} variant="display">
               {title ?? t('welcome.title')}
-            </NativeText>
+            </Text>
             <Text className="max-w-130" tone="muted" variant="body">
               {body ?? t('welcome.body')}
             </Text>

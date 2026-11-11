@@ -14,4 +14,16 @@ describe('Text', () => {
 
     expect(screen.queryByRole('heading')).not.toBeOnTheScreen()
   })
+
+  it('keeps the device text size from enlarging it past 1.3 times', async () => {
+    await render(<Text>Members</Text>)
+
+    expect(screen.getByText('Members')).toHaveProp('maxFontSizeMultiplier', 1.3)
+  })
+
+  it('lets a caller set a tighter limit', async () => {
+    await render(<Text maxFontSizeMultiplier={1.1}>Members</Text>)
+
+    expect(screen.getByText('Members')).toHaveProp('maxFontSizeMultiplier', 1.1)
+  })
 })
