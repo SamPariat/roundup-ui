@@ -51,6 +51,8 @@ export { VenueType } from './venues/types'
 export type {
   ISavedIn,
   IVenueCard,
+  IFavoriteRow,
+  IFavoriteSaver,
   IVenueInfo,
   IVenuePhoto,
   IVenueReview,
@@ -61,6 +63,8 @@ export { useExploreViewModel } from './venues/useExploreViewModel'
 export type { IExploreViewModel } from './venues/useExploreViewModel'
 export { useSaveVenueViewModel } from './venues/useSaveVenueViewModel'
 export type { ISaveVenueViewModel } from './venues/useSaveVenueViewModel'
+export { useSquadFavorites } from './venues/useSquadFavorites'
+export type { IUseSquadFavorites } from './venues/useSquadFavorites'
 export { useVenue } from './venues/useVenue'
 export type { IUseVenue } from './venues/useVenue'
 // Values from the API client the app needs without importing it: HTTP status names, and the squad

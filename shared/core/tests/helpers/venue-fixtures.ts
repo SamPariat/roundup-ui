@@ -1,4 +1,4 @@
-import type { SearchVenues200, Venue, VenueDetail } from '@roundup/api'
+import type { Favorite, ListFavorites200, SearchVenues200, Venue, VenueDetail } from '@roundup/api'
 
 import type { ITestCore } from './wrapper'
 
@@ -79,6 +79,41 @@ export class VenueFixtures {
    */
   static page(venues: Venue[], nextCursor: null | string = null): SearchVenues200['data'] {
     return { nextCursor, venues }
+  }
+
+  /**
+   * Builds a favorite of a squad.
+   * @param id - Which venue; the name is built from it.
+   * @param overrides - Fields to change.
+   * @returns A rated favorite with a photo, saved by Meera on 18 October 2026.
+   */
+  static favorite(id: string, overrides: Partial<Favorite> = {}): Favorite {
+    return {
+      address: `${id} MG Road`,
+      averageRating: 4.5,
+      lastSavedAt: '2026-10-18T10:00:00Z',
+      name: `Venue ${id}`,
+      photo: { height: 800, url: `/api/v1/venues/photos/${id}`, width: 1200 },
+      placeID: id,
+      priceLevel: 2,
+      ratingCount: 120,
+      savedBy: [{ avatarURL: '', name: 'Meera', userID: 'u2' }],
+      savedByMe: false,
+      ...overrides,
+    }
+  }
+
+  /**
+   * Builds the favorites answer for one page.
+   * @param favorites - The page's items.
+   * @param nextCursor - The cursor of the next page; null on the last.
+   * @returns The answer's data.
+   */
+  static favorites(
+    favorites: Favorite[],
+    nextCursor: null | string = null,
+  ): ListFavorites200['data'] {
+    return { favorites, nextCursor }
   }
 
   /**

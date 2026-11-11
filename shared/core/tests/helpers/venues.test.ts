@@ -91,6 +91,40 @@ describe('Venues', () => {
     })
   })
 
+  describe('Venues.toFavorite', () => {
+    it('maps a favorite onto a row with a thumbnail, its savers and the day it was saved', () => {
+      expect(venues.toFavorite(VenueFixtures.favorite('v1'), 'u1')).toEqual({
+        address: 'v1 MG Road',
+        id: 'v1',
+        name: 'Venue v1',
+        photo: 'http://localhost:8080/api/v1/venues/photos/v1?maxWidth=200',
+        priceLevel: 2,
+        rating: 4.5,
+        reviews: 120,
+        savedByMe: false,
+        savedOn: '18 Oct',
+        savers: [{ id: 'u2', isMe: false, name: 'Meera' }],
+      })
+    })
+
+    it('leaves out what the API does not know and marks the signed-in saver', () => {
+      const row = venues.toFavorite(
+        VenueFixtures.favorite('v1', {
+          address: '',
+          averageRating: 0,
+          photo: null,
+          savedBy: [{ avatarURL: '', name: '', userID: 'u1' }],
+        }),
+        'u1',
+      )
+
+      expect(row).not.toHaveProperty('address')
+      expect(row).not.toHaveProperty('photo')
+      expect(row).not.toHaveProperty('rating')
+      expect(row.savers).toEqual([{ id: 'u1', isMe: true, name: '' }])
+    })
+  })
+
   describe('Venues.toInfo', () => {
     it("adds today's hours without the day, the week, the first review and the squads", () => {
       const info = venues.toInfo(VenueFixtures.detail('v1'), WEDNESDAY)
