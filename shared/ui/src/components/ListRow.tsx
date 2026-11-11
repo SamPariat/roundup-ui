@@ -7,6 +7,7 @@ import { useT } from '@roundup/i18n'
 
 import { cn } from '../lib/cn'
 import { Icon } from './Icon'
+import { Spinner } from './Spinner'
 import { Text } from './Text'
 
 /** Props for ListRow. */
@@ -27,11 +28,35 @@ export interface IListRowProps {
   onPress?: () => void
   /** Why the row cannot be pressed right now, while a request is in flight. */
   busy?: boolean
+  /**
+   * What the row says while its own request runs, such as "Saving…": a spinner and this text take
+   * the place of the trailing content, and the row counts as busy. They are plain content, not a
+   * button, because a button cannot sit inside the row's own.
+   */
+  working?: string
   /** Whether the row is picked, for a row that ticks like a checkbox. Leave it out for other rows. */
   selected?: boolean
   /** Whether the content the row opens is showing, for a row that expands in place. Leave it out for other rows. */
   expanded?: boolean
 }
+
+/**
+ * The spinner and live label a row shows while its own request runs.
+ * @returns The spinner beside the label.
+ */
+const Working = ({
+  label,
+}: {
+  /** What the row says while it works. */
+  label: string
+}): ReactElement => (
+  <View className="flex-row items-center gap-2">
+    <Spinner tone="fg-subtle" />
+    <Text accessibilityLiveRegion="polite" aria-live="polite" tone="subtle" variant="label">
+      {label}
+    </Text>
+  </View>
+)
 
 /**
  * A row of a List: leading content, a title with optional subtitle, and trailing content; a button when it has an `onPress`.
@@ -48,6 +73,7 @@ export const ListRow = ({
   subtitle,
   title,
   trailing,
+  working,
 }: IListRowProps): ReactElement => {
   const { t } = useT()
 
@@ -64,9 +90,9 @@ export const ListRow = ({
           </Text>
         )}
       </View>
-      {trailing !== undefined || chevron ? (
+      {trailing !== undefined || chevron || working !== undefined ? (
         <View className="shrink-0 flex-row items-center gap-2">
-          {trailing}
+          {working === undefined ? trailing : <Working label={working} />}
           {chevron ? <Icon decorative name="chevron" tone="fg-muted" /> : null}
         </View>
       ) : null}
@@ -86,7 +112,7 @@ export const ListRow = ({
     <Pressable
       accessibilityLabel={subtitle === undefined ? title : t('listRow.spoken', { subtitle, title })}
       accessibilityRole="button"
-      aria-busy={busy}
+      aria-busy={busy || working !== undefined}
       aria-expanded={expanded}
       aria-selected={selected}
       className={cn(
