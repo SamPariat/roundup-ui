@@ -23,7 +23,7 @@ export interface ITabListProps<T> {
   empty: ReactNode
   /** True while the first page loads: shows placeholders instead of `empty`. */
   loading?: boolean
-  /** The shape of those placeholders: list rows, or venue cards. Defaults to rows. */
+  /** The shape of those placeholders: list rows, or venue cards in the list's own columns. Defaults to rows. */
   skeleton?: 'card' | 'row'
   /** Content above the items. */
   header?: ReactElement | undefined
@@ -56,8 +56,21 @@ const CELL_WIDTH: Record<number, string> = {
 /** How many placeholder rows the first load draws. */
 const PLACEHOLDERS = 5
 
-/** The keys of the placeholder cards the first load draws, three of them. */
-const CARD_PLACEHOLDERS: readonly string[] = ['first', 'second', 'third']
+/** The keys of the placeholder cards the first load draws, six at most. */
+const CARD_PLACEHOLDERS: readonly string[] = [
+  'first',
+  'second',
+  'third',
+  'fourth',
+  'fifth',
+  'sixth',
+]
+
+/** How many placeholder cards a column count draws: two on a phone, six in a grid. */
+const CARD_COUNT: Record<number, number> = { 1: 2, 2: 6, 3: 6 }
+
+/** The width of a placeholder card in each column count. */
+const CARD_WIDTH: Record<number, string> = { 1: 'w-full', 2: 'w-1/2', 3: 'w-1/3' }
 
 /**
  * The body of a tab screen that is a list: the FlatList sibling of TabPage. It insets below the
@@ -99,14 +112,26 @@ export const TabList = <T,>({
   const headerBox =
     header === undefined ? undefined : <View className="px-1.5 pb-1.5">{header}</View>
 
-  const placeholder = loading ? (
-    <View className="gap-3 px-1.5">
-      {skeleton === 'card' ? (
-        CARD_PLACEHOLDERS.map((key) => <Skeleton key={key} variant="card" />)
-      ) : (
-        <Skeleton count={PLACEHOLDERS} />
-      )}
+  const cards = (
+    <View className="flex-row flex-wrap">
+      {CARD_PLACEHOLDERS.slice(0, CARD_COUNT[columns]).map((key) => (
+        <View className={cn('p-1.5', CARD_WIDTH[columns])} key={key}>
+          <Skeleton variant="card" />
+        </View>
+      ))}
     </View>
+  )
+
+  const rows = (
+    <View className="px-1.5">
+      <Skeleton count={PLACEHOLDERS} />
+    </View>
+  )
+
+  const loadingPlaceholder = skeleton === 'card' ? cards : rows
+
+  const placeholder = loading ? (
+    loadingPlaceholder
   ) : (
     <View className="flex-1 justify-center px-1.5">{empty}</View>
   )

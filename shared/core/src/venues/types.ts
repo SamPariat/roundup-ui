@@ -57,8 +57,10 @@ export interface IVenueInfo extends IVenueCard {
   phone?: string
   /** The website; left out when empty. */
   website?: string
-  /** The first review; left out when there are none. */
-  review?: IVenueReview
+  /** Every photo as an absolute URL, the first being the card's; empty when there are none. */
+  photos: string[]
+  /** The reviews the API sent, up to five, newest as it orders them; empty when there are none. */
+  reviewList: IVenueReview[]
   /** One entry per squad the person is in. */
   savedIn: ISavedIn[]
 }

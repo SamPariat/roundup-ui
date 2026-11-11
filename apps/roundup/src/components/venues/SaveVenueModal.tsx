@@ -40,10 +40,10 @@ export const SaveVenueModal = ({ name, onClose, placeId }: ISaveVenueModalProps)
       actions={actions}
       busy={busy}
       onClose={onClose}
-      subtitle={t('saveVenue.subtitle', { name })}
+      {...(loading ? {} : { subtitle: t('saveVenue.subtitle', { name }) })}
       title={t('saveVenue.title')}
     >
-      {loading ? <Skeleton count={3} /> : null}
+      {loading ? <Skeleton count={3} variant="item" /> : null}
       {!loading && squads.length === 0 ? (
         <Text tone="muted" variant="body-sm">
           {t('saveVenue.noSquads')}

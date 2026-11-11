@@ -70,12 +70,12 @@ describe('Venues.toInfo', () => {
     expect(info.phone).toBe('+91 80 1234 5678')
     expect(info.website).toBe('https://rooftop.example')
 
-    expect(info.review).toEqual({
-      author: 'Meera',
-      publishedAt: 'a month ago',
-      rating: 5,
-      text: 'Great views.',
-    })
+    expect(info.photos).toEqual(['http://localhost:8080/api/v1/venues/photos/v1'])
+
+    expect(info.reviewList).toEqual([
+      { author: 'Meera', publishedAt: 'a month ago', rating: 5, text: 'Great views.' },
+      { author: 'Kabir', publishedAt: 'a week ago', rating: 3, text: 'Loud.' },
+    ])
 
     expect(info.savedIn).toEqual([
       { saved: true, squadId: 's1', squadName: 'Friday crew' },
@@ -105,7 +105,7 @@ describe('Venues.toInfo', () => {
     expect(info).not.toHaveProperty('hoursToday')
     expect(info).not.toHaveProperty('phone')
     expect(info).not.toHaveProperty('website')
-    expect(info).not.toHaveProperty('review')
+    expect(info.reviewList).toEqual([])
     expect(info.hours).toEqual([])
   })
 })

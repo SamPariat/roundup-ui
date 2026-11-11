@@ -33,21 +33,24 @@ describe('venue page', () => {
     expect(screen.getByText('A place with a view.')).toBeOnTheScreen()
     expect(screen.getByText('Skyline Bar Road')).toBeOnTheScreen()
     expect(screen.getByText('Great views.')).toBeOnTheScreen()
-    expect(screen.getByText('Meera, a month ago')).toBeOnTheScreen()
-    expect(screen.getByText('Friday crew')).toBeOnTheScreen()
+    expect(screen.getByText('Meera')).toBeOnTheScreen()
+    expect(screen.queryByText('Kabir')).toBeNull()
+    expect(screen.queryByText('a month ago')).toBeNull()
+    expect(screen.getByText('Saved in Friday crew')).toBeOnTheScreen()
+    expect(screen.getByText('Not saved in Goa trip')).toBeOnTheScreen()
   })
 
   it('expands the opening hours to the whole week', async () => {
     await VenuesFixtures.open(backend, '/explore/v1')
 
-    const hours = await screen.findByRole('button', { name: /^Hours/ })
+    const hours = await screen.findByRole('button', { name: /^Today: 5:00 PM – 11:00 PM/ })
 
     expect(hours).not.toBeExpanded()
     expect(screen.queryByText('Monday: 5:00 PM – 11:00 PM')).toBeNull()
 
     await fireEvent.press(hours)
 
-    expect(screen.getByRole('button', { name: /^Hours/ })).toBeExpanded()
+    expect(screen.getByRole('button', { name: /^Today: 5:00 PM – 11:00 PM/ })).toBeExpanded()
     expect(screen.getByText('Monday: 5:00 PM – 11:00 PM')).toBeOnTheScreen()
   })
 
@@ -55,8 +58,8 @@ describe('venue page', () => {
     const open = jest.spyOn(Linking, 'openURL').mockResolvedValue()
 
     await VenuesFixtures.open(backend, '/explore/v1')
-    await fireEvent.press(await screen.findByRole('button', { name: /^Phone/ }))
-    await fireEvent.press(screen.getByRole('button', { name: /^Website/ }))
+    await fireEvent.press(await screen.findByRole('button', { name: '+91 80 1234 5678' }))
+    await fireEvent.press(screen.getByRole('button', { name: 'https://venue.example' }))
 
     expect(open).toHaveBeenNthCalledWith(1, 'tel:+918012345678')
     expect(open).toHaveBeenNthCalledWith(2, 'https://venue.example')
@@ -68,22 +71,22 @@ describe('venue page', () => {
 
     expect(await screen.findByText('Save to which squad?')).toBeOnTheScreen()
 
-    expect(await screen.findByRole('button', { name: 'Friday crew' })).toBeSelected()
-    expect(screen.getByRole('button', { name: 'Goa trip' })).not.toBeSelected()
+    expect(await screen.findByRole('button', { name: /^Friday crew, / })).toBeSelected()
+    expect(screen.getByRole('button', { name: /^Goa trip/ })).not.toBeSelected()
 
-    await fireEvent.press(screen.getByRole('button', { name: 'Goa trip' }))
+    await fireEvent.press(screen.getByRole('button', { name: /^Goa trip/ }))
 
     await waitFor(() => {
-      expect(screen.getByRole('button', { name: 'Goa trip' })).toBeSelected()
+      expect(screen.getByRole('button', { name: /^Goa trip/ })).toBeSelected()
     })
 
     expect(backend.paths).toContain('POST /api/v1/squads/s2/favorites')
     expect(backend.saved?.['v1']).toEqual(['s1', 's2'])
 
-    await fireEvent.press(screen.getByRole('button', { name: 'Friday crew' }))
+    await fireEvent.press(screen.getByRole('button', { name: /^Friday crew, / }))
 
     await waitFor(() => {
-      expect(screen.getByRole('button', { name: 'Friday crew' })).not.toBeSelected()
+      expect(screen.getByRole('button', { name: /^Friday crew, / })).not.toBeSelected()
     })
 
     expect(backend.paths).toContain('DELETE /api/v1/squads/s1/favorites/v1')
@@ -96,7 +99,7 @@ describe('venue page', () => {
     })
 
     // The page's Saved in row follows the change.
-    expect(screen.getByText('Goa trip')).toBeOnTheScreen()
+    expect(screen.getByText('Saved in Goa trip')).toBeOnTheScreen()
   })
 
   it('says so when the person is in no squad', async () => {

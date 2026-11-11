@@ -1,6 +1,6 @@
 import type { QueryClient } from '@tanstack/react-query'
 
-import type { SavedIn, Venue, VenueDetail } from '@roundup/api'
+import type { Review, SavedIn, Venue, VenueDetail } from '@roundup/api'
 
 import { ApiUrl, getGetVenueQueryKey, getListFavoritesQueryKey } from '@roundup/api'
 
@@ -65,30 +65,21 @@ export class Venues {
    * Maps a venue's detail answer onto what its page shows.
    * @param detail - The detail answer.
    * @param now - The current time in milliseconds, which picks today's line of the opening hours.
-   * @returns The venue with today's hours, its first review and the squads it is saved in.
+   * @returns The venue with today's hours, its photos and reviews and the squads it is saved in.
    */
   toInfo(detail: VenueDetail, now: number): IVenueInfo {
-    const [review] = detail.reviews
     const today = this.hoursOn(detail.openingHours, now)
 
     return {
       ...this.toCard(detail),
       hours: detail.openingHours,
+      photos: detail.photos.map((photo) => ApiUrl.of(photo.url)),
+      reviewList: detail.reviews.map((review) => this.toReview(review)),
       savedIn: detail.savedIn.map((squad) => this.toSavedIn(squad)),
       ...(detail.editorialSummary === '' ? {} : { summary: detail.editorialSummary }),
       ...(today === undefined ? {} : { hoursToday: today }),
       ...(detail.phoneNumber === '' ? {} : { phone: detail.phoneNumber }),
       ...(detail.website === '' ? {} : { website: detail.website }),
-      ...(review === undefined
-        ? {}
-        : {
-            review: {
-              author: review.authorName,
-              publishedAt: review.publishedAt,
-              rating: review.rating,
-              text: review.text,
-            } satisfies IVenueReview,
-          }),
     }
   }
 
@@ -103,6 +94,20 @@ export class Venues {
       this.queryClient.invalidateQueries({ queryKey: getGetVenueQueryKey(placeId) }),
       this.queryClient.invalidateQueries({ queryKey: getListFavoritesQueryKey(squadId) }),
     ])
+  }
+
+  /**
+   * Maps one review of the detail answer.
+   * @param review - A review.
+   * @returns Its author, rating, text and when it was published.
+   */
+  private toReview(review: Review): IVenueReview {
+    return {
+      author: review.authorName,
+      publishedAt: review.publishedAt,
+      rating: review.rating,
+      text: review.text,
+    }
   }
 
   /**

@@ -1,34 +1,49 @@
+import type { NativeStackNavigationOptions } from 'expo-router'
 import type { ReactElement } from 'react'
 
-import { useLocalSearchParams, useRouter } from 'expo-router'
-import { useCallback, useState } from 'react'
+import { Stack, useLocalSearchParams, useRouter } from 'expo-router'
+import { useCallback, useMemo, useState } from 'react'
 import { View } from 'react-native'
+
+import type { IVenueInfo } from '@roundup/core'
 
 import { useVenue } from '@roundup/core'
 import { useT } from '@roundup/i18n'
-import { Button, EmptyState, FloatingActionButton, Rating, Skeleton, Text } from '@roundup/ui'
+import { Button, EmptyState, FloatingActionButton, Skeleton, Text } from '@roundup/ui'
 
 import { TabPage } from '@/components/TabPage'
 import { SaveVenueModal } from '@/components/venues/SaveVenueModal'
 import { VenueDetails } from '@/components/venues/VenueDetails'
+import { VenueFacts } from '@/components/venues/VenueFacts'
 import { VenueHeader } from '@/components/venues/VenueHeader'
+import { VenuePhotoGrid } from '@/components/venues/VenuePhotoGrid'
+import { VenueReviews } from '@/components/venues/VenueReviews'
 import { useErrorText } from '@/hooks/useErrorText'
+import { useLayout } from '@/hooks/useLayout'
 import { Paths } from '@/navigation/paths'
 
+/** What separates a venue's tags from its address in the line under the title. */
+const TAG_SEPARATOR = ' · '
+
 /**
- * One venue: its photo, name, rating, price and whether it is open now, then its summary, a list
- * of its address, hours, phone, website and the squads it is saved in, and its first review. Save
- * to squad floats over the page and opens the sheet that picks the squads. A venue that does not
- * exist shows a not-found state with a way back.
+ * One venue. On a phone: its photo, name, rating, price and whether it is open now, then its
+ * summary, a list of its address, hours, phone, website and the squads it is saved in, and its
+ * first review, with Save to squad floating over the page. On a wide screen: the header holds
+ * Save to squad, the photos tile a grid, About and every review stand on the left, and the facts
+ * and the list sit in a raised card on the right. A venue that does not exist shows a not-found
+ * state with a way back.
  * @returns The venue, a placeholder while it loads, or the not-found state.
  */
 export default function VenueScreen(): ReactElement {
   const { placeId } = useLocalSearchParams<'/explore/[placeId]'>()
   const { t } = useT()
   const router = useRouter()
+  const { nav, systemChrome } = useLayout()
   const [saving, setSaving] = useState<boolean>(false)
   const { error, loading, notFound, requestId, venue } = useVenue(placeId)
   const errorText = useErrorText(error, requestId)
+  const wide = nav === 'side'
+  const inHeader = wide && !systemChrome
 
   const handleGoToExplore = useCallback((): void => {
     router.dismissTo(Paths.tabsExplore())
@@ -41,6 +56,20 @@ export default function VenueScreen(): ReactElement {
   const handleCloseSave = useCallback((): void => {
     setSaving(false)
   }, [])
+
+  const renderHeaderRight = useCallback(
+    (): ReactElement => (
+      <Button icon="bookmark" onPress={handleOpenSave}>
+        {t('venueCard.save')}
+      </Button>
+    ),
+    [handleOpenSave, t],
+  )
+
+  const headerOptions = useMemo(
+    (): NativeStackNavigationOptions => (inHeader ? { headerRight: renderHeaderRight } : {}),
+    [inHeader, renderHeaderRight],
+  )
 
   if (notFound || (venue === undefined && error !== undefined)) {
     return (
@@ -58,48 +87,83 @@ export default function VenueScreen(): ReactElement {
   if (loading || venue === undefined) {
     return (
       <TabPage>
-        <Skeleton count={5} />
+        <Skeleton variant="venue" />
       </TabPage>
     )
   }
 
-  const { review } = venue
-
-  const save = (
+  const save = inHeader ? undefined : (
     <FloatingActionButton icon="bookmark" onPress={handleOpenSave}>
       {t('venueCard.save')}
     </FloatingActionButton>
   )
 
+  const body = wide ? <WideVenue venue={venue} /> : <PhoneVenue venue={venue} />
+
   return (
     <>
-      <TabPage fab={save}>
-        <View className="max-w-160 gap-6">
-          <VenueHeader venue={venue} />
-          {venue.summary === undefined ? null : <Text tone="muted">{venue.summary}</Text>}
-          <VenueDetails venue={venue} />
-          {review === undefined ? null : (
-            <View className="gap-3">
-              <Text heading={2} variant="heading">
-                {t('screens.venue.review')}
-              </Text>
-              <View className="gap-2 rounded-2xl border border-border bg-bg-raised p-4">
-                <Rating value={review.rating} />
-                <Text>{review.text}</Text>
-                <Text tone="muted" variant="caption">
-                  {t('screens.venue.reviewBy', {
-                    author: review.author,
-                    publishedAt: review.publishedAt,
-                  })}
-                </Text>
-              </View>
-            </View>
-          )}
-        </View>
-      </TabPage>
+      <Stack.Screen options={headerOptions} />
+      <TabPage fab={save}>{body}</TabPage>
       {saving ? (
         <SaveVenueModal name={venue.name} onClose={handleCloseSave} placeId={venue.id} />
       ) : null}
     </>
+  )
+}
+
+/** Props for the two layouts of the page. */
+interface ILayoutProps {
+  /** The venue to lay out. */
+  venue: IVenueInfo
+}
+
+/**
+ * The phone layout: header, summary, list and the first review in one column.
+ * @returns The column.
+ */
+const PhoneVenue = ({ venue }: ILayoutProps): ReactElement => (
+  <View className="gap-6">
+    <VenueHeader venue={venue} />
+    {venue.summary === undefined ? null : (
+      <Text tone="muted" variant="body-sm">
+        {venue.summary}
+      </Text>
+    )}
+    <VenueDetails venue={venue} />
+    <VenueReviews reviews={venue.reviewList} wide={false} />
+  </View>
+)
+
+/**
+ * The wide layout: the photo grid, then About and the reviews beside a raised card of the facts
+ * and the list.
+ * @returns The grid and the two columns.
+ */
+const WideVenue = ({ venue }: ILayoutProps): ReactElement => {
+  const { t } = useT()
+  const line = [...venue.types, ...(venue.address === undefined ? [] : [venue.address])]
+
+  return (
+    <View className="gap-8">
+      <VenuePhotoGrid photos={venue.photos} />
+      <View className="flex-row items-start gap-8">
+        <View className="max-w-160 min-w-0 flex-1 gap-6">
+          <View className="gap-2">
+            <Text heading={2} variant="heading">
+              {t('screens.venue.about')}
+            </Text>
+            <Text tone="muted" variant="body-sm">
+              {line.join(TAG_SEPARATOR)}
+            </Text>
+            {venue.summary === undefined ? null : <Text tone="muted">{venue.summary}</Text>}
+          </View>
+          <VenueReviews reviews={venue.reviewList} wide />
+        </View>
+        <View className="w-80 gap-4 rounded-2xl border border-border bg-bg-raised p-5">
+          <VenueFacts venue={venue} />
+          <VenueDetails venue={venue} />
+        </View>
+      </View>
+    </View>
   )
 }

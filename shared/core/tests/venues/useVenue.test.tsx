@@ -30,7 +30,7 @@ describe('useVenue', () => {
       id: 'v1',
       name: 'Venue v1',
       phone: '+91 80 1234 5678',
-      review: { author: 'Meera' },
+      reviewList: [{ author: 'Meera' }, { author: 'Kabir' }],
       summary: 'A rooftop with a view.',
     })
 

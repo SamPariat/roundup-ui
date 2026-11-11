@@ -117,16 +117,21 @@ export default function ExploreScreen(): ReactElement {
     )
   }
 
-  const header =
-    phase === 'ready' ? (
-      <View className="gap-3 pb-3">
-        <TextField
-          icon="search"
-          label={t('screens.explore.searchLabel')}
-          onChangeText={setQuery}
-          placeholder={t('screens.explore.searchPlaceholder')}
-          value={query}
-        />
+  // The first load draws the field, chips and caption as blocks; later searches keep the real ones.
+  const searching = phase === 'ready' && !loading
+
+  const header = searching ? (
+    <View className="gap-3 pb-3">
+      <View className="flex-row flex-wrap items-center gap-3">
+        <View className="w-full md:w-auto md:max-w-120 md:min-w-80 md:flex-1">
+          <TextField
+            icon="search"
+            label={t('screens.explore.searchLabel')}
+            onChangeText={setQuery}
+            placeholder={t('screens.explore.searchPlaceholder')}
+            value={query}
+          />
+        </View>
         <View
           accessibilityLabel={t('screens.explore.filters.label')}
           className="flex-row flex-wrap gap-2"
@@ -142,13 +147,16 @@ export default function ExploreScreen(): ReactElement {
             />
           ))}
         </View>
-        {loading ? null : (
-          <Text aria-live="polite" tone="muted" variant="caption">
-            {t('screens.explore.caption', { count: venues.length, km: radiusKm })}
-          </Text>
-        )}
       </View>
-    ) : undefined
+      <Text aria-live="polite" tone="muted" variant="caption">
+        {t('screens.explore.caption', { count: venues.length, km: radiusKm })}
+      </Text>
+    </View>
+  ) : (
+    <View className="pb-3">
+      <Skeleton variant="search" />
+    </View>
+  )
 
   const empty =
     errorText === undefined ? (
