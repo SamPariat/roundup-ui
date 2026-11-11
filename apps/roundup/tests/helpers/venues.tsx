@@ -14,6 +14,8 @@ import type { IStubVenue } from './venue-backend'
 import { Render } from './render'
 import VenueScreen from '@/app/(tabs)/explore/[placeId]'
 import ExploreScreen from '@/app/(tabs)/explore/index'
+import SquadScreen from '@/app/(tabs)/squads/[squadId]'
+import SquadsScreen from '@/app/(tabs)/squads/index'
 
 /**
  * The explore stack of a test: the same screens as the app, in a Stack so going back and
@@ -116,6 +118,27 @@ export class VenuesFixtures {
         'explore/index': ExploreScreen,
       },
       { backend, location, saved: 'r1', url },
+    )
+  }
+
+  /**
+   * Opens the app at a route of either the squads or the explore stack, signed in, for a flow that
+   * goes from a squad's favorites to a place and back.
+   * @param backend - What the stubbed backend answers.
+   * @param url - Where the app opens.
+   * @returns A promise that resolves once it has rendered.
+   */
+  static openWithSquads(backend: IBackend, url: string): Promise<void> {
+    return Render.app(
+      {
+        'explore/[placeId]': VenueScreen,
+        'explore/_layout': ExploreStack,
+        'explore/index': ExploreScreen,
+        'squads/[squadId]': SquadScreen,
+        'squads/_layout': ExploreStack,
+        'squads/index': SquadsScreen,
+      },
+      { backend, location: VenuesFixtures.location(), saved: 'r1', url },
     )
   }
 }

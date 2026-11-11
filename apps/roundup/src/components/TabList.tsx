@@ -25,6 +25,8 @@ export interface ITabListProps<T> {
   skeleton?: 'card' | 'row'
   /** Content above the items. */
   header?: ReactElement | undefined
+  /** True to keep the header at the top while the items scroll under it, as Explore's filters do. */
+  pinHeader?: boolean
   /** True while a later page loads: draws one more row of the same placeholders below the items. */
   loadingMore?: boolean
   /** True while a pull to refresh runs. */
@@ -76,6 +78,7 @@ export const TabList = <T,>({
   loadingMore = false,
   onEndReached,
   onRefresh,
+  pinHeader = false,
   refreshing = false,
   renderItem,
   skeleton = 'row',
@@ -172,7 +175,7 @@ export const TabList = <T,>({
             )
           }
           renderItem={cell}
-          stickyHeaderIndices={header === undefined ? undefined : STICKY_HEADER}
+          stickyHeaderIndices={header !== undefined && pinHeader ? STICKY_HEADER : undefined}
         />
       </View>
       {fab === undefined ? null : <TabFabLayer>{fab}</TabFabLayer>}
