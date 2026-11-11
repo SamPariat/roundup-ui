@@ -17,6 +17,15 @@ import { LocationSource } from '../location/location-source'
 import { NetworkSource } from '../network/network-source'
 import { SessionStore } from '../session/session-store'
 
+/**
+ * How long an answer counts as fresh, in milliseconds. Within it a screen that mounts, or a tab
+ * that regains focus, reads the cache instead of asking again: the profile is read by the shell,
+ * the route gate and the Profile tab, a venue by its page and its save sheet, and a search by the
+ * person who clears a word they typed. Saves and edits invalidate what they change, so fresh
+ * never means wrong.
+ */
+const STALE_TIME = 30_000
+
 /** Everything outside the app that core depends on. Tests pass fakes for any of it. */
 export interface IDeps {
   /** Where the refresh token is kept between launches. */
@@ -82,7 +91,7 @@ export class Deps {
   }
 
   /**
-   * Builds the query client, retrying failed queries by the query helper's policy.
+   * Builds the query client, retrying failed queries by the query helper's policy and keeping answers fresh for a while.
    * @param query - The retry policy.
    * @returns A client whose queries retry by that policy.
    */
@@ -98,6 +107,7 @@ export class Deps {
            */
           retry: (failureCount: number, error: unknown): boolean =>
             query.shouldRetry(failureCount, error),
+          staleTime: STALE_TIME,
         },
       },
     })

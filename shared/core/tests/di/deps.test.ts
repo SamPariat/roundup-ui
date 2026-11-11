@@ -54,6 +54,12 @@ describe('Deps.create', () => {
     expect(Math.abs(deps.now() - Date.now())).toBeLessThan(1000)
   })
 
+  it('keeps answers fresh for a while, so a screen that mounts again reads the cache', () => {
+    const { staleTime } = Deps.create().queryClient.getDefaultOptions().queries ?? {}
+
+    expect(staleTime).toBe(30_000)
+  })
+
   it('creates one of each helper', () => {
     const { helpers } = Deps.create()
 
