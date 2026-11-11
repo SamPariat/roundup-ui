@@ -38,4 +38,10 @@ describe('ListRow', () => {
 
     expect(screen.getByRole('button', { name: 'Meera Krishnan' })).toBeSelected()
   })
+
+  it('reports whether the content it opens is showing', async () => {
+    await Render.withTheme(<ListRow expanded onPress={jest.fn()} title="Hours" />)
+
+    expect(screen.getByRole('button', { name: 'Hours' })).toBeExpanded()
+  })
 })

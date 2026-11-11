@@ -23,6 +23,8 @@ export interface ITabListProps<T> {
   empty: ReactNode
   /** True while the first page loads: shows placeholders instead of `empty`. */
   loading?: boolean
+  /** The shape of those placeholders: list rows, or venue cards. Defaults to rows. */
+  skeleton?: 'card' | 'row'
   /** Content above the items. */
   header?: ReactElement | undefined
   /** Content below the items, such as a placeholder while more load. */
@@ -54,6 +56,9 @@ const CELL_WIDTH: Record<number, string> = {
 /** How many placeholder rows the first load draws. */
 const PLACEHOLDERS = 5
 
+/** The keys of the placeholder cards the first load draws, three of them. */
+const CARD_PLACEHOLDERS: readonly string[] = ['first', 'second', 'third']
+
 /**
  * The body of a tab screen that is a list: the FlatList sibling of TabPage. It insets below the
  * iOS header, takes the same width cap and side gutter and centers the empty state in the visible area. It
@@ -74,6 +79,7 @@ export const TabList = <T,>({
   onRefresh,
   refreshing = false,
   renderItem,
+  skeleton = 'row',
 }: ITabListProps<T>): ReactElement => {
   const { gutterClass } = useLayout()
   const { breakpoint } = useBreakpoint()
@@ -94,8 +100,12 @@ export const TabList = <T,>({
     header === undefined ? undefined : <View className="px-1.5 pb-1.5">{header}</View>
 
   const placeholder = loading ? (
-    <View className="px-1.5">
-      <Skeleton count={PLACEHOLDERS} />
+    <View className="gap-3 px-1.5">
+      {skeleton === 'card' ? (
+        CARD_PLACEHOLDERS.map((key) => <Skeleton key={key} variant="card" />)
+      ) : (
+        <Skeleton count={PLACEHOLDERS} />
+      )}
     </View>
   ) : (
     <View className="flex-1 justify-center px-1.5">{empty}</View>

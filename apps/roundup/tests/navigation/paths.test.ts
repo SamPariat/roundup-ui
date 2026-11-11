@@ -56,4 +56,16 @@ describe('Paths', () => {
       pathname: '/squads/[squadId]',
     })
   })
+
+  it('builds the venue path with the place it opens and its name as the title', () => {
+    expect(Paths.venue('v1')).toEqual({
+      params: { placeId: 'v1' },
+      pathname: '/explore/[placeId]',
+    })
+
+    expect(Paths.venue('v1', 'Skyline Bar')).toEqual({
+      params: { placeId: 'v1', title: 'Skyline Bar' },
+      pathname: '/explore/[placeId]',
+    })
+  })
 })

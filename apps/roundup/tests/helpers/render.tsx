@@ -35,6 +35,8 @@ export interface IAppOptions {
   network?: FakeNetwork
   /** The contacts source; defaults to the real one, which a test must not reach. */
   contacts?: IDeps['contacts']
+  /** The location source; defaults to the real one, which a test must not reach. */
+  location?: IDeps['location']
 }
 
 /**
@@ -48,11 +50,11 @@ export class Render {
    * @returns A promise that resolves once the app has rendered.
    */
   static async app(routes: Record<string, ComponentType>, options: IAppOptions): Promise<void> {
-    const { backend, contacts, guarded = false, network, saved, url } = options
+    const { backend, contacts, guarded = false, location, network, saved, url } = options
 
     Fakes.stubBackend(backend)
 
-    const deps = Fakes.testDeps(saved, network, contacts)
+    const deps = Fakes.testDeps(saved, network, contacts, location)
 
     /**
      * The root layout of the test app.

@@ -26,6 +26,14 @@ interface ISquadParams extends TQuery {
   title?: string
 }
 
+/** The parameter the venue screen needs. */
+interface IVenueParams extends TQuery {
+  /** The venue's Google place ID. */
+  placeId: string
+  /** The venue's name, which the header shows as the page's title. */
+  title?: string
+}
+
 /**
  * Every path the app navigates to. Screens never write a path string themselves: they call a
  * static method from here, so renaming a route is one edit and a typo is a compile error. Without
@@ -109,6 +117,20 @@ export class Paths {
     return {
       params: { squadId, ...(title === undefined ? {} : { title }) },
       pathname: '/squads/[squadId]',
+    }
+  }
+
+  /**
+   * One venue, under the Explore tab. Needs the place ID; its name rides along as the title query
+   * parameter, so the page's header shows it at once, before the venue loads.
+   * @param placeId - The venue to open.
+   * @param title - The venue's name, when the caller knows it.
+   * @returns The path with its parameters.
+   */
+  static venue(placeId: string, title?: string): ILink<'/explore/[placeId]', IVenueParams> {
+    return {
+      params: { placeId, ...(title === undefined ? {} : { title }) },
+      pathname: '/explore/[placeId]',
     }
   }
 

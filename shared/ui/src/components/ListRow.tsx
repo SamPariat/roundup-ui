@@ -29,6 +29,8 @@ export interface IListRowProps {
   busy?: boolean
   /** Whether the row is picked, for a row that ticks like a checkbox. Leave it out for other rows. */
   selected?: boolean
+  /** Whether the content the row opens is showing, for a row that expands in place. Leave it out for other rows. */
+  expanded?: boolean
 }
 
 /**
@@ -39,6 +41,7 @@ export const ListRow = ({
   busy = false,
   chevron = false,
   destructive = false,
+  expanded,
   leading,
   onPress,
   selected,
@@ -84,6 +87,7 @@ export const ListRow = ({
       accessibilityLabel={subtitle === undefined ? title : t('listRow.spoken', { subtitle, title })}
       accessibilityRole="button"
       aria-busy={busy}
+      aria-expanded={expanded}
       aria-selected={selected}
       className={cn(
         layout,
