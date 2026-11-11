@@ -16,7 +16,7 @@ import { usePullRefresh } from '@/hooks/usePullRefresh'
 import { Paths } from '@/navigation/paths'
 
 /** What the favorites views read of the squad's favorites. */
-export type TFavorites = Pick<
+type TFavorites = Pick<
   IUseSquadFavorites,
   | 'complete'
   | 'error'
@@ -40,7 +40,7 @@ export interface ISquadFavoritesProps {
  * The empty state of a squad's favorites, with a way to Explore to save the first place.
  * @returns The empty state.
  */
-export const NoFavorites = (): ReactElement => {
+const NoFavorites = (): ReactElement => {
   const { t } = useT()
   const router = useRouter()
 
@@ -132,7 +132,7 @@ export const FavoritesAside = ({ state }: ISquadFavoritesProps): ReactElement =>
  * @param removingId - The venue whose save is being removed, if any.
  * @returns The card.
  */
-export const renderFavorite = (
+const renderFavorite = (
   favorite: IFavoriteRow,
   remove: TFavorites['remove'],
   removingId: string | undefined,
@@ -143,7 +143,7 @@ export const renderFavorite = (
 )
 
 /** Props for FavoritesFailed. */
-export interface IFavoritesFailedProps {
+interface IFavoritesFailedProps {
   /** Why the favorites did not load. */
   text: string
 }
@@ -152,7 +152,7 @@ export interface IFavoritesFailedProps {
  * The state of a squad's favorites that did not load.
  * @returns The error state.
  */
-export const FavoritesFailed = ({ text }: IFavoritesFailedProps): ReactElement => {
+const FavoritesFailed = ({ text }: IFavoritesFailedProps): ReactElement => {
   const { t } = useT()
 
   return <EmptyState art="favorites" body={text} title={t('screens.squad.favorites.errorTitle')} />
