@@ -111,7 +111,7 @@ export default function ExploreScreen(): ReactElement {
   // The first load draws the field, chips and caption as blocks; later searches keep the real ones.
   const searching = phase === 'ready' && !loading
 
-  const header = searching ? (
+  const controls = searching ? (
     <View className="gap-3 pb-3">
       <View className="flex-row flex-wrap items-center gap-3">
         <View className="w-full md:w-auto md:max-w-120 md:min-w-80 md:flex-1">
@@ -165,16 +165,15 @@ export default function ExploreScreen(): ReactElement {
     <TabList
       data={venues}
       empty={empty}
-      header={header}
       keyExtractor={keyOf}
       loading={phase === 'locating' || loading}
       loadingMore={loadingMore}
       onEndReached={handleLoadNext}
       onRefresh={handleReload}
-      pinHeader
       refreshing={refreshing}
       renderItem={renderCard}
       skeleton="card"
+      top={controls}
     />
   )
 }
