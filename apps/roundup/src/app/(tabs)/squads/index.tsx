@@ -6,7 +6,7 @@ import type { ISquadCard } from '@roundup/core'
 
 import { useSquads } from '@roundup/core'
 import { useT } from '@roundup/i18n'
-import { EmptyState, FloatingActionButton, Skeleton } from '@roundup/ui'
+import { EmptyState, FloatingActionButton } from '@roundup/ui'
 
 import { CreateSquadModal } from '@/components/squads/CreateSquadModal'
 import { SquadListCard } from '@/components/squads/SquadListCard'
@@ -69,9 +69,9 @@ export default function SquadsScreen(): ReactElement {
             {t('screens.squads.newSquad')}
           </FloatingActionButton>
         }
-        footer={loadingMore ? <Skeleton /> : undefined}
         keyExtractor={keyOf}
         loading={loading}
+        loadingMore={loadingMore}
         onEndReached={handleLoadNext}
         onRefresh={handleReload}
         refreshing={refreshing}

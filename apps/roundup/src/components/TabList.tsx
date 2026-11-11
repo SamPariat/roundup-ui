@@ -27,8 +27,8 @@ export interface ITabListProps<T> {
   skeleton?: 'card' | 'row'
   /** Content above the items. */
   header?: ReactElement | undefined
-  /** Content below the items, such as a placeholder while more load. */
-  footer?: ReactElement | undefined
+  /** True while a later page loads: draws one more row of the same placeholders below the items. */
+  loadingMore?: boolean
   /** True while a pull to refresh runs. */
   refreshing?: boolean
   /** Called when the person pulls the list down. Leaving it out turns pull to refresh off. */
@@ -84,10 +84,10 @@ export const TabList = <T,>({
   data,
   empty,
   fab,
-  footer,
   header,
   keyExtractor,
   loading = false,
+  loadingMore = false,
   onEndReached,
   onRefresh,
   refreshing = false,
@@ -112,9 +112,16 @@ export const TabList = <T,>({
   const headerBox =
     header === undefined ? undefined : <View className="px-1.5 pb-1.5">{header}</View>
 
-  const cards = (
+  // Placeholders sit in the same padded cells as the items, so they line up with the cards and
+  // take a card's width instead of the list's.
+  /**
+   * Draws placeholder cards in the list's columns.
+   * @param count - How many cards to draw.
+   * @returns The wrapped cards.
+   */
+  const cards = (count: number): ReactElement => (
     <View className="flex-row flex-wrap">
-      {CARD_PLACEHOLDERS.slice(0, CARD_COUNT[columns]).map((key) => (
+      {CARD_PLACEHOLDERS.slice(0, count).map((key) => (
         <View className={cn('p-1.5', CARD_WIDTH[columns])} key={key}>
           <Skeleton variant="card" />
         </View>
@@ -122,13 +129,21 @@ export const TabList = <T,>({
     </View>
   )
 
-  const rows = (
+  /**
+   * Draws placeholder rows.
+   * @param count - How many placeholder rows to stack.
+   * @returns The padded stack of rows.
+   */
+  const rows = (count: number): ReactElement => (
     <View className="px-1.5">
-      <Skeleton count={PLACEHOLDERS} />
+      <Skeleton count={count} />
     </View>
   )
 
-  const loadingPlaceholder = skeleton === 'card' ? cards : rows
+  const loadingPlaceholder =
+    skeleton === 'card' ? cards(CARD_COUNT[columns] ?? columns) : rows(PLACEHOLDERS)
+
+  const moreFooter = skeleton === 'card' ? cards(columns) : rows(1)
 
   const placeholder = loading ? (
     loadingPlaceholder
@@ -151,7 +166,7 @@ export const TabList = <T,>({
           keyboardShouldPersistTaps="handled"
           keyExtractor={keyExtractor}
           ListEmptyComponent={placeholder}
-          ListFooterComponent={footer}
+          ListFooterComponent={loadingMore ? moreFooter : undefined}
           ListHeaderComponent={headerBox}
           numColumns={columns}
           onEndReached={onEndReached}

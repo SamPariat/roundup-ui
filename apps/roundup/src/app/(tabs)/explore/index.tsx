@@ -173,10 +173,10 @@ export default function ExploreScreen(): ReactElement {
     <TabList
       data={venues}
       empty={empty}
-      footer={loadingMore ? <Skeleton variant="card" /> : undefined}
       header={header}
       keyExtractor={keyOf}
       loading={phase === 'locating' || loading}
+      loadingMore={loadingMore}
       onEndReached={handleLoadNext}
       onRefresh={handleReload}
       refreshing={refreshing}
