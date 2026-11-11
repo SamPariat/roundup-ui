@@ -1,10 +1,10 @@
 import type { ReactElement } from 'react'
 
-import { Image, View } from 'react-native'
+import { View } from 'react-native'
 
 import type { IVenueInfo } from '@roundup/core'
 
-import { Text } from '@roundup/ui'
+import { Photo, Text } from '@roundup/ui'
 
 import { VenueFacts } from './VenueFacts'
 
@@ -22,12 +22,7 @@ export interface IVenueHeaderProps {
 export const VenueHeader = ({ venue }: IVenueHeaderProps): ReactElement => (
   <View className="gap-3">
     {venue.photo === undefined ? null : (
-      <Image
-        accessibilityIgnoresInvertColors
-        alt=""
-        className="h-46 w-full rounded-2xl bg-bg-sunken"
-        source={{ uri: venue.photo }}
-      />
+      <Photo className="h-46 w-full rounded-2xl bg-bg-sunken" src={venue.photo} />
     )}
     <Text heading={1} variant="title">
       {venue.name}

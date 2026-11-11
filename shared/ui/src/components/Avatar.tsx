@@ -2,13 +2,14 @@ import type { VariantProps } from 'class-variance-authority'
 import type { ReactElement } from 'react'
 
 import { cva } from 'class-variance-authority'
-import { Image, View } from 'react-native'
+import { View } from 'react-native'
 
 import type { TAvatarTint } from '../lib/avatar-tint'
 import type { TTextProps } from './Text'
 
 import { AvatarTint } from '../lib/avatar-tint'
 import { cn } from '../lib/cn'
+import { Photo } from './Photo'
 import { Text } from './Text'
 
 const avatarVariants = cva('shrink-0 items-center justify-center overflow-hidden rounded-full', {
@@ -85,7 +86,7 @@ export const Avatar = ({
         {AvatarTint.initialsOf(name)}
       </Text>
     ) : (
-      <Image accessibilityIgnoresInvertColors alt="" className="size-full" source={{ uri: src }} />
+      <Photo className="size-full" recyclingKey={src} src={src} />
     )}
   </View>
 )

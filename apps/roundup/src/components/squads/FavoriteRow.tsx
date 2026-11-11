@@ -2,13 +2,13 @@ import type { ReactElement } from 'react'
 
 import { useRouter } from 'expo-router'
 import { useCallback, useMemo } from 'react'
-import { Image, View } from 'react-native'
+import { View } from 'react-native'
 
 import type { IFavoriteRow } from '@roundup/core'
 import type { IMenuItem } from '@roundup/ui'
 
 import { useT } from '@roundup/i18n'
-import { Button, Icon, ListRow, Menu } from '@roundup/ui'
+import { Button, Icon, ListRow, Menu, Photo } from '@roundup/ui'
 
 import { SavedBy } from '@/components/squads/saved-by'
 import { Paths } from '@/navigation/paths'
@@ -37,12 +37,7 @@ const Thumbnail = ({
       <Icon decorative name="bookmark-filled" tone="accent" />
     </View>
   ) : (
-    <Image
-      accessibilityIgnoresInvertColors
-      alt=""
-      className="size-12 rounded-lg bg-bg-sunken"
-      source={{ uri: photo }}
-    />
+    <Photo className="size-12 rounded-lg bg-bg-sunken" recyclingKey={photo} src={photo} />
   )
 
 /**

@@ -1,6 +1,6 @@
 import type { ReactElement } from 'react'
 
-import { Image, View } from 'react-native'
+import { View } from 'react-native'
 import Svg, { Rect } from 'react-native-svg'
 
 import { useT } from '@roundup/i18n'
@@ -9,6 +9,7 @@ import { styleSvg } from '../lib/svg'
 import { Badge } from './Badge'
 import { Button } from './Button'
 import { Icon } from './Icon'
+import { Photo } from './Photo'
 import { Price } from './Price'
 import { Rating } from './Rating'
 import { Text } from './Text'
@@ -83,12 +84,7 @@ const VenueMedia = ({
       {photo === undefined ? (
         <VenuePattern />
       ) : (
-        <Image
-          accessibilityIgnoresInvertColors
-          alt=""
-          className="size-full"
-          source={{ uri: photo }}
-        />
+        <Photo className="size-full" recyclingKey={photo} src={photo} />
       )}
       {showSave ? (
         <View className="absolute top-2 right-2">

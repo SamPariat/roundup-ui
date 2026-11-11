@@ -20,6 +20,7 @@ import { NotifierDemo } from './demos/NotifierDemo'
 import { OtpInputDemo } from './demos/OtpInputDemo'
 import { PageHeaderDemo } from './demos/PageHeaderDemo'
 import { PhoneInputDemo } from './demos/PhoneInputDemo'
+import { PhotoDemo } from './demos/PhotoDemo'
 import { PriceDemo } from './demos/PriceDemo'
 import { RatingDemo } from './demos/RatingDemo'
 import { SafeAreaDemo } from './demos/SafeAreaDemo'
@@ -153,6 +154,12 @@ const ENTRIES: readonly TEntryInput[] = [
     group: 'Display',
     summary: 'A person or squad as a photo or tinted initials.',
     Demo: AvatarDemo,
+  },
+  {
+    title: 'Photo',
+    group: 'Display',
+    summary: 'A cached, fading photo that fills its box over a placeholder color.',
+    Demo: PhotoDemo,
   },
   {
     title: 'IdentityHeader',
