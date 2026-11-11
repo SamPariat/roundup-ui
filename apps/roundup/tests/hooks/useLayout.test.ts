@@ -15,6 +15,21 @@ describe('Layout.forWidth', () => {
   })
 })
 
+describe('Layout.bottomPad', () => {
+  it('leaves the normal gap below the last row', () => {
+    expect(Layout.bottomPad(false)).toBe(24)
+  })
+
+  it('adds the floating button footprint, its 56 height and 16 offset', () => {
+    expect(Layout.bottomPad(true)).toBe(24 + 72)
+  })
+
+  it('takes the 6 points a list cell already adds from a list', () => {
+    expect(Layout.listBottomPad(false)).toBe(18)
+    expect(Layout.listBottomPad(true)).toBe(90)
+  })
+})
+
 describe('Layout.columnsFor', () => {
   it.each([
     [0, 16, 1],

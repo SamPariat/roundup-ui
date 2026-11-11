@@ -104,6 +104,9 @@ export const TabList = <T,>({
   const columnStyle = useMemo((): ViewStyle => ({ maxWidth: `${100 / columns}%` }), [columns])
   const placeholderStyle = useMemo((): ViewStyle => ({ width: `${100 / columns}%` }), [columns])
 
+  const endPad = Layout.listBottomPad(fab !== undefined)
+  const endStyle = useMemo((): ViewStyle => ({ paddingBottom: endPad }), [endPad])
+
   const cell = useCallback(
     ({ item }: ListRenderItemInfo<T>): ReactElement => (
       <View className="min-w-0 flex-1 p-1.5" style={columnStyle}>
@@ -178,11 +181,14 @@ export const TabList = <T,>({
         <FlatList
           contentContainerClassName={cn(
             FRAME,
-            'grow',
+            // Only an empty list fills the height, to center its empty state. A list with items
+            // keeps its own height: iOS insets the content for the header and the tab bar, so a
+            // grown container would let a short list scroll past its last row by both insets.
+            data.length === 0 && 'grow',
             header === undefined && top === undefined && 'pt-4.5',
-            fab === undefined ? 'pb-4.5' : 'pb-24',
             gutterClass,
           )}
+          contentContainerStyle={endStyle}
           contentInsetAdjustmentBehavior="automatic"
           data={data}
           key={columns}
