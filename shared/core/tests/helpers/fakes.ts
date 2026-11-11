@@ -1,6 +1,7 @@
 import { HttpStatus } from '@roundup/api'
 
 import type { IContactsSource, TContactsPermission } from '../../src/contacts/types'
+import type { ICoordinates, ILocationSource, TLocationPermission } from '../../src/location/types'
 import type { INetworkSource, INetworkState } from '../../src/network/types'
 import type { ISessionStore } from '../../src/session/types'
 
@@ -68,16 +69,37 @@ export class FakeStore implements ISessionStore {
   }
 }
 
-/** A contacts source whose answer and numbers a test chooses. */
-export class FakeContacts implements IContactsSource {
+/** A source that asks for access: it counts the asks and answers as the test chose. */
+abstract class FakePermission<T extends string> {
   /** How many times access was asked for. */
   asked = 0
 
+  /** What the person answers when asked; a test may change it between attempts. */
+  permission: T
+
+  /**
+   * Builds the source.
+   * @param permission - What the person answers when asked for access.
+   */
+  constructor(permission: T) {
+    this.permission = permission
+  }
+
+  /**
+   * Answers as the person would and records the call.
+   * @returns The answer this fake was set up with.
+   */
+  requestPermission(): Promise<T> {
+    this.asked += 1
+
+    return Promise.resolve(this.permission)
+  }
+}
+
+/** A contacts source whose answer and numbers a test chooses. */
+export class FakeContacts extends FakePermission<TContactsPermission> implements IContactsSource {
   /** How many times the numbers were read. */
   reads = 0
-
-  /** What the person answers when asked. */
-  private readonly permission: TContactsPermission
 
   /** The numbers in the "address book". */
   private readonly numbers: string[]
@@ -88,7 +110,7 @@ export class FakeContacts implements IContactsSource {
    * @param numbers - The numbers in the "address book".
    */
   constructor(permission: TContactsPermission = 'granted', numbers: string[] = []) {
-    this.permission = permission
+    super(permission)
     this.numbers = numbers
   }
 
@@ -101,15 +123,42 @@ export class FakeContacts implements IContactsSource {
 
     return Promise.resolve(this.numbers)
   }
+}
+
+/** Where the fake location "is": Bengaluru. */
+const BENGALURU: ICoordinates = { lat: 12.9716, lng: 77.5946 }
+
+/** A location source whose answer and position a test chooses, and which can be told to fail. */
+export class FakeLocation extends FakePermission<TLocationPermission> implements ILocationSource {
+  /** How many times the position was read. */
+  reads = 0
+
+  /** Whether reading the position fails, as when location services are off. */
+  unavailable = false
+
+  /** Where the device "is". */
+  private readonly position: ICoordinates
 
   /**
-   * Answers as the person would and records the call.
-   * @returns Granted or denied, as this fake was set up.
+   * Builds the source.
+   * @param permission - What the person answers when asked for access.
+   * @param position - Where the device "is"; Bengaluru by default.
    */
-  requestPermission(): Promise<TContactsPermission> {
-    this.asked += 1
+  constructor(permission: TLocationPermission = 'granted', position: ICoordinates = BENGALURU) {
+    super(permission)
+    this.position = position
+  }
 
-    return Promise.resolve(this.permission)
+  /**
+   * Reads the position and records the call.
+   * @returns The position, or a rejection when the source is told it is unavailable.
+   */
+  current(): Promise<ICoordinates> {
+    this.reads += 1
+
+    return this.unavailable
+      ? Promise.reject(new Error('unavailable'))
+      : Promise.resolve(this.position)
   }
 }
 

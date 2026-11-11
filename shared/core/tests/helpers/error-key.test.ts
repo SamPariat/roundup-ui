@@ -21,6 +21,9 @@ describe('ErrorKey.toMessage', () => {
     [HttpStatus.conflict, 'role', 'errors.needsAnAdmin'],
     [HttpStatus.notFound, 'role', 'errors.generic'],
     [HttpStatus.noResponse, 'addMember', 'errors.offline'],
+    [HttpStatus.notFound, 'venue', 'errors.venueNotFound'],
+    [HttpStatus.notFound, 'favorite', 'errors.venueNotFound'],
+    [HttpStatus.badRequest, 'favorite', 'errors.generic'],
   ] as const)('maps %i on %s to %s', (status, context, key) => {
     expect(errors.toMessage(new ApiError(status, 'x'), context).key).toBe(key)
   })

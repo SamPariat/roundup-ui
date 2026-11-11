@@ -15,6 +15,7 @@
     "@roundup/i18n": "workspace:*",
     "@tanstack/react-query": "catalog:",
     "expo-contacts": "catalog:",
+    "expo-location": "catalog:",
     "expo-network": "catalog:",
     "expo-secure-store": "catalog:",
     "react": "catalog:",

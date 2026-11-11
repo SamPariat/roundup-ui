@@ -19,6 +19,7 @@
     "expo-glass-effect": "catalog:",
     "expo-linking": "catalog:",
     "expo-localization": "catalog:",
+    "expo-location": "catalog:",
     "expo-network": "catalog:",
     "expo-router": "catalog:",
     "expo-secure-store": "catalog:",
