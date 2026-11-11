@@ -4,11 +4,11 @@ import { useRouter } from 'expo-router'
 import { useCallback, useMemo } from 'react'
 import { Image, View } from 'react-native'
 
-import type { IFavoriteRow, IFavoriteSaver } from '@roundup/core'
+import type { IFavoriteRow } from '@roundup/core'
 import type { IMenuItem } from '@roundup/ui'
 
 import { useT } from '@roundup/i18n'
-import { AvatarGroup, Button, Icon, ListRow, Menu } from '@roundup/ui'
+import { Button, Icon, ListRow, Menu } from '@roundup/ui'
 
 import { SavedBy } from '@/components/squads/saved-by'
 import { Paths } from '@/navigation/paths'
@@ -46,7 +46,7 @@ const Thumbnail = ({
   )
 
 /**
- * One favorite of a squad: its photo, name and who saved it and when, with the savers as avatars.
+ * One favorite of a squad: its photo, name and who saved it and when, with the savers named in the subtitle.
  * Pressing the row opens the venue. When the person saved it themselves, a ⋯ beside the row offers
  * Remove from favorites, which takes out their save only, and shows Removing… while it runs.
  * @returns The row, with its options beside it.
@@ -62,15 +62,6 @@ export const FavoriteRowItem = ({
   const handleOpen = useCallback((): void => {
     router.push(Paths.venue(favorite.id, favorite.name))
   }, [favorite.id, favorite.name, router])
-
-  const people = useMemo(
-    (): IFavoriteSaver[] =>
-      favorite.savers.map((saver) => ({
-        ...saver,
-        name: saver.name.trim() === '' ? t('savedBy.someone') : saver.name,
-      })),
-    [favorite.savers, t],
-  )
 
   const items = useMemo(
     (): IMenuItem[] => [
@@ -116,7 +107,6 @@ export const FavoriteRowItem = ({
           onPress={handleOpen}
           subtitle={SavedBy.line(t, favorite)}
           title={favorite.name}
-          trailing={<AvatarGroup max={3} people={people} size={24} />}
         />
       </View>
       {action}
