@@ -14,3 +14,19 @@ describe('Layout.forWidth', () => {
     expect(Layout.forWidth(width)).toMatchObject({ nav, gutter })
   })
 })
+
+describe('Layout.columnsFor', () => {
+  it.each([
+    [0, 16, 1],
+    [390, 16, 1],
+    [776, 32, 2],
+    [1024, 32, 3],
+    [1280, 32, 3],
+    [2000, 32, 3],
+  ])(
+    'gives a %i point list with a %i gutter %i columns of at least 280',
+    (width, gutter, columns) => {
+      expect(Layout.columnsFor(width, gutter)).toBe(columns)
+    },
+  )
+})

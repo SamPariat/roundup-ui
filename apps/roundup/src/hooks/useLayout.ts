@@ -9,6 +9,15 @@ import { Breakpoint, useBreakpoint } from '@roundup/ui'
  */
 const SYSTEM_CHROME: boolean = Platform.OS === 'ios'
 
+/** The widest the content gets, which max-w-content sets in CSS. */
+const CONTENT_MAX = 1200
+
+/** The narrowest a card of a grid is, so the columns are as many as fit at that width. */
+const CARD_MIN = 280
+
+/** The space a grid cell adds around its card: 6 points on each side. */
+const CELL_PADDING = 12
+
 /** How the shell is laid out at a given width. */
 export interface IShellLayout {
   /** Which navigation to show: the bottom bar or the side rail. */
@@ -25,6 +34,19 @@ export interface IShellLayout {
  * Shell layout helpers. Static methods only.
  */
 export class Layout {
+  /**
+   * How many equal columns a grid of cards has, as many as keep every card at least 280 wide, like
+   * the design's auto-fill grid; one on a phone.
+   * @param width - The width of the list, in points, as measured.
+   * @param gutter - The side gutter of the shell, in points.
+   * @returns At least 1.
+   */
+  static columnsFor(width: number, gutter: number): number {
+    const row = Math.min(width, CONTENT_MAX) - 2 * gutter
+
+    return Math.max(1, Math.floor(row / (CARD_MIN + CELL_PADDING)))
+  }
+
   /**
    * Width is the only input: folded, open, rotated and Split View windows all look the same to it.
    * @param width - The window width in points.
