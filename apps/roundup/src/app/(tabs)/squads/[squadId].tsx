@@ -159,7 +159,7 @@ export default function SquadScreen(): ReactElement {
   if (loading || squad === undefined || permissions === undefined) {
     return (
       <TabPage>
-        <Skeleton count={5} />
+        <Skeleton variant="squad" />
       </TabPage>
     )
   }
