@@ -55,6 +55,22 @@ describe('squad favorites', () => {
     expect(await screen.findByRole('heading', { name: 'Brew Cafe' })).toBeOnTheScreen()
   })
 
+  it('opens the place inside the Squads tab, and Back returns to the squad', async () => {
+    await openFavorites()
+    await fireEvent.press(await screen.findByRole('button', { name: /^Brew Cafe/ }))
+
+    expect(await screen.findByRole('heading', { name: 'Brew Cafe' })).toBeOnTheScreen()
+    expect(screen).toHavePathname('/squads/venue/v2')
+
+    await act(() => {
+      router.back()
+    })
+
+    expect(await screen.findByRole('heading', { name: 'Friday crew' })).toBeOnTheScreen()
+    expect(screen).toHavePathname('/squads/s1')
+    expect(screen).toHaveSearchParams({ squadId: 's1', tab: 'favorites' })
+  })
+
   it('shows an empty state with a way to Explore when nothing is saved', async () => {
     backend.saved = {}
     await openFavorites()

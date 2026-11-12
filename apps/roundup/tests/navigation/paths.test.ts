@@ -87,4 +87,16 @@ describe('Paths', () => {
       pathname: '/explore/[placeId]',
     })
   })
+
+  it('builds the squad venue path, under the Squads tab, the same way', () => {
+    expect(Paths.squadVenue('v1', 'Skyline Bar')).toEqual({
+      params: { placeId: 'v1', title: 'Skyline Bar' },
+      pathname: '/squads/venue/[placeId]',
+    })
+
+    expect(Paths.squadVenue('v1')).toEqual({
+      params: { placeId: 'v1' },
+      pathname: '/squads/venue/[placeId]',
+    })
+  })
 })

@@ -42,7 +42,7 @@ const Thumbnail = ({
 
 /**
  * One favorite of a squad: its photo, name and who saved it and when, with the savers named in the subtitle.
- * Pressing the row opens the venue. When the person saved it themselves, a ⋯ beside the row offers
+ * Pressing the row opens the venue inside the Squads tab, so Back returns to the squad. When the person saved it themselves, a ⋯ beside the row offers
  * Remove from favorites, which takes out their save only, and shows Removing… while it runs.
  * @returns The row, with its options beside it.
  */
@@ -55,7 +55,7 @@ export const FavoriteRowItem = ({
   const router = useRouter()
 
   const handleOpen = useCallback((): void => {
-    router.push(Paths.venue(favorite.id, favorite.name))
+    router.push(Paths.squadVenue(favorite.id, favorite.name))
   }, [favorite.id, favorite.name, router])
 
   const items = useMemo(

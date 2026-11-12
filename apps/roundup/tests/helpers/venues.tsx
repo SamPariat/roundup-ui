@@ -16,6 +16,7 @@ import VenueScreen from '@/app/(tabs)/explore/[placeId]'
 import ExploreScreen from '@/app/(tabs)/explore/index'
 import SquadScreen from '@/app/(tabs)/squads/[squadId]'
 import SquadsScreen from '@/app/(tabs)/squads/index'
+import SquadVenueScreen from '@/app/(tabs)/squads/venue/[placeId]'
 
 /**
  * The explore stack of a test: the same screens as the app, in a Stack so going back and
@@ -140,6 +141,7 @@ export class VenuesFixtures {
         'squads/[squadId]': SquadScreen,
         'squads/_layout': ExploreStack,
         'squads/index': SquadsScreen,
+        'squads/venue/[placeId]': SquadVenueScreen,
       },
       { backend, location: VenuesFixtures.location(), saved: 'r1', url },
     )

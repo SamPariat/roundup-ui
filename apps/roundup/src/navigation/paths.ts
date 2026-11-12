@@ -170,6 +170,24 @@ export class Paths {
   }
 
   /**
+   * One venue, under the Squads tab, for a venue opened from a squad's favorites: it lives in the
+   * Squads stack, so Back returns to the squad. Needs the place ID; its name rides along as the
+   * title query parameter.
+   * @param placeId - The venue to open.
+   * @param title - The venue's name, when the caller knows it.
+   * @returns The path with its parameters.
+   */
+  static squadVenue(
+    placeId: string,
+    title?: string,
+  ): ILink<'/squads/venue/[placeId]', IVenueParams> {
+    return {
+      params: { placeId, ...(title === undefined ? {} : { title }) },
+      pathname: '/squads/venue/[placeId]',
+    }
+  }
+
+  /**
    * Edit profile, under the Profile tab.
    * @param query - Extra query parameters, if any.
    * @returns The path, or the path with its parameters.
