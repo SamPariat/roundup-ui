@@ -5,7 +5,7 @@ import { useHeaderHeight } from 'expo-router/react-navigation'
 import { useCallback, useMemo, useState } from 'react'
 import { FlatList, RefreshControl, View } from 'react-native'
 
-import { cn, Skeleton } from '@roundup/ui'
+import { cn, Skeleton, useBreakpoint } from '@roundup/ui'
 
 import { TabFabLayer } from '@/components/TabFabLayer'
 import { Layout, useLayout } from '@/hooks/useLayout'
@@ -97,11 +97,14 @@ export const TabList = <T,>({
 }: ITabListProps<T>): ReactElement => {
   const { gutter, gutterClass, systemChrome } = useLayout()
   const headerHeight = useHeaderHeight()
-  const [width, setWidth] = useState<number>(0)
-  const columns = columnsProp ?? Layout.columnsFor(width, gutter)
+  const { width: windowWidth } = useBreakpoint()
+  const [measured, setMeasured] = useState<number | undefined>()
+  // Until the list is measured, the window's width stands in for its own, so the first layout
+  // usually keeps the columns the list started with instead of remounting it (the key follows them).
+  const columns = columnsProp ?? Layout.columnsFor(measured ?? windowWidth, gutter)
 
   const handleLayout = useCallback((event: LayoutChangeEvent): void => {
-    setWidth(event.nativeEvent.layout.width)
+    setMeasured(event.nativeEvent.layout.width)
   }, [])
 
   // A cell never grows past its column, so a short last row keeps the width of the others.

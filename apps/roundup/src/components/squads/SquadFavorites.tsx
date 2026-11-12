@@ -139,7 +139,7 @@ const renderFavorite = (
   remove: TFavorites['remove'],
   removingId: string | undefined,
 ): ReactElement => (
-  <View className="overflow-hidden rounded-2xl border border-border bg-bg-raised">
+  <View className="max-w-160 overflow-hidden rounded-2xl border border-border bg-bg-raised">
     <FavoriteRowItem favorite={favorite} onRemove={remove} removing={removingId === favorite.id} />
   </View>
 )
@@ -191,7 +191,9 @@ export interface IPhoneSquadProps {
 
 /**
  * The squad's body on a phone: one list under the squad's header and tabs, so switching tabs
- * changes only the rows below them. The Members tab is the members block as the list's single
+ * changes only the rows below them. Both tabs are one column, as in the design's squad board
+ * (members and favorites are lists of rows, not grids of cards), so a tab switch never changes the
+ * list's columns, which would remount it with its header. The Members tab is the members block as the list's single
  * row. The Favorites tab loads more as its end comes into view and reloads on a pull; failed
  * loads and the empty list have their own states.
  * @returns The virtualized list.
@@ -228,7 +230,7 @@ export const PhoneSquad = ({
 
   return (
     <TabList<TPhoneRow>
-      columns={showingFavorites ? undefined : 1}
+      columns={1}
       data={showingFavorites ? state.favorites : MEMBERS_ROWS}
       empty={errorText === undefined ? <NoFavorites /> : <FavoritesFailed text={errorText} />}
       fab={showingFavorites ? undefined : fab}
