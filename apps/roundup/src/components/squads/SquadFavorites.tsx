@@ -7,7 +7,7 @@ import { View } from 'react-native'
 import type { IFavoriteRow, IUseSquadFavorites } from '@roundup/core'
 
 import { useT } from '@roundup/i18n'
-import { Button, EmptyState, List, Skeleton, Text } from '@roundup/ui'
+import { Button, EmptyState, List, Skeleton, Text, Toast } from '@roundup/ui'
 
 import type { TSquadTab } from '@/navigation/squad-tab'
 
@@ -220,6 +220,12 @@ export const PhoneSquad = ({
 
   const keyOf = useCallback((row: TPhoneRow): string => ('kind' in row ? row.kind : row.id), [])
 
+  // A first load that failed fills the screen; once rows exist, an error (a failed Remove from
+  // favorites, or a later page) is a Toast over them, which the empty state cannot show.
+  const failed = showingFavorites && errorText !== undefined && state.favorites.length > 0
+
+  const toast = failed ? <Toast tone="error">{errorText}</Toast> : undefined
+
   return (
     <TabList<TPhoneRow>
       columns={showingFavorites ? undefined : 1}
@@ -234,6 +240,7 @@ export const PhoneSquad = ({
       onRefresh={showingFavorites ? handleReload : undefined}
       refreshing={refreshing}
       renderItem={renderRow}
+      toast={toast}
     />
   )
 }

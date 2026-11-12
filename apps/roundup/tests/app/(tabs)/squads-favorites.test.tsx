@@ -80,6 +80,19 @@ describe('squad favorites', () => {
     expect(screen.getByRole('button', { name: /^Brew Cafe/ })).toBeOnTheScreen()
   })
 
+  it('shows a failed removal as an error toast over the rows that are still there', async () => {
+    backend.unsaveStatus = 500
+    await openFavorites()
+    await screen.findByRole('button', { name: /^Skyline Bar/ })
+    await fireEvent.press(screen.getByRole('button', { name: 'Options for Skyline Bar' }))
+    await fireEvent.press(screen.getByRole('menuitem', { name: 'Remove from favorites' }))
+
+    expect(await screen.findByRole('alert')).toBeOnTheScreen()
+    expect(screen.getByRole('button', { name: /^Skyline Bar/ })).toBeOnTheScreen()
+    expect(screen.getByRole('button', { name: /^Brew Cafe/ })).toBeOnTheScreen()
+    expect(screen.queryByText('Nothing saved yet')).toBeNull()
+  })
+
   it('follows a save or unsave made on the place page', async () => {
     await openFavorites()
     await fireEvent.press(await screen.findByRole('button', { name: /^Skyline Bar/ }))

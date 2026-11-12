@@ -42,6 +42,8 @@ export interface ITabListProps<T> {
   onEndReached?: (() => void) | undefined
   /** The screen's FloatingActionButton, floated over the bottom-right of the list. */
   fab?: ReactElement | undefined
+  /** A message, such as an error Toast, floated over the bottom of the list, in its content column. */
+  toast?: ReactElement | undefined
   /** Forces this many columns instead of fitting as many cards as the width allows, for a list that is not a grid of cards. */
   columns?: number | undefined
 }
@@ -72,7 +74,8 @@ const FRAME = 'mx-auto w-full max-w-content'
  * iOS header, takes the same width cap and side gutter and centers the empty state in the visible area. It
  * lays items out in one column on phones and more on wider screens. A list must never sit inside
  * TabPage's ScrollView, which would load every item at once. With a floating button the list
- * leaves room below its last row, so that row scrolls clear of the button.
+ * leaves room below its last row, so that row scrolls clear of the button; a toast floats the same way
+ * and does not take room, as it comes and goes.
  * @returns The virtualized list.
  */
 export const TabList = <T,>({
@@ -89,6 +92,7 @@ export const TabList = <T,>({
   refreshing = false,
   renderItem,
   skeleton = 'row',
+  toast,
   top,
 }: ITabListProps<T>): ReactElement => {
   const { gutter, gutterClass, systemChrome } = useLayout()
@@ -208,6 +212,13 @@ export const TabList = <T,>({
         />
       </View>
       {fab === undefined ? null : <TabFabLayer>{fab}</TabFabLayer>}
+      {toast === undefined ? null : (
+        <TabFabLayer>
+          <View className="absolute inset-x-0 bottom-4" pointerEvents="box-none">
+            {toast}
+          </View>
+        </TabFabLayer>
+      )}
     </View>
   )
 }
