@@ -5,7 +5,7 @@ import { Linking, Platform, View } from 'react-native'
 
 import type { IVenueCard, TVenueType } from '@roundup/core'
 
-import { useExploreViewModel, VenueType } from '@roundup/core'
+import { RADIUS_STEPS_KM, useExploreViewModel, VenueType } from '@roundup/core'
 import { useT } from '@roundup/i18n'
 import { Button, EmptyState, Skeleton, Text, TextField } from '@roundup/ui'
 
@@ -15,6 +15,7 @@ import { FilterChip } from '@/components/venues/FilterChip'
 import { RadiusMenu } from '@/components/venues/RadiusMenu'
 import { VenueListCard } from '@/components/venues/VenueListCard'
 import { useErrorText } from '@/hooks/useErrorText'
+import { useExploreParams } from '@/hooks/useExploreParams'
 import { usePullRefresh } from '@/hooks/usePullRefresh'
 import { useWhenActive } from '@/hooks/useWhenActive'
 
@@ -27,8 +28,9 @@ interface IFilter {
 }
 
 /**
- * The Explore tab: finds the person, then lists places within 3 km of them as cards under a search
- * field and kind-of-place chips. It loads more as the end of the list comes into view and reloads
+ * The Explore tab: finds the person, then lists places within 3 km of them (or the radius they
+ * pick) as cards under a search field and kind-of-place chips. The words, the kind of place and
+ * the radius live in the URL's query, so a reload or a link restores them. It loads more as the end of the list comes into view and reloads
  * on a pull. Without access to the location it explains why Roundup asks, with a way to allow it:
  * Settings on a phone, a retry on the web (and on both, coming back to the app tries again).
  * @returns The results, or their placeholders, empty state or the location explanation.
@@ -36,25 +38,20 @@ interface IFilter {
 export default function ExploreScreen(): ReactElement {
   const { t } = useT()
 
+  const { filter, query, radiusKm, setRadiusKm, setText, text, toggleFilter } = useExploreParams()
+
   const {
     error,
-    filter,
     hasMore,
     loading,
     loadingMore,
     loadMore,
     phase,
-    query,
-    radiusKm,
-    radiusSteps,
     refresh,
     requestId,
     retryLocation,
-    setQuery,
-    setRadiusKm,
-    toggleFilter,
     venues,
-  } = useExploreViewModel()
+  } = useExploreViewModel({ filter, query, radiusKm })
 
   const { handleReload, refreshing } = usePullRefresh(refresh)
   const errorText = useErrorText(error, requestId)
@@ -114,16 +111,16 @@ export default function ExploreScreen(): ReactElement {
   // The first load draws the field, chips and caption as blocks; later searches keep the real ones.
   const searching = phase === 'ready' && !loading
 
-  const header = searching ? (
+  const controls = searching ? (
     <View className="gap-3 pb-3">
       <View className="flex-row flex-wrap items-center gap-3">
         <View className="w-full md:w-auto md:max-w-120 md:min-w-80 md:flex-1">
           <TextField
             icon="search"
             label={t('screens.explore.searchLabel')}
-            onChangeText={setQuery}
+            onChangeText={setText}
             placeholder={t('screens.explore.searchPlaceholder')}
-            value={query}
+            value={text}
           />
         </View>
         <View
@@ -140,7 +137,7 @@ export default function ExploreScreen(): ReactElement {
               type={item.type}
             />
           ))}
-          <RadiusMenu onChange={setRadiusKm} steps={radiusSteps} value={radiusKm} />
+          <RadiusMenu onChange={setRadiusKm} steps={RADIUS_STEPS_KM} value={radiusKm} />
         </View>
       </View>
       <Text aria-live="polite" tone="muted" variant="caption">
@@ -168,16 +165,15 @@ export default function ExploreScreen(): ReactElement {
     <TabList
       data={venues}
       empty={empty}
-      header={header}
       keyExtractor={keyOf}
       loading={phase === 'locating' || loading}
       loadingMore={loadingMore}
       onEndReached={handleLoadNext}
       onRefresh={handleReload}
-      pinHeader
       refreshing={refreshing}
       renderItem={renderCard}
       skeleton="card"
+      top={controls}
     />
   )
 }

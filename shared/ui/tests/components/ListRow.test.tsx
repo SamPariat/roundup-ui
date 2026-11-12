@@ -1,5 +1,6 @@
 import { fireEvent, screen } from '@testing-library/react-native'
 
+import { Icon } from '../../src/components/Icon'
 import { ListRow } from '../../src/components/ListRow'
 import { Render } from '../helpers/render'
 
@@ -43,5 +44,21 @@ describe('ListRow', () => {
     await Render.withTheme(<ListRow expanded onPress={jest.fn()} title="Hours" />)
 
     expect(screen.getByRole('button', { name: 'Hours' })).toBeExpanded()
+  })
+
+  it('shows what it is doing as plain content, so it holds one button only', async () => {
+    await Render.withTheme(
+      <ListRow
+        onPress={jest.fn()}
+        title="Friday crew"
+        trailing={<Icon label="Tick" name="check" />}
+        working="Saving…"
+      />,
+    )
+
+    expect(screen.getAllByRole('button')).toHaveLength(1)
+    expect(screen.getByRole('button', { name: 'Friday crew' })).toBeBusy()
+    expect(screen.getByText('Saving…')).toBeOnTheScreen()
+    expect(screen.queryByRole('image', { name: 'Tick' })).not.toBeOnTheScreen()
   })
 })

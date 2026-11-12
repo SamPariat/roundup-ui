@@ -1,8 +1,10 @@
 import type { ReactElement } from 'react'
 
-import { Image, View } from 'react-native'
+import { View } from 'react-native'
 
 import type { IVenuePhoto } from '@roundup/core'
+
+import { Photo } from '@roundup/ui'
 
 /** Props for VenuePhotoGrid. */
 export interface IVenuePhotoGridProps {
@@ -26,22 +28,11 @@ export const VenuePhotoGrid = ({ photos }: IVenuePhotoGridProps): null | ReactEl
 
   return (
     <View className="h-82 flex-row gap-2 overflow-hidden rounded-2xl">
-      <Image
-        accessibilityIgnoresInvertColors
-        alt=""
-        className="h-full flex-1 bg-bg-sunken"
-        source={{ uri: first.large }}
-      />
+      <Photo className="h-full flex-1 bg-bg-sunken" src={first.large} />
       {rest.length === 0 ? null : (
         <View className="h-full flex-1 flex-row flex-wrap content-between justify-between">
           {rest.slice(0, SMALL).map((photo) => (
-            <Image
-              accessibilityIgnoresInvertColors
-              alt=""
-              className="h-40 w-[49%] bg-bg-sunken"
-              key={photo.small}
-              source={{ uri: photo.small }}
-            />
+            <Photo className="h-40 w-[49%] bg-bg-sunken" key={photo.small} src={photo.small} />
           ))}
         </View>
       )}

@@ -3,6 +3,7 @@ import type { ReactElement } from 'react'
 import { useCallback, useState } from 'react'
 
 import type { ISquadMember, ISquadPermissions } from '@roundup/core'
+import type { IListRowProps } from '@roundup/ui'
 
 import { Role, useSquadMembersViewModel } from '@roundup/core'
 import { useT } from '@roundup/i18n'
@@ -103,16 +104,12 @@ export const MemberActionsModal = ({
   )
 
   /**
-   * The spinner shown on the row the person pressed while its request runs.
+   * What the row the person pressed says while its request runs.
    * @param action - The row's action.
-   * @returns The spinner, or undefined on every other row.
+   * @returns The text, or an empty object on every other row.
    */
-  const working = (action: TMemberAction): ReactElement | undefined =>
-    busy && chosen === action ? (
-      <Button loading loadingLabel={t('screens.squad.member.saving')} size="sm" variant="ghost">
-        {t('screens.squad.member.saving')}
-      </Button>
-    ) : undefined
+  const working = (action: TMemberAction): Pick<IListRowProps, 'working'> =>
+    busy && chosen === action ? { working: t('screens.squad.member.saving') } : {}
 
   // Modals have no close button, so a ghost Cancel dismisses this one.
   const actions = [
@@ -149,7 +146,7 @@ export const MemberActionsModal = ({
             onPress={handlePromote}
             subtitle={t('screens.squad.member.makeAdminHint')}
             title={t('screens.squad.member.makeAdmin')}
-            trailing={working(MemberAction.MAKE_ADMIN)}
+            {...working(MemberAction.MAKE_ADMIN)}
           />
         ) : null}
         {available.includes(MemberAction.REMOVE_ADMIN) ? (
@@ -159,7 +156,7 @@ export const MemberActionsModal = ({
             onPress={handleDemote}
             subtitle={t('screens.squad.member.removeAdminHint')}
             title={t('screens.squad.member.removeAdmin')}
-            trailing={working(MemberAction.REMOVE_ADMIN)}
+            {...working(MemberAction.REMOVE_ADMIN)}
           />
         ) : null}
         {available.includes(MemberAction.REMOVE) ? (
@@ -169,7 +166,7 @@ export const MemberActionsModal = ({
             leading={<Icon decorative name="trash" tone="danger" />}
             onPress={handleKick}
             title={t('screens.squad.member.remove')}
-            trailing={working(MemberAction.REMOVE)}
+            {...working(MemberAction.REMOVE)}
           />
         ) : null}
       </List>

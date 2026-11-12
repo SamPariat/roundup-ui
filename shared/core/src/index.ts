@@ -47,7 +47,7 @@ export { useSquadMembersViewModel } from './squads/useSquadMembersViewModel'
 export type { ISquadMembersViewModel } from './squads/useSquadMembersViewModel'
 export { useSquads } from './squads/useSquads'
 export type { IUseSquads } from './squads/useSquads'
-export { VenueType } from './venues/types'
+export { DEFAULT_RADIUS_KM, RADIUS_STEPS_KM, VenueType } from './venues/types'
 export type {
   ISavedIn,
   IVenueCard,
@@ -60,7 +60,7 @@ export type {
   TVenueType,
 } from './venues/types'
 export { useExploreViewModel } from './venues/useExploreViewModel'
-export type { IExploreViewModel } from './venues/useExploreViewModel'
+export type { IExploreInputs, IExploreViewModel } from './venues/useExploreViewModel'
 export { useSaveVenueViewModel } from './venues/useSaveVenueViewModel'
 export type { ISaveVenueViewModel } from './venues/useSaveVenueViewModel'
 export { useSquadFavorites } from './venues/useSquadFavorites'

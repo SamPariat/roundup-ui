@@ -1,5 +1,5 @@
 /**
- * Reads the title a link carries in its query, such as Paths.squad(id, name) and
+ * Reads the title a link carries in its query, such as Paths.squad(id, { title }) and
  * Paths.venue(id, name). Static methods only.
  */
 export class RouteTitle {

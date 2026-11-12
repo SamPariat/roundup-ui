@@ -5,7 +5,7 @@ import { useCallback } from 'react'
 import type { ISavedIn } from '@roundup/core'
 
 import { useT } from '@roundup/i18n'
-import { Avatar, Button, Icon, ListRow } from '@roundup/ui'
+import { Avatar, Icon, ListRow } from '@roundup/ui'
 
 /** Props for SaveSquadRow. */
 export interface ISaveSquadRowProps {
@@ -39,14 +39,6 @@ export const SaveSquadRow = ({
 
   const tick = squad.saved ? <Icon label={t('saveVenue.saved')} name="check" tone="accent" /> : null
 
-  const trailing = saving ? (
-    <Button loading loadingLabel={t('saveVenue.saving')} size="sm" variant="ghost">
-      {t('saveVenue.saving')}
-    </Button>
-  ) : (
-    tick
-  )
-
   const hint = squad.saved ? t('saveVenue.saved') : t('saveVenue.tapToSave')
 
   return (
@@ -56,8 +48,8 @@ export const SaveSquadRow = ({
       onPress={handlePress}
       selected={squad.saved}
       title={squad.squadName}
-      trailing={trailing}
-      {...(saving ? {} : { subtitle: hint })}
+      trailing={tick}
+      {...(saving ? { working: t('saveVenue.saving') } : { subtitle: hint })}
     />
   )
 }

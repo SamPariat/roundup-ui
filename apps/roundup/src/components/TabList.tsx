@@ -1,6 +1,7 @@
 import type { ReactElement, ReactNode } from 'react'
 import type { LayoutChangeEvent, ListRenderItemInfo, ViewStyle } from 'react-native'
 
+import { useHeaderHeight } from 'expo-router/react-navigation'
 import { useCallback, useMemo, useState } from 'react'
 import { FlatList, RefreshControl, View } from 'react-native'
 
@@ -25,18 +26,24 @@ export interface ITabListProps<T> {
   skeleton?: 'card' | 'row'
   /** Content above the items. */
   header?: ReactElement | undefined
-  /** True to keep the header at the top while the items scroll under it, as Explore's filters do. */
-  pinHeader?: boolean
+  /**
+   * Content that stays above the list while the items scroll beneath it, as Explore's filters do.
+   * It sits on the page background, takes the list's width and gutter, and on iOS starts below
+   * the translucent header bar.
+   */
+  top?: ReactElement | undefined
   /** True while a later page loads: draws one more row of the same placeholders below the items. */
   loadingMore?: boolean
   /** True while a pull to refresh runs. */
   refreshing?: boolean
   /** Called when the person pulls the list down. Leaving it out turns pull to refresh off. */
-  onRefresh?: () => void
+  onRefresh?: (() => void) | undefined
   /** Called when the end of the list comes into view. */
-  onEndReached?: () => void
+  onEndReached?: (() => void) | undefined
   /** The screen's FloatingActionButton, floated over the bottom-right of the list. */
   fab?: ReactElement | undefined
+  /** Forces this many columns instead of fitting as many cards as the width allows, for a list that is not a grid of cards. */
+  columns?: number | undefined
 }
 
 /** How many placeholder rows the first load draws. */
@@ -57,8 +64,8 @@ const CARD_PLACEHOLDERS: readonly string[] = [
 /** How many placeholder cards the first load draws: two on a phone, two rows in a grid. */
 const CARD_ROWS = 2
 
-/** Header content sticks to the top of the list: the header is the list's first child. */
-const STICKY_HEADER: number[] = [0]
+/** The centered, width-capped column that the list's content and the content above it share. */
+const FRAME = 'mx-auto w-full max-w-content'
 
 /**
  * The body of a tab screen that is a list: the FlatList sibling of TabPage. It insets below the
@@ -69,6 +76,7 @@ const STICKY_HEADER: number[] = [0]
  * @returns The virtualized list.
  */
 export const TabList = <T,>({
+  columns: columnsProp,
   data,
   empty,
   fab,
@@ -78,14 +86,15 @@ export const TabList = <T,>({
   loadingMore = false,
   onEndReached,
   onRefresh,
-  pinHeader = false,
   refreshing = false,
   renderItem,
   skeleton = 'row',
+  top,
 }: ITabListProps<T>): ReactElement => {
-  const { gutter, gutterClass } = useLayout()
+  const { gutter, gutterClass, systemChrome } = useLayout()
+  const headerHeight = useHeaderHeight()
   const [width, setWidth] = useState<number>(0)
-  const columns = Layout.columnsFor(width, gutter)
+  const columns = columnsProp ?? Layout.columnsFor(width, gutter)
 
   const handleLayout = useCallback((event: LayoutChangeEvent): void => {
     setWidth(event.nativeEvent.layout.width)
@@ -95,19 +104,31 @@ export const TabList = <T,>({
   const columnStyle = useMemo((): ViewStyle => ({ maxWidth: `${100 / columns}%` }), [columns])
   const placeholderStyle = useMemo((): ViewStyle => ({ width: `${100 / columns}%` }), [columns])
 
+  // In a grid each row lays its cells out side by side, so flex-1 shares the row's width. A single
+  // column has no row: flex-1 would act on the height there and collapse the cell to nothing, so
+  // the list would measure every card as 0 tall and leave blank gaps as it scrolls.
   const cell = useCallback(
     ({ item }: ListRenderItemInfo<T>): ReactElement => (
-      <View className="min-w-0 flex-1 p-1.5" style={columnStyle}>
+      <View className={cn('min-w-0 p-1.5', columns > 1 && 'flex-1')} style={columnStyle}>
         {renderItem(item)}
       </View>
     ),
-    [columnStyle, renderItem],
+    [columnStyle, columns, renderItem],
   )
 
   // The cells carry 6 points of padding on every side, so the list itself sits 6 outside the gutter
   // to keep the cards on it, and the header takes the 6 back and adds the last 6 of the 12 row gap.
   // The negative margin goes on a plain wrapping View: iOS ignores margins on a scroll view's
   // content container, and on the web a FlatList's own className lands on two nested elements.
+  // iOS draws its header bar over the screen, and the content above the list is not a scroll view,
+  // so it reserves the bar's height itself, under the bar's translucent glass. The list below
+  // starts under the content above it, so the items scroll beneath that, not beneath the bar.
+  // Web and Android draw their bar in the layout, so they need nothing.
+  const topStyle = useMemo(
+    (): ViewStyle => ({ paddingTop: systemChrome ? headerHeight : 0 }),
+    [headerHeight, systemChrome],
+  )
+
   const headerBox =
     header === undefined ? undefined : <View className="bg-bg px-1.5 pt-4.5 pb-1.5">{header}</View>
 
@@ -151,11 +172,20 @@ export const TabList = <T,>({
 
   return (
     <View className="flex-1">
+      {top === undefined ? null : (
+        <View className="bg-bg" style={topStyle}>
+          <View className={cn(FRAME, 'pt-4.5 pb-1.5', gutterClass)}>{top}</View>
+        </View>
+      )}
       <View className="-mx-1.5 flex-1" onLayout={handleLayout}>
         <FlatList
           contentContainerClassName={cn(
-            'mx-auto w-full max-w-content grow',
-            header === undefined && 'pt-4.5',
+            FRAME,
+            // Only an empty list fills the height, to center its empty state. A list with items
+            // keeps its own height: iOS insets the content for the header and the tab bar, so a
+            // grown container would let a short list scroll past its last row by both insets.
+            data.length === 0 && 'grow',
+            header === undefined && top === undefined && 'pt-4.5',
             fab === undefined ? 'pb-4.5' : 'pb-24',
             gutterClass,
           )}
@@ -175,7 +205,6 @@ export const TabList = <T,>({
             )
           }
           renderItem={cell}
-          stickyHeaderIndices={header !== undefined && pinHeader ? STICKY_HEADER : undefined}
         />
       </View>
       {fab === undefined ? null : <TabFabLayer>{fab}</TabFabLayer>}

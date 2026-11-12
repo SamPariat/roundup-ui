@@ -1,6 +1,6 @@
 import type { ReactElement } from 'react'
 
-import { Image, View } from 'react-native'
+import { View } from 'react-native'
 import Svg, { Rect } from 'react-native-svg'
 
 import { useT } from '@roundup/i18n'
@@ -9,6 +9,7 @@ import { styleSvg } from '../lib/svg'
 import { Badge } from './Badge'
 import { Button } from './Button'
 import { Icon } from './Icon'
+import { Photo } from './Photo'
 import { Price } from './Price'
 import { Rating } from './Rating'
 import { Text } from './Text'
@@ -83,12 +84,7 @@ const VenueMedia = ({
       {photo === undefined ? (
         <VenuePattern />
       ) : (
-        <Image
-          accessibilityIgnoresInvertColors
-          alt=""
-          className="size-full"
-          source={{ uri: photo }}
-        />
+        <Photo className="size-full" recyclingKey={photo} src={photo} />
       )}
       {showSave ? (
         <View className="absolute top-2 right-2">
@@ -164,7 +160,7 @@ export const VenueCard = ({
   saved,
   types = NO_TYPES,
 }: IVenueCardProps): ReactElement => (
-  <View className="overflow-hidden rounded-2xl border border-border bg-bg-raised">
+  <View className="overflow-hidden rounded-2xl bg-bg-raised">
     <VenueMedia onSave={onSave} photo={photo} saved={saved} />
     <View className="gap-1 px-4 pt-3 pb-4">
       <Text heading={3} variant="body-strong">
@@ -189,5 +185,13 @@ export const VenueCard = ({
         </View>
       ) : null}
     </View>
+    {/* The border is its own layer over the content: on iOS a border on a clipped, rounded card
+        showed as a flat line across the top of the first card in a list. */}
+    <View
+      aria-hidden
+      className="absolute inset-0 rounded-2xl border border-border"
+      importantForAccessibility="no-hide-descendants"
+      pointerEvents="none"
+    />
   </View>
 )

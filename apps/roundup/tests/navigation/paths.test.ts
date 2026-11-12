@@ -51,9 +51,28 @@ describe('Paths', () => {
   })
 
   it('carries the squad name as the title query parameter', () => {
-    expect(Paths.squad('s1', 'Weekend Crew')).toEqual({
+    expect(Paths.squad('s1', { title: 'Weekend Crew' })).toEqual({
       params: { squadId: 's1', title: 'Weekend Crew' },
       pathname: '/squads/[squadId]',
+    })
+  })
+
+  it('opens a squad on its Favorites tab, and leaves the default tab out', () => {
+    expect(Paths.squad('s1', { tab: 'favorites', title: 'Weekend Crew' })).toEqual({
+      params: { squadId: 's1', tab: 'favorites', title: 'Weekend Crew' },
+      pathname: '/squads/[squadId]',
+    })
+
+    expect(Paths.squad('s1', { tab: 'members' })).toEqual({
+      params: { squadId: 's1' },
+      pathname: '/squads/[squadId]',
+    })
+  })
+
+  it('carries the Explore search as its query parameters', () => {
+    expect(Paths.tabsExplore({ q: 'brew', radius: '10', type: 'cafe' })).toEqual({
+      params: { q: 'brew', radius: '10', type: 'cafe' },
+      pathname: '/explore',
     })
   })
 

@@ -8,7 +8,7 @@ import { Specimen } from '@/components/Specimen'
 import { PEOPLE } from '@/fixtures'
 
 /**
- * Skeleton as one row, several rows, flush item rows, a venue card, the search field and the whole venue page, then a list that swaps between its skeleton and its rows.
+ * Skeleton as one row, several rows, flush item rows, a venue card, the search field, the whole venue page and the whole squad page, then a list that swaps between its skeleton and its rows.
  * @returns The specimens.
  */
 export const SkeletonDemo = (): ReactElement => {
@@ -37,6 +37,9 @@ export const SkeletonDemo = (): ReactElement => {
       </Specimen>
       <Specimen title="variant=venue">
         <Skeleton variant="venue" />
+      </Specimen>
+      <Specimen title="variant=squad">
+        <Skeleton variant="squad" />
       </Specimen>
       <Specimen
         note="The loading state of a screen: placeholders first, then the rows."

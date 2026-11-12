@@ -34,7 +34,7 @@ export const CreateSquadModal = ({ onClose }: ICreateSquadModalProps): ReactElem
     if (id === undefined) return
 
     onClose()
-    router.push(Paths.squad(id, name.trim()))
+    router.push(Paths.squad(id, { title: name.trim() }))
   }, [name, onClose, router, submit])
 
   const actions = [
