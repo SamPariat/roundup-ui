@@ -22,9 +22,14 @@
  *
  * OpenAPI spec version: 1.0.0
  */
-import type { DueResponse } from './dueResponse'
-import type { SuccessEnvelope } from './successEnvelope'
+import type { PhotoWidthParameter } from './photoWidthParameter'
 
-export type CloseDueEvents200 = SuccessEnvelope & {
-  data: DueResponse
+export type NominateParams = {
+  /**
+   * How wide the photos may be, in pixels. Pick the smallest width that
+   * covers the photo's slot on screen (points times pixel density), so the
+   * same few widths repeat and their URLs stay cached. 400 for any other
+   * value.
+   */
+  photoWidth?: PhotoWidthParameter
 }

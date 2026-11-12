@@ -22,8 +22,21 @@
  *
  * OpenAPI spec version: 1.0.0
  */
-import type { Phone } from './phone'
+import type { PhotoCountParameter } from './photoCountParameter'
+import type { PhotoWidthParameter } from './photoWidthParameter'
 
-export interface CreateUserRequest {
-  phone: Phone
+export type GetVenueParams = {
+  /**
+   * How wide the photos may be, in pixels. Pick the smallest width that
+   * covers the photo's slot on screen (points times pixel density), so the
+   * same few widths repeat and their URLs stay cached. 400 for any other
+   * value.
+   */
+  photoWidth?: PhotoWidthParameter
+  /**
+   * How many of the venue's photos to return. 400 outside 1–5.
+   * @minimum 1
+   * @maximum 5
+   */
+  photoCount?: PhotoCountParameter
 }

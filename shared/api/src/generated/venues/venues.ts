@@ -39,13 +39,12 @@ import type {
   BadGatewayResponse,
   BadRequestResponse,
   GetVenue200,
-  GetVenuePhotoParams,
+  GetVenueParams,
   InternalErrorResponse,
   NotFoundResponse,
   SearchVenues200,
   SearchVenuesParams,
   ServiceUnavailableResponse,
-  TooManyRequestsResponse,
   UnauthorizedResponse,
 } from '../models'
 
@@ -234,8 +233,20 @@ export function useSearchVenues<
   return withQueryKey(query, queryOptions.queryKey)
 }
 
-export const getGetVenueUrl = (placeID: string) => {
-  return `/api/v1/venues/${placeID}`
+export const getGetVenueUrl = (placeID: string, params?: GetVenueParams) => {
+  const normalizedParams = new URLSearchParams()
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  })
+
+  const stringifiedParams = normalizedParams.toString()
+
+  return stringifiedParams.length > 0
+    ? `/api/v1/venues/${placeID}?${stringifiedParams}`
+    : `/api/v1/venues/${placeID}`
 }
 
 /**
@@ -245,16 +256,17 @@ export const getGetVenueUrl = (placeID: string) => {
  */
 export const getVenue = async (
   placeID: string,
+  params?: GetVenueParams,
   options?: Parameters<typeof fetcher>[1],
 ): Promise<GetVenue200> => {
-  return fetcher<GetVenue200>(getGetVenueUrl(placeID), {
+  return fetcher<GetVenue200>(getGetVenueUrl(placeID, params), {
     ...options,
     method: 'GET',
   })
 }
 
-export const getGetVenueQueryKey = (placeID: string) => {
-  return [`/api/v1/venues/${placeID}`] as const
+export const getGetVenueQueryKey = (placeID: string, params?: GetVenueParams) => {
+  return [`/api/v1/venues/${placeID}`, ...(params ? [params] : [])] as const
 }
 
 export const getGetVenueQueryOptions = <
@@ -267,6 +279,7 @@ export const getGetVenueQueryOptions = <
     | ServiceUnavailableResponse,
 >(
   placeID: string,
+  params?: GetVenueParams,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof getVenue>>, TError, TData>>
     request?: SecondParameter<typeof fetcher>
@@ -274,10 +287,10 @@ export const getGetVenueQueryOptions = <
 ) => {
   const { query: queryOptions, request: requestOptions } = options ?? {}
 
-  const queryKey = queryOptions?.queryKey ?? getGetVenueQueryKey(placeID)
+  const queryKey = queryOptions?.queryKey ?? getGetVenueQueryKey(placeID, params)
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof getVenue>>> = ({ signal }) =>
-    getVenue(placeID, { signal, ...requestOptions })
+    getVenue(placeID, params, { signal, ...requestOptions })
 
   return {
     queryKey,
@@ -307,6 +320,7 @@ export function useGetVenue<
     | ServiceUnavailableResponse,
 >(
   placeID: string,
+  params: undefined | GetVenueParams,
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof getVenue>>, TError, TData>> &
       Pick<
@@ -331,6 +345,7 @@ export function useGetVenue<
     | ServiceUnavailableResponse,
 >(
   placeID: string,
+  params?: GetVenueParams,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof getVenue>>, TError, TData>> &
       Pick<
@@ -355,6 +370,7 @@ export function useGetVenue<
     | ServiceUnavailableResponse,
 >(
   placeID: string,
+  params?: GetVenueParams,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof getVenue>>, TError, TData>>
     request?: SecondParameter<typeof fetcher>
@@ -375,189 +391,14 @@ export function useGetVenue<
     | ServiceUnavailableResponse,
 >(
   placeID: string,
+  params?: GetVenueParams,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof getVenue>>, TError, TData>>
     request?: SecondParameter<typeof fetcher>
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
-  const queryOptions = getGetVenueQueryOptions(placeID, options)
-
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
-    queryKey: DataTag<QueryKey, TData, TError>
-  }
-
-  return withQueryKey(query, queryOptions.queryKey)
-}
-
-export const getGetVenuePhotoUrl = (ref: string, params?: GetVenuePhotoParams) => {
-  const normalizedParams = new URLSearchParams()
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : String(value))
-    }
-  })
-
-  const stringifiedParams = normalizedParams.toString()
-
-  return stringifiedParams.length > 0
-    ? `/api/v1/venues/photos/${ref}?${stringifiedParams}`
-    : `/api/v1/venues/photos/${ref}`
-}
-
-/**
- * The image bytes, fetched from Google so the API key never reaches the
- * client. Public (no token), because image tags cannot send one; rate
- * limited per client IP at the gateway. Use the `url` from a venue's
- * `photos`; it already points here.
- * @summary Get a venue photo
- */
-export const getVenuePhoto = async (
-  ref: string,
-  params?: GetVenuePhotoParams,
-  options?: Parameters<typeof fetcher>[1],
-): Promise<Blob> => {
-  return fetcher<Blob>(getGetVenuePhotoUrl(ref, params), {
-    ...options,
-    method: 'GET',
-  })
-}
-
-export const getGetVenuePhotoQueryKey = (ref: string, params?: GetVenuePhotoParams) => {
-  return [`/api/v1/venues/photos/${ref}`, ...(params ? [params] : [])] as const
-}
-
-export const getGetVenuePhotoQueryOptions = <
-  TData = Awaited<ReturnType<typeof getVenuePhoto>>,
-  TError =
-    | NotFoundResponse
-    | TooManyRequestsResponse
-    | InternalErrorResponse
-    | BadGatewayResponse
-    | ServiceUnavailableResponse,
->(
-  ref: string,
-  params?: GetVenuePhotoParams,
-  options?: {
-    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof getVenuePhoto>>, TError, TData>>
-    request?: SecondParameter<typeof fetcher>
-  },
-) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {}
-
-  const queryKey = queryOptions?.queryKey ?? getGetVenuePhotoQueryKey(ref, params)
-
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof getVenuePhoto>>> = ({ signal }) =>
-    getVenuePhoto(ref, params, { signal, ...requestOptions })
-
-  return {
-    queryKey,
-    queryFn,
-    enabled: ref !== null && ref !== undefined,
-    ...queryOptions,
-  } as UseQueryOptions<Awaited<ReturnType<typeof getVenuePhoto>>, TError, TData> & {
-    queryKey: DataTag<QueryKey, TData, TError>
-  }
-}
-
-export type GetVenuePhotoQueryResult = NonNullable<Awaited<ReturnType<typeof getVenuePhoto>>>
-export type GetVenuePhotoQueryError =
-  | NotFoundResponse
-  | TooManyRequestsResponse
-  | InternalErrorResponse
-  | BadGatewayResponse
-  | ServiceUnavailableResponse
-
-export function useGetVenuePhoto<
-  TData = Awaited<ReturnType<typeof getVenuePhoto>>,
-  TError =
-    | NotFoundResponse
-    | TooManyRequestsResponse
-    | InternalErrorResponse
-    | BadGatewayResponse
-    | ServiceUnavailableResponse,
->(
-  ref: string,
-  params: undefined | GetVenuePhotoParams,
-  options: {
-    query: Partial<UseQueryOptions<Awaited<ReturnType<typeof getVenuePhoto>>, TError, TData>> &
-      Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getVenuePhoto>>,
-          TError,
-          Awaited<ReturnType<typeof getVenuePhoto>>
-        >,
-        'initialData'
-      >
-    request?: SecondParameter<typeof fetcher>
-  },
-  queryClient?: QueryClient,
-): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetVenuePhoto<
-  TData = Awaited<ReturnType<typeof getVenuePhoto>>,
-  TError =
-    | NotFoundResponse
-    | TooManyRequestsResponse
-    | InternalErrorResponse
-    | BadGatewayResponse
-    | ServiceUnavailableResponse,
->(
-  ref: string,
-  params?: GetVenuePhotoParams,
-  options?: {
-    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof getVenuePhoto>>, TError, TData>> &
-      Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getVenuePhoto>>,
-          TError,
-          Awaited<ReturnType<typeof getVenuePhoto>>
-        >,
-        'initialData'
-      >
-    request?: SecondParameter<typeof fetcher>
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetVenuePhoto<
-  TData = Awaited<ReturnType<typeof getVenuePhoto>>,
-  TError =
-    | NotFoundResponse
-    | TooManyRequestsResponse
-    | InternalErrorResponse
-    | BadGatewayResponse
-    | ServiceUnavailableResponse,
->(
-  ref: string,
-  params?: GetVenuePhotoParams,
-  options?: {
-    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof getVenuePhoto>>, TError, TData>>
-    request?: SecondParameter<typeof fetcher>
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-/**
- * @summary Get a venue photo
- */
-
-export function useGetVenuePhoto<
-  TData = Awaited<ReturnType<typeof getVenuePhoto>>,
-  TError =
-    | NotFoundResponse
-    | TooManyRequestsResponse
-    | InternalErrorResponse
-    | BadGatewayResponse
-    | ServiceUnavailableResponse,
->(
-  ref: string,
-  params?: GetVenuePhotoParams,
-  options?: {
-    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof getVenuePhoto>>, TError, TData>>
-    request?: SecondParameter<typeof fetcher>
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
-  const queryOptions = getGetVenuePhotoQueryOptions(ref, params, options)
+  const queryOptions = getGetVenueQueryOptions(placeID, params, options)
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>

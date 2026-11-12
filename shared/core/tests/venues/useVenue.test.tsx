@@ -14,7 +14,7 @@ describe('useVenue', () => {
   it('maps the detail onto what the page shows', async () => {
     Fakes.stubNetwork({
       ...REFRESH,
-      'GET /api/v1/venues/v1': Fakes.ok(VenueFixtures.detail('v1')),
+      'GET /api/v1/venues/v1?photoCount=5&photoWidth=1200': Fakes.ok(VenueFixtures.detail('v1')),
     })
 
     const { wrapper } = await VenueFixtures.signedInCore()
@@ -41,7 +41,10 @@ describe('useVenue', () => {
   it('reports a venue that does not exist', async () => {
     Fakes.stubNetwork({
       ...REFRESH,
-      'GET /api/v1/venues/gone': Fakes.failure(HttpStatus.notFound, 'venue not found'),
+      'GET /api/v1/venues/gone?photoCount=5&photoWidth=1200': Fakes.failure(
+        HttpStatus.notFound,
+        'venue not found',
+      ),
     })
 
     const { wrapper } = await VenueFixtures.signedInCore()
@@ -58,7 +61,10 @@ describe('useVenue', () => {
   it('shows the request id of a server failure', async () => {
     Fakes.stubNetwork({
       ...REFRESH,
-      'GET /api/v1/venues/v1': Fakes.failure(HttpStatus.internalServerError, 'boom'),
+      'GET /api/v1/venues/v1?photoCount=5&photoWidth=1200': Fakes.failure(
+        HttpStatus.internalServerError,
+        'boom',
+      ),
     })
 
     const { wrapper } = await VenueFixtures.signedInCore()

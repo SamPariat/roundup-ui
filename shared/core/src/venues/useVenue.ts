@@ -1,4 +1,5 @@
 import { useMemo } from 'react'
+import { useWindowDimensions } from 'react-native'
 
 import { ApiError, HttpStatus, useGetVenue } from '@roundup/api'
 
@@ -6,6 +7,7 @@ import type { TErrorKey } from '../helpers/error-key'
 import type { IVenueInfo } from './types'
 
 import { useDeps } from '../di/useDeps'
+import { VENUE_PHOTOS } from '../helpers/venues'
 import { useSignedIn } from '../session/useSignedIn'
 
 /** What a venue's page shows. */
@@ -30,8 +32,15 @@ export interface IUseVenue {
 export const useVenue = (placeId: string): IUseVenue => {
   const { helpers, now } = useDeps()
   const venuesHelper = helpers.venues
+  const { width: windowWidth } = useWindowDimensions()
   const signedIn = useSignedIn()
-  const { data, error, isPending } = useGetVenue(placeId, { query: { enabled: signedIn } })
+
+  const { data, error, isPending } = useGetVenue(
+    placeId,
+    { photoCount: VENUE_PHOTOS, photoWidth: venuesHelper.photoWidth('large', windowWidth) },
+    { query: { enabled: signedIn } },
+  )
+
   const detail = data?.data
 
   const venue = useMemo(

@@ -9,6 +9,9 @@ import type { IVenueState } from './venue-backend'
 import { SquadBackend } from './squad-backend'
 import { VenueBackend } from './venue-backend'
 
+/** The clock every screen test runs at: Wednesday, 11 November 2026, at noon local time. */
+const WEDNESDAY = new Date(2026, 10, 11, 12).getTime()
+
 /** The user the stubbed profile route returns. */
 interface IStubUser {
   /** The name; empty until the person sets one. */
@@ -196,8 +199,9 @@ export class Fakes {
   }
 
   /**
-   * Builds the dependencies of a test: a store with or without a saved session, a network source and a query client
-   * that never garbage-collects, whose timer would keep Jest alive.
+   * Builds the dependencies of a test: a store with or without a saved session, a network source, a
+   * query client that never garbage-collects, whose timer would keep Jest alive, and a clock fixed at
+   * WEDNESDAY, so what a screen says about "today" doesn't change with the day the tests run.
    * @param token - The saved refresh token; none means a signed-out launch.
    * @param network - The fake network source; defaults to one that stays online.
    * @param contacts - The fake contacts source; left out, the real one is used and never called.
@@ -214,6 +218,11 @@ export class Fakes {
       ...(contacts === undefined ? {} : { contacts }),
       ...(location === undefined ? {} : { location }),
       network,
+      /**
+       * Reads the fixed test clock.
+       * @returns WEDNESDAY, in milliseconds since the epoch.
+       */
+      now: () => WEDNESDAY,
       queryClient: new QueryClient({
         defaultOptions: { queries: { gcTime: Infinity, retry: false } },
       }),

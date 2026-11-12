@@ -51,6 +51,9 @@
   --color-avatar-5: #89b4fa4c;
   --color-avatar-6: #f5c2e74c;
   --color-scrim: #11111b66;
+  /* Over a photo, the same in every theme: a dark backing and light text on it. */
+  --color-photo-scrim: #11111bb3;
+  --color-on-photo: #cdd6f4;
   /* Modal glass on the web: the raised color at 60%, and a hairline edge in the text color. */
   --color-glass: #31324499;
   --color-glass-edge: #cdd6f424;
@@ -109,6 +112,9 @@
   --color-avatar-6: #f5c2e74c;
   /* Modal backdrop: light, because the screen behind it is blurred. */
   --color-scrim: #11111b66;
+  /* Over a photo, the same in every theme: a dark backing and light text on it. */
+  --color-photo-scrim: #11111bb3;
+  --color-on-photo: #cdd6f4;
   /* Modal glass on the web: the raised color at 60%, and a hairline edge in the text color. */
   --color-glass: #31324499;
   --color-glass-edge: #cdd6f424;
@@ -151,6 +157,9 @@
     --color-avatar-5: #1e66f538;
     --color-avatar-6: #ea76cb38;
     --color-scrim: #4c4f6938;
+    /* Over a photo, the same in every theme: a dark backing and light text on it. */
+    --color-photo-scrim: #11111bb3;
+    --color-on-photo: #cdd6f4;
     /* Modal glass on the web: the raised color at 60%, and a hairline edge in the text color. */
     --color-glass: #faf4ed99;
     --color-glass-edge: #4c4f6924;
@@ -204,6 +213,9 @@
   --color-avatar-6: #f5c2e74c;
   /* Modal backdrop: light, because the screen behind it is blurred. */
   --color-scrim: #11111b66;
+  /* Over a photo, the same in every theme: a dark backing and light text on it. */
+  --color-photo-scrim: #11111bb3;
+  --color-on-photo: #cdd6f4;
   /* Modal glass on the web: the raised color at 60%, and a hairline edge in the text color. */
   --color-glass: #31324499;
   --color-glass-edge: #cdd6f424;
@@ -255,6 +267,9 @@
   --color-avatar-6: #ea76cb38;
   /* Modal backdrop: light, because the screen behind it is blurred. */
   --color-scrim: #4c4f6938;
+  /* Over a photo, the same in every theme: a dark backing and light text on it. */
+  --color-photo-scrim: #11111bb3;
+  --color-on-photo: #cdd6f4;
   /* Modal glass on the web: the raised color at 60%, and a hairline edge in the text color. */
   --color-glass: #faf4ed99;
   --color-glass-edge: #4c4f6924;

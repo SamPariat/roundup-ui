@@ -36,6 +36,7 @@ const textVariants = cva('', {
       danger: 'text-danger',
       'on-accent': 'text-on-accent',
       'on-highlight': 'text-on-highlight',
+      'on-photo': 'text-on-photo',
     },
   },
   defaultVariants: { variant: 'body', tone: 'fg' },

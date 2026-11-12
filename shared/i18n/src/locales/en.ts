@@ -111,6 +111,12 @@ export const en = {
     light: 'Light',
     dark: 'Dark',
   },
+  photo: {
+    credit: 'Photo: {{name}}',
+    position: '{{index}} / {{count}}',
+    positionLabel: 'Photo {{index}} of {{count}}',
+    strip: 'Photos',
+  },
   venueCard: {
     save: 'Save to squad',
     saved: 'Saved to squad',

@@ -28,11 +28,16 @@ export const VenuePhotoGrid = ({ photos }: IVenuePhotoGridProps): null | ReactEl
 
   return (
     <View className="h-82 flex-row gap-2 overflow-hidden rounded-2xl">
-      <Photo className="h-full flex-1 bg-bg-sunken" src={first.large} />
+      <Photo className="h-full flex-1 bg-bg-sunken" credit={first.credit} src={first.src} />
       {rest.length === 0 ? null : (
         <View className="h-full flex-1 flex-row flex-wrap content-between justify-between">
           {rest.slice(0, SMALL).map((photo) => (
-            <Photo className="h-40 w-[49%] bg-bg-sunken" key={photo.small} src={photo.small} />
+            <Photo
+              className="h-40 w-[49%] bg-bg-sunken"
+              credit={photo.credit}
+              key={photo.src}
+              src={photo.src}
+            />
           ))}
         </View>
       )}

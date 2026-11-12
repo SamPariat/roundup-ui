@@ -17,7 +17,9 @@ if (!existsSync(spec)) {
 // repo. Every call goes through the hand-written mutator in src/fetcher.ts.
 export default defineConfig({
   roundup: {
-    input: spec,
+    // Internal routes (tagged Internal) are service to service: the gateway never exposes them, so
+    // the app has no use for a client of them.
+    input: { target: spec, filters: { mode: 'exclude', tags: ['Internal'] } },
     output: {
       client: 'react-query',
       httpClient: 'fetch',
