@@ -18,12 +18,6 @@ const CARD_MIN = 280
 /** The space a grid cell adds around its card: 6 points on each side. */
 const CELL_PADDING = 12
 
-/** The room below the last row of a screen's content, before any floating button. */
-const END_GAP = 24
-
-/** The room a FloatingActionButton takes at the bottom: its 56 point height and 16 point offset. */
-const FAB_RESERVE = 72
-
 /** How the shell is laid out at a given width. */
 export interface IShellLayout {
   /** Which navigation to show: the bottom bar or the side rail. */
@@ -51,28 +45,6 @@ export class Layout {
     const row = Math.min(width, CONTENT_MAX) - 2 * gutter
 
     return Math.max(1, Math.floor(row / (CARD_MIN + CELL_PADDING)))
-  }
-
-  /**
-   * The padding below the last row of a list of cells, which already carry half of CELL_PADDING
-   * under their card, so the gap below the card matches a plain page's.
-   * @param fab - True when the screen floats a button over its content.
-   * @returns The padding, in points.
-   */
-  static listBottomPad(fab: boolean): number {
-    return Layout.bottomPad(fab) - CELL_PADDING / 2
-  }
-
-  /**
-   * The padding below the last row of a scrolling screen, the one place the bottom spacing is set:
-   * the normal gap, plus the floating button's footprint when the screen has one, so the last row
-   * rests just clear of it. The tab bar is not counted: AppShell's BottomNav sits below the screen
-   * on web and Android, and iOS insets the scroll view for its tab bar.
-   * @param fab - True when the screen floats a button over its content.
-   * @returns The padding, in points.
-   */
-  static bottomPad(fab: boolean): number {
-    return fab ? END_GAP + FAB_RESERVE : END_GAP
   }
 
   /**

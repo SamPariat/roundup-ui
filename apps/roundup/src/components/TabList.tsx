@@ -104,9 +104,6 @@ export const TabList = <T,>({
   const columnStyle = useMemo((): ViewStyle => ({ maxWidth: `${100 / columns}%` }), [columns])
   const placeholderStyle = useMemo((): ViewStyle => ({ width: `${100 / columns}%` }), [columns])
 
-  const endPad = Layout.listBottomPad(fab !== undefined)
-  const endStyle = useMemo((): ViewStyle => ({ paddingBottom: endPad }), [endPad])
-
   // In a grid each row lays its cells out side by side, so flex-1 shares the row's width. A single
   // column has no row: flex-1 would act on the height there and collapse the cell to nothing, so
   // the list would measure every card as 0 tall and leave blank gaps as it scrolls.
@@ -189,9 +186,9 @@ export const TabList = <T,>({
             // grown container would let a short list scroll past its last row by both insets.
             data.length === 0 && 'grow',
             header === undefined && top === undefined && 'pt-4.5',
+            fab === undefined ? 'pb-4.5' : 'pb-24',
             gutterClass,
           )}
-          contentContainerStyle={endStyle}
           contentInsetAdjustmentBehavior="automatic"
           data={data}
           key={columns}

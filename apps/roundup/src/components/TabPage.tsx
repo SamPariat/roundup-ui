@@ -2,14 +2,13 @@ import type { ReactElement, ReactNode } from 'react'
 import type { ViewStyle } from 'react-native'
 import type { Edge } from 'react-native-safe-area-context'
 
-import { useMemo } from 'react'
 import { ScrollView, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
 import { cn } from '@roundup/ui'
 
 import { TabFabLayer } from '@/components/TabFabLayer'
-import { Layout, useLayout } from '@/hooks/useLayout'
+import { useLayout } from '@/hooks/useLayout'
 
 /** Props for TabPage. */
 export interface ITabPageProps {
@@ -38,15 +37,12 @@ const VISIBLE: readonly Edge[] = ['top', 'bottom']
 export const TabPage = ({ centered = false, children, fab }: ITabPageProps): ReactElement => {
   const { gutterClass, systemChrome } = useLayout()
   const frame = cn('mx-auto w-full max-w-content', gutterClass)
-  const endPad = Layout.bottomPad(fab !== undefined)
-  const endStyle = useMemo((): ViewStyle => ({ paddingBottom: endPad }), [endPad])
 
   if (!centered) {
     return (
       <View className="flex-1">
         <ScrollView
-          contentContainerClassName={cn('pt-6', frame)}
-          contentContainerStyle={endStyle}
+          contentContainerClassName={cn('pt-6', fab === undefined ? 'pb-6' : 'pb-24', frame)}
           contentInsetAdjustmentBehavior="automatic"
           keyboardShouldPersistTaps="handled"
         >
