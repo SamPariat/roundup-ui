@@ -1,3 +1,4 @@
+import { focusManager } from '@tanstack/react-query'
 import { act, renderHook, waitFor } from '@testing-library/react-native'
 
 import { useLocation } from '../../src/location/useLocation'
@@ -67,5 +68,53 @@ describe('useLocation', () => {
     })
 
     expect(location.asked).toBe(2)
+  })
+
+  describe('when the app comes back to the foreground', () => {
+    afterEach(() => {
+      focusManager.setFocused()
+    })
+
+    it('asks again after a refusal', async () => {
+      const location = new FakeLocation('denied')
+      const { wrapper } = TestCore.create({ location })
+      const { result } = await renderHook(() => useLocation(), { wrapper })
+
+      await waitFor(() => {
+        expect(result.current.phase).toBe('denied')
+      })
+
+      location.permission = 'granted'
+
+      await act(() => {
+        focusManager.setFocused(false)
+        focusManager.setFocused(true)
+      })
+
+      await waitFor(() => {
+        expect(result.current.phase).toBe('ready')
+      })
+
+      expect(location.asked).toBe(2)
+    })
+
+    it('keeps a known position without reading it again', async () => {
+      const location = new FakeLocation()
+      const { wrapper } = TestCore.create({ location })
+      const { result } = await renderHook(() => useLocation(), { wrapper })
+
+      await waitFor(() => {
+        expect(result.current.phase).toBe('ready')
+      })
+
+      await act(() => {
+        focusManager.setFocused(false)
+        focusManager.setFocused(true)
+      })
+
+      expect(result.current.phase).toBe('ready')
+      expect(location.asked).toBe(1)
+      expect(location.reads).toBe(1)
+    })
   })
 })

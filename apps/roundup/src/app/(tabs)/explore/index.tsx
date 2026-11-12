@@ -17,7 +17,6 @@ import { VenueListCard } from '@/components/venues/VenueListCard'
 import { useErrorText } from '@/hooks/useErrorText'
 import { useExploreParams } from '@/hooks/useExploreParams'
 import { usePullRefresh } from '@/hooks/usePullRefresh'
-import { useWhenActive } from '@/hooks/useWhenActive'
 
 /** One chip of the filter row. */
 interface IFilter {
@@ -69,13 +68,6 @@ export default function ExploreScreen(): ReactElement {
   const handleOpenSettings = useCallback((): void => {
     void Linking.openSettings()
   }, [])
-
-  // Coming back from Settings, or to the browser tab, tries the location again when it was refused.
-  const handleReturn = useCallback((): void => {
-    if (phase === 'denied') retryLocation()
-  }, [phase, retryLocation])
-
-  useWhenActive(handleReturn)
 
   const handleLoadNext = useCallback((): void => {
     if (hasMore) loadMore()
