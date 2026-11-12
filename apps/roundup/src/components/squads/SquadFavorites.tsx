@@ -7,7 +7,7 @@ import { View } from 'react-native'
 import type { IFavoriteRow, IUseSquadFavorites } from '@roundup/core'
 
 import { useT } from '@roundup/i18n'
-import { Button, EmptyState, List, Skeleton, Text } from '@roundup/ui'
+import { Button, EmptyState, List, Skeleton, Text, Toast } from '@roundup/ui'
 
 import type { TSquadTab } from '@/navigation/squad-tab'
 
@@ -139,7 +139,7 @@ const renderFavorite = (
   remove: TFavorites['remove'],
   removingId: string | undefined,
 ): ReactElement => (
-  <View className="overflow-hidden rounded-2xl border border-border bg-bg-raised">
+  <View className="max-w-160 overflow-hidden rounded-2xl border border-border bg-bg-raised">
     <FavoriteRowItem favorite={favorite} onRemove={remove} removing={removingId === favorite.id} />
   </View>
 )
@@ -191,7 +191,9 @@ export interface IPhoneSquadProps {
 
 /**
  * The squad's body on a phone: one list under the squad's header and tabs, so switching tabs
- * changes only the rows below them. The Members tab is the members block as the list's single
+ * changes only the rows below them. Both tabs are one column, as in the design's squad board
+ * (members and favorites are lists of rows, not grids of cards), so a tab switch never changes the
+ * list's columns, which would remount it with its header. The Members tab is the members block as the list's single
  * row. The Favorites tab loads more as its end comes into view and reloads on a pull; failed
  * loads and the empty list have their own states.
  * @returns The virtualized list.
@@ -220,9 +222,15 @@ export const PhoneSquad = ({
 
   const keyOf = useCallback((row: TPhoneRow): string => ('kind' in row ? row.kind : row.id), [])
 
+  // A first load that failed fills the screen; once rows exist, an error (a failed Remove from
+  // favorites, or a later page) is a Toast over them, which the empty state cannot show.
+  const failed = showingFavorites && errorText !== undefined && state.favorites.length > 0
+
+  const toast = failed ? <Toast tone="error">{errorText}</Toast> : undefined
+
   return (
     <TabList<TPhoneRow>
-      columns={showingFavorites ? undefined : 1}
+      columns={1}
       data={showingFavorites ? state.favorites : MEMBERS_ROWS}
       empty={errorText === undefined ? <NoFavorites /> : <FavoritesFailed text={errorText} />}
       fab={showingFavorites ? undefined : fab}
@@ -234,6 +242,7 @@ export const PhoneSquad = ({
       onRefresh={showingFavorites ? handleReload : undefined}
       refreshing={refreshing}
       renderItem={renderRow}
+      toast={toast}
     />
   )
 }

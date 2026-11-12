@@ -16,6 +16,7 @@ import VenueScreen from '@/app/(tabs)/explore/[placeId]'
 import ExploreScreen from '@/app/(tabs)/explore/index'
 import SquadScreen from '@/app/(tabs)/squads/[squadId]'
 import SquadsScreen from '@/app/(tabs)/squads/index'
+import SquadVenueScreen from '@/app/(tabs)/squads/venue/[placeId]'
 
 /**
  * The explore stack of a test: the same screens as the app, in a Stack so going back and
@@ -64,7 +65,7 @@ export class VenuesFixtures {
   /**
    * Captures what the app listens to for app state changes, so a test can bring it to the
    * foreground. Restore the spy with jest.restoreAllMocks.
-   * @returns A function that tells every listener the app is active.
+   * @returns A function that tells every listener the app went to the background and came back.
    */
   static foreground(): () => void {
     const listeners: ((state: AppStateStatus) => void)[] = []
@@ -76,7 +77,10 @@ export class VenuesFixtures {
     })
 
     return (): void => {
-      for (const listener of listeners) listener('active')
+      for (const listener of listeners) {
+        listener('background')
+        listener('active')
+      }
     }
   }
 
@@ -137,6 +141,7 @@ export class VenuesFixtures {
         'squads/[squadId]': SquadScreen,
         'squads/_layout': ExploreStack,
         'squads/index': SquadsScreen,
+        'squads/venue/[placeId]': SquadVenueScreen,
       },
       { backend, location: VenuesFixtures.location(), saved: 'r1', url },
     )

@@ -20,6 +20,8 @@ export interface IVenueState extends ISquadState {
   saved?: Record<string, string[]>
   /** How many venues a search page holds. Defaults to 20, as Google's does. */
   pageSize?: number
+  /** The status an unsave answers with, to make it fail; it succeeds when left out. */
+  unsaveStatus?: number
 }
 
 /** Where the search routes are mounted. */
@@ -220,6 +222,11 @@ export class VenueBackend {
     const { body, method, placeId = body?.['placeID'] ?? '', squadId } = request
 
     if (method === 'GET') return VenueBackend.favorites(state, squadId)
+
+    if (method === 'DELETE' && state.unsaveStatus !== undefined) {
+      return Response.json({ error: 'nope', success: false }, { status: state.unsaveStatus })
+    }
+
     const squads = saved[placeId] ?? []
 
     saved[placeId] =

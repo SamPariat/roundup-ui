@@ -5,7 +5,7 @@ import { useHeaderHeight } from 'expo-router/react-navigation'
 import { useCallback, useMemo, useState } from 'react'
 import { FlatList, RefreshControl, View } from 'react-native'
 
-import { cn, Skeleton } from '@roundup/ui'
+import { cn, Skeleton, useBreakpoint } from '@roundup/ui'
 
 import { TabFabLayer } from '@/components/TabFabLayer'
 import { Layout, useLayout } from '@/hooks/useLayout'
@@ -42,6 +42,8 @@ export interface ITabListProps<T> {
   onEndReached?: (() => void) | undefined
   /** The screen's FloatingActionButton, floated over the bottom-right of the list. */
   fab?: ReactElement | undefined
+  /** A message, such as an error Toast, floated over the bottom of the list, in its content column. */
+  toast?: ReactElement | undefined
   /** Forces this many columns instead of fitting as many cards as the width allows, for a list that is not a grid of cards. */
   columns?: number | undefined
 }
@@ -72,7 +74,8 @@ const FRAME = 'mx-auto w-full max-w-content'
  * iOS header, takes the same width cap and side gutter and centers the empty state in the visible area. It
  * lays items out in one column on phones and more on wider screens. A list must never sit inside
  * TabPage's ScrollView, which would load every item at once. With a floating button the list
- * leaves room below its last row, so that row scrolls clear of the button.
+ * leaves room below its last row, so that row scrolls clear of the button; a toast floats the same way
+ * and does not take room, as it comes and goes.
  * @returns The virtualized list.
  */
 export const TabList = <T,>({
@@ -89,15 +92,19 @@ export const TabList = <T,>({
   refreshing = false,
   renderItem,
   skeleton = 'row',
+  toast,
   top,
 }: ITabListProps<T>): ReactElement => {
   const { gutter, gutterClass, systemChrome } = useLayout()
   const headerHeight = useHeaderHeight()
-  const [width, setWidth] = useState<number>(0)
-  const columns = columnsProp ?? Layout.columnsFor(width, gutter)
+  const { width: windowWidth } = useBreakpoint()
+  const [measured, setMeasured] = useState<number | undefined>()
+  // Until the list is measured, the window's width stands in for its own, so the first layout
+  // usually keeps the columns the list started with instead of remounting it (the key follows them).
+  const columns = columnsProp ?? Layout.columnsFor(measured ?? windowWidth, gutter)
 
   const handleLayout = useCallback((event: LayoutChangeEvent): void => {
-    setWidth(event.nativeEvent.layout.width)
+    setMeasured(event.nativeEvent.layout.width)
   }, [])
 
   // A cell never grows past its column, so a short last row keeps the width of the others.
@@ -208,6 +215,13 @@ export const TabList = <T,>({
         />
       </View>
       {fab === undefined ? null : <TabFabLayer>{fab}</TabFabLayer>}
+      {toast === undefined ? null : (
+        <TabFabLayer>
+          <View className="absolute inset-x-0 bottom-4" pointerEvents="box-none">
+            {toast}
+          </View>
+        </TabFabLayer>
+      )}
     </View>
   )
 }

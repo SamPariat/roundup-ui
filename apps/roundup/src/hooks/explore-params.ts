@@ -42,19 +42,6 @@ export class ExploreParams {
   }
 
   /**
-   * Writes the whole search as parameters, for a link to Explore.
-   * @param state - The search; any part may be left out.
-   * @returns The parameters, with the defaults left out.
-   */
-  static serialize(state: Partial<IExploreState>): IExploreQuery {
-    return {
-      q: ExploreParams.queryOf(state.query ?? ''),
-      radius: ExploreParams.radiusOf(state.radiusKm ?? DEFAULT_RADIUS_KM),
-      type: ExploreParams.typeOf(state.filter),
-    }
-  }
-
-  /**
    * The `q` parameter for some typed words.
    * @param text - What is typed.
    * @returns The words trimmed, or undefined when blank, which clears the parameter.

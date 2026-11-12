@@ -1,3 +1,12 @@
+/** What a screen's options function is given: here, only its route and that route's params. */
+export interface IScreenProps {
+  /** The screen's route. */
+  route: {
+    /** The route's params: the path segments and the query. */
+    params?: object | undefined
+  }
+}
+
 /**
  * Reads the title a link carries in its query, such as Paths.squad(id, { title }) and
  * Paths.venue(id, name). Static methods only.

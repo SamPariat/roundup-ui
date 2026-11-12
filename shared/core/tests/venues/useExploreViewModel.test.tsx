@@ -1,3 +1,4 @@
+import { focusManager } from '@tanstack/react-query'
 import { act, renderHook, waitFor } from '@testing-library/react-native'
 
 import { HttpStatus } from '@roundup/api'
@@ -265,6 +266,29 @@ describe('useExploreViewModel', () => {
     })
 
     expect(searches(network)).toHaveLength(2)
+  })
+
+  it('does not search again when the app comes back to the foreground', async () => {
+    const network = Fakes.stubNetwork({
+      ...REFRESH,
+      [`GET ${VenueFixtures.base}`]: Fakes.ok(VenueFixtures.page([VenueFixtures.venue('v1')])),
+    })
+
+    const { wrapper } = await VenueFixtures.signedInCore()
+    const { result } = await renderExplore(wrapper)
+
+    await waitFor(() => {
+      expect(result.current.venues).toHaveLength(1)
+    })
+
+    await act(() => {
+      focusManager.setFocused(false)
+      focusManager.setFocused(true)
+    })
+
+    expect(searches(network)).toEqual([VenueFixtures.base])
+
+    focusManager.setFocused()
   })
 
   it('loads the results again on refresh', async () => {

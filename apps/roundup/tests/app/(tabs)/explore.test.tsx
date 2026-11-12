@@ -216,6 +216,42 @@ describe('explore', () => {
       expect(router.canGoBack()).toBe(false)
     })
 
+    it('keeps a space typed at either end of the words while the URL holds them trimmed', async () => {
+      await VenuesFixtures.open(backend, '/explore')
+      await screen.findByRole('button', { name: 'Skyline Bar' })
+      await fireEvent.changeText(screen.getByLabelText('Search places'), ' thai ')
+
+      await waitFor(() => {
+        expect(screen).toHaveSearchParams({ q: 'thai' })
+      })
+
+      expect(screen.getByLabelText('Search places')).toHaveDisplayValue(' thai ')
+
+      await fireEvent.changeText(screen.getByLabelText('Search places'), ' thai food')
+
+      await waitFor(() => {
+        expect(screen).toHaveSearchParams({ q: 'thai food' })
+      })
+
+      expect(screen.getByLabelText('Search places')).toHaveDisplayValue(' thai food')
+    })
+
+    it('writes the words typed just before opening a place, so the field and results agree on return', async () => {
+      await VenuesFixtures.open(backend, '/explore')
+      await screen.findByRole('button', { name: 'Skyline Bar' })
+      await fireEvent.changeText(screen.getByLabelText('Search places'), 'sky')
+      await fireEvent.press(screen.getByRole('button', { name: 'Skyline Bar' }))
+
+      expect(await screen.findByRole('heading', { name: 'Skyline Bar' })).toBeOnTheScreen()
+
+      await act(() => {
+        router.back()
+      })
+
+      expect(await screen.findByLabelText('Search places')).toHaveDisplayValue('sky')
+      expect(screen).toHaveSearchParams({ q: 'sky' })
+    })
+
     it('restores the words, the kind and the radius from the link', async () => {
       await VenuesFixtures.open(backend, '/explore?q=brew&type=cafe&radius=10')
 

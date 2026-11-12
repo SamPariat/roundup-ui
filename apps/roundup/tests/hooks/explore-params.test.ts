@@ -29,30 +29,25 @@ describe('ExploreParams', () => {
     })
   })
 
-  it('writes the search, leaving out whatever is the default', () => {
-    expect(ExploreParams.serialize({ filter: 'bar', query: ' brew ', radiusKm: 25 })).toEqual({
-      q: 'brew',
-      radius: '25',
-      type: 'bar',
-    })
-
-    expect(ExploreParams.serialize({ query: '', radiusKm: 3 })).toEqual({
-      q: undefined,
-      radius: undefined,
-      type: undefined,
-    })
-
-    expect(ExploreParams.serialize({})).toEqual({
-      q: undefined,
-      radius: undefined,
-      type: undefined,
-    })
+  it('writes each part, leaving out whatever is the default', () => {
+    expect(ExploreParams.queryOf(' brew ')).toBe('brew')
+    expect(ExploreParams.queryOf('  ')).toBeUndefined()
+    expect(ExploreParams.radiusOf(25)).toBe('25')
+    expect(ExploreParams.radiusOf(3)).toBeUndefined()
+    expect(ExploreParams.typeOf('bar')).toBe('bar')
   })
 
   it('reads back what it wrote', () => {
-    const state = { filter: 'night_club' as const, query: 'roof', radiusKm: 50 }
-    const written = ExploreParams.serialize(state)
+    const written = {
+      q: ExploreParams.queryOf('roof'),
+      radius: ExploreParams.radiusOf(50),
+      type: ExploreParams.typeOf('night_club'),
+    }
 
-    expect(ExploreParams.parse(written)).toEqual(state)
+    expect(ExploreParams.parse(written)).toEqual({
+      filter: 'night_club',
+      query: 'roof',
+      radiusKm: 50,
+    })
   })
 })

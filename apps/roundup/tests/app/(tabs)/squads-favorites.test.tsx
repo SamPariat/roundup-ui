@@ -55,6 +55,22 @@ describe('squad favorites', () => {
     expect(await screen.findByRole('heading', { name: 'Brew Cafe' })).toBeOnTheScreen()
   })
 
+  it('opens the place inside the Squads tab, and Back returns to the squad', async () => {
+    await openFavorites()
+    await fireEvent.press(await screen.findByRole('button', { name: /^Brew Cafe/ }))
+
+    expect(await screen.findByRole('heading', { name: 'Brew Cafe' })).toBeOnTheScreen()
+    expect(screen).toHavePathname('/squads/venue/v2')
+
+    await act(() => {
+      router.back()
+    })
+
+    expect(await screen.findByRole('heading', { name: 'Friday crew' })).toBeOnTheScreen()
+    expect(screen).toHavePathname('/squads/s1')
+    expect(screen).toHaveSearchParams({ squadId: 's1', tab: 'favorites' })
+  })
+
   it('shows an empty state with a way to Explore when nothing is saved', async () => {
     backend.saved = {}
     await openFavorites()
@@ -78,6 +94,19 @@ describe('squad favorites', () => {
 
     expect(backend.paths).toContain('DELETE /api/v1/squads/s1/favorites/v1')
     expect(screen.getByRole('button', { name: /^Brew Cafe/ })).toBeOnTheScreen()
+  })
+
+  it('shows a failed removal as an error toast over the rows that are still there', async () => {
+    backend.unsaveStatus = 500
+    await openFavorites()
+    await screen.findByRole('button', { name: /^Skyline Bar/ })
+    await fireEvent.press(screen.getByRole('button', { name: 'Options for Skyline Bar' }))
+    await fireEvent.press(screen.getByRole('menuitem', { name: 'Remove from favorites' }))
+
+    expect(await screen.findByRole('alert')).toBeOnTheScreen()
+    expect(screen.getByRole('button', { name: /^Skyline Bar/ })).toBeOnTheScreen()
+    expect(screen.getByRole('button', { name: /^Brew Cafe/ })).toBeOnTheScreen()
+    expect(screen.queryByText('Nothing saved yet')).toBeNull()
   })
 
   it('follows a save or unsave made on the place page', async () => {

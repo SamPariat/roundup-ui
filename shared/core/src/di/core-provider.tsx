@@ -1,7 +1,9 @@
 import type { ReactElement, ReactNode } from 'react'
+import type { AppStateStatus } from 'react-native'
 
-import { onlineManager, QueryClientProvider } from '@tanstack/react-query'
+import { focusManager, onlineManager, QueryClientProvider } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
+import { AppState } from 'react-native'
 
 import { AuthBridge } from '@roundup/api'
 
@@ -55,6 +57,44 @@ class OnlineBridge {
   }
 }
 
+/** Tells TanStack Query whether the app is in the foreground. */
+type TSetFocused = (focused: boolean) => void
+
+/**
+ * Connects TanStack Query's focus state to the app being in the foreground: on a phone, coming back
+ * from another app or from Settings, and on web, coming back to the tab. Only 'background' counts
+ * as leaving: iOS reports 'inactive' for a system sheet or the app switcher, and coming back from
+ * one of those is not a return. Static methods only.
+ */
+class FocusBridge {
+  /**
+   * The listener setup for focusManager: it reports every foreground change and returns the
+   * unsubscribe that focusManager calls when the listener is replaced.
+   * @param setFocused - Tells TanStack Query whether the app is in the foreground.
+   * @returns The unsubscribe.
+   */
+  static readonly listen = (setFocused: TSetFocused): (() => void) => {
+    // Start from the real state, so the first 'inactive' to 'active' flip is not read as a change.
+    setFocused(AppState.currentState !== 'background')
+
+    const subscription = AppState.addEventListener('change', (state: AppStateStatus) => {
+      setFocused(state !== 'background')
+    })
+
+    return () => {
+      subscription.remove()
+    }
+  }
+
+  /**
+   * A setup that listens to nothing. Installing it makes focusManager call the previous
+   * listener's unsubscribe, which is how the app state subscription is let go.
+   */
+  static readonly none = (): undefined => {
+    // Subscribes to nothing, so there is nothing to undo.
+  }
+}
+
 /** What the provider builds once: the dependencies and the session on top of them. */
 interface IBuiltCore {
   /** The default dependencies with the caller's overrides. */
@@ -88,12 +128,15 @@ export const CoreProvider = ({ children, deps }: ICoreProviderProps): ReactEleme
 
     // Queries pause while offline and refetch when the connection returns.
     onlineManager.setEventListener(OnlineBridge.listenTo(built.deps.network))
+    // Stale queries refetch when the app comes back to the foreground.
+    focusManager.setEventListener(FocusBridge.listen)
 
     return () => {
       AuthBridge.set(undefined)
       // onlineManager is global and outlives this provider; without this it keeps the network
       // subscription, and with it the dependencies this provider built.
       onlineManager.setEventListener(OnlineBridge.none)
+      focusManager.setEventListener(FocusBridge.none)
     }
   }, [built])
 

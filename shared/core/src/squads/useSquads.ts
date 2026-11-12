@@ -1,5 +1,4 @@
-import { useInfiniteQuery } from '@tanstack/react-query'
-import { useCallback, useMemo } from 'react'
+import { useMemo } from 'react'
 
 import type { ListSquads200 } from '@roundup/api'
 
@@ -9,34 +8,19 @@ import type { TErrorKey } from '../helpers/error-key'
 import type { ISquadCard } from './types'
 
 import { useDeps } from '../di/useDeps'
+import { usePages } from '../paging/usePages'
 import { useSignedIn } from '../session/useSignedIn'
 
 /** How many squads a page asks for. */
 const PAGE_SIZE = 25
 
-/** What the query hands the page request. */
-interface IPageContext {
-  /** The cursor of the page to load; undefined for the first. */
-  pageParam: string | undefined
-}
-
 /**
  * Asks for one page of squads.
- * @param context - The query's context, which holds the page's cursor.
+ * @param cursor - The cursor of the page, or undefined for the first.
  * @returns The squads of that page and the cursor of the next.
  */
-const fetchPage = (context: IPageContext): Promise<ListSquads200> =>
-  listSquads({
-    limit: PAGE_SIZE,
-    ...(context.pageParam === undefined ? {} : { cursor: context.pageParam }),
-  })
-
-/**
- * Reads where the next page starts.
- * @param last - The most recent answer of the list.
- * @returns The cursor, or undefined at the end of the list.
- */
-const nextCursor = (last: ListSquads200): string | undefined => last.data.nextCursor ?? undefined
+const fetchPage = (cursor: string | undefined): Promise<ListSquads200> =>
+  listSquads({ limit: PAGE_SIZE, ...(cursor === undefined ? {} : { cursor }) })
 
 /** What the squads list shows and does. */
 export interface IUseSquads {
@@ -67,37 +51,24 @@ export const useSquads = (): IUseSquads => {
   const squadsHelper = helpers.squads
   const signedIn = useSignedIn()
 
-  const { data, error, fetchNextPage, hasNextPage, isFetchingNextPage, isPending, refetch } =
-    useInfiniteQuery({
-      enabled: signedIn,
-      getNextPageParam: nextCursor,
-      initialPageParam: undefined,
-      queryFn: fetchPage,
-      queryKey: getListSquadsQueryKey(),
-    })
+  const { error, hasMore, loading, loadingMore, loadMore, pages, refresh } = usePages({
+    fetchPage: signedIn ? fetchPage : undefined,
+    queryKey: getListSquadsQueryKey(),
+  })
 
   const squads = useMemo(
     (): ISquadCard[] =>
-      data?.pages.flatMap((page) => page.data.squads.map((squad) => squadsHelper.toCard(squad))) ??
-      [],
-    [data, squadsHelper],
+      pages?.flatMap((page) => page.data.squads.map((squad) => squadsHelper.toCard(squad))) ?? [],
+    [pages, squadsHelper],
   )
-
-  const loadMore = useCallback((): void => {
-    if (hasNextPage && !isFetchingNextPage) void fetchNextPage({ cancelRefetch: false })
-  }, [fetchNextPage, hasNextPage, isFetchingNextPage])
-
-  const refresh = useCallback(async (): Promise<void> => {
-    await refetch()
-  }, [refetch])
 
   const message = error === null ? undefined : helpers.errors.toMessage(error, 'squad')
 
   return {
     error: message?.key,
-    hasMore: hasNextPage,
-    loading: signedIn && isPending,
-    loadingMore: isFetchingNextPage,
+    hasMore,
+    loading: signedIn && loading,
+    loadingMore,
     loadMore,
     refresh,
     requestId: message?.requestId,
