@@ -107,13 +107,16 @@ export const TabList = <T,>({
   const endPad = Layout.listBottomPad(fab !== undefined)
   const endStyle = useMemo((): ViewStyle => ({ paddingBottom: endPad }), [endPad])
 
+  // In a grid each row lays its cells out side by side, so flex-1 shares the row's width. A single
+  // column has no row: flex-1 would act on the height there and collapse the cell to nothing, so
+  // the list would measure every card as 0 tall and leave blank gaps as it scrolls.
   const cell = useCallback(
     ({ item }: ListRenderItemInfo<T>): ReactElement => (
-      <View className="min-w-0 flex-1 p-1.5" style={columnStyle}>
+      <View className={cn('min-w-0 p-1.5', columns > 1 && 'flex-1')} style={columnStyle}>
         {renderItem(item)}
       </View>
     ),
-    [columnStyle, renderItem],
+    [columnStyle, columns, renderItem],
   )
 
   // The cells carry 6 points of padding on every side, so the list itself sits 6 outside the gutter
