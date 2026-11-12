@@ -62,7 +62,9 @@ type TSetFocused = (focused: boolean) => void
 
 /**
  * Connects TanStack Query's focus state to the app being in the foreground: on a phone, coming back
- * from another app or from Settings, and on web, coming back to the tab. Static methods only.
+ * from another app or from Settings, and on web, coming back to the tab. Only 'background' counts
+ * as leaving: iOS reports 'inactive' for a system sheet or the app switcher, and coming back from
+ * one of those is not a return. Static methods only.
  */
 class FocusBridge {
   /**
@@ -72,8 +74,11 @@ class FocusBridge {
    * @returns The unsubscribe.
    */
   static readonly listen = (setFocused: TSetFocused): (() => void) => {
+    // Start from the real state, so the first 'inactive' to 'active' flip is not read as a change.
+    setFocused(AppState.currentState !== 'background')
+
     const subscription = AppState.addEventListener('change', (state: AppStateStatus) => {
-      setFocused(state === 'active')
+      setFocused(state !== 'background')
     })
 
     return () => {

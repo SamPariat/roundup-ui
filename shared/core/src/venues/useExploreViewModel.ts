@@ -117,6 +117,8 @@ export const useExploreViewModel = ({
       placeholderData: keepPreviousData,
       queryFn: signedIn && params !== undefined ? pageFetcher(params) : skipToken,
       queryKey: getSearchVenuesQueryKey(params),
+      // Every loaded page would be asked for again (paid Places calls); a pull reloads instead.
+      refetchOnWindowFocus: false,
     })
 
   const venues = useMemo(
