@@ -41,6 +41,19 @@ describe('Venues', () => {
         )
       },
     )
+
+    it('encodes the reference so it stays one path segment', () => {
+      expect(venues.photoUrl('/api/v1/venues/photos/a b?c', 400)).toContain(
+        '/photos/a%20b%3Fc?maxWidth=',
+      )
+    })
+
+    it.each(['/media/ref1', '/api/v1/venues/photos/', ''])(
+      'leaves %j as it is, unsized, when it holds no photo reference',
+      (path) => {
+        expect(venues.photoUrl(path, 400)).toBe(`http://localhost:8080${path}`)
+      },
+    )
   })
 
   describe('Venues.toCard', () => {

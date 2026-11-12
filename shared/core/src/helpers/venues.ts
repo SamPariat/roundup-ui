@@ -160,14 +160,18 @@ export class Venues {
    * it is drawn.
    * @param url - The photo's path as the API sends it, ending in its reference.
    * @param slot - How wide the slot is, in points.
-   * @returns The absolute URL, with `maxWidth` set.
+   * @returns The absolute URL, with `maxWidth` set; a path that is not a photos path, or has no
+   * reference, is returned as it is, unsized.
    */
   photoUrl(url: string, slot: number): string {
     const wanted = slot * PixelRatio.get()
     const maxWidth = PHOTO_WIDTHS.find((width) => width >= wanted) ?? MAX_PHOTO_WIDTH
-    const ref = url.slice(url.lastIndexOf(PHOTO_PATH) + PHOTO_PATH.length)
+    const start = url.lastIndexOf(PHOTO_PATH)
+    const ref = start === -1 ? '' : url.slice(start + PHOTO_PATH.length)
 
-    return ApiUrl.of(getGetVenuePhotoUrl(ref, { maxWidth }))
+    return ref === ''
+      ? ApiUrl.of(url)
+      : ApiUrl.of(getGetVenuePhotoUrl(encodeURIComponent(ref), { maxWidth }))
   }
 
   /**
