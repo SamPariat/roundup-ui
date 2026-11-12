@@ -98,6 +98,32 @@ describe('useLocation', () => {
       expect(location.asked).toBe(2)
     })
 
+    it('asks again after a failed read, as when Location Services were off', async () => {
+      const location = new FakeLocation()
+
+      location.unavailable = true
+
+      const { wrapper } = TestCore.create({ location })
+      const { result } = await renderHook(() => useLocation(), { wrapper })
+
+      await waitFor(() => {
+        expect(result.current.phase).toBe('denied')
+      })
+
+      location.unavailable = false
+
+      await act(() => {
+        focusManager.setFocused(false)
+        focusManager.setFocused(true)
+      })
+
+      await waitFor(() => {
+        expect(result.current.phase).toBe('ready')
+      })
+
+      expect(location.reads).toBe(2)
+    })
+
     it('keeps a known position without reading it again', async () => {
       const location = new FakeLocation()
       const { wrapper } = TestCore.create({ location })
