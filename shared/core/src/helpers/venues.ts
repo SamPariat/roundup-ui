@@ -2,7 +2,7 @@ import type { QueryClient } from '@tanstack/react-query'
 
 import { PixelRatio } from 'react-native'
 
-import type { Review, SavedIn, Venue, VenueDetail } from '@roundup/api'
+import type { Favorite, Member, Review, SavedIn, Venue, VenueDetail } from '@roundup/api'
 
 import {
   ApiUrl,
@@ -12,6 +12,8 @@ import {
 } from '@roundup/api'
 
 import type {
+  IFavoriteRow,
+  IFavoriteSaver,
   ISavedIn,
   IVenueCard,
   IVenueInfo,
@@ -33,6 +35,9 @@ const MAX_TAGS = 3
 const WEEK = 7
 const FROM_SUNDAY = 6
 
+/** How a save's date reads in a row: the day and the month, such as "18 Oct". */
+const SAVED_ON = new Intl.DateTimeFormat('en-IN', { day: 'numeric', month: 'short' })
+
 /** What separates the day from the hours in Google's lines, such as "Monday: 5:00 PM – 11:00 PM". */
 const DAY_SEPARATOR = ': '
 
@@ -46,7 +51,7 @@ const PHOTO_WIDTHS: readonly number[] = [200, 400, 600, 800, 1200, 1600]
 const MAX_PHOTO_WIDTH = 1600
 
 /** How wide each slot a photo fills is, in points: a card or the header, and the page's two tiles. */
-const PHOTO_SLOT = { card: 400, large: 570, small: 280 } as const
+const PHOTO_SLOT = { card: 400, large: 570, small: 280, thumb: 56 } as const
 
 /** What separates the API's photo path from the reference the photo endpoint takes. */
 const PHOTO_PATH = '/photos/'
@@ -113,6 +118,30 @@ export class Venues {
   }
 
   /**
+   * Maps a favorite of a squad onto a row.
+   * @param favorite - The favorite the API sent.
+   * @param meId - The signed-in person's user ID, to mark their own save; undefined while unknown.
+   * @returns The row, its photo a thumbnail and its savers as people.
+   */
+  toFavorite(favorite: Favorite, meId: string | undefined): IFavoriteRow {
+    const rated = favorite.averageRating > 0
+
+    return {
+      id: favorite.placeID,
+      name: favorite.name,
+      priceLevel: PRICE_LEVELS[favorite.priceLevel] ?? 0,
+      savedByMe: favorite.savedByMe,
+      savedOn: SAVED_ON.format(new Date(favorite.lastSavedAt)),
+      savers: favorite.savedBy.map((member) => this.toSaver(member, meId)),
+      ...(favorite.address === '' ? {} : { address: favorite.address }),
+      ...(favorite.photo === null
+        ? {}
+        : { photo: this.photoUrl(favorite.photo.url, PHOTO_SLOT.thumb) }),
+      ...(rated ? { rating: favorite.averageRating, reviews: favorite.ratingCount } : {}),
+    }
+  }
+
+  /**
    * Marks a venue's detail and its squad's favorites as out of date, after a save or an unsave.
    * Whatever is on screen loads again, and this waits for it, so a sheet shows the new state.
    * @param placeId - The venue that was saved or unsaved.
@@ -139,6 +168,21 @@ export class Venues {
     const ref = url.slice(url.lastIndexOf(PHOTO_PATH) + PHOTO_PATH.length)
 
     return ApiUrl.of(getGetVenuePhotoUrl(ref, { maxWidth }))
+  }
+
+  /**
+   * Maps a member who saved a venue.
+   * @param member - The member the API sent.
+   * @param meId - The signed-in person's user ID.
+   * @returns The person, marked when it is the signed-in one.
+   */
+  private toSaver(member: Member, meId: string | undefined): IFavoriteSaver {
+    return {
+      id: member.userID,
+      isMe: member.userID === meId,
+      name: member.name,
+      ...(member.avatarURL === '' ? {} : { src: member.avatarURL }),
+    }
   }
 
   /**

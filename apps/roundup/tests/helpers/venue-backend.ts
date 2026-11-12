@@ -157,6 +157,43 @@ export class VenueBackend {
   }
 
   /**
+   * Answers the list of a squad's favorites: the venues saved in it, each saved by Meera and by the
+   * signed-in person, in one page.
+   * @param state - The venues and the saved venues.
+   * @param squadId - The squad in the path.
+   * @returns The page.
+   */
+  private static favorites(state: IVenueState, squadId: string): Response {
+    const saved = Object.entries(state.saved ?? {}).filter(([, squads]) => squads.includes(squadId))
+
+    const favorites = saved.flatMap(([placeId]) => {
+      const venue = (state.venues ?? []).find((candidate) => candidate.id === placeId)
+
+      if (venue === undefined) return []
+
+      return [
+        {
+          address: `${venue.name} Road`,
+          averageRating: 4.5,
+          lastSavedAt: '2026-10-18T10:00:00Z',
+          name: venue.name,
+          photo: null,
+          placeID: venue.id,
+          priceLevel: 2,
+          ratingCount: 120,
+          savedBy: [
+            { avatarURL: '', name: 'Asha Rao', userID: 'u1' },
+            { avatarURL: '', name: 'Meera', userID: 'u2' },
+          ],
+          savedByMe: true,
+        },
+      ]
+    })
+
+    return VenueBackend.ok({ favorites, nextCursor: null })
+  }
+
+  /**
    * Answers a save (POST) or an unsave (DELETE) of a venue for a squad.
    * @param state - The saved venues.
    * @param request - The method, the squad, the venue of an unsave and the body of a save.
@@ -181,6 +218,8 @@ export class VenueBackend {
   ): Response {
     const saved = (state.saved ??= {})
     const { body, method, placeId = body?.['placeID'] ?? '', squadId } = request
+
+    if (method === 'GET') return VenueBackend.favorites(state, squadId)
     const squads = saved[placeId] ?? []
 
     saved[placeId] =

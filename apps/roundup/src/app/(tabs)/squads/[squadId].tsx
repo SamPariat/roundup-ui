@@ -6,9 +6,9 @@ import { useCallback, useMemo, useRef, useState } from 'react'
 import { View } from 'react-native'
 
 import type { ISquadMember } from '@roundup/core'
-import type { IMenuHandle, IMenuItem } from '@roundup/ui'
+import type { IMenuHandle, IMenuItem, ITabItem } from '@roundup/ui'
 
-import { useSquad } from '@roundup/core'
+import { useSquad, useSquadFavorites } from '@roundup/core'
 import { useT } from '@roundup/i18n'
 import {
   Button,
@@ -18,6 +18,7 @@ import {
   List,
   Menu,
   Skeleton,
+  Tabs,
   Text,
 } from '@roundup/ui'
 
@@ -25,14 +26,19 @@ import type { TSheet } from '@/components/squads/SquadSheets'
 
 import { MemberActions } from '@/components/squads/MemberActionsModal'
 import { MemberRow } from '@/components/squads/MemberRow'
+import { FavoritesAside, PhoneFavorites } from '@/components/squads/SquadFavorites'
 import { SquadSheets } from '@/components/squads/SquadSheets'
 import { TabPage } from '@/components/TabPage'
 import { useErrorText } from '@/hooks/useErrorText'
 import { useLayout } from '@/hooks/useLayout'
 import { Paths } from '@/navigation/paths'
 
+/** The two views of a squad on a phone. */
+type TSquadTab = 'favorites' | 'members'
+
 /**
- * One squad: its avatar, name and member count, then the members with an Admin badge on admins.
+ * One squad: its avatar, name and member count, then the members with an Admin badge on admins. On a phone Tabs switch between the members and the
+ * favorites the squad has saved; from 1024 wide the favorites sit in an aside beside the members.
  * What a person can do comes from the server's permissions: admins open a member's actions and get
  * Add people as a floating button, and everyone has the options Menu in the header, with Rename
  * squad (when allowed) and Leave squad. A squad that does not exist, or that the person is not in,
@@ -45,11 +51,14 @@ export default function SquadScreen(): ReactElement {
   const router = useRouter()
   const [sheet, setSheet] = useState<TSheet | undefined>()
   const menuRef = useRef<IMenuHandle>(null)
-  const { systemChrome } = useLayout()
+  const { nav, systemChrome } = useLayout()
+  const [tab, setTab] = useState<TSquadTab>('members')
+  const wide = nav === 'side'
 
   const { error, loading, members, notFound, permissions, requestId, squad } = useSquad(squadId)
 
   const errorText = useErrorText(error, requestId)
+  const favorites = useSquadFavorites(squadId)
 
   const handleGoToSquads = useCallback((): void => {
     router.dismissTo(Paths.tabsSquads())
@@ -76,6 +85,26 @@ export default function SquadScreen(): ReactElement {
 
     return [{ icon: 'edit', label: t('screens.squad.renameRow'), onPress: handleOpenRename }, leave]
   }, [handleOpenLeave, handleOpenRename, permissions, t])
+
+  const handleSelectTab = useCallback((id: string): void => {
+    setTab(id === 'favorites' ? 'favorites' : 'members')
+  }, [])
+
+  const tabs = useMemo(
+    (): ITabItem[] => [
+      {
+        id: 'members',
+        label: t('screens.squad.tabs.members'),
+        ...(squad === undefined ? {} : { count: squad.memberCount }),
+      },
+      {
+        id: 'favorites',
+        label: t('screens.squad.tabs.favorites'),
+        ...(favorites.complete ? { count: favorites.favorites.length } : {}),
+      },
+    ],
+    [favorites.complete, favorites.favorites.length, squad, t],
+  )
 
   const handleOpenAdd = useCallback((): void => {
     setSheet({ kind: 'add' })
@@ -143,38 +172,81 @@ export default function SquadScreen(): ReactElement {
     </FloatingActionButton>
   ) : undefined
 
-  return (
-    <>
-      <Stack.Screen options={headerOptions} />
-      <TabPage fab={addPeople}>
-        <View className="max-w-160 gap-6">
-          <IdentityHeader
-            avatar={{
-              id: squad.id,
-              name: squad.name,
-              ...(squad.avatarURL === undefined ? {} : { src: squad.avatarURL }),
-            }}
-            subtitle={t('common.members', { count: squad.memberCount })}
-            title={squad.name}
+  const identity = (
+    <IdentityHeader
+      avatar={{
+        id: squad.id,
+        name: squad.name,
+        ...(squad.avatarURL === undefined ? {} : { src: squad.avatarURL }),
+      }}
+      subtitle={t('common.members', { count: squad.memberCount })}
+      title={squad.name}
+    />
+  )
+
+  const memberList = (
+    <View className="gap-3">
+      <Text heading={2} variant="heading">
+        {t('screens.squad.members')}
+      </Text>
+      <List>
+        {members.map((member) => (
+          <MemberRow
+            key={member.id}
+            member={member}
+            onSelect={
+              MemberActions.available(member, permissions).length > 0 ? openMember : undefined
+            }
           />
-          <View className="gap-3">
-            <Text heading={2} variant="heading">
-              {t('screens.squad.members')}
-            </Text>
-            <List>
-              {members.map((member) => (
-                <MemberRow
-                  key={member.id}
-                  member={member}
-                  onSelect={
-                    MemberActions.available(member, permissions).length > 0 ? openMember : undefined
-                  }
-                />
-              ))}
-            </List>
+        ))}
+      </List>
+    </View>
+  )
+
+  let content: ReactElement
+
+  if (wide) {
+    content = (
+      <TabPage fab={addPeople}>
+        <View className="gap-6">
+          {identity}
+          <View className="flex-row items-start gap-8">
+            <View className="max-w-160 min-w-0 flex-1">{memberList}</View>
+            <View className="w-90 shrink-0">
+              <FavoritesAside state={favorites} />
+            </View>
           </View>
         </View>
       </TabPage>
+    )
+  } else if (tab === 'favorites') {
+    content = (
+      <PhoneFavorites
+        header={
+          <View className="gap-4">
+            {identity}
+            <Tabs items={tabs} onChange={handleSelectTab} value={tab} />
+          </View>
+        }
+        state={favorites}
+      />
+    )
+  } else {
+    content = (
+      <TabPage fab={addPeople}>
+        <View className="max-w-160 gap-6">
+          {identity}
+          <Tabs items={tabs} onChange={handleSelectTab} value={tab} />
+          {memberList}
+        </View>
+      </TabPage>
+    )
+  }
+
+  return (
+    <>
+      <Stack.Screen options={headerOptions} />
+      {content}
       {systemChrome ? (
         <Menu anchor="header" items={options} label={t('screens.squad.options')} ref={menuRef} />
       ) : null}

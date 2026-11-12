@@ -31,6 +31,42 @@ export interface IVenuePhoto {
   small: string
 }
 
+/** A member who saved a venue in a squad. */
+export interface IFavoriteSaver {
+  /** The member's user ID. */
+  id: string
+  /** Their name; empty until they finish profile setup. */
+  name: string
+  /** Their photo; left out when they have none. */
+  src?: string
+  /** True for the signed-in person. */
+  isMe: boolean
+}
+
+/** One venue saved in a squad, as a row of the squad's favorites. */
+export interface IFavoriteRow {
+  /** The venue's place ID. */
+  id: string
+  /** The venue's name. */
+  name: string
+  /** The street address; left out when empty. */
+  address?: string
+  /** The average rating; left out when unrated. */
+  rating?: number
+  /** How many ratings it is based on; left out when unrated. */
+  reviews?: number
+  /** The Google price level, 0 when unknown. */
+  priceLevel: TPriceLevel
+  /** A small photo as an absolute URL; left out when the venue has none. */
+  photo?: string
+  /** The current members who saved it, the most recent first. */
+  savers: IFavoriteSaver[]
+  /** True when the signed-in person saved it, and so can remove their save. */
+  savedByMe: boolean
+  /** When it was last saved, such as "18 Oct". */
+  savedOn: string
+}
+
 /** One review of a venue. */
 export interface IVenueReview {
   /** Who wrote it. */

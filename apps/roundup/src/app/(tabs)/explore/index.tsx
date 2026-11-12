@@ -174,6 +174,7 @@ export default function ExploreScreen(): ReactElement {
       loadingMore={loadingMore}
       onEndReached={handleLoadNext}
       onRefresh={handleReload}
+      pinHeader
       refreshing={refreshing}
       renderItem={renderCard}
       skeleton="card"
