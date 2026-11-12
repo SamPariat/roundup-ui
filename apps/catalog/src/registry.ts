@@ -21,6 +21,7 @@ import { OtpInputDemo } from './demos/OtpInputDemo'
 import { PageHeaderDemo } from './demos/PageHeaderDemo'
 import { PhoneInputDemo } from './demos/PhoneInputDemo'
 import { PhotoDemo } from './demos/PhotoDemo'
+import { PhotoStripDemo } from './demos/PhotoStripDemo'
 import { PriceDemo } from './demos/PriceDemo'
 import { RatingDemo } from './demos/RatingDemo'
 import { SafeAreaDemo } from './demos/SafeAreaDemo'
@@ -160,6 +161,12 @@ const ENTRIES: readonly TEntryInput[] = [
     group: 'Display',
     summary: 'A cached, fading photo that fills its box over a placeholder color.',
     Demo: PhotoDemo,
+  },
+  {
+    title: 'PhotoStrip',
+    group: 'Display',
+    summary: 'Photos swiped through one at a time, with a counter and each one credited.',
+    Demo: PhotoStripDemo,
   },
   {
     title: 'IdentityHeader',

@@ -113,6 +113,9 @@ export const en = {
   },
   photo: {
     credit: 'Photo: {{name}}',
+    position: '{{index}} / {{count}}',
+    positionLabel: 'Photo {{index}} of {{count}}',
+    strip: 'Photos',
   },
   venueCard: {
     save: 'Save to squad',
