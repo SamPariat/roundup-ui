@@ -1,5 +1,4 @@
-import { keepPreviousData, skipToken, useInfiniteQuery } from '@tanstack/react-query'
-import { useCallback, useMemo } from 'react'
+import { useMemo } from 'react'
 
 import type { SearchVenues200, SearchVenuesParams } from '@roundup/api'
 
@@ -11,36 +10,21 @@ import type { IVenueCard, TVenueType } from './types'
 
 import { useDeps } from '../di/useDeps'
 import { useLocation } from '../location/useLocation'
+import { usePages } from '../paging/usePages'
 import { useSignedIn } from '../session/useSignedIn'
 
 /** Meters in a kilometer, which the API's radius is in. */
 const METERS_PER_KM = 1000
 
-/** What the query hands the page request. */
-interface IPageContext {
-  /** The cursor of the page to load; undefined for the first. */
-  pageParam: string | undefined
-}
-
 /**
  * Builds the function that asks for one page of a search.
  * @param params - What to search for.
- * @returns The function the query calls with each page's cursor.
+ * @returns The function that takes a page's cursor.
  */
 const pageFetcher =
   (params: SearchVenuesParams) =>
-  (context: IPageContext): Promise<SearchVenues200> =>
-    searchVenues({
-      ...params,
-      ...(context.pageParam === undefined ? {} : { cursor: context.pageParam }),
-    })
-
-/**
- * Reads where the next page starts.
- * @param last - The most recent answer of the search.
- * @returns The cursor, or undefined at the end of the results.
- */
-const nextCursor = (last: SearchVenues200): string | undefined => last.data.nextCursor ?? undefined
+  (cursor: string | undefined): Promise<SearchVenues200> =>
+    searchVenues({ ...params, ...(cursor === undefined ? {} : { cursor }) })
 
 /** What the Explore screen shows and does. */
 export interface IExploreViewModel {
@@ -109,40 +93,28 @@ export const useExploreViewModel = ({
     [coordinates, filter, radiusKm, words],
   )
 
-  const { data, error, fetchNextPage, hasNextPage, isFetchingNextPage, isPending, refetch } =
-    useInfiniteQuery({
-      getNextPageParam: nextCursor,
-      initialPageParam: undefined,
-      // Keeps the last results on screen while a new search loads, so typing does not flash.
-      placeholderData: keepPreviousData,
-      queryFn: signedIn && params !== undefined ? pageFetcher(params) : skipToken,
-      queryKey: getSearchVenuesQueryKey(params),
-      // Every loaded page would be asked for again (paid Places calls); a pull reloads instead.
-      refetchOnWindowFocus: false,
-    })
+  const { error, hasMore, loading, loadingMore, loadMore, pages, refresh } = usePages({
+    fetchPage: signedIn && params !== undefined ? pageFetcher(params) : undefined,
+    // Every loaded page would be asked for again (paid Places calls); a pull reloads instead.
+    refetchOnFocus: false,
+    // Keeps the last results on screen while a new search loads, so typing does not flash.
+    keepPrevious: true,
+    queryKey: getSearchVenuesQueryKey(params),
+  })
 
   const venues = useMemo(
     (): IVenueCard[] =>
-      data?.pages.flatMap((page) => page.data.venues.map((venue) => venuesHelper.toCard(venue))) ??
-      [],
-    [data, venuesHelper],
+      pages?.flatMap((page) => page.data.venues.map((venue) => venuesHelper.toCard(venue))) ?? [],
+    [pages, venuesHelper],
   )
-
-  const loadMore = useCallback((): void => {
-    if (hasNextPage && !isFetchingNextPage) void fetchNextPage({ cancelRefetch: false })
-  }, [fetchNextPage, hasNextPage, isFetchingNextPage])
-
-  const refresh = useCallback(async (): Promise<void> => {
-    await refetch()
-  }, [refetch])
 
   const message = error === null ? undefined : helpers.errors.toMessage(error, 'venue')
 
   return {
     error: message?.key,
-    hasMore: hasNextPage,
-    loading: signedIn && phase === 'ready' && isPending,
-    loadingMore: isFetchingNextPage,
+    hasMore,
+    loading: signedIn && phase === 'ready' && loading,
+    loadingMore,
     loadMore,
     phase,
     refresh,

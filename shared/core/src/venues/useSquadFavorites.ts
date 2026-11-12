@@ -1,4 +1,3 @@
-import { skipToken, useInfiniteQuery } from '@tanstack/react-query'
 import { useCallback, useMemo, useState } from 'react'
 
 import type { ListFavorites200 } from '@roundup/api'
@@ -11,36 +10,21 @@ import type { IFavoriteRow } from './types'
 import { useAttempt } from '../auth/useAttempt'
 import { useMe } from '../auth/useMe'
 import { useDeps } from '../di/useDeps'
+import { usePages } from '../paging/usePages'
 import { useSignedIn } from '../session/useSignedIn'
 
 /** How many favorites a page asks for. */
 const PAGE_SIZE = 25
 
-/** What the query hands the page request. */
-interface IPageContext {
-  /** The cursor of the page to load; undefined for the first. */
-  pageParam: string | undefined
-}
-
 /**
  * Builds the function that asks for one page of a squad's favorites.
  * @param squadId - The ID of the squad whose list is asked for.
- * @returns The function the query calls with each page's cursor.
+ * @returns The function that takes a page's cursor.
  */
 const pageFetcher =
   (squadId: string) =>
-  (context: IPageContext): Promise<ListFavorites200> =>
-    listFavorites(squadId, {
-      limit: PAGE_SIZE,
-      ...(context.pageParam === undefined ? {} : { cursor: context.pageParam }),
-    })
-
-/**
- * Reads where the next page starts.
- * @param last - The most recent answer of the list.
- * @returns The cursor, or undefined at the end of the list.
- */
-const nextCursor = (last: ListFavorites200): string | undefined => last.data.nextCursor ?? undefined
+  (cursor: string | undefined): Promise<ListFavorites200> =>
+    listFavorites(squadId, { limit: PAGE_SIZE, ...(cursor === undefined ? {} : { cursor }) })
 
 /** What a squad's favorites show and do. */
 export interface IUseSquadFavorites {
@@ -84,31 +68,20 @@ export const useSquadFavorites = (squadId: string): IUseSquadFavorites => {
   const { busy, error: removeError, requestId: removeRequestId, run } = useAttempt()
   const [removingId, setRemovingId] = useState<string | undefined>()
 
-  const { data, error, fetchNextPage, hasNextPage, isFetchingNextPage, isPending, refetch } =
-    useInfiniteQuery({
-      getNextPageParam: nextCursor,
-      initialPageParam: undefined,
-      queryFn: signedIn ? pageFetcher(squadId) : skipToken,
-      queryKey: getListFavoritesQueryKey(squadId),
-    })
+  const { error, hasMore, loading, loadingMore, loadMore, pages, refresh } = usePages({
+    fetchPage: signedIn ? pageFetcher(squadId) : undefined,
+    queryKey: getListFavoritesQueryKey(squadId),
+  })
 
   const meId = me?.id
 
   const favorites = useMemo(
     (): IFavoriteRow[] =>
-      data?.pages.flatMap((page) =>
+      pages?.flatMap((page) =>
         page.data.favorites.map((favorite) => venuesHelper.toFavorite(favorite, meId)),
       ) ?? [],
-    [data, meId, venuesHelper],
+    [meId, pages, venuesHelper],
   )
-
-  const loadMore = useCallback((): void => {
-    if (hasNextPage && !isFetchingNextPage) void fetchNextPage({ cancelRefetch: false })
-  }, [fetchNextPage, hasNextPage, isFetchingNextPage])
-
-  const refresh = useCallback(async (): Promise<void> => {
-    await refetch()
-  }, [refetch])
 
   const remove = useCallback(
     async (favorite: IFavoriteRow): Promise<boolean> => {
@@ -133,12 +106,12 @@ export const useSquadFavorites = (squadId: string): IUseSquadFavorites => {
   const message = error === null ? undefined : helpers.errors.toMessage(error, 'squad')
 
   return {
-    complete: !hasNextPage && data !== undefined,
+    complete: !hasMore && pages !== undefined,
     error: removeError ?? message?.key,
     favorites,
-    hasMore: hasNextPage,
-    loading: signedIn && isPending,
-    loadingMore: isFetchingNextPage,
+    hasMore,
+    loading: signedIn && loading,
+    loadingMore,
     loadMore,
     refresh,
     remove,
