@@ -106,6 +106,14 @@ const FAMILIES: IFamily[] = [
       { role: 'scrim', fill: 'bg-scrim' },
     ],
   },
+  {
+    title: 'On a photo',
+    note: 'The backing and text of a photo credit, the same in every theme since the photo is.',
+    swatches: [
+      { role: 'photo-scrim', fill: 'bg-photo-scrim' },
+      { role: 'on-photo', fill: 'bg-on-photo' },
+    ],
+  },
 ]
 
 /**

@@ -8,7 +8,7 @@ import { Specimen } from '@/components/Specimen'
 const TONES = ['fg', 'muted', 'subtle', 'accent', 'danger'] as const
 
 /**
- * Text in each tone, as a heading, and truncated. The type styles have a page of their own (Type).
+ * Text in each tone, including the ones that sit on a fill or a photo, as a heading, and truncated. The type styles have a page of their own (Type).
  * @returns The specimens.
  */
 export const TextDemo = (): ReactElement => (
@@ -19,14 +19,17 @@ export const TextDemo = (): ReactElement => (
       </Specimen>
     ))}
     <Specimen
-      note="On-accent and on-highlight sit on their own fills."
-      title="tone=on-accent · on-highlight"
+      note="On-accent and on-highlight sit on their own fills; on-photo sits on photo-scrim, over a photo."
+      title="tone=on-accent · on-highlight · on-photo"
     >
       <Text className="rounded-lg bg-accent p-3" tone="on-accent" variant="body-strong">
         On accent
       </Text>
       <Text className="rounded-lg bg-highlight p-3" tone="on-highlight" variant="body-strong">
         On highlight
+      </Text>
+      <Text className="rounded-lg bg-photo-scrim p-3" tone="on-photo" variant="body-strong">
+        On photo
       </Text>
     </Specimen>
     <Specimen
