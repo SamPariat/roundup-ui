@@ -10,7 +10,8 @@ const SAMPLE = `data:image/svg+xml,${encodeURIComponent(
 )}`
 
 /**
- * Photo as a loaded picture and as the placeholder color it sits on until one arrives.
+ * Photo as a loaded picture, with its author credited (linked and plain), and as the placeholder
+ * color it sits on until one arrives.
  * @returns The specimens.
  */
 export const PhotoDemo = (): ReactElement => (
@@ -20,6 +21,26 @@ export const PhotoDemo = (): ReactElement => (
       title="src=… (loaded)"
     >
       <Photo className="h-40 w-full rounded-2xl bg-bg-sunken" src={SAMPLE} />
+    </Specimen>
+    <Specimen
+      note="Google requires crediting the author. With a url the name opens their profile."
+      title="credit={ name, url }"
+    >
+      <Photo
+        className="h-40 w-full rounded-2xl bg-bg-sunken"
+        credit={{ name: 'Asha Rao', url: 'https://maps.google.com' }}
+        src={SAMPLE}
+      />
+    </Specimen>
+    <Specimen
+      note="Without a url, or inside something already pressable, the credit is plain text."
+      title="credit={ name }"
+    >
+      <Photo
+        className="h-40 w-full rounded-2xl bg-bg-sunken"
+        credit={{ name: 'Kabir' }}
+        src={SAMPLE}
+      />
     </Specimen>
     <Specimen note="Until the photo arrives the box shows the sunken color." title="Placeholder">
       <Photo className="h-40 w-full rounded-2xl bg-bg-sunken" src="https://invalid.invalid/x.jpg" />

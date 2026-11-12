@@ -45,5 +45,10 @@ export interface Venue {
    * @nullable
    */
   isOpen: boolean | null
+  /**
+   * Photos with a direct URL: the first one in search results, up to
+   * five on a venue's page. A photo whose URL could not be looked up
+   * is left out.
+   */
   photos: Photo[]
 }

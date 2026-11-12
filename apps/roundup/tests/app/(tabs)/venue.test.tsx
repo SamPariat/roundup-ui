@@ -6,9 +6,6 @@ import type { IBackend } from '../../helpers/fakes'
 import { SquadsFixtures } from '../../helpers/squads'
 import { VenuesFixtures } from '../../helpers/venues'
 
-/** The collapsed hours row, whatever weekday the test runs on: the fixture's hours differ by day. */
-const TODAY_HOURS = /^Today: \d:00 [AP]M – \d:00 [AP]M/
-
 /** The backend of the current test. */
 let backend: IBackend
 
@@ -46,14 +43,14 @@ describe('venue page', () => {
   it('expands the opening hours to the whole week', async () => {
     await VenuesFixtures.open(backend, '/explore/v1')
 
-    const hours = await screen.findByRole('button', { name: TODAY_HOURS })
+    const hours = await screen.findByRole('button', { name: /^Today: 5:00 PM – 11:00 PM/ })
 
     expect(hours).not.toBeExpanded()
     expect(screen.queryByText('Monday: 5:00 PM – 11:00 PM')).toBeNull()
 
     await fireEvent.press(hours)
 
-    expect(screen.getByRole('button', { name: TODAY_HOURS })).toBeExpanded()
+    expect(screen.getByRole('button', { name: /^Today: 5:00 PM – 11:00 PM/ })).toBeExpanded()
     expect(screen.getByText('Monday: 5:00 PM – 11:00 PM')).toBeOnTheScreen()
   })
 

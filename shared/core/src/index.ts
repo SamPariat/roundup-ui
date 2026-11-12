@@ -54,6 +54,7 @@ export type {
   IFavoriteRow,
   IFavoriteSaver,
   IVenueInfo,
+  IPhotoCredit,
   IVenuePhoto,
   IVenueReview,
   TPriceLevel,

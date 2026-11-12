@@ -22,7 +22,14 @@
  *
  * OpenAPI spec version: 1.0.0
  */
+import type { PhotoWidthParameter } from './photoWidthParameter'
 
-export interface DueResponse {
-  count?: number
+export type StartVotingParams = {
+  /**
+   * How wide the photos may be, in pixels. Pick the smallest width that
+   * covers the photo's slot on screen (points times pixel density), so the
+   * same few widths repeat and their URLs stay cached. 400 for any other
+   * value.
+   */
+  photoWidth?: PhotoWidthParameter
 }

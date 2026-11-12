@@ -1,6 +1,7 @@
 import { useCallback, useMemo, useState } from 'react'
+import { useWindowDimensions } from 'react-native'
 
-import type { ListFavorites200 } from '@roundup/api'
+import type { ListFavorites200, PhotoWidthParameter } from '@roundup/api'
 
 import { getListFavoritesQueryKey, listFavorites, removeFavorite } from '@roundup/api'
 
@@ -19,12 +20,17 @@ const PAGE_SIZE = 25
 /**
  * Builds the function that asks for one page of a squad's favorites.
  * @param squadId - The ID of the squad whose list is asked for.
+ * @param photoWidth - How wide the rows' thumbnails are asked for.
  * @returns The function that takes a page's cursor.
  */
 const pageFetcher =
-  (squadId: string) =>
+  (squadId: string, photoWidth: PhotoWidthParameter) =>
   (cursor: string | undefined): Promise<ListFavorites200> =>
-    listFavorites(squadId, { limit: PAGE_SIZE, ...(cursor === undefined ? {} : { cursor }) })
+    listFavorites(squadId, {
+      limit: PAGE_SIZE,
+      photoWidth,
+      ...(cursor === undefined ? {} : { cursor }),
+    })
 
 /** What a squad's favorites show and do. */
 export interface IUseSquadFavorites {
@@ -63,13 +69,16 @@ export interface IUseSquadFavorites {
 export const useSquadFavorites = (squadId: string): IUseSquadFavorites => {
   const { helpers } = useDeps()
   const venuesHelper = helpers.venues
+  const { width: windowWidth } = useWindowDimensions()
   const signedIn = useSignedIn()
   const { me } = useMe()
   const { busy, error: removeError, requestId: removeRequestId, run } = useAttempt()
   const [removingId, setRemovingId] = useState<string | undefined>()
 
   const { error, hasMore, loading, loadingMore, loadMore, pages, refresh } = usePages({
-    fetchPage: signedIn ? pageFetcher(squadId) : undefined,
+    fetchPage: signedIn
+      ? pageFetcher(squadId, venuesHelper.photoWidth('thumb', windowWidth))
+      : undefined,
     queryKey: getListFavoritesQueryKey(squadId),
   })
 

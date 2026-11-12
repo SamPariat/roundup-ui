@@ -22,7 +22,10 @@ const SAVED_TWICE = VenueFixtures.detail('v1', {
 
 describe('useSaveVenueViewModel', () => {
   it('lists the squads with a tick on those that have the venue', async () => {
-    Fakes.stubNetwork({ ...REFRESH, 'GET /api/v1/venues/v1': Fakes.ok(SAVED) })
+    Fakes.stubNetwork({
+      ...REFRESH,
+      'GET /api/v1/venues/v1?photoCount=5&photoWidth=1200': Fakes.ok(SAVED),
+    })
 
     const { wrapper } = await VenueFixtures.signedInCore()
     const { result } = await renderHook(() => useSaveVenueViewModel('v1'), { wrapper })
@@ -43,7 +46,7 @@ describe('useSaveVenueViewModel', () => {
   it('saves the venue in a squad and loads it again', async () => {
     const network = Fakes.stubNetwork({
       ...REFRESH,
-      'GET /api/v1/venues/v1': Fakes.ok(SAVED),
+      'GET /api/v1/venues/v1?photoCount=5&photoWidth=1200': Fakes.ok(SAVED),
       'POST /api/v1/squads/s2/favorites': Fakes.empty(HttpStatus.noContent),
     })
 
@@ -54,7 +57,7 @@ describe('useSaveVenueViewModel', () => {
       expect(result.current.squads).toHaveLength(2)
     })
 
-    network.routes['GET /api/v1/venues/v1'] = Fakes.ok(SAVED_TWICE)
+    network.routes['GET /api/v1/venues/v1?photoCount=5&photoWidth=1200'] = Fakes.ok(SAVED_TWICE)
 
     let done: boolean | undefined
 
@@ -79,7 +82,7 @@ describe('useSaveVenueViewModel', () => {
     const network = Fakes.stubNetwork({
       ...REFRESH,
       'DELETE /api/v1/squads/s1/favorites/v1': Fakes.empty(HttpStatus.noContent),
-      'GET /api/v1/venues/v1': Fakes.ok(SAVED),
+      'GET /api/v1/venues/v1?photoCount=5&photoWidth=1200': Fakes.ok(SAVED),
     })
 
     const { wrapper } = await VenueFixtures.signedInCore()
@@ -89,7 +92,7 @@ describe('useSaveVenueViewModel', () => {
       expect(result.current.squads).toHaveLength(2)
     })
 
-    network.routes['GET /api/v1/venues/v1'] = Fakes.ok(
+    network.routes['GET /api/v1/venues/v1?photoCount=5&photoWidth=1200'] = Fakes.ok(
       VenueFixtures.detail('v1', {
         savedIn: [
           { saved: false, squadID: 's1', squadName: 'Friday crew' },
@@ -119,7 +122,7 @@ describe('useSaveVenueViewModel', () => {
 
     Fakes.stubNetwork({
       ...REFRESH,
-      'GET /api/v1/venues/v1': Fakes.ok(SAVED),
+      'GET /api/v1/venues/v1?photoCount=5&photoWidth=1200': Fakes.ok(SAVED),
       'POST /api/v1/squads/s2/favorites': { gate, status: HttpStatus.noContent },
     })
 
@@ -149,7 +152,7 @@ describe('useSaveVenueViewModel', () => {
   it('shows an error and resolves false when saving fails', async () => {
     Fakes.stubNetwork({
       ...REFRESH,
-      'GET /api/v1/venues/v1': Fakes.ok(SAVED),
+      'GET /api/v1/venues/v1?photoCount=5&photoWidth=1200': Fakes.ok(SAVED),
       'POST /api/v1/squads/s2/favorites': Fakes.failure(HttpStatus.notFound, 'squad or venue'),
     })
 

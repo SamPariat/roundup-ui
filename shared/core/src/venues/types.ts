@@ -19,16 +19,26 @@ export interface IVenueCard {
   isOpen?: boolean
   /** Readable category tags, such as "Night club". */
   types: string[]
-  /** The first photo as an absolute URL; left out when the venue has none. */
+  /** The first photo's URL on Google's servers, sized for a card; left out when the venue has none. */
   photo?: string
+  /** Who took the first photo; left out when unknown. */
+  photoCredit?: IPhotoCredit
 }
 
-/** One photo of a venue's page, at the two sizes its tiles draw it. */
+/** Who took a photo, which Google requires showing with it. Matches the UI's IPhotoCredit. */
+export interface IPhotoCredit {
+  /** The author's display name. */
+  name: string
+  /** The author's profile page; left out when Google gives none. */
+  url?: string
+}
+
+/** One photo of a venue's page. */
 export interface IVenuePhoto {
-  /** For the large tile of the photo grid, an absolute URL. */
-  large: string
-  /** For a small tile of the photo grid, an absolute URL. */
-  small: string
+  /** The photo's URL on Google's servers, sized for the page's largest tile. */
+  src: string
+  /** Who took it; left out when unknown. */
+  credit?: IPhotoCredit
 }
 
 /** A member who saved a venue in a squad. */
@@ -57,8 +67,10 @@ export interface IFavoriteRow {
   reviews?: number
   /** The Google price level, 0 when unknown. */
   priceLevel: TPriceLevel
-  /** A small photo as an absolute URL; left out when the venue has none. */
+  /** A small photo's URL on Google's servers; left out when the venue has none. */
   photo?: string
+  /** Who took the photo; left out when unknown. */
+  photoCredit?: IPhotoCredit
   /** The current members who saved it, the most recent first. */
   savers: IFavoriteSaver[]
   /** True when the signed-in person saved it, and so can remove their save. */
@@ -101,7 +113,7 @@ export interface IVenueInfo extends IVenueCard {
   phone?: string
   /** The website; left out when empty. */
   website?: string
-  /** Every photo, the first being the card's, each sized for the page's tiles; empty when there are none. */
+  /** The photos the page shows, up to five, the first being the card's; empty when there are none. */
   photos: IVenuePhoto[]
   /** The reviews the API sent, up to five, newest as it orders them; empty when there are none. */
   reviewList: IVenueReview[]

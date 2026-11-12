@@ -7,7 +7,7 @@ import type { IBackend } from '../../helpers/fakes'
 import { VenuesFixtures } from '../../helpers/venues'
 
 /** The first page's path: 3 km around Bengaluru. */
-const BASE = '/api/v1/venues?lat=12.9716&lng=77.5946&radius=3000'
+const BASE = '/api/v1/venues?lat=12.9716&lng=77.5946&radius=3000&photoWidth=800'
 
 /** The backend of the current test. */
 let backend: IBackend
