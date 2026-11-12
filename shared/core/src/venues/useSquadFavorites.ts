@@ -1,7 +1,8 @@
 import { skipToken, useInfiniteQuery } from '@tanstack/react-query'
 import { useCallback, useMemo, useState } from 'react'
+import { useWindowDimensions } from 'react-native'
 
-import type { ListFavorites200 } from '@roundup/api'
+import type { ListFavorites200, PhotoWidthParameter } from '@roundup/api'
 
 import { getListFavoritesQueryKey, listFavorites, removeFavorite } from '@roundup/api'
 
@@ -25,13 +26,15 @@ interface IPageContext {
 /**
  * Builds the function that asks for one page of a squad's favorites.
  * @param squadId - The ID of the squad whose list is asked for.
+ * @param photoWidth - How wide the rows' thumbnails are asked for.
  * @returns The function the query calls with each page's cursor.
  */
 const pageFetcher =
-  (squadId: string) =>
+  (squadId: string, photoWidth: PhotoWidthParameter) =>
   (context: IPageContext): Promise<ListFavorites200> =>
     listFavorites(squadId, {
       limit: PAGE_SIZE,
+      photoWidth,
       ...(context.pageParam === undefined ? {} : { cursor: context.pageParam }),
     })
 
@@ -79,6 +82,7 @@ export interface IUseSquadFavorites {
 export const useSquadFavorites = (squadId: string): IUseSquadFavorites => {
   const { helpers } = useDeps()
   const venuesHelper = helpers.venues
+  const { width: windowWidth } = useWindowDimensions()
   const signedIn = useSignedIn()
   const { me } = useMe()
   const { busy, error: removeError, requestId: removeRequestId, run } = useAttempt()
@@ -88,7 +92,9 @@ export const useSquadFavorites = (squadId: string): IUseSquadFavorites => {
     useInfiniteQuery({
       getNextPageParam: nextCursor,
       initialPageParam: undefined,
-      queryFn: signedIn ? pageFetcher(squadId) : skipToken,
+      queryFn: signedIn
+        ? pageFetcher(squadId, venuesHelper.photoWidth('thumb', windowWidth))
+        : skipToken,
       queryKey: getListFavoritesQueryKey(squadId),
     })
 

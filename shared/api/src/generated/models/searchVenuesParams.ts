@@ -23,6 +23,7 @@
  * OpenAPI spec version: 1.0.0
  */
 import type { CursorParameter } from './cursorParameter'
+import type { PhotoWidthParameter } from './photoWidthParameter'
 
 export type SearchVenuesParams = {
   /**
@@ -50,4 +51,11 @@ export type SearchVenuesParams = {
    * send it back exactly as received. A cursor this API did not issue is a 400.
    */
   cursor?: CursorParameter
+  /**
+   * How wide the photos may be, in pixels. Pick the smallest width that
+   * covers the photo's slot on screen (points times pixel density), so the
+   * same few widths repeat and their URLs stay cached. 400 for any other
+   * value.
+   */
+  photoWidth?: PhotoWidthParameter
 }

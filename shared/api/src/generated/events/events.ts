@@ -42,29 +42,39 @@ import type {
   BadGatewayResponse,
   BadRequestResponse,
   CloseEvent200,
+  CloseEventParams,
   CloseVoting200,
+  CloseVotingParams,
   CreateEvent201,
   CreateEventRequest,
   EventConflictResponse,
   EventNotFoundResponse,
   ForbiddenResponse,
   GetEvent200,
+  GetEventParams,
   InternalErrorResponse,
   ListSquadEvents200,
   ListSquadEventsParams,
   Nominate200,
+  NominateParams,
   PlaceRequest,
   RSVPRequest,
   RemoveNomination200,
+  RemoveNominationParams,
   ServiceUnavailableResponse,
   SetRSVP200,
+  SetRSVPParams,
   SquadNotFoundResponse,
   StartNight200,
+  StartNightParams,
   StartVoting200,
+  StartVotingParams,
   UnauthorizedResponse,
   UpdateEvent200,
+  UpdateEventParams,
   UpdateEventRequest,
   Vote200,
+  VoteParams,
 } from '../models'
 
 import { fetcher } from '../../fetcher'
@@ -399,8 +409,20 @@ export const useCreateEvent = <
 > => {
   return useMutation(getCreateEventMutationOptions(options), queryClient)
 }
-export const getGetEventUrl = (eventID: string) => {
-  return `/api/v1/events/${eventID}`
+export const getGetEventUrl = (eventID: string, params?: GetEventParams) => {
+  const normalizedParams = new URLSearchParams()
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  })
+
+  const stringifiedParams = normalizedParams.toString()
+
+  return stringifiedParams.length > 0
+    ? `/api/v1/events/${eventID}?${stringifiedParams}`
+    : `/api/v1/events/${eventID}`
 }
 
 /**
@@ -411,16 +433,17 @@ export const getGetEventUrl = (eventID: string) => {
  */
 export const getEvent = async (
   eventID: string,
+  params?: GetEventParams,
   options?: Parameters<typeof fetcher>[1],
 ): Promise<GetEvent200> => {
-  return fetcher<GetEvent200>(getGetEventUrl(eventID), {
+  return fetcher<GetEvent200>(getGetEventUrl(eventID, params), {
     ...options,
     method: 'GET',
   })
 }
 
-export const getGetEventQueryKey = (eventID: string) => {
-  return [`/api/v1/events/${eventID}`] as const
+export const getGetEventQueryKey = (eventID: string, params?: GetEventParams) => {
+  return [`/api/v1/events/${eventID}`, ...(params ? [params] : [])] as const
 }
 
 export const getGetEventQueryOptions = <
@@ -433,6 +456,7 @@ export const getGetEventQueryOptions = <
     | ServiceUnavailableResponse,
 >(
   eventID: string,
+  params?: GetEventParams,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof getEvent>>, TError, TData>>
     request?: SecondParameter<typeof fetcher>
@@ -440,10 +464,10 @@ export const getGetEventQueryOptions = <
 ) => {
   const { query: queryOptions, request: requestOptions } = options ?? {}
 
-  const queryKey = queryOptions?.queryKey ?? getGetEventQueryKey(eventID)
+  const queryKey = queryOptions?.queryKey ?? getGetEventQueryKey(eventID, params)
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof getEvent>>> = ({ signal }) =>
-    getEvent(eventID, { signal, ...requestOptions })
+    getEvent(eventID, params, { signal, ...requestOptions })
 
   return {
     queryKey,
@@ -473,6 +497,7 @@ export function useGetEvent<
     | ServiceUnavailableResponse,
 >(
   eventID: string,
+  params: undefined | GetEventParams,
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof getEvent>>, TError, TData>> &
       Pick<
@@ -497,6 +522,7 @@ export function useGetEvent<
     | ServiceUnavailableResponse,
 >(
   eventID: string,
+  params?: GetEventParams,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof getEvent>>, TError, TData>> &
       Pick<
@@ -521,6 +547,7 @@ export function useGetEvent<
     | ServiceUnavailableResponse,
 >(
   eventID: string,
+  params?: GetEventParams,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof getEvent>>, TError, TData>>
     request?: SecondParameter<typeof fetcher>
@@ -541,13 +568,14 @@ export function useGetEvent<
     | ServiceUnavailableResponse,
 >(
   eventID: string,
+  params?: GetEventParams,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof getEvent>>, TError, TData>>
     request?: SecondParameter<typeof fetcher>
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
-  const queryOptions = getGetEventQueryOptions(eventID, options)
+  const queryOptions = getGetEventQueryOptions(eventID, params, options)
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>
@@ -556,8 +584,20 @@ export function useGetEvent<
   return withQueryKey(query, queryOptions.queryKey)
 }
 
-export const getUpdateEventUrl = (eventID: string) => {
-  return `/api/v1/events/${eventID}`
+export const getUpdateEventUrl = (eventID: string, params?: UpdateEventParams) => {
+  const normalizedParams = new URLSearchParams()
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  })
+
+  const stringifiedParams = normalizedParams.toString()
+
+  return stringifiedParams.length > 0
+    ? `/api/v1/events/${eventID}?${stringifiedParams}`
+    : `/api/v1/events/${eventID}`
 }
 
 /**
@@ -568,6 +608,7 @@ export const getUpdateEventUrl = (eventID: string) => {
 export const updateEvent = async (
   eventID: string,
   updateEventRequest: UpdateEventRequest,
+  params?: UpdateEventParams,
   options?: Parameters<typeof fetcher>[1],
 ): Promise<UpdateEvent200> => {
   const getHeaders = (
@@ -589,7 +630,7 @@ export const updateEvent = async (
     }
     return headers
   }
-  return fetcher<UpdateEvent200>(getUpdateEventUrl(eventID), {
+  return fetcher<UpdateEvent200>(getUpdateEventUrl(eventID, params), {
     ...options,
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
@@ -635,9 +676,9 @@ export const getUpdateEventMutationOptions = <
     Awaited<ReturnType<typeof updateEvent>>,
     UpdateEventMutationVariables
   > = (props) => {
-    const { eventID, data } = props ?? {}
+    const { eventID, data, params } = props ?? {}
 
-    return updateEvent(eventID, data, requestOptions)
+    return updateEvent(eventID, data, params, requestOptions)
   }
 
   return { mutationFn, ...mutationOptions }
@@ -654,7 +695,11 @@ export type UpdateEventMutationError =
   | InternalErrorResponse
   | BadGatewayResponse
   | ServiceUnavailableResponse
-export type UpdateEventMutationVariables = { eventID: string; data: UpdateEventRequest }
+export type UpdateEventMutationVariables = {
+  eventID: string
+  data: UpdateEventRequest
+  params?: UpdateEventParams
+}
 
 /**
  * @summary Edit an event
@@ -689,8 +734,20 @@ export const useUpdateEvent = <
 > => {
   return useMutation(getUpdateEventMutationOptions(options), queryClient)
 }
-export const getSetRSVPUrl = (eventID: string) => {
-  return `/api/v1/events/${eventID}/rsvp`
+export const getSetRSVPUrl = (eventID: string, params?: SetRSVPParams) => {
+  const normalizedParams = new URLSearchParams()
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  })
+
+  const stringifiedParams = normalizedParams.toString()
+
+  return stringifiedParams.length > 0
+    ? `/api/v1/events/${eventID}/rsvp?${stringifiedParams}`
+    : `/api/v1/events/${eventID}/rsvp`
 }
 
 /**
@@ -700,6 +757,7 @@ export const getSetRSVPUrl = (eventID: string) => {
 export const setRSVP = async (
   eventID: string,
   rSVPRequest: RSVPRequest,
+  params?: SetRSVPParams,
   options?: Parameters<typeof fetcher>[1],
 ): Promise<SetRSVP200> => {
   const getHeaders = (
@@ -721,7 +779,7 @@ export const setRSVP = async (
     }
     return headers
   }
-  return fetcher<SetRSVP200>(getSetRSVPUrl(eventID), {
+  return fetcher<SetRSVP200>(getSetRSVPUrl(eventID, params), {
     ...options,
     method: 'PUT',
     headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
@@ -767,9 +825,9 @@ export const getSetRSVPMutationOptions = <
     Awaited<ReturnType<typeof setRSVP>>,
     SetRSVPMutationVariables
   > = (props) => {
-    const { eventID, data } = props ?? {}
+    const { eventID, data, params } = props ?? {}
 
-    return setRSVP(eventID, data, requestOptions)
+    return setRSVP(eventID, data, params, requestOptions)
   }
 
   return { mutationFn, ...mutationOptions }
@@ -786,7 +844,11 @@ export type SetRSVPMutationError =
   | InternalErrorResponse
   | BadGatewayResponse
   | ServiceUnavailableResponse
-export type SetRSVPMutationVariables = { eventID: string; data: RSVPRequest }
+export type SetRSVPMutationVariables = {
+  eventID: string
+  data: RSVPRequest
+  params?: SetRSVPParams
+}
 
 /**
  * @summary Answer going, maybe or not going
@@ -821,8 +883,20 @@ export const useSetRSVP = <
 > => {
   return useMutation(getSetRSVPMutationOptions(options), queryClient)
 }
-export const getNominateUrl = (eventID: string) => {
-  return `/api/v1/events/${eventID}/nominations`
+export const getNominateUrl = (eventID: string, params?: NominateParams) => {
+  const normalizedParams = new URLSearchParams()
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  })
+
+  const stringifiedParams = normalizedParams.toString()
+
+  return stringifiedParams.length > 0
+    ? `/api/v1/events/${eventID}/nominations?${stringifiedParams}`
+    : `/api/v1/events/${eventID}/nominations`
 }
 
 /**
@@ -834,6 +908,7 @@ export const getNominateUrl = (eventID: string) => {
 export const nominate = async (
   eventID: string,
   placeRequest: PlaceRequest,
+  params?: NominateParams,
   options?: Parameters<typeof fetcher>[1],
 ): Promise<Nominate200> => {
   const getHeaders = (
@@ -855,7 +930,7 @@ export const nominate = async (
     }
     return headers
   }
-  return fetcher<Nominate200>(getNominateUrl(eventID), {
+  return fetcher<Nominate200>(getNominateUrl(eventID, params), {
     ...options,
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
@@ -901,9 +976,9 @@ export const getNominateMutationOptions = <
     Awaited<ReturnType<typeof nominate>>,
     NominateMutationVariables
   > = (props) => {
-    const { eventID, data } = props ?? {}
+    const { eventID, data, params } = props ?? {}
 
-    return nominate(eventID, data, requestOptions)
+    return nominate(eventID, data, params, requestOptions)
   }
 
   return { mutationFn, ...mutationOptions }
@@ -920,7 +995,11 @@ export type NominateMutationError =
   | InternalErrorResponse
   | BadGatewayResponse
   | ServiceUnavailableResponse
-export type NominateMutationVariables = { eventID: string; data: PlaceRequest }
+export type NominateMutationVariables = {
+  eventID: string
+  data: PlaceRequest
+  params?: NominateParams
+}
 
 /**
  * @summary Suggest a place
@@ -955,8 +1034,24 @@ export const useNominate = <
 > => {
   return useMutation(getNominateMutationOptions(options), queryClient)
 }
-export const getRemoveNominationUrl = (eventID: string, placeID: string) => {
-  return `/api/v1/events/${eventID}/nominations/${placeID}`
+export const getRemoveNominationUrl = (
+  eventID: string,
+  placeID: string,
+  params?: RemoveNominationParams,
+) => {
+  const normalizedParams = new URLSearchParams()
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  })
+
+  const stringifiedParams = normalizedParams.toString()
+
+  return stringifiedParams.length > 0
+    ? `/api/v1/events/${eventID}/nominations/${placeID}?${stringifiedParams}`
+    : `/api/v1/events/${eventID}/nominations/${placeID}`
 }
 
 /**
@@ -966,9 +1061,10 @@ export const getRemoveNominationUrl = (eventID: string, placeID: string) => {
 export const removeNomination = async (
   eventID: string,
   placeID: string,
+  params?: RemoveNominationParams,
   options?: Parameters<typeof fetcher>[1],
 ): Promise<RemoveNomination200> => {
-  return fetcher<RemoveNomination200>(getRemoveNominationUrl(eventID, placeID), {
+  return fetcher<RemoveNomination200>(getRemoveNominationUrl(eventID, placeID, params), {
     ...options,
     method: 'DELETE',
   })
@@ -1011,9 +1107,9 @@ export const getRemoveNominationMutationOptions = <
     Awaited<ReturnType<typeof removeNomination>>,
     RemoveNominationMutationVariables
   > = (props) => {
-    const { eventID, placeID } = props ?? {}
+    const { eventID, placeID, params } = props ?? {}
 
-    return removeNomination(eventID, placeID, requestOptions)
+    return removeNomination(eventID, placeID, params, requestOptions)
   }
 
   return { mutationFn, ...mutationOptions }
@@ -1031,7 +1127,11 @@ export type RemoveNominationMutationError =
   | InternalErrorResponse
   | BadGatewayResponse
   | ServiceUnavailableResponse
-export type RemoveNominationMutationVariables = { eventID: string; placeID: string }
+export type RemoveNominationMutationVariables = {
+  eventID: string
+  placeID: string
+  params?: RemoveNominationParams
+}
 
 /**
  * @summary Withdraw a suggestion
@@ -1065,8 +1165,20 @@ export const useRemoveNomination = <
 > => {
   return useMutation(getRemoveNominationMutationOptions(options), queryClient)
 }
-export const getVoteUrl = (eventID: string) => {
-  return `/api/v1/events/${eventID}/vote`
+export const getVoteUrl = (eventID: string, params?: VoteParams) => {
+  const normalizedParams = new URLSearchParams()
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  })
+
+  const stringifiedParams = normalizedParams.toString()
+
+  return stringifiedParams.length > 0
+    ? `/api/v1/events/${eventID}/vote?${stringifiedParams}`
+    : `/api/v1/events/${eventID}/vote`
 }
 
 /**
@@ -1076,6 +1188,7 @@ export const getVoteUrl = (eventID: string) => {
 export const vote = async (
   eventID: string,
   placeRequest: PlaceRequest,
+  params?: VoteParams,
   options?: Parameters<typeof fetcher>[1],
 ): Promise<Vote200> => {
   const getHeaders = (
@@ -1097,7 +1210,7 @@ export const vote = async (
     }
     return headers
   }
-  return fetcher<Vote200>(getVoteUrl(eventID), {
+  return fetcher<Vote200>(getVoteUrl(eventID, params), {
     ...options,
     method: 'PUT',
     headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
@@ -1142,9 +1255,9 @@ export const getVoteMutationOptions = <
   const mutationFn: MutationFunction<Awaited<ReturnType<typeof vote>>, VoteMutationVariables> = (
     props,
   ) => {
-    const { eventID, data } = props ?? {}
+    const { eventID, data, params } = props ?? {}
 
-    return vote(eventID, data, requestOptions)
+    return vote(eventID, data, params, requestOptions)
   }
 
   return { mutationFn, ...mutationOptions }
@@ -1161,7 +1274,7 @@ export type VoteMutationError =
   | InternalErrorResponse
   | BadGatewayResponse
   | ServiceUnavailableResponse
-export type VoteMutationVariables = { eventID: string; data: PlaceRequest }
+export type VoteMutationVariables = { eventID: string; data: PlaceRequest; params?: VoteParams }
 
 /**
  * @summary Vote for a place
@@ -1191,8 +1304,20 @@ export const useVote = <
 ): UseMutationResult<Awaited<ReturnType<typeof vote>>, TError, VoteMutationVariables, TContext> => {
   return useMutation(getVoteMutationOptions(options), queryClient)
 }
-export const getStartVotingUrl = (eventID: string) => {
-  return `/api/v1/events/${eventID}/voting/start`
+export const getStartVotingUrl = (eventID: string, params?: StartVotingParams) => {
+  const normalizedParams = new URLSearchParams()
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  })
+
+  const stringifiedParams = normalizedParams.toString()
+
+  return stringifiedParams.length > 0
+    ? `/api/v1/events/${eventID}/voting/start?${stringifiedParams}`
+    : `/api/v1/events/${eventID}/voting/start`
 }
 
 /**
@@ -1201,9 +1326,10 @@ export const getStartVotingUrl = (eventID: string) => {
  */
 export const startVoting = async (
   eventID: string,
+  params?: StartVotingParams,
   options?: Parameters<typeof fetcher>[1],
 ): Promise<StartVoting200> => {
-  return fetcher<StartVoting200>(getStartVotingUrl(eventID), {
+  return fetcher<StartVoting200>(getStartVotingUrl(eventID, params), {
     ...options,
     method: 'POST',
   })
@@ -1246,9 +1372,9 @@ export const getStartVotingMutationOptions = <
     Awaited<ReturnType<typeof startVoting>>,
     StartVotingMutationVariables
   > = (props) => {
-    const { eventID } = props ?? {}
+    const { eventID, params } = props ?? {}
 
-    return startVoting(eventID, requestOptions)
+    return startVoting(eventID, params, requestOptions)
   }
 
   return { mutationFn, ...mutationOptions }
@@ -1264,7 +1390,7 @@ export type StartVotingMutationError =
   | InternalErrorResponse
   | BadGatewayResponse
   | ServiceUnavailableResponse
-export type StartVotingMutationVariables = { eventID: string }
+export type StartVotingMutationVariables = { eventID: string; params?: StartVotingParams }
 
 /**
  * @summary Start voting
@@ -1298,8 +1424,20 @@ export const useStartVoting = <
 > => {
   return useMutation(getStartVotingMutationOptions(options), queryClient)
 }
-export const getCloseVotingUrl = (eventID: string) => {
-  return `/api/v1/events/${eventID}/voting/close`
+export const getCloseVotingUrl = (eventID: string, params?: CloseVotingParams) => {
+  const normalizedParams = new URLSearchParams()
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  })
+
+  const stringifiedParams = normalizedParams.toString()
+
+  return stringifiedParams.length > 0
+    ? `/api/v1/events/${eventID}/voting/close?${stringifiedParams}`
+    : `/api/v1/events/${eventID}/voting/close`
 }
 
 /**
@@ -1310,9 +1448,10 @@ export const getCloseVotingUrl = (eventID: string) => {
  */
 export const closeVoting = async (
   eventID: string,
+  params?: CloseVotingParams,
   options?: Parameters<typeof fetcher>[1],
 ): Promise<CloseVoting200> => {
-  return fetcher<CloseVoting200>(getCloseVotingUrl(eventID), {
+  return fetcher<CloseVoting200>(getCloseVotingUrl(eventID, params), {
     ...options,
     method: 'POST',
   })
@@ -1355,9 +1494,9 @@ export const getCloseVotingMutationOptions = <
     Awaited<ReturnType<typeof closeVoting>>,
     CloseVotingMutationVariables
   > = (props) => {
-    const { eventID } = props ?? {}
+    const { eventID, params } = props ?? {}
 
-    return closeVoting(eventID, requestOptions)
+    return closeVoting(eventID, params, requestOptions)
   }
 
   return { mutationFn, ...mutationOptions }
@@ -1373,7 +1512,7 @@ export type CloseVotingMutationError =
   | InternalErrorResponse
   | BadGatewayResponse
   | ServiceUnavailableResponse
-export type CloseVotingMutationVariables = { eventID: string }
+export type CloseVotingMutationVariables = { eventID: string; params?: CloseVotingParams }
 
 /**
  * @summary Close voting
@@ -1407,8 +1546,20 @@ export const useCloseVoting = <
 > => {
   return useMutation(getCloseVotingMutationOptions(options), queryClient)
 }
-export const getStartNightUrl = (eventID: string) => {
-  return `/api/v1/events/${eventID}/start`
+export const getStartNightUrl = (eventID: string, params?: StartNightParams) => {
+  const normalizedParams = new URLSearchParams()
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  })
+
+  const stringifiedParams = normalizedParams.toString()
+
+  return stringifiedParams.length > 0
+    ? `/api/v1/events/${eventID}/start?${stringifiedParams}`
+    : `/api/v1/events/${eventID}/start`
 }
 
 /**
@@ -1417,9 +1568,10 @@ export const getStartNightUrl = (eventID: string) => {
  */
 export const startNight = async (
   eventID: string,
+  params?: StartNightParams,
   options?: Parameters<typeof fetcher>[1],
 ): Promise<StartNight200> => {
-  return fetcher<StartNight200>(getStartNightUrl(eventID), {
+  return fetcher<StartNight200>(getStartNightUrl(eventID, params), {
     ...options,
     method: 'POST',
   })
@@ -1462,9 +1614,9 @@ export const getStartNightMutationOptions = <
     Awaited<ReturnType<typeof startNight>>,
     StartNightMutationVariables
   > = (props) => {
-    const { eventID } = props ?? {}
+    const { eventID, params } = props ?? {}
 
-    return startNight(eventID, requestOptions)
+    return startNight(eventID, params, requestOptions)
   }
 
   return { mutationFn, ...mutationOptions }
@@ -1480,7 +1632,7 @@ export type StartNightMutationError =
   | InternalErrorResponse
   | BadGatewayResponse
   | ServiceUnavailableResponse
-export type StartNightMutationVariables = { eventID: string }
+export type StartNightMutationVariables = { eventID: string; params?: StartNightParams }
 
 /**
  * @summary Start the night
@@ -1514,8 +1666,20 @@ export const useStartNight = <
 > => {
   return useMutation(getStartNightMutationOptions(options), queryClient)
 }
-export const getCloseEventUrl = (eventID: string) => {
-  return `/api/v1/events/${eventID}/close`
+export const getCloseEventUrl = (eventID: string, params?: CloseEventParams) => {
+  const normalizedParams = new URLSearchParams()
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  })
+
+  const stringifiedParams = normalizedParams.toString()
+
+  return stringifiedParams.length > 0
+    ? `/api/v1/events/${eventID}/close?${stringifiedParams}`
+    : `/api/v1/events/${eventID}/close`
 }
 
 /**
@@ -1526,9 +1690,10 @@ export const getCloseEventUrl = (eventID: string) => {
  */
 export const closeEvent = async (
   eventID: string,
+  params?: CloseEventParams,
   options?: Parameters<typeof fetcher>[1],
 ): Promise<CloseEvent200> => {
-  return fetcher<CloseEvent200>(getCloseEventUrl(eventID), {
+  return fetcher<CloseEvent200>(getCloseEventUrl(eventID, params), {
     ...options,
     method: 'POST',
   })
@@ -1571,9 +1736,9 @@ export const getCloseEventMutationOptions = <
     Awaited<ReturnType<typeof closeEvent>>,
     CloseEventMutationVariables
   > = (props) => {
-    const { eventID } = props ?? {}
+    const { eventID, params } = props ?? {}
 
-    return closeEvent(eventID, requestOptions)
+    return closeEvent(eventID, params, requestOptions)
   }
 
   return { mutationFn, ...mutationOptions }
@@ -1589,7 +1754,7 @@ export type CloseEventMutationError =
   | InternalErrorResponse
   | BadGatewayResponse
   | ServiceUnavailableResponse
-export type CloseEventMutationVariables = { eventID: string }
+export type CloseEventMutationVariables = { eventID: string; params?: CloseEventParams }
 
 /**
  * @summary Close the night

@@ -1,5 +1,6 @@
 import { keepPreviousData, skipToken, useInfiniteQuery } from '@tanstack/react-query'
 import { useCallback, useMemo } from 'react'
+import { useWindowDimensions } from 'react-native'
 
 import type { SearchVenues200, SearchVenuesParams } from '@roundup/api'
 
@@ -94,6 +95,7 @@ export const useExploreViewModel = ({
 }: IExploreInputs): IExploreViewModel => {
   const { helpers } = useDeps()
   const venuesHelper = helpers.venues
+  const { width: windowWidth } = useWindowDimensions()
   const signedIn = useSignedIn()
   const { coordinates, phase, retry } = useLocation()
   const words = query.trim()
@@ -103,10 +105,11 @@ export const useExploreViewModel = ({
       coordinates && {
         ...coordinates,
         radius: radiusKm * METERS_PER_KM,
+        photoWidth: venuesHelper.photoWidth('card', windowWidth),
         ...(words === '' ? {} : { query: words }),
         ...(filter === undefined ? {} : { type: filter }),
       },
-    [coordinates, filter, radiusKm, words],
+    [coordinates, filter, radiusKm, venuesHelper, windowWidth, words],
   )
 
   const { data, error, fetchNextPage, hasNextPage, isFetchingNextPage, isPending, refetch } =

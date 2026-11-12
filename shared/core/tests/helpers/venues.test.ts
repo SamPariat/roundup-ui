@@ -1,4 +1,5 @@
 import { QueryClient } from '@tanstack/react-query'
+import { PixelRatio } from 'react-native'
 
 import { getGetVenueQueryKey, getListFavoritesQueryKey } from '@roundup/api'
 
@@ -13,6 +14,41 @@ const queryClient = new QueryClient({ defaultOptions: { queries: { gcTime: Infin
 const venues = new Venues(queryClient)
 
 describe('Venues', () => {
+  afterEach(() => {
+    jest.restoreAllMocks()
+  })
+
+  describe('Venues.photoWidth', () => {
+    it.each([
+      [1, 'card', 400],
+      [2, 'card', 800],
+      [3, 'card', 1200],
+      [2, 'large', 1200],
+      [3, 'large', 1600],
+      [1, 'thumb', 200],
+      [3, 'thumb', 200],
+    ] as const)(
+      'on a x%i screen a %s slot asks for %i pixels, a width the API serves',
+      (ratio, slot, width) => {
+        jest.spyOn(PixelRatio, 'get').mockReturnValue(ratio)
+
+        expect(venues.photoWidth(slot, 1280)).toBe(width)
+      },
+    )
+
+    it('asks a phone for no more than its window is wide', () => {
+      jest.spyOn(PixelRatio, 'get').mockReturnValue(3)
+
+      expect(venues.photoWidth('large', 390)).toBe(1200)
+    })
+
+    it('asks for the widest the API serves when a slot needs more', () => {
+      jest.spyOn(PixelRatio, 'get').mockReturnValue(4)
+
+      expect(venues.photoWidth('large', 1280)).toBe(1600)
+    })
+  })
+
   describe('Venues.toCard', () => {
     it("maps a search result onto card props with the API's photo URL, its credit and readable tags", () => {
       expect(venues.toCard(VenueFixtures.venue('v1'))).toEqual({

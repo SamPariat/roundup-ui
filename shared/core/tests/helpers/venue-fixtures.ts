@@ -13,7 +13,7 @@ import { FakeLocation } from './fakes'
 import { TestCore } from './wrapper'
 
 /** The search URL of the fake location (Bengaluru) with no words or type. */
-const BASE = '/api/v1/venues?lat=12.9716&lng=77.5946&radius=3000'
+const BASE = '/api/v1/venues?lat=12.9716&lng=77.5946&radius=3000&photoWidth=800'
 
 /**
  * Venue data and cores for the venue tests. Static methods only.

@@ -20,7 +20,7 @@ const SESSION = {
 }
 
 /** The first page of a squad's favorites. */
-const FIRST = '/api/v1/squads/s1/favorites?limit=25'
+const FIRST = '/api/v1/squads/s1/favorites?limit=25&photoWidth=200'
 
 describe('useSquadFavorites', () => {
   it('maps the favorites onto rows with a thumbnail, the savers and when it was saved', async () => {

@@ -39,6 +39,7 @@ import type {
   BadGatewayResponse,
   BadRequestResponse,
   GetVenue200,
+  GetVenueParams,
   InternalErrorResponse,
   NotFoundResponse,
   SearchVenues200,
@@ -232,8 +233,20 @@ export function useSearchVenues<
   return withQueryKey(query, queryOptions.queryKey)
 }
 
-export const getGetVenueUrl = (placeID: string) => {
-  return `/api/v1/venues/${placeID}`
+export const getGetVenueUrl = (placeID: string, params?: GetVenueParams) => {
+  const normalizedParams = new URLSearchParams()
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  })
+
+  const stringifiedParams = normalizedParams.toString()
+
+  return stringifiedParams.length > 0
+    ? `/api/v1/venues/${placeID}?${stringifiedParams}`
+    : `/api/v1/venues/${placeID}`
 }
 
 /**
@@ -243,16 +256,17 @@ export const getGetVenueUrl = (placeID: string) => {
  */
 export const getVenue = async (
   placeID: string,
+  params?: GetVenueParams,
   options?: Parameters<typeof fetcher>[1],
 ): Promise<GetVenue200> => {
-  return fetcher<GetVenue200>(getGetVenueUrl(placeID), {
+  return fetcher<GetVenue200>(getGetVenueUrl(placeID, params), {
     ...options,
     method: 'GET',
   })
 }
 
-export const getGetVenueQueryKey = (placeID: string) => {
-  return [`/api/v1/venues/${placeID}`] as const
+export const getGetVenueQueryKey = (placeID: string, params?: GetVenueParams) => {
+  return [`/api/v1/venues/${placeID}`, ...(params ? [params] : [])] as const
 }
 
 export const getGetVenueQueryOptions = <
@@ -265,6 +279,7 @@ export const getGetVenueQueryOptions = <
     | ServiceUnavailableResponse,
 >(
   placeID: string,
+  params?: GetVenueParams,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof getVenue>>, TError, TData>>
     request?: SecondParameter<typeof fetcher>
@@ -272,10 +287,10 @@ export const getGetVenueQueryOptions = <
 ) => {
   const { query: queryOptions, request: requestOptions } = options ?? {}
 
-  const queryKey = queryOptions?.queryKey ?? getGetVenueQueryKey(placeID)
+  const queryKey = queryOptions?.queryKey ?? getGetVenueQueryKey(placeID, params)
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof getVenue>>> = ({ signal }) =>
-    getVenue(placeID, { signal, ...requestOptions })
+    getVenue(placeID, params, { signal, ...requestOptions })
 
   return {
     queryKey,
@@ -305,6 +320,7 @@ export function useGetVenue<
     | ServiceUnavailableResponse,
 >(
   placeID: string,
+  params: undefined | GetVenueParams,
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof getVenue>>, TError, TData>> &
       Pick<
@@ -329,6 +345,7 @@ export function useGetVenue<
     | ServiceUnavailableResponse,
 >(
   placeID: string,
+  params?: GetVenueParams,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof getVenue>>, TError, TData>> &
       Pick<
@@ -353,6 +370,7 @@ export function useGetVenue<
     | ServiceUnavailableResponse,
 >(
   placeID: string,
+  params?: GetVenueParams,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof getVenue>>, TError, TData>>
     request?: SecondParameter<typeof fetcher>
@@ -373,13 +391,14 @@ export function useGetVenue<
     | ServiceUnavailableResponse,
 >(
   placeID: string,
+  params?: GetVenueParams,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof getVenue>>, TError, TData>>
     request?: SecondParameter<typeof fetcher>
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
-  const queryOptions = getGetVenueQueryOptions(placeID, options)
+  const queryOptions = getGetVenueQueryOptions(placeID, params, options)
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>

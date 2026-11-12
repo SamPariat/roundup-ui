@@ -1,8 +1,10 @@
 import type { QueryClient } from '@tanstack/react-query'
 
+import { PixelRatio } from 'react-native'
+
 import type { Favorite, Member, Photo, Review, SavedIn, Venue, VenueDetail } from '@roundup/api'
 
-import { getGetVenueQueryKey, getListFavoritesQueryKey } from '@roundup/api'
+import { getGetVenueQueryKey, getListFavoritesQueryKey, PhotoWidthParameter } from '@roundup/api'
 
 import type {
   IFavoriteRow,
@@ -34,6 +36,26 @@ const SAVED_ON = new Intl.DateTimeFormat('en-IN', { day: 'numeric', month: 'shor
 
 /** What separates the day from the hours in Google's lines, such as "Monday: 5:00 PM – 11:00 PM". */
 const DAY_SEPARATOR = ': '
+
+/**
+ * The widths the API serves photos at, narrowest first. Only these are accepted, so the same few
+ * repeat across devices and the API's cached photo URLs answer.
+ */
+const PHOTO_WIDTHS: readonly PhotoWidthParameter[] = Object.values(PhotoWidthParameter).toSorted(
+  (a, b) => a - b,
+)
+
+/**
+ * How wide each slot a photo fills is, in points: a card, the venue page's largest (its big grid
+ * tile, or on a phone the whole width, whichever is narrower), a thumbnail.
+ */
+const PHOTO_SLOT = { card: 400, large: 570, thumb: 56 } as const
+
+/** A slot a photo fills, which sets the width it is asked for at. */
+export type TPhotoSlot = keyof typeof PHOTO_SLOT
+
+/** How many photos a venue's page asks for: the large one and the four beside it. */
+export const VENUE_PHOTOS = 5
 
 /**
  * Venue mapping and cache helpers, on the query client they refresh. Deps creates one; reach it
@@ -129,6 +151,21 @@ export class Venues {
       this.queryClient.invalidateQueries({ queryKey: getGetVenueQueryKey(placeId) }),
       this.queryClient.invalidateQueries({ queryKey: getListFavoritesQueryKey(squadId) }),
     ])
+  }
+
+  /**
+   * The width to ask the API for a slot's photos at: the slot in points times the pixel ratio,
+   * rounded up to the next width the API serves, so no photo is fetched larger than it is drawn. No
+   * slot is wider than the window, so a phone asks for less than a wide screen's 570 point tile.
+   * @param slot - The slot the photos fill.
+   * @param windowWidth - The window's width in points, from useWindowDimensions.
+   * @returns A width the API accepts; its widest when the slot needs more.
+   */
+  photoWidth(slot: TPhotoSlot, windowWidth: number): PhotoWidthParameter {
+    const points = Math.min(PHOTO_SLOT[slot], windowWidth)
+    const wanted = points * PixelRatio.get()
+
+    return PHOTO_WIDTHS.find((width) => width >= wanted) ?? PhotoWidthParameter.NUMBER_1600
   }
 
   /**

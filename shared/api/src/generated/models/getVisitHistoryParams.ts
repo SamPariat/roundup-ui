@@ -24,6 +24,7 @@
  */
 import type { CursorParameter } from './cursorParameter'
 import type { LimitParameter } from './limitParameter'
+import type { PhotoWidthParameter } from './photoWidthParameter'
 
 export type GetVisitHistoryParams = {
   /**
@@ -37,4 +38,11 @@ export type GetVisitHistoryParams = {
    * send it back exactly as received. A cursor this API did not issue is a 400.
    */
   cursor?: CursorParameter
+  /**
+   * How wide the photos may be, in pixels. Pick the smallest width that
+   * covers the photo's slot on screen (points times pixel density), so the
+   * same few widths repeat and their URLs stay cached. 400 for any other
+   * value.
+   */
+  photoWidth?: PhotoWidthParameter
 }
