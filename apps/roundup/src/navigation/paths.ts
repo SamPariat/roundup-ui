@@ -113,7 +113,7 @@ export class Paths {
   }
 
   /**
-   * The Explore tab, optionally with a search, which ExploreParams.serialize writes.
+   * The Explore tab, optionally with a search, spelled as ExploreParams.parse reads it.
    * @param query - The search words, kind of place and radius, if any.
    * @returns The path, or the path with its parameters.
    */

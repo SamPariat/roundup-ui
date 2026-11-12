@@ -6,17 +6,10 @@ import { useCallback } from 'react'
 
 import { useT } from '@roundup/i18n'
 
+import type { IScreenProps } from '@/navigation/route-title'
+
 import { TabStack } from '@/components/TabStack'
 import { RouteTitle } from '@/navigation/route-title'
-
-/** What a screen's options function is given: here, only its route and that route's params. */
-interface IScreenProps {
-  /** The screen's route. */
-  route: {
-    /** The route's params: the path segments and the query. */
-    params?: object | undefined
-  }
-}
 
 /**
  * The stack inside the Squads tab. A squad's page is titled from the title query parameter its
