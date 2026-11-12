@@ -1,4 +1,6 @@
-import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router'
+import type { NativeStackNavigationProp } from 'expo-router'
+
+import { useFocusEffect, useLocalSearchParams, useNavigation, useRouter } from 'expo-router'
 import { useCallback, useMemo, useRef, useState } from 'react'
 
 import type { TVenueType } from '@roundup/core'
@@ -10,6 +12,17 @@ import { ExploreParams } from '@/hooks/explore-params'
 
 /** How long typing must pause before the words go into the URL, and so into the search, in milliseconds. */
 const DEBOUNCE = 400
+
+/** The route params this screen's navigation sets, by route name. */
+type TExploreRoutes = Record<string, IExploreQuery>
+
+/** Words typed in the search field, and whether the URL has them yet. */
+interface IDraft {
+  /** The words exactly as typed, spaces included. */
+  text: string
+  /** True once the URL holds them (trimmed); until then the field must keep them. */
+  written: boolean
+}
 
 /** What Explore's controls read and change. */
 export interface IExploreParams extends IExploreState {
@@ -32,35 +45,50 @@ export interface IExploreParams extends IExploreState {
 export const useExploreParams = (): IExploreParams => {
   const params = useLocalSearchParams<IExploreQuery>()
   const router = useRouter()
+  const navigation = useNavigation<NativeStackNavigationProp<TExploreRoutes>>()
   const { q, radius, type } = params
-  // Words typed that the URL does not hold yet.
-  const [draft, setDraft] = useState<string | undefined>()
+  // Words typed that the URL does not hold yet, or holds only trimmed.
+  const [draft, setDraft] = useState<IDraft | undefined>()
   const timerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
+  // The words of the write that is waiting, if any.
+  const pendingRef = useRef<string | undefined>(undefined)
 
   const state = useMemo(
     (): IExploreState => ExploreParams.parse({ q, radius, type }),
     [q, radius, type],
   )
 
-  // Going to a place, or away, drops a write that is still waiting, so it cannot land on that screen.
-  const cancel = useCallback((): void => {
-    clearTimeout(timerRef.current)
-  }, [])
-
-  useFocusEffect(useCallback((): (() => void) => cancel, [cancel]))
-
+  // Writes through this screen's own navigation, not the router's, which writes to whichever screen
+  // is in front: that is how the words of a blurred screen can still reach their own URL.
   const write = useCallback(
     (text: string): void => {
-      router.setParams({ q: ExploreParams.queryOf(text) })
-      setDraft(undefined)
+      pendingRef.current = undefined
+      navigation.setParams({ q: ExploreParams.queryOf(text) })
+
+      // The URL holds the words trimmed, so a field with a space at either end keeps what was typed.
+      setDraft(text === text.trim() ? undefined : { text, written: true })
     },
-    [router],
+    [navigation],
   )
+
+  // Going to a place, or away, writes the words that are waiting at once, so the field and the
+  // results agree when the person comes back, and no write is left to land on another screen.
+  const flush = useCallback(
+    (): (() => void) => (): void => {
+      clearTimeout(timerRef.current)
+
+      if (pendingRef.current !== undefined) write(pendingRef.current)
+    },
+    [write],
+  )
+
+  useFocusEffect(flush)
 
   const setText = useCallback(
     (text: string): void => {
       clearTimeout(timerRef.current)
-      setDraft(text)
+      pendingRef.current = text
+      setDraft({ text, written: false })
       timerRef.current = setTimeout(write, DEBOUNCE, text)
     },
     [write],
@@ -82,5 +110,13 @@ export const useExploreParams = (): IExploreParams => {
     [router],
   )
 
-  return { ...state, setRadiusKm, setText, text: draft ?? state.query, toggleFilter }
+  // The field keeps the words as typed until the URL changes to something else, so a space typed
+  // at either end is not trimmed away while the person is still typing.
+  const keeping =
+    draft !== undefined &&
+    (!draft.written || ExploreParams.queryOf(draft.text) === ExploreParams.queryOf(state.query))
+
+  const text = keeping ? draft.text : state.query
+
+  return { ...state, setRadiusKm, setText, text, toggleFilter }
 }
