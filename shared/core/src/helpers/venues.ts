@@ -41,7 +41,7 @@ const DAY_SEPARATOR = ': '
  * The widths the API serves photos at, narrowest first. Only these are accepted, so the same few
  * repeat across devices and the API's cached photo URLs answer.
  */
-const PHOTO_WIDTHS: readonly PhotoWidthParameter[] = Object.values(PhotoWidthParameter).toSorted(
+const PHOTO_WIDTHS: readonly PhotoWidthParameter[] = Object.values(PhotoWidthParameter).sort(
   (a, b) => a - b,
 )
 

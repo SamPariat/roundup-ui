@@ -51,9 +51,12 @@ describe('registry', () => {
   it('has no page for something @roundup/ui does not export, other than the foundations', () => {
     const pages = REGISTRY.filter(({ group }) => group !== 'Foundations').map(({ title }) => title)
 
-    expect(pages.toSorted((a, b) => RegistryFixtures.compare(a, b))).toEqual(
-      components.toSorted((a, b) => RegistryFixtures.compare(a, b)),
-    )
+    const expected = [...components]
+
+    pages.sort((a, b) => RegistryFixtures.compare(a, b))
+    expected.sort((a, b) => RegistryFixtures.compare(a, b))
+
+    expect(pages).toEqual(expected)
   })
 
   it('gives every page its own slug', () => {
