@@ -5,6 +5,8 @@ import Svg, { Rect } from 'react-native-svg'
 
 import { useT } from '@roundup/i18n'
 
+import type { IPhotoCredit } from './Photo'
+
 import { styleSvg } from '../lib/svg'
 import { Badge } from './Badge'
 import { Button } from './Button'
@@ -32,6 +34,8 @@ export interface IVenueCardProps {
   types?: string[]
   /** Photo URL. A pattern is drawn without it. */
   photo?: string
+  /** Who took the photo, drawn over it. */
+  photoCredit?: IPhotoCredit
   /** Show the save button; true draws it filled. */
   saved?: boolean
   /** Called when the save button is pressed. */
@@ -73,9 +77,13 @@ const NO_TYPES: string[] = []
 const VenueMedia = ({
   onSave,
   photo,
+  photoCredit,
   saved,
-}: TLoose<Pick<IVenueCardProps, 'onSave' | 'photo' | 'saved'>>): ReactElement => {
+}: TLoose<Pick<IVenueCardProps, 'onSave' | 'photo' | 'photoCredit' | 'saved'>>): ReactElement => {
   const showSave = onSave !== undefined || saved !== undefined
+  // The whole card is pressable, so the credit is plain text: a link inside it would nest one
+  // button in another. The venue's page links the author.
+  const credit = photoCredit === undefined ? undefined : { name: photoCredit.name }
   const isSaved = saved === true
   const { t } = useT()
 
@@ -84,7 +92,7 @@ const VenueMedia = ({
       {photo === undefined ? (
         <VenuePattern />
       ) : (
-        <Photo className="size-full" recyclingKey={photo} src={photo} />
+        <Photo className="size-full" credit={credit} recyclingKey={photo} src={photo} />
       )}
       {showSave ? (
         <View className="absolute top-2 right-2">
@@ -154,6 +162,7 @@ export const VenueCard = ({
   name,
   onSave,
   photo,
+  photoCredit,
   priceLevel,
   rating,
   reviews,
@@ -161,7 +170,7 @@ export const VenueCard = ({
   types = NO_TYPES,
 }: IVenueCardProps): ReactElement => (
   <View className="overflow-hidden rounded-2xl bg-bg-raised">
-    <VenueMedia onSave={onSave} photo={photo} saved={saved} />
+    <VenueMedia onSave={onSave} photo={photo} photoCredit={photoCredit} saved={saved} />
     <View className="gap-1 px-4 pt-3 pb-4">
       <Text heading={3} variant="body-strong">
         {name}

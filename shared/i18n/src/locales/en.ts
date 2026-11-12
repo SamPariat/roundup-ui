@@ -111,6 +111,9 @@ export const en = {
     light: 'Light',
     dark: 'Dark',
   },
+  photo: {
+    credit: 'Photo: {{name}}',
+  },
   venueCard: {
     save: 'Save to squad',
     saved: 'Saved to squad',
