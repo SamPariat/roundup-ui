@@ -22,7 +22,11 @@ export interface IVenueHeaderProps {
 export const VenueHeader = ({ venue }: IVenueHeaderProps): ReactElement => (
   <View className="gap-3">
     {venue.photo === undefined ? null : (
-      <Photo className="h-46 w-full rounded-2xl bg-bg-sunken" src={venue.photo} />
+      <Photo
+        className="h-46 w-full rounded-2xl bg-bg-sunken"
+        credit={venue.photoCredit}
+        src={venue.photo}
+      />
     )}
     <Text heading={1} variant="title">
       {venue.name}

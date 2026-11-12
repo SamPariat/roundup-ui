@@ -1,4 +1,11 @@
-import type { Favorite, ListFavorites200, SearchVenues200, Venue, VenueDetail } from '@roundup/api'
+import type {
+  Favorite,
+  ListFavorites200,
+  Photo,
+  SearchVenues200,
+  Venue,
+  VenueDetail,
+} from '@roundup/api'
 
 import type { ITestCore } from './wrapper'
 
@@ -29,7 +36,7 @@ export class VenueFixtures {
       latitude: 12.97,
       longitude: 77.59,
       name: `Venue ${id}`,
-      photos: [{ height: 800, url: `/api/v1/venues/photos/${id}`, width: 1200 }],
+      photos: [VenueFixtures.photo(id)],
       placeID: id,
       priceLevel: 2,
       ratingCount: 120,
@@ -82,6 +89,23 @@ export class VenueFixtures {
   }
 
   /**
+   * Builds a photo as the API sends it: its URL on Google's servers, its ref and its author.
+   * @param id - The venue it belongs to, which its URL and ref name.
+   * @param overrides - Fields to change.
+   * @returns A photo on Google's servers, credited to Asha Rao.
+   */
+  static photo(id: string, overrides: Partial<Photo> = {}): Photo {
+    return {
+      attributions: [{ name: 'Asha Rao', uri: 'https://maps.google.com/maps/contrib/1' }],
+      height: 800,
+      ref: `ref-${id}`,
+      url: `https://lh3.googleusercontent.com/place-photos/${id}=s4800-w800`,
+      width: 1200,
+      ...overrides,
+    }
+  }
+
+  /**
    * Builds a favorite of a squad.
    * @param id - Which venue; the name is built from it.
    * @param overrides - Fields to change.
@@ -93,7 +117,7 @@ export class VenueFixtures {
       averageRating: 4.5,
       lastSavedAt: '2026-10-18T10:00:00Z',
       name: `Venue ${id}`,
-      photo: { height: 800, url: `/api/v1/venues/photos/${id}`, width: 1200 },
+      photo: VenueFixtures.photo(id),
       placeID: id,
       priceLevel: 2,
       ratingCount: 120,

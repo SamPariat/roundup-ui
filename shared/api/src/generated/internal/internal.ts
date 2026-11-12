@@ -35,7 +35,10 @@ import type {
   CloseDueEvents200,
   ConfirmDueEvents200,
   CreateUserRequest,
+  GetVenuePhotoURLs200,
   InternalErrorResponse,
+  PhotoURLsRequest,
+  ServiceUnavailableResponse,
   UserResponse,
 } from '../models'
 
@@ -150,6 +153,118 @@ export const useCreateOrGetUser = <
   TContext
 > => {
   return useMutation(getCreateOrGetUserMutationOptions(options), queryClient)
+}
+export const getGetVenuePhotoURLsUrl = () => {
+  return `/internal/v1/venues/photo-urls`
+}
+
+/**
+ * Called by event-service, which stores a nominated venue's photo `ref`.
+ * The URLs expire, so look them up for each response and never store them.
+ * Each ref is a billed Google call.
+ * @summary Turn stored photo references into fresh URLs
+ */
+export const getVenuePhotoURLs = async (
+  photoURLsRequest: PhotoURLsRequest,
+  options?: Parameters<typeof fetcher>[1],
+): Promise<GetVenuePhotoURLs200> => {
+  const getHeaders = (
+    h?: NonNullable<RequestInit['headers']>,
+  ): Record<string, string | readonly string[]> => {
+    if (!h) return {}
+    if (h instanceof Headers) return Object.fromEntries(h.entries())
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(
+          h as Iterable<Iterable<string>>,
+          (entry) => Array.from(entry) as [string, string],
+        ),
+      )
+    }
+    const headers: Record<string, string | readonly string[]> = {}
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value
+    }
+    return headers
+  }
+  return fetcher<GetVenuePhotoURLs200>(getGetVenuePhotoURLsUrl(), {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(photoURLsRequest),
+  })
+}
+
+export const getGetVenuePhotoURLsMutationKey = () => ['getVenuePhotoURLs'] as const
+
+export const getGetVenuePhotoURLsMutationOptions = <
+  TError = BadRequestResponse | InternalErrorResponse | ServiceUnavailableResponse,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof getVenuePhotoURLs>>,
+    TError,
+    GetVenuePhotoURLsMutationVariables,
+    TContext
+  >
+  request?: SecondParameter<typeof fetcher>
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof getVenuePhotoURLs>>,
+  TError,
+  GetVenuePhotoURLsMutationVariables,
+  TContext
+> => {
+  const mutationKey = getGetVenuePhotoURLsMutationKey()
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined }
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof getVenuePhotoURLs>>,
+    GetVenuePhotoURLsMutationVariables
+  > = (props) => {
+    const { data } = props ?? {}
+
+    return getVenuePhotoURLs(data, requestOptions)
+  }
+
+  return { mutationFn, ...mutationOptions }
+}
+
+export type GetVenuePhotoURLsMutationResult = NonNullable<
+  Awaited<ReturnType<typeof getVenuePhotoURLs>>
+>
+export type GetVenuePhotoURLsMutationBody = PhotoURLsRequest
+export type GetVenuePhotoURLsMutationError =
+  BadRequestResponse | InternalErrorResponse | ServiceUnavailableResponse
+export type GetVenuePhotoURLsMutationVariables = { data: PhotoURLsRequest }
+
+/**
+ * @summary Turn stored photo references into fresh URLs
+ */
+export const useGetVenuePhotoURLs = <
+  TError = BadRequestResponse | InternalErrorResponse | ServiceUnavailableResponse,
+  TContext = unknown,
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof getVenuePhotoURLs>>,
+      TError,
+      GetVenuePhotoURLsMutationVariables,
+      TContext
+    >
+    request?: SecondParameter<typeof fetcher>
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof getVenuePhotoURLs>>,
+  TError,
+  GetVenuePhotoURLsMutationVariables,
+  TContext
+> => {
+  return useMutation(getGetVenuePhotoURLsMutationOptions(options), queryClient)
 }
 export const getConfirmDueEventsUrl = () => {
   return `/internal/v1/events/confirm-due`

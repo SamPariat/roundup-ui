@@ -1,5 +1,4 @@
 import { QueryClient } from '@tanstack/react-query'
-import { PixelRatio } from 'react-native'
 
 import { getGetVenueQueryKey, getListFavoritesQueryKey } from '@roundup/api'
 
@@ -14,43 +13,15 @@ const queryClient = new QueryClient({ defaultOptions: { queries: { gcTime: Infin
 const venues = new Venues(queryClient)
 
 describe('Venues', () => {
-  beforeEach(() => {
-    jest.spyOn(PixelRatio, 'get').mockReturnValue(2)
-  })
-
-  afterEach(() => {
-    jest.restoreAllMocks()
-  })
-
-  describe('Venues.photoUrl', () => {
-    it.each([
-      [1, 400, 400],
-      [2, 400, 800],
-      [3, 400, 1200],
-      [3, 570, 1600],
-      [1, 280, 400],
-      [2, 280, 600],
-      [1, 100, 200],
-    ])(
-      'on a x%i screen a %i point slot asks for %i pixels, a width the cache repeats',
-      (ratio, slot, width) => {
-        jest.spyOn(PixelRatio, 'get').mockReturnValue(ratio)
-
-        expect(venues.photoUrl('/api/v1/venues/photos/ref1', slot)).toBe(
-          `http://localhost:8080/api/v1/venues/photos/ref1?maxWidth=${width}`,
-        )
-      },
-    )
-  })
-
   describe('Venues.toCard', () => {
-    it('maps a search result onto card props with an absolute photo URL and readable tags', () => {
+    it("maps a search result onto card props with the API's photo URL, its credit and readable tags", () => {
       expect(venues.toCard(VenueFixtures.venue('v1'))).toEqual({
         address: 'v1 MG Road',
         id: 'v1',
         isOpen: true,
         name: 'Venue v1',
-        photo: 'http://localhost:8080/api/v1/venues/photos/v1?maxWidth=800',
+        photo: 'https://lh3.googleusercontent.com/place-photos/v1=s4800-w800',
+        photoCredit: { name: 'Asha Rao', url: 'https://maps.google.com/maps/contrib/1' },
         priceLevel: 2,
         rating: 4.5,
         reviews: 120,
@@ -72,6 +43,23 @@ describe('Venues', () => {
       )
 
       expect(card).toEqual({ id: 'v2', name: 'Venue v2', priceLevel: 0, types: [] })
+    })
+
+    it('credits the first author, leaving out the link Google did not give, or no one', () => {
+      const unlinked = VenueFixtures.venue('v1', {
+        photos: [VenueFixtures.photo('v1', { attributions: [{ name: 'Kabir', uri: '' }] })],
+      })
+
+      const uncredited = VenueFixtures.venue('v2', {
+        photos: [VenueFixtures.photo('v2', { attributions: [] })],
+      })
+
+      expect(venues.toCard(unlinked).photoCredit).toEqual({ name: 'Kabir' })
+      expect(venues.toCard(uncredited)).not.toHaveProperty('photoCredit')
+
+      expect(venues.toCard(uncredited).photo).toBe(
+        'https://lh3.googleusercontent.com/place-photos/v2=s4800-w800',
+      )
     })
 
     it('treats a price level outside 0 to 4 as unknown', () => {
@@ -97,7 +85,8 @@ describe('Venues', () => {
         address: 'v1 MG Road',
         id: 'v1',
         name: 'Venue v1',
-        photo: 'http://localhost:8080/api/v1/venues/photos/v1?maxWidth=200',
+        photo: 'https://lh3.googleusercontent.com/place-photos/v1=s4800-w800',
+        photoCredit: { name: 'Asha Rao', url: 'https://maps.google.com/maps/contrib/1' },
         priceLevel: 2,
         rating: 4.5,
         reviews: 120,
@@ -120,6 +109,7 @@ describe('Venues', () => {
 
       expect(row).not.toHaveProperty('address')
       expect(row).not.toHaveProperty('photo')
+      expect(row).not.toHaveProperty('photoCredit')
       expect(row).not.toHaveProperty('rating')
       expect(row.savers).toEqual([{ id: 'u1', isMe: true, name: '' }])
     })
@@ -137,8 +127,8 @@ describe('Venues', () => {
 
       expect(info.photos).toEqual([
         {
-          large: 'http://localhost:8080/api/v1/venues/photos/v1?maxWidth=1200',
-          small: 'http://localhost:8080/api/v1/venues/photos/v1?maxWidth=600',
+          credit: { name: 'Asha Rao', url: 'https://maps.google.com/maps/contrib/1' },
+          src: 'https://lh3.googleusercontent.com/place-photos/v1=s4800-w800',
         },
       ])
 

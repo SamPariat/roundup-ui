@@ -23,11 +23,16 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type GetVenuePhotoParams = {
+export interface PhotoURLsRequest {
   /**
-   * Widest the image may be; 800 when omitted, capped at 1600.
-   * @minimum 1
-   * @maximum 1600
+   * Photo references, as in a Photo's `ref`.
+   * @maxItems 50
    */
-  maxWidth?: number
+  refs: string[]
+  /**
+   * Widest the images may be, in pixels.
+   * @minimum 1
+   * @maximum 4800
+   */
+  maxWidth: number
 }

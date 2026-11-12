@@ -55,7 +55,9 @@ describe('useSquadFavorites', () => {
       savedOn: '18 Oct',
     })
 
-    expect(result.current.favorites[0]?.photo).toContain('/api/v1/venues/photos/v1?maxWidth=')
+    expect(result.current.favorites[0]?.photo).toBe(
+      'https://lh3.googleusercontent.com/place-photos/v1=s4800-w800',
+    )
 
     await waitFor(() => {
       expect(result.current.favorites[0]?.savers).toEqual([

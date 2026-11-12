@@ -22,12 +22,29 @@
  *
  * OpenAPI spec version: 1.0.0
  */
+import type { PhotoAttribution } from './photoAttribution'
 
 export interface Photo {
-  /** Path on this API that serves the image without a token. */
+  /**
+   * The image on Google's servers, sized for the screen this endpoint
+   * serves (search cards, a venue's page, or list thumbnails). Needs no
+   * key or token, so it works as an image source. It expires: use it
+   * from a fresh response and never store it.
+   */
   url: string
+  /**
+   * Opaque photo reference. A service that keeps a venue's photo stores
+   * this, never the url, and gets a fresh url from
+   * POST /internal/v1/venues/photo-urls.
+   */
+  ref: string
   /** Original width in pixels. */
   width: number
   /** Original height in pixels. */
   height: number
+  /**
+   * The photo's authors. Google requires showing them with the photo.
+   * Empty when unknown, e.g. a favorite saved before credits were kept.
+   */
+  attributions: PhotoAttribution[]
 }

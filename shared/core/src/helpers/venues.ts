@@ -1,19 +1,13 @@
 import type { QueryClient } from '@tanstack/react-query'
 
-import { PixelRatio } from 'react-native'
+import type { Favorite, Member, Photo, Review, SavedIn, Venue, VenueDetail } from '@roundup/api'
 
-import type { Favorite, Member, Review, SavedIn, Venue, VenueDetail } from '@roundup/api'
-
-import {
-  ApiUrl,
-  getGetVenuePhotoUrl,
-  getGetVenueQueryKey,
-  getListFavoritesQueryKey,
-} from '@roundup/api'
+import { getGetVenueQueryKey, getListFavoritesQueryKey } from '@roundup/api'
 
 import type {
   IFavoriteRow,
   IFavoriteSaver,
+  IPhotoCredit,
   ISavedIn,
   IVenueCard,
   IVenueInfo,
@@ -40,21 +34,6 @@ const SAVED_ON = new Intl.DateTimeFormat('en-IN', { day: 'numeric', month: 'shor
 
 /** What separates the day from the hours in Google's lines, such as "Monday: 5:00 PM – 11:00 PM". */
 const DAY_SEPARATOR = ': '
-
-/**
- * The widths the photo endpoint is asked for, in pixels, so the same few URLs repeat and the
- * cache answers. The API serves 800 when none is asked for and caps at 1600.
- */
-const PHOTO_WIDTHS: readonly number[] = [200, 400, 600, 800, 1200, 1600]
-
-/** The widest the photo endpoint serves, which a bigger need is cut to. */
-const MAX_PHOTO_WIDTH = 1600
-
-/** How wide each slot a photo fills is, in points: a card or the header, and the page's two tiles. */
-const PHOTO_SLOT = { card: 400, large: 570, small: 280, thumb: 56 } as const
-
-/** What separates the API's photo path from the reference the photo endpoint takes. */
-const PHOTO_PATH = '/photos/'
 
 /**
  * Venue mapping and cache helpers, on the query client they refresh. Deps creates one; reach it
@@ -90,7 +69,7 @@ export class Venues {
       types: this.toTags(venue.types),
       ...(venue.address === '' ? {} : { address: venue.address }),
       ...(venue.isOpen === null ? {} : { isOpen: venue.isOpen }),
-      ...(photo === undefined ? {} : { photo: this.photoUrl(photo.url, PHOTO_SLOT.card) }),
+      ...(photo === undefined ? {} : this.photoFields(photo)),
       ...(rated ? { rating: venue.averageRating, reviews: venue.ratingCount } : {}),
     }
   }
@@ -107,7 +86,7 @@ export class Venues {
     return {
       ...this.toCard(detail),
       hours: detail.openingHours,
-      photos: detail.photos.map((photo) => this.toPhoto(photo.url)),
+      photos: detail.photos.map((photo) => this.toPhoto(photo)),
       reviewList: detail.reviews.map((review) => this.toReview(review)),
       savedIn: detail.savedIn.map((squad) => this.toSavedIn(squad)),
       ...(detail.editorialSummary === '' ? {} : { summary: detail.editorialSummary }),
@@ -134,9 +113,7 @@ export class Venues {
       savedOn: SAVED_ON.format(new Date(favorite.lastSavedAt)),
       savers: favorite.savedBy.map((member) => this.toSaver(member, meId)),
       ...(favorite.address === '' ? {} : { address: favorite.address }),
-      ...(favorite.photo === null
-        ? {}
-        : { photo: this.photoUrl(favorite.photo.url, PHOTO_SLOT.thumb) }),
+      ...(favorite.photo === null ? {} : this.photoFields(favorite.photo)),
       ...(rated ? { rating: favorite.averageRating, reviews: favorite.ratingCount } : {}),
     }
   }
@@ -155,22 +132,6 @@ export class Venues {
   }
 
   /**
-   * Builds the URL of a photo at the width a slot needs on this screen: the slot in points times the
-   * pixel ratio, rounded up to the next width in PHOTO_WIDTHS, so no photo is fetched larger than
-   * it is drawn.
-   * @param url - The photo's path as the API sends it, ending in its reference.
-   * @param slot - How wide the slot is, in points.
-   * @returns The absolute URL, with `maxWidth` set.
-   */
-  photoUrl(url: string, slot: number): string {
-    const wanted = slot * PixelRatio.get()
-    const maxWidth = PHOTO_WIDTHS.find((width) => width >= wanted) ?? MAX_PHOTO_WIDTH
-    const ref = url.slice(url.lastIndexOf(PHOTO_PATH) + PHOTO_PATH.length)
-
-    return ApiUrl.of(getGetVenuePhotoUrl(ref, { maxWidth }))
-  }
-
-  /**
    * Maps a member who saved a venue.
    * @param member - The member the API sent.
    * @param meId - The signed-in person's user ID.
@@ -186,15 +147,38 @@ export class Venues {
   }
 
   /**
-   * Maps one photo of the detail answer to the sizes of the page's tiles.
-   * @param url - The photo's path as the API sends it.
-   * @returns Its large and small URLs.
+   * Maps one photo of the detail answer. The API already sized it for the page.
+   * @param photo - The photo the API sent.
+   * @returns Its URL and who took it.
    */
-  private toPhoto(url: string): IVenuePhoto {
-    return {
-      large: this.photoUrl(url, PHOTO_SLOT.large),
-      small: this.photoUrl(url, PHOTO_SLOT.small),
-    }
+  private toPhoto(photo: Photo): IVenuePhoto {
+    const credit = this.creditOf(photo)
+
+    return { src: photo.url, ...(credit === undefined ? {} : { credit }) }
+  }
+
+  /**
+   * A card's or row's photo fields: its URL, already sized by the API, and who took it.
+   * @param photo - The photo the API sent.
+   * @returns The photo and, when known, its credit.
+   */
+  private photoFields(photo: Photo): Pick<IVenueCard, 'photo' | 'photoCredit'> {
+    const credit = this.creditOf(photo)
+
+    return { photo: photo.url, ...(credit === undefined ? {} : { photoCredit: credit }) }
+  }
+
+  /**
+   * Who took a photo. The API lists its authors; a place photo has one, so the first is the credit.
+   * @param photo - The photo the API sent.
+   * @returns The credit, or undefined when the API named no author.
+   */
+  private creditOf(photo: Photo): IPhotoCredit | undefined {
+    const [author] = photo.attributions
+
+    if (author === undefined) return undefined
+
+    return { name: author.name, ...(author.uri === '' ? {} : { url: author.uri }) }
   }
 
   /**
