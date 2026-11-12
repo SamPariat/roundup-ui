@@ -84,7 +84,7 @@ export const useSquads = (): IUseSquads => {
   )
 
   const loadMore = useCallback((): void => {
-    if (hasNextPage && !isFetchingNextPage) void fetchNextPage()
+    if (hasNextPage && !isFetchingNextPage) void fetchNextPage({ cancelRefetch: false })
   }, [fetchNextPage, hasNextPage, isFetchingNextPage])
 
   const refresh = useCallback(async (): Promise<void> => {

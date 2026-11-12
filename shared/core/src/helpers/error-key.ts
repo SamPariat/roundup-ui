@@ -7,7 +7,16 @@ export type TErrorKey = `errors.${keyof typeof en.errors}`
 
 /** Which step failed, since the same status means different things on each. */
 export type TErrorContext =
-  'addMember' | 'code' | 'name' | 'phone' | 'profile' | 'role' | 'squad' | 'squadName'
+  | 'addMember'
+  | 'code'
+  | 'favorite'
+  | 'name'
+  | 'phone'
+  | 'profile'
+  | 'role'
+  | 'squad'
+  | 'squadName'
+  | 'venue'
 
 /** How the backend's message starts when a squad is full; it sends no error codes. */
 const SQUAD_FULL = 'squad is full'
@@ -21,7 +30,12 @@ const BY_STATUS: Partial<Record<number, Partial<Record<TErrorContext, TErrorKey>
     squadName: 'errors.invalidSquadName',
   },
   [HttpStatus.unauthorized]: { code: 'errors.wrongCode' },
-  [HttpStatus.notFound]: { addMember: 'errors.notOnRoundup', squad: 'errors.squadNotFound' },
+  [HttpStatus.notFound]: {
+    addMember: 'errors.notOnRoundup',
+    favorite: 'errors.venueNotFound',
+    squad: 'errors.squadNotFound',
+    venue: 'errors.venueNotFound',
+  },
   [HttpStatus.conflict]: { role: 'errors.needsAnAdmin' },
 }
 
@@ -40,8 +54,8 @@ export class ErrorKey {
   /**
    * Maps whatever a request threw to a message key. 400 is invalid input, 401 a wrong code, 429 too
    * many requests (or too many tries at a code), 404 a missing squad or a number not on Roundup,
-   * 409 a member already there, a full squad or a squad left without an admin, 0 no connection,
-   * and anything else a generic message that carries the request ID so a person can quote it.
+   * 409 a member already there, a full squad or a squad left without an admin, 404 on a venue or
+   * on saving one a place that cannot be found, 0 no connection, and anything else a generic message that carries the request ID so a person can quote it.
    * @param error - What was thrown.
    * @param context - Which step failed.
    * @returns The key to translate and the request ID to fill in.

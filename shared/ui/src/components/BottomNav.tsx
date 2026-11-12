@@ -56,7 +56,7 @@ export const BottomNav = ({ items, onChange, value = 'squads' }: IBottomNavProps
                 <Icon decorative name={item.icon} size={22} tone={active ? 'accent' : 'fg-muted'} />
               </View>
               {/* Capped at 1.3x so three labels still fit a 360-wide phone at large system font sizes. */}
-              <Text maxFontSizeMultiplier={1.3} tone={active ? 'fg' : 'muted'} variant="caption">
+              <Text tone={active ? 'fg' : 'muted'} variant="caption">
                 {item.label}
               </Text>
             </NavTab>

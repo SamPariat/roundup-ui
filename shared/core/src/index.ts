@@ -14,6 +14,9 @@ export type { ICoreProviderProps } from './di/core-provider'
 export type { IDeps } from './di/deps'
 export { useDeps } from './di/useDeps'
 export type { TErrorKey } from './helpers/error-key'
+export type { ICoordinates, ILocationSource, TLocationPermission } from './location/types'
+export { useLocation } from './location/useLocation'
+export type { IUseLocation, TLocationPhase } from './location/useLocation'
 export { useOfflineNotice } from './network/useOfflineNotice'
 export type { INetworkNotice } from './network/useOfflineNotice'
 export type { TSessionStatus, ISessionStore } from './session/types'
@@ -44,6 +47,22 @@ export { useSquadMembersViewModel } from './squads/useSquadMembersViewModel'
 export type { ISquadMembersViewModel } from './squads/useSquadMembersViewModel'
 export { useSquads } from './squads/useSquads'
 export type { IUseSquads } from './squads/useSquads'
+export { VenueType } from './venues/types'
+export type {
+  ISavedIn,
+  IVenueCard,
+  IVenueInfo,
+  IVenuePhoto,
+  IVenueReview,
+  TPriceLevel,
+  TVenueType,
+} from './venues/types'
+export { useExploreViewModel } from './venues/useExploreViewModel'
+export type { IExploreViewModel } from './venues/useExploreViewModel'
+export { useSaveVenueViewModel } from './venues/useSaveVenueViewModel'
+export type { ISaveVenueViewModel } from './venues/useSaveVenueViewModel'
+export { useVenue } from './venues/useVenue'
+export type { IUseVenue } from './venues/useVenue'
 // Values from the API client the app needs without importing it: HTTP status names, and the squad
 // roles as orval generates them, so the app compares against Role.ADMIN.
 export { HttpStatus, Role } from '@roundup/api'

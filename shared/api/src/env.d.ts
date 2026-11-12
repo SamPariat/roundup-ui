@@ -1,5 +1,5 @@
 // The one environment variable this package reads. Expo inlines EXPO_PUBLIC_* at build time, but
-// only for the literal `process.env.EXPO_PUBLIC_API_URL`, so it cannot be read through a helper.
+// only for the literal `process.env.EXPO_PUBLIC_API_URL`, so it is read in one place, ApiUrl.of, never by a variable name.
 declare namespace NodeJS {
   /** The environment variables the API client reads. */
   // eslint-disable-next-line @typescript-eslint/naming-convention -- ProcessEnv is Node's own interface name, extended here

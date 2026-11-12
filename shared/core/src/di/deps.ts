@@ -1,6 +1,7 @@
 import { QueryClient } from '@tanstack/react-query'
 
 import type { IContactsSource } from '../contacts/types'
+import type { ILocationSource } from '../location/types'
 import type { INetworkSource } from '../network/types'
 import type { ISessionStore } from '../session/types'
 
@@ -11,8 +12,19 @@ import { OtpCode } from '../helpers/otp-code'
 import { Phone } from '../helpers/phone'
 import { Query } from '../helpers/query'
 import { Squads } from '../helpers/squads'
+import { Venues } from '../helpers/venues'
+import { LocationSource } from '../location/location-source'
 import { NetworkSource } from '../network/network-source'
 import { SessionStore } from '../session/session-store'
+
+/**
+ * How long an answer counts as fresh, in milliseconds. Within it a screen that mounts, or a tab
+ * that regains focus, reads the cache instead of asking again: the profile is read by the shell,
+ * the route gate and the Profile tab, a venue by its page and its save sheet, and a search by the
+ * person who clears a word they typed. Saves and edits invalidate what they change, so fresh
+ * never means wrong.
+ */
+const STALE_TIME = 30_000
 
 /** Everything outside the app that core depends on. Tests pass fakes for any of it. */
 export interface IDeps {
@@ -32,11 +44,15 @@ export interface IDeps {
     query: Query
     /** Squad model mapping and cache refreshes, on the query client below. */
     squads: Squads
+    /** Venue model mapping and cache refreshes, on the query client below. */
+    venues: Venues
   }
   /** Whether the device has internet, and when that changes. */
   network: INetworkSource
   /** The phone numbers in the person's address book, once they allow it. */
   contacts: IContactsSource
+  /** Where the device is, once the person allows it. */
+  location: ILocationSource
   /** The TanStack Query cache every request goes through. */
   queryClient: QueryClient
   /** The current time in milliseconds, so countdowns can be tested without real waiting. */
@@ -49,7 +65,7 @@ export interface IDeps {
 export class Deps {
   /**
    * Builds the dependencies: the platform's session store, the network source, the contacts
-   * source, a query client, the helpers and the clock, with the caller's overrides on top. The
+   * source, the location source, a query client, the helpers and the clock, with the caller's overrides on top. The
    * query client comes first, so the helpers are built on the one in use, a test's included.
    * @param overrides - Replaces any of the real dependencies, which tests use to pass fakes.
    * @returns The dependencies.
@@ -61,6 +77,7 @@ export class Deps {
     return {
       contacts: ContactsSource.create(),
       helpers: Deps.helpers(queryClient, query),
+      location: LocationSource.create(),
       /**
        * Reads the system clock.
        * @returns Milliseconds since the epoch.
@@ -74,7 +91,7 @@ export class Deps {
   }
 
   /**
-   * Builds the query client, retrying failed queries by the query helper's policy.
+   * Builds the query client, retrying failed queries by the query helper's policy and keeping answers fresh for a while.
    * @param query - The retry policy.
    * @returns A client whose queries retry by that policy.
    */
@@ -90,6 +107,7 @@ export class Deps {
            */
           retry: (failureCount: number, error: unknown): boolean =>
             query.shouldRetry(failureCount, error),
+          staleTime: STALE_TIME,
         },
       },
     })
@@ -97,9 +115,9 @@ export class Deps {
 
   /**
    * Creates one of each helper.
-   * @param queryClient - The cache the squad helpers refresh.
+   * @param queryClient - The cache the squad and venue helpers refresh.
    * @param query - The retry policy, already built for the query client.
-   * @returns OtpCode, ErrorKey, Notice, Phone, Query and Squads, keyed as IDeps names them.
+   * @returns OtpCode, ErrorKey, Notice, Phone, Query, Squads and Venues, keyed as IDeps names them.
    */
   private static helpers(queryClient: QueryClient, query: Query): IDeps['helpers'] {
     return {
@@ -109,6 +127,7 @@ export class Deps {
       phone: new Phone(),
       query,
       squads: new Squads(queryClient),
+      venues: new Venues(queryClient),
     }
   }
 }

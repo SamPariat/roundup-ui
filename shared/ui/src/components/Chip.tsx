@@ -16,6 +16,10 @@ export interface IChipProps {
   icon?: TIconName
   /** Called when the chip is pressed. */
   onPress?: () => void
+  /** The accessible name when it needs more than the text, such as "Search radius, 3 km". */
+  label?: string
+  /** True when pressing the chip opens a menu: it ends with a down chevron. */
+  menu?: boolean
   /** The chip's text. It is also its accessible name. */
   children: string
 }
@@ -44,8 +48,16 @@ const ChipIcon = ({
  * A pill-shaped toggle for filters and choices, announced as a button that is selected or not.
  * @returns A pressable pill, selected or not.
  */
-export const Chip = ({ children, icon, onPress, selected = false }: IChipProps): ReactElement => (
+export const Chip = ({
+  children,
+  icon,
+  label,
+  menu = false,
+  onPress,
+  selected = false,
+}: IChipProps): ReactElement => (
   <Pressable
+    accessibilityLabel={label}
     accessibilityRole="button"
     aria-selected={selected}
     className={cn(
@@ -57,5 +69,8 @@ export const Chip = ({ children, icon, onPress, selected = false }: IChipProps):
   >
     <ChipIcon icon={icon} selected={selected} />
     <Text variant="label">{children}</Text>
+    {menu ? (
+      <Icon className="rotate-90" decorative name="chevron" size={16} tone="fg-muted" />
+    ) : null}
   </Pressable>
 )

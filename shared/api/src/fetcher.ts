@@ -1,6 +1,7 @@
 import { Platform } from 'react-native'
 
 import { ApiError } from './api-error'
+import { ApiUrl } from './api-url'
 import { AuthBridge } from './auth-bridge'
 import { HttpStatus } from './http-status'
 
@@ -48,7 +49,7 @@ class Fetch {
     }
 
     try {
-      return await fetch(`${process.env.EXPO_PUBLIC_API_URL}${url}`, {
+      return await fetch(ApiUrl.of(url), {
         ...init,
         headers,
         ...Platform.select({ default: {}, web: { credentials: 'include' as const } }),

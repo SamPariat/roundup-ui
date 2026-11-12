@@ -4,9 +4,10 @@ import type { IDeps } from '@roundup/core'
 
 import { HttpStatus } from '@roundup/core'
 
-import type { ISquadState } from './squad-backend'
+import type { IVenueState } from './venue-backend'
 
 import { SquadBackend } from './squad-backend'
+import { VenueBackend } from './venue-backend'
 
 /** The user the stubbed profile route returns. */
 interface IStubUser {
@@ -15,7 +16,7 @@ interface IStubUser {
 }
 
 /** What a test says the backend does. */
-export interface IBackend extends ISquadState {
+export interface IBackend extends IVenueState {
   /** The profile route's user. */
   user: IStubUser
   /** True to make the refresh route hang, so the session stays in "restoring". */
@@ -178,6 +179,10 @@ export class Fakes {
 
       if (path === '/api/v1/users/me') return Fakes.meAnswer(method, backend)
 
+      const venue = VenueBackend.answer(method, path, Fakes.bodyOf(init), backend)
+
+      if (venue !== undefined) return venue
+
       const squad = SquadBackend.answer(method, path, Fakes.bodyOf(init), backend)
 
       if (squad !== undefined) return squad
@@ -196,15 +201,18 @@ export class Fakes {
    * @param token - The saved refresh token; none means a signed-out launch.
    * @param network - The fake network source; defaults to one that stays online.
    * @param contacts - The fake contacts source; left out, the real one is used and never called.
+   * @param location - The fake location source; left out, the real one is used and never called.
    * @returns IDeps to pass to CoreProvider.
    */
   static testDeps(
     token?: string,
     network = new FakeNetwork(),
     contacts?: IDeps['contacts'],
+    location?: IDeps['location'],
   ): Partial<IDeps> {
     return {
       ...(contacts === undefined ? {} : { contacts }),
+      ...(location === undefined ? {} : { location }),
       network,
       queryClient: new QueryClient({
         defaultOptions: { queries: { gcTime: Infinity, retry: false } },

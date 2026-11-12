@@ -88,6 +88,19 @@ describe('app.config', () => {
     expect(config.android.blockedPermissions).toEqual(['android.permission.WRITE_CONTACTS'])
   })
 
+  it('asks for the location only while the app is open, with a reason', () => {
+    const config = ConfigFixtures.loadConfig('beta')
+
+    const entry = config.plugins.find(
+      (plugin) => Array.isArray(plugin) && plugin[0] === 'expo-location',
+    )
+
+    expect(entry).toBeDefined()
+    expect(JSON.stringify(entry)).toContain('locationWhenInUsePermission')
+    expect(JSON.stringify(entry)).toContain('"locationAlwaysPermission":false')
+    expect(JSON.stringify(entry)).toContain('"motionUsagePermission":false')
+  })
+
   it('turns on typed routes', () => {
     const config = ConfigFixtures.loadConfig('beta')
 

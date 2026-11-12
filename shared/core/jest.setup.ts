@@ -8,3 +8,11 @@ jest.mock('expo-contacts', () => ({
   ContactField: { PHONES: 'phones' },
   requestPermissionsAsync: jest.fn(),
 }))
+
+// expo-location needs its native module just to load, which Jest does not have. Tests that read the
+// position use a fake source; this keeps loading the module harmless.
+jest.mock('expo-location', () => ({
+  Accuracy: { Balanced: 3 },
+  getCurrentPositionAsync: jest.fn(),
+  requestForegroundPermissionsAsync: jest.fn(),
+}))

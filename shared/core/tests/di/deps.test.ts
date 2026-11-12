@@ -9,6 +9,7 @@ import { OtpCode } from '../../src/helpers/otp-code'
 import { Phone } from '../../src/helpers/phone'
 import { Query } from '../../src/helpers/query'
 import { Squads } from '../../src/helpers/squads'
+import { Venues } from '../../src/helpers/venues'
 
 /** The retry policy under test. */
 const query = new Query()
@@ -40,7 +41,7 @@ describe('Query.shouldRetry', () => {
 })
 
 describe('Deps.create', () => {
-  it('builds the platform store, the network source, the contacts source, a query client and the clock', () => {
+  it('builds the platform store, the network source, the contacts source, the location source, a query client and the clock', () => {
     const deps = Deps.create()
 
     const retry = deps.queryClient.getDefaultOptions().queries?.retry
@@ -49,7 +50,14 @@ describe('Deps.create', () => {
     expect(typeof retry).toBe('function')
     expect(typeof deps.network.getState).toBe('function')
     expect(typeof deps.contacts.requestPermission).toBe('function')
+    expect(typeof deps.location.requestPermission).toBe('function')
     expect(Math.abs(deps.now() - Date.now())).toBeLessThan(1000)
+  })
+
+  it('keeps answers fresh for a while, so a screen that mounts again reads the cache', () => {
+    const { staleTime } = Deps.create().queryClient.getDefaultOptions().queries ?? {}
+
+    expect(staleTime).toBe(30_000)
   })
 
   it('creates one of each helper', () => {
@@ -61,6 +69,7 @@ describe('Deps.create', () => {
     expect(helpers.phone).toBeInstanceOf(Phone)
     expect(helpers.query).toBeInstanceOf(Query)
     expect(helpers.squads).toBeInstanceOf(Squads)
+    expect(helpers.venues).toBeInstanceOf(Venues)
   })
 
   it('builds the squad helpers on the query client a test passes', async () => {

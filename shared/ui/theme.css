@@ -295,23 +295,6 @@
  * files in assets/fonts: app.config.ts embeds them on iOS (which looks fonts up by PostScript name)
  * and Android (by file name, so the files carry the same names), and the root layout registers
  * them under those names on the web. */
-/* The Welcome headline, larger than display. Line heights are fixed pixels: a Tailwind
- * text-4xl/10 compiles to calc(var(--spacing) * 10), which react-native-css cannot give a unit,
- * and iOS reads a unitless line height as a multiple of the font size. */
-@utility type-hero {
-  font-family: Onest-Bold;
-  font-size: 36px;
-  line-height: 40px;
-  letter-spacing: -1.26px;
-}
-
-@utility type-hero-wide {
-  font-family: Onest-Bold;
-  font-size: 64px;
-  line-height: 68px;
-  letter-spacing: -2.88px;
-}
-
 @utility type-display {
   font-family: Onest-Bold;
   font-size: 32px;

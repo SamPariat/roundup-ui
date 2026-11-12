@@ -60,6 +60,18 @@ export default {
           '$(PRODUCT_NAME) reads phone numbers from your contacts to find friends who are already on Roundup. Nothing is stored.',
       },
     ],
+    [
+      'expo-location',
+      {
+        // Shown by iOS in the permission prompt. Only while the app is open: no always-on or
+        // background access, and no motion activity.
+        locationWhenInUsePermission:
+          '$(PRODUCT_NAME) uses where you are to find bars, cafes and restaurants near you. Your location is never stored.',
+        locationAlwaysAndWhenInUsePermission: false,
+        locationAlwaysPermission: false,
+        motionUsagePermission: false,
+      },
+    ],
     'expo-localization',
     [
       'expo-splash-screen',

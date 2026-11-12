@@ -1,4 +1,5 @@
 export { ApiError } from './api-error'
+export { ApiUrl } from './api-url'
 export { AuthBridge } from './auth-bridge'
 export type { IAuthBridge } from './auth-bridge'
 export * from './generated/index'

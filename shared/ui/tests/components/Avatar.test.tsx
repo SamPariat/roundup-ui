@@ -29,4 +29,17 @@ describe('Avatar', () => {
 
     expect(screen.getByRole('image', { name: 'Meera Krishnan' })).toBeOnTheScreen()
   })
+
+  it.each([
+    [24, 'type-caption'],
+    [40, 'type-label'],
+    [64, 'type-title'],
+  ] as const)('sets the initials of a %i avatar in a type scale style', async (size, style) => {
+    await Render.withTheme(<Avatar name="Meera Krishnan" size={size} />)
+
+    expect(screen.getByText('MK', { includeHiddenElements: true })).toHaveProp(
+      'className',
+      expect.stringContaining(style),
+    )
+  })
 })

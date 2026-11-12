@@ -385,8 +385,9 @@ export default [
   },
   {
     // The API client is the one shared package that reads the environment: Expo inlines
-    // EXPO_PUBLIC_API_URL only where it is written out literally, and the mutator needs it per call.
-    files: ['shared/api/src/fetcher.ts'],
+    // EXPO_PUBLIC_API_URL only where it is written out literally, and ApiUrl.of is that one place,
+    // for the mutator's requests and for the images the API serves.
+    files: ['shared/api/src/api-url.ts'],
     rules: {
       'no-restricted-properties': [
         'error',

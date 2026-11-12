@@ -23,7 +23,7 @@ describe('Welcome', () => {
     await Render.withTheme(<Welcome />)
 
     expect(
-      screen.getByRole('header', { name: 'Weekend plans for the whole squad.' }),
+      screen.getByRole('heading', { name: 'Weekend plans for the whole squad.' }),
     ).toBeOnTheScreen()
   })
 

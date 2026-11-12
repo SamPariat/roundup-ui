@@ -1,15 +1,13 @@
 import type { ReactElement, ReactNode } from 'react'
-import type { ListRenderItemInfo } from 'react-native'
+import type { LayoutChangeEvent, ListRenderItemInfo, ViewStyle } from 'react-native'
 
-import { useCallback } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { FlatList, RefreshControl, View } from 'react-native'
 
-import type { TBreakpoint } from '@roundup/ui'
-
-import { cn, Skeleton, useBreakpoint } from '@roundup/ui'
+import { cn, Skeleton } from '@roundup/ui'
 
 import { TabFabLayer } from '@/components/TabFabLayer'
-import { useLayout } from '@/hooks/useLayout'
+import { Layout, useLayout } from '@/hooks/useLayout'
 
 /** Props for TabList. */
 export interface ITabListProps<T> {
@@ -23,10 +21,12 @@ export interface ITabListProps<T> {
   empty: ReactNode
   /** True while the first page loads: shows placeholders instead of `empty`. */
   loading?: boolean
+  /** The shape of those placeholders: list rows, or venue cards in the list's own columns. Defaults to rows. */
+  skeleton?: 'card' | 'row'
   /** Content above the items. */
   header?: ReactElement | undefined
-  /** Content below the items, such as a placeholder while more load. */
-  footer?: ReactElement | undefined
+  /** True while a later page loads: draws one more row of the same placeholders below the items. */
+  loadingMore?: boolean
   /** True while a pull to refresh runs. */
   refreshing?: boolean
   /** Called when the person pulls the list down. Leaving it out turns pull to refresh off. */
@@ -37,22 +37,26 @@ export interface ITabListProps<T> {
   fab?: ReactElement | undefined
 }
 
-/** How many columns each layout step has. */
-const COLUMNS: Record<TBreakpoint, number> = {
-  desktop: 3,
-  phone: 1,
-  tablet: 2,
-}
-
-/** The widest an item gets in each column count, so a short last row keeps the same width. */
-const CELL_WIDTH: Record<number, string> = {
-  1: 'max-w-full',
-  2: 'max-w-1/2',
-  3: 'max-w-1/3',
-}
-
 /** How many placeholder rows the first load draws. */
 const PLACEHOLDERS = 5
+
+/** The keys of the placeholder cards the first load draws, eight at most. */
+const CARD_PLACEHOLDERS: readonly string[] = [
+  'first',
+  'second',
+  'third',
+  'fourth',
+  'fifth',
+  'sixth',
+  'seventh',
+  'eighth',
+]
+
+/** How many placeholder cards the first load draws: two on a phone, two rows in a grid. */
+const CARD_ROWS = 2
+
+/** Header content sticks to the top of the list: the header is the list's first child. */
+const STICKY_HEADER: number[] = [0]
 
 /**
  * The body of a tab screen that is a list: the FlatList sibling of TabPage. It insets below the
@@ -66,24 +70,35 @@ export const TabList = <T,>({
   data,
   empty,
   fab,
-  footer,
   header,
   keyExtractor,
   loading = false,
+  loadingMore = false,
   onEndReached,
   onRefresh,
   refreshing = false,
   renderItem,
+  skeleton = 'row',
 }: ITabListProps<T>): ReactElement => {
-  const { gutterClass } = useLayout()
-  const { breakpoint } = useBreakpoint()
-  const columns = COLUMNS[breakpoint]
+  const { gutter, gutterClass } = useLayout()
+  const [width, setWidth] = useState<number>(0)
+  const columns = Layout.columnsFor(width, gutter)
+
+  const handleLayout = useCallback((event: LayoutChangeEvent): void => {
+    setWidth(event.nativeEvent.layout.width)
+  }, [])
+
+  // A cell never grows past its column, so a short last row keeps the width of the others.
+  const columnStyle = useMemo((): ViewStyle => ({ maxWidth: `${100 / columns}%` }), [columns])
+  const placeholderStyle = useMemo((): ViewStyle => ({ width: `${100 / columns}%` }), [columns])
 
   const cell = useCallback(
     ({ item }: ListRenderItemInfo<T>): ReactElement => (
-      <View className={cn('min-w-0 flex-1 p-1.5', CELL_WIDTH[columns])}>{renderItem(item)}</View>
+      <View className="min-w-0 flex-1 p-1.5" style={columnStyle}>
+        {renderItem(item)}
+      </View>
     ),
-    [columns, renderItem],
+    [columnStyle, renderItem],
   )
 
   // The cells carry 6 points of padding on every side, so the list itself sits 6 outside the gutter
@@ -91,22 +106,53 @@ export const TabList = <T,>({
   // The negative margin goes on a plain wrapping View: iOS ignores margins on a scroll view's
   // content container, and on the web a FlatList's own className lands on two nested elements.
   const headerBox =
-    header === undefined ? undefined : <View className="px-1.5 pb-1.5">{header}</View>
+    header === undefined ? undefined : <View className="bg-bg px-1.5 pt-4.5 pb-1.5">{header}</View>
+
+  // Placeholders sit in the same padded cells as the items, so they line up with the cards and
+  // take a card's width instead of the list's.
+  /**
+   * Draws placeholder cards in the list's columns.
+   * @param count - How many cards to draw.
+   * @returns The wrapped cards.
+   */
+  const cards = (count: number): ReactElement => (
+    <View className="flex-row flex-wrap">
+      {CARD_PLACEHOLDERS.slice(0, count).map((key) => (
+        <View className="p-1.5" key={key} style={placeholderStyle}>
+          <Skeleton variant="card" />
+        </View>
+      ))}
+    </View>
+  )
+
+  /**
+   * Draws placeholder rows.
+   * @param count - How many placeholder rows to stack.
+   * @returns The padded stack of rows.
+   */
+  const rows = (count: number): ReactElement => (
+    <View className="px-1.5">
+      <Skeleton count={count} />
+    </View>
+  )
+
+  const loadingPlaceholder = skeleton === 'card' ? cards(columns * CARD_ROWS) : rows(PLACEHOLDERS)
+
+  const moreFooter = skeleton === 'card' ? cards(columns) : rows(1)
 
   const placeholder = loading ? (
-    <View className="px-1.5">
-      <Skeleton count={PLACEHOLDERS} />
-    </View>
+    loadingPlaceholder
   ) : (
     <View className="flex-1 justify-center px-1.5">{empty}</View>
   )
 
   return (
     <View className="flex-1">
-      <View className="-mx-1.5 flex-1">
+      <View className="-mx-1.5 flex-1" onLayout={handleLayout}>
         <FlatList
           contentContainerClassName={cn(
-            'mx-auto w-full max-w-content grow pt-4.5',
+            'mx-auto w-full max-w-content grow',
+            header === undefined && 'pt-4.5',
             fab === undefined ? 'pb-4.5' : 'pb-24',
             gutterClass,
           )}
@@ -116,7 +162,7 @@ export const TabList = <T,>({
           keyboardShouldPersistTaps="handled"
           keyExtractor={keyExtractor}
           ListEmptyComponent={placeholder}
-          ListFooterComponent={footer}
+          ListFooterComponent={loadingMore ? moreFooter : undefined}
           ListHeaderComponent={headerBox}
           numColumns={columns}
           onEndReached={onEndReached}
@@ -126,6 +172,7 @@ export const TabList = <T,>({
             )
           }
           renderItem={cell}
+          stickyHeaderIndices={header === undefined ? undefined : STICKY_HEADER}
         />
       </View>
       {fab === undefined ? null : <TabFabLayer>{fab}</TabFabLayer>}
