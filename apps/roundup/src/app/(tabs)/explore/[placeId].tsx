@@ -26,6 +26,13 @@ import { Paths } from '@/navigation/paths'
 const TAG_SEPARATOR = ' · '
 
 /**
+ * A header button that draws nothing: the options type has no undefined for headerRight, and
+ * options merge, so this is how the wide layout's Save leaves the header.
+ * @returns Null, which React draws as no element.
+ */
+const renderNothing = (): null => null
+
+/**
  * One venue. On a phone: its photo, name, rating, price and whether it is open now, then its
  * summary, a list of its address, hours, phone, website and the squads it is saved in, and its
  * first review, with Save to squad floating over the page. On a wide screen: the header holds
@@ -66,8 +73,11 @@ export default function VenueScreen(): ReactElement {
     [handleOpenSave, t],
   )
 
+  // Options merge, so leaving the wide layout must replace Save, not just stop setting it.
   const headerOptions = useMemo(
-    (): NativeStackNavigationOptions => (inHeader ? { headerRight: renderHeaderRight } : {}),
+    (): NativeStackNavigationOptions => ({
+      headerRight: inHeader ? renderHeaderRight : renderNothing,
+    }),
     [inHeader, renderHeaderRight],
   )
 
