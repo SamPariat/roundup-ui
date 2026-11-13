@@ -23,6 +23,33 @@ class ModalFixtures {
   }
 
   /**
+   * The tallest the dialog may grow, which is set on the view around it.
+   * @returns The cap in points.
+   */
+  static maxHeight(): number | undefined {
+    let node = screen.getByLabelText('Add member').parent
+
+    while (node !== null) {
+      const cap = (
+        node.props['style'] as
+          | undefined
+          | {
+              /**
+               *
+               */
+              maxHeight?: unknown
+            }
+      )?.maxHeight
+
+      if (typeof cap === 'number') return cap
+
+      node = node.parent
+    }
+
+    return undefined
+  }
+
+  /**
    * The blurred backdrop behind the dialog. It is hidden from assistive technology, so it is found
    * by walking up from the dialog to the sibling that hides its descendants.
    * @returns The backdrop's host element.
@@ -73,6 +100,36 @@ describe('Modal', () => {
       await Render.withTheme(<Modal title="Add member" />)
 
       expect(ModalFixtures.modalHost().props['animationType']).toBe('none')
+    })
+
+    it('lets the sheet grow to the status bar, so a form that fits shows whole', async () => {
+      Platform.OS = 'ios'
+
+      await Render.withTheme(
+        <Modal title="Add member">
+          <Text>Body</Text>
+        </Modal>,
+      )
+
+      // The window is 1334 points tall here and the safe area has no insets.
+      expect(ModalFixtures.maxHeight()).toBe(1334 - 16)
+    })
+
+    it('keeps the web card to 85% of the window', async () => {
+      Platform.OS = 'web'
+
+      Object.defineProperty(globalThis, 'document', {
+        configurable: true,
+        value: { documentElement: { dataset: {}, style: {} } },
+      })
+
+      await Render.withTheme(
+        <Modal title="Add member">
+          <Text>Body</Text>
+        </Modal>,
+      )
+
+      expect(ModalFixtures.maxHeight()).toBeCloseTo(1334 * 0.85)
     })
   })
 

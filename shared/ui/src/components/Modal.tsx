@@ -10,6 +10,7 @@ import {
   Platform,
   Pressable,
   ScrollView,
+  useWindowDimensions,
   View,
 } from 'react-native'
 import Animated from 'react-native-reanimated'
@@ -59,6 +60,12 @@ export interface IModalProps {
 
 /** The padding inside the modal, in points; the sheet adds the home indicator's inset below it. */
 const PADDING = 24
+
+/** How much of the window a web card may take, as a share of its height. */
+const CARD_SHARE = 0.85
+
+/** The gap the sheet keeps under the status bar and the notch, in points. */
+const SHEET_GAP = 16
 
 /** How strongly the app blurs the screen behind the sheet, on expo-blur's 0 to 100 scale. */
 const BACKDROP_BLUR = 24
@@ -250,7 +257,18 @@ export const Modal = ({
   })
 
   // The sheet runs to the bottom edge, so its last action stays clear of the home indicator.
-  const { bottom } = useSafeAreaInsets()
+  const { bottom, top } = useSafeAreaInsets()
+  const { height } = useWindowDimensions()
+
+  // The cap is a number, not a percentage: the parents are as tall as their content, and Yoga has
+  // no height to take a percentage of, so a percentage cap let the sheet outgrow the screen or
+  // scroll too early. The sheet may fill the screen below the status bar; the card keeps its
+  // share. Whatever is taller scrolls in the body, because everything between the wrapper and the
+  // body shrinks.
+  const maxHeight = useMemo(
+    (): ViewStyle => ({ maxHeight: sheet ? height - top - SHEET_GAP : height * CARD_SHARE }),
+    [height, sheet, top],
+  )
 
   const sheetPadding = useMemo(
     (): undefined | ViewStyle => (sheet ? { paddingBottom: PADDING + bottom } : undefined),
@@ -280,16 +298,17 @@ export const Modal = ({
         {/* NativeWind does not style Reanimated views, so the size lives on a plain View and the
             animated one inside it only moves. */}
         <View
-          className={cn('max-h-[85%]', sheet ? 'mx-auto w-full max-w-140' : 'w-120 max-w-full')}
+          className={cn('shrink', sheet ? 'mx-auto w-full max-w-140' : 'w-120 max-w-full')}
+          style={maxHeight}
         >
-          <Animated.View className="max-h-full" style={sheet ? panel : [panel, CARD_CORNERS]}>
+          <Animated.View className="shrink" style={sheet ? panel : [panel, CARD_CORNERS]}>
             <Surface
               accessibilityLabel={title}
               accessibilityViewIsModal
               aria-busy={busy}
               aria-modal
               className={cn(
-                'max-h-full border border-glass-edge px-6 pt-6',
+                'shrink border border-glass-edge px-6 pt-6',
                 sheet
                   ? 'rounded-t-[20px] border-x-0 border-b-0 shadow-sheet'
                   : 'rounded-[20px] shadow-toast',
