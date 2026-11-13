@@ -44,8 +44,8 @@ describe('useCreateEventViewModel', () => {
       expect(await result.current.submit()).toBeUndefined()
     })
 
-    expect(result.current.error).toBe('errors.invalidEventName')
-    expect(result.current.invalid).toBe('name')
+    expect(result.current.invalid).toEqual({ name: 'errors.invalidEventName' })
+    expect(result.current.error).toBeUndefined()
     expect(network.requests).toHaveLength(0)
   })
 
@@ -62,8 +62,7 @@ describe('useCreateEventViewModel', () => {
       await result.current.submit()
     })
 
-    expect(result.current.invalid).toBe('times')
-    expect(result.current.error).toBe('errors.invalidEventTimes')
+    expect(result.current.invalid).toEqual({ startsAt: 'errors.invalidEventStart' })
 
     await act(() => {
       result.current.setStartsAt(new Date(2026, 10, 14, 20))
@@ -74,7 +73,29 @@ describe('useCreateEventViewModel', () => {
       await result.current.submit()
     })
 
-    expect(result.current.invalid).toBe('times')
+    expect(result.current.invalid).toEqual({ votingCloses: 'errors.invalidEventVoting' })
+    expect(network.requests).toHaveLength(0)
+  })
+
+  it('turns down the start and the deadline together, each with its own message', async () => {
+    const network = Fakes.stubNetwork({})
+    const { result } = await setup()
+
+    await act(() => {
+      result.current.setName('Drinks')
+      result.current.setStartsAt(new Date(2026, 10, 10, 20))
+      result.current.setVotingCloses(new Date(2026, 10, 11, 20))
+    })
+
+    await act(async () => {
+      await result.current.submit()
+    })
+
+    expect(result.current.invalid).toEqual({
+      startsAt: 'errors.invalidEventStart',
+      votingCloses: 'errors.invalidEventVoting',
+    })
+
     expect(network.requests).toHaveLength(0)
   })
 
@@ -124,6 +145,6 @@ describe('useCreateEventViewModel', () => {
     })
 
     expect(result.current.error).toBe('errors.invalidEvent')
-    expect(result.current.invalid).toBeUndefined()
+    expect(result.current.invalid).toEqual({})
   })
 })

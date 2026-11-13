@@ -1,9 +1,15 @@
-import { fireEvent, screen, waitFor } from 'expo-router/testing-library'
+import type { DateTimePickerChangeEvent } from '@react-native-community/datetimepicker'
+
+import { DateTimePickerAndroid } from '@react-native-community/datetimepicker'
+import { act, fireEvent, screen, waitFor } from 'expo-router/testing-library'
 import { Platform } from 'react-native'
 
 import type { IBackend } from '../../helpers/fakes'
 
 import { EventsFixtures } from '../../helpers/events'
+
+/** What a dialog reports besides the date, which the field ignores. */
+const PICKED = { nativeEvent: {} } as unknown as DateTimePickerChangeEvent
 
 /** The backend of the current test. */
 let backend: IBackend
@@ -51,6 +57,30 @@ describe('New event modal', () => {
     await fireEvent.press(screen.getByRole('button', { name: 'Create event' }))
 
     expect(await screen.findByText('Enter a name for the event.')).toBeOnTheScreen()
+    expect(backend.paths).not.toContain('POST /api/v1/squads/s1/events')
+  })
+
+  it('puts a deadline after the start under Voting closes, not under When', async () => {
+    await openModal()
+    await fireEvent.changeText(screen.getByLabelText('Name'), 'Saturday night out')
+    await fireEvent.press(screen.getByRole('button', { name: 'Voting closes' }))
+
+    // The date dialog opens first, and the time dialog once a date is confirmed: pick the next day.
+    const next = new Date(2026, 10, 13, 20)
+    const dialogs = jest.mocked(DateTimePickerAndroid.open).mock.calls
+
+    await act(() => {
+      dialogs[0]?.[0].onValueChange?.(PICKED, next)
+    })
+
+    await act(() => {
+      dialogs[1]?.[0].onValueChange?.(PICKED, next)
+    })
+
+    await fireEvent.press(screen.getByRole('button', { name: 'Create event' }))
+
+    expect(await screen.findByText('Close voting before the event starts.')).toBeOnTheScreen()
+    expect(screen.queryByText("Pick a time that hasn't passed yet.")).toBeNull()
     expect(backend.paths).not.toContain('POST /api/v1/squads/s1/events')
   })
 

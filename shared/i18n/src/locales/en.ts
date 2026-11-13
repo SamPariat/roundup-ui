@@ -188,7 +188,8 @@ export const en = {
     squadNotFound: "We can't find that squad. It may have been deleted, or you may have left it.",
     invalidEvent: 'Check the name and the times, then try again.',
     invalidEventName: 'Enter a name for the event.',
-    invalidEventTimes: 'Pick a start in the future, and close voting before the event starts.',
+    invalidEventStart: "Pick a time that hasn't passed yet.",
+    invalidEventVoting: 'Close voting before the event starts.',
     eventNotFound:
       "We can't find that event. It may have been deleted, or you may have left the squad.",
     eventChanged:

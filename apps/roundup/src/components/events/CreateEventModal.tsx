@@ -75,6 +75,9 @@ export const CreateEventModal = ({
   const dateField = useDeps().helpers.dates.field
   const { busy, earliest, error, invalid, name, requestId } = model
   const errorText = useErrorText(error, requestId)
+  const nameText = useErrorText(invalid.name)
+  const startText = useErrorText(invalid.startsAt)
+  const votingText = useErrorText(invalid.votingCloses)
 
   const handleCreate = useCallback(async (): Promise<void> => {
     const id = await model.submit()
@@ -85,9 +88,10 @@ export const CreateEventModal = ({
     router.push(Paths.squadEvent(id, name.trim()))
   }, [model, name, onClose, router])
 
-  // Each input shows the message of its own check; whatever else went wrong shows under the form.
-  const nameError = invalid === 'name' && errorText !== undefined ? { error: errorText } : {}
-  const timesError = invalid === 'times' && errorText !== undefined ? { error: errorText } : {}
+  // Each input shows the message of its own check; a failed request shows under the form.
+  const nameError = nameText === undefined ? {} : { error: nameText }
+  const startError = startText === undefined ? {} : { error: startText }
+  const votingError = votingText === undefined ? {} : { error: votingText }
 
   const actions = [
     <Button
@@ -133,7 +137,7 @@ export const CreateEventModal = ({
         minimumDate={earliest}
         onChange={model.setStartsAt}
         value={model.startsAt}
-        {...timesError}
+        {...startError}
       />
       <DateTimeField
         format={dateField}
@@ -143,12 +147,13 @@ export const CreateEventModal = ({
         minimumDate={earliest}
         onChange={model.setVotingCloses}
         value={model.votingCloses}
+        {...votingError}
       />
-      {invalid === undefined && errorText !== undefined ? (
+      {errorText === undefined ? null : (
         <Text aria-live="polite" role="alert" tone="danger" variant="body-sm">
           {errorText}
         </Text>
-      ) : null}
+      )}
     </Modal>
   )
 }

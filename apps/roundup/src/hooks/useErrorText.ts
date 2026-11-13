@@ -11,7 +11,7 @@ import { useT } from '@roundup/i18n'
  */
 export const useErrorText = (
   error: TErrorKey | undefined,
-  requestId: string | undefined,
+  requestId?: string,
 ): string | undefined => {
   const { t } = useT()
 

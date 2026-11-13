@@ -7,8 +7,8 @@ import type { TErrorKey } from '../helpers/error-key'
 import { useAttempt } from '../auth/useAttempt'
 import { useDeps } from '../di/useDeps'
 
-/** Which input the view model's own check turned down. */
-export type TCreateEventField = 'name' | 'times'
+/** An input the view model's own check can turn down. */
+export type TCreateEventField = 'name' | 'startsAt' | 'votingCloses'
 
 /** What the New event modal shows and does. */
 export interface ICreateEventViewModel {
@@ -30,9 +30,9 @@ export interface ICreateEventViewModel {
   setVotingCloses: (date: Date) => void
   /** The earliest moment the pickers offer: now. */
   earliest: Date
-  /** The input the check turned down; undefined when it passed, or when the server answered with the error. */
-  invalid: TCreateEventField | undefined
-  /** The message key to show, or undefined. */
+  /** The message of each input the check turned down; empty when it passed. Several can show at once. */
+  invalid: Partial<Record<TCreateEventField, TErrorKey>>
+  /** The message key of a failed request, to show under the form, or undefined. */
   error: TErrorKey | undefined
   /** The request ID for the generic message. */
   requestId: string | undefined
@@ -52,34 +52,30 @@ export const useCreateEventViewModel = (squadId: string): ICreateEventViewModel 
   const { helpers, now } = useDeps()
   const datesHelper = helpers.dates
   const eventsHelper = helpers.events
-  const { busy, clear, error, fail, requestId, run } = useAttempt()
+  const { busy, clear, error, requestId, run } = useAttempt()
   const [name, setName] = useState<string>('')
   const [type, setType] = useState<EventType>(EventType.DRINKS)
   const [startsAt, setStartsAt] = useState<Date>(() => eventsHelper.defaultStart(now()))
   const [votingCloses, setVotingCloses] = useState<Date | undefined>()
-  const [invalid, setInvalid] = useState<TCreateEventField | undefined>()
+  const [invalid, setInvalid] = useState<Partial<Record<TCreateEventField, TErrorKey>>>({})
 
   const submit = useCallback(async (): Promise<string | undefined> => {
     const trimmed = name.trim()
 
-    if (trimmed === '') {
-      setInvalid('name')
-      fail('errors.invalidEventName')
-
-      return undefined
+    const problems: Partial<Record<TCreateEventField, TErrorKey>> = {
+      ...(trimmed === '' ? { name: 'errors.invalidEventName' as const } : {}),
+      ...(datesHelper.isAfter(startsAt, now())
+        ? {}
+        : { startsAt: 'errors.invalidEventStart' as const }),
+      ...(votingCloses !== undefined && datesHelper.isAfter(votingCloses, startsAt)
+        ? { votingCloses: 'errors.invalidEventVoting' as const }
+        : {}),
     }
 
-    if (
-      !datesHelper.isAfter(startsAt, now()) ||
-      (votingCloses !== undefined && datesHelper.isAfter(votingCloses, startsAt))
-    ) {
-      setInvalid('times')
-      fail('errors.invalidEventTimes')
+    setInvalid(problems)
 
-      return undefined
-    }
+    if (Object.keys(problems).length > 0) return undefined
 
-    setInvalid(undefined)
     clear()
 
     const created = await run('event', async () => {
@@ -96,19 +92,7 @@ export const useCreateEventViewModel = (squadId: string): ICreateEventViewModel 
     })
 
     return created
-  }, [
-    clear,
-    datesHelper,
-    eventsHelper,
-    fail,
-    name,
-    now,
-    run,
-    squadId,
-    startsAt,
-    type,
-    votingCloses,
-  ])
+  }, [clear, datesHelper, eventsHelper, name, now, run, squadId, startsAt, type, votingCloses])
 
   return {
     busy,
