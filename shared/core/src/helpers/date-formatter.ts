@@ -1,4 +1,28 @@
-import { addDays, format, formatISO, isAfter, isValid, parse, parseISO, set } from 'date-fns'
+import type { WeekOptions } from 'date-fns'
+
+import {
+  addDays,
+  addMinutes,
+  addMonths,
+  eachDayOfInterval,
+  eachWeekOfInterval,
+  endOfMonth,
+  endOfWeek,
+  format,
+  formatISO,
+  getHours,
+  isAfter,
+  isBefore,
+  isSameDay,
+  isSameMonth,
+  isValid,
+  parse,
+  parseISO,
+  set,
+  startOfDay,
+  startOfMonth,
+  startOfWeek,
+} from 'date-fns'
 import { enIN } from 'date-fns/locale'
 
 /** How a moment reads with its weekday, day and time, such as "Sat 31 Oct, 8:00 pm". */
@@ -13,9 +37,30 @@ const PAST_DAY = 'd MMM'
 /** How a `datetime-local` input spells its value: the local date and time without a zone. */
 const INPUT = "yyyy-MM-dd'T'HH:mm"
 
+/** How a month reads above its days, such as "November 2026". */
+const MONTH = 'MMMM yyyy'
+
+/** How a weekday's initial reads over its column of days, such as "M". */
+const WEEKDAY_INITIAL = 'EEEEE'
+
+/** How a day reads to a screen reader, such as "Saturday 31 October". */
+const DAY_NAME = 'EEEE d MMMM'
+
+/** How the hour of a time reads on a 12-hour clock, without a leading zero, such as "8". */
+const HOUR = 'h'
+
+/** How the minutes of a time read, with a leading zero, such as "05". */
+const MINUTES = 'mm'
+
+/** The first hour of the afternoon on a 24-hour clock. */
+const NOON = 12
+
+/** The date-fns option that starts a week on Monday, as the calendar of a date field does. */
+const MONDAY_FIRST: WeekOptions = { weekStartsOn: 1 }
+
 /**
- * How a date field writes and reads a moment. Typed structurally, so it fits shared/ui's
- * IDateTimeFormat without core importing the UI.
+ * How a date field and its picker write, read and step through moments. Typed structurally, so it
+ * fits shared/ui's IDateTimeFormat without core importing the UI.
  */
 export interface IDateField {
   /**
@@ -36,6 +81,93 @@ export interface IDateField {
    * @returns The moment, or undefined while the input is incomplete or invalid.
    */
   fromInput: (text: string) => Date | undefined
+  /**
+   * Writes the month the picker is showing.
+   * @param month - Any moment in the month.
+   * @returns The text, such as "November 2026".
+   */
+  monthLabel: (month: Date) => string
+  /**
+   * Writes the initials that head the picker's columns.
+   * @returns Seven letters, Monday first.
+   */
+  weekdayLabels: () => string[]
+  /**
+   * Lays a month out as the picker's grid.
+   * @param month - Any moment in the month.
+   * @returns The weeks, Monday first, each of seven cells: the day, or undefined where the cell belongs to another month.
+   */
+  weeks: (month: Date) => (Date | undefined)[][]
+  /**
+   * Writes a day the way a screen reader says it.
+   * @param date - The day to write.
+   * @returns The text, such as "Saturday 31 October".
+   */
+  dayLabel: (date: Date) => string
+  /**
+   * Reads the clock.
+   * @returns The current moment.
+   */
+  today: () => Date
+  /**
+   * Whether two moments fall on the same day.
+   * @param date - The moment to test.
+   * @param other - The moment it is compared with.
+   * @returns True when both are on one day.
+   */
+  isSameDay: (date: Date, other: Date) => boolean
+  /**
+   * Whether a moment's day comes before another's, whatever the time.
+   * @param date - The moment to test.
+   * @param other - The moment it is compared with.
+   * @returns True when `date` falls on an earlier day.
+   */
+  isBeforeDay: (date: Date, other: Date) => boolean
+  /**
+   * Finds the first moment of a month.
+   * @param date - Any moment in the month.
+   * @returns Midnight on the 1st.
+   */
+  startOfMonth: (date: Date) => Date
+  /**
+   * Moves a moment by whole months.
+   * @param date - The moment.
+   * @param months - How many months to move, negative for earlier.
+   * @returns The moment that many months away.
+   */
+  addMonths: (date: Date, months: number) => Date
+  /**
+   * Moves a moment by minutes, rolling over into the next or previous day.
+   * @param date - The moment.
+   * @param minutes - How many minutes to move, negative for earlier.
+   * @returns The moment that many minutes away.
+   */
+  addMinutes: (date: Date, minutes: number) => Date
+  /**
+   * Puts a moment on another day and keeps its time.
+   * @param date - The moment whose time is kept.
+   * @param day - The day to move it to.
+   * @returns The moment on that day at the same time.
+   */
+  withDay: (date: Date, day: Date) => Date
+  /**
+   * Writes the hour of a moment on a 12-hour clock.
+   * @param date - The moment.
+   * @returns The hour, such as "8".
+   */
+  hourText: (date: Date) => string
+  /**
+   * Writes the minutes of a moment.
+   * @param date - The moment.
+   * @returns The minutes, such as "05".
+   */
+  minuteText: (date: Date) => string
+  /**
+   * Whether a moment is from noon on.
+   * @param date - The moment.
+   * @returns True for pm, false for am.
+   */
+  isPm: (date: Date) => boolean
 }
 
 /**
@@ -49,12 +181,6 @@ export class DateFormatter {
    */
   readonly field: IDateField = {
     /**
-     * Writes a moment as the field shows it.
-     * @param date - The moment.
-     * @returns The text, such as "Sat 31 Oct, 8:00 pm".
-     */
-    display: (date: Date): string => this.display(date),
-    /**
      * Reads a `datetime-local` input's value.
      * @param text - The input's value.
      * @returns The moment, or undefined while the input is incomplete or invalid.
@@ -63,9 +189,102 @@ export class DateFormatter {
     /**
      * Writes a moment as a `datetime-local` input takes it.
      * @param date - The moment.
-     * @returns The local date and time, such as 2026-10-31T20:00.
+     * @returns The local date and time without a zone, such as 2026-10-31T20:00.
      */
     toInput: (date: Date): string => this.toInput(date),
+    /**
+     * Moves a moment by minutes, rolling over into the next or previous day.
+     * @param date - The moment.
+     * @param minutes - How many minutes to move.
+     * @returns The moment that many minutes away.
+     */
+    addMinutes: (date: Date, minutes: number): Date => this.addMinutes(date, minutes),
+    /**
+     * Moves a moment by whole months.
+     * @param date - The moment.
+     * @param months - How many months to move.
+     * @returns The moment that many months away.
+     */
+    addMonths: (date: Date, months: number): Date => this.addMonths(date, months),
+    /**
+     * Writes a day the way a screen reader says it.
+     * @param date - The day to write.
+     * @returns The text, such as "Saturday 31 October".
+     */
+    dayLabel: (date: Date): string => this.dayLabel(date),
+    /**
+     * Writes a moment as the field shows it.
+     * @param date - The moment.
+     * @returns The text, such as "Sat 31 Oct, 8:00 pm".
+     */
+    display: (date: Date): string => this.display(date),
+    /**
+     * Writes the hour of a moment on a 12-hour clock.
+     * @param date - The moment.
+     * @returns The hour, such as "8".
+     */
+    hourText: (date: Date): string => this.hourText(date),
+    /**
+     * Whether a moment's day comes before another's, whatever the time.
+     * @param date - The moment to test.
+     * @param other - The moment it is compared with.
+     * @returns True when `date` falls on an earlier day.
+     */
+    isBeforeDay: (date: Date, other: Date): boolean => this.isBeforeDay(date, other),
+    /**
+     * Whether a moment is from noon on.
+     * @param date - The moment.
+     * @returns True for pm, false for am.
+     */
+    isPm: (date: Date): boolean => this.isPm(date),
+    /**
+     * Whether two moments fall on the same day.
+     * @param date - The moment to test.
+     * @param other - The moment it is compared with.
+     * @returns True when both are on one day.
+     */
+    isSameDay: (date: Date, other: Date): boolean => this.isSameDay(date, other),
+    /**
+     * Writes the minutes of a moment.
+     * @param date - The moment.
+     * @returns The minutes, such as "05".
+     */
+    minuteText: (date: Date): string => this.minuteText(date),
+    /**
+     * Writes the month the picker is showing.
+     * @param month - Any moment in the month.
+     * @returns The text, such as "November 2026".
+     */
+    monthLabel: (month: Date): string => this.monthLabel(month),
+    /**
+     * Finds the first moment of a month.
+     * @param date - Any moment in the month.
+     * @returns Midnight on the 1st.
+     */
+    startOfMonth: (date: Date): Date => this.startOfMonth(date),
+    /**
+     * Reads the clock.
+     * @returns The current moment.
+     */
+    today: (): Date => this.today(),
+    /**
+     * Writes the initials that head the picker's columns.
+     * @returns Seven letters, Monday first.
+     */
+    weekdayLabels: (): string[] => this.weekdayLabels(),
+    /**
+     * Lays a month out as the picker's grid.
+     * @param month - Any moment in the month.
+     * @returns The weeks, Monday first; undefined marks a cell of another month.
+     */
+    weeks: (month: Date): (Date | undefined)[][] => this.weeks(month),
+    /**
+     * Puts a moment on another day and keeps its time.
+     * @param date - The moment whose time is kept.
+     * @param day - The day to move it to.
+     * @returns The moment on that day at the same time.
+     */
+    withDay: (date: Date, day: Date): Date => this.withDay(date, day),
   }
 
   /**
@@ -160,5 +379,148 @@ export class DateFormatter {
    */
   isAfter(date: Date, other: Date | number): boolean {
     return isAfter(date, other)
+  }
+
+  /**
+   * Writes the month the picker is showing: "November 2026".
+   * @param month - Any moment in the month.
+   * @returns The text.
+   */
+  monthLabel(month: Date): string {
+    return format(month, MONTH, { locale: enIN })
+  }
+
+  /**
+   * Writes the initials that head the picker's columns: "M", "T", "W", "T", "F", "S", "S".
+   * @returns Seven letters, Monday first.
+   */
+  weekdayLabels(): string[] {
+    const monday = startOfWeek(this.today(), MONDAY_FIRST)
+
+    return eachDayOfInterval({ end: endOfWeek(monday, MONDAY_FIRST), start: monday }).map(
+      (day: Date): string => format(day, WEEKDAY_INITIAL, { locale: enIN }),
+    )
+  }
+
+  /**
+   * Lays a month out as the picker's grid: whole weeks from Monday, with the days of the month and
+   * a blank where a cell belongs to the month before or after.
+   * @param month - Any moment in the month.
+   * @returns The weeks, each of seven cells: the day, or undefined for a blank.
+   */
+  weeks(month: Date): (Date | undefined)[][] {
+    const starts = eachWeekOfInterval(
+      { end: endOfMonth(month), start: startOfMonth(month) },
+      MONDAY_FIRST,
+    )
+
+    return starts.map((monday: Date): (Date | undefined)[] =>
+      eachDayOfInterval({ end: endOfWeek(monday, MONDAY_FIRST), start: monday }).map(
+        (day: Date): Date | undefined => (isSameMonth(day, month) ? day : undefined),
+      ),
+    )
+  }
+
+  /**
+   * Writes a day the way a screen reader says it: "Saturday 31 October".
+   * @param date - The day to write.
+   * @returns The text.
+   */
+  dayLabel(date: Date): string {
+    return format(date, DAY_NAME, { locale: enIN })
+  }
+
+  /**
+   * Reads the clock.
+   * @returns The current moment, in the device's time zone.
+   */
+  today(): Date {
+    return new Date()
+  }
+
+  /**
+   * Whether two moments fall on the same day.
+   * @param date - The moment to test.
+   * @param other - The moment it is compared with.
+   * @returns True when both are on one day.
+   */
+  isSameDay(date: Date, other: Date): boolean {
+    return isSameDay(date, other)
+  }
+
+  /**
+   * Whether a moment's day comes before another's, whatever the time.
+   * @param date - The moment to test.
+   * @param other - The moment it is compared with.
+   * @returns True when `date` falls on an earlier day.
+   */
+  isBeforeDay(date: Date, other: Date): boolean {
+    return isBefore(startOfDay(date), startOfDay(other))
+  }
+
+  /**
+   * Finds the first moment of a month.
+   * @param date - Any moment in the month.
+   * @returns Midnight on the 1st.
+   */
+  startOfMonth(date: Date): Date {
+    return startOfMonth(date)
+  }
+
+  /**
+   * Moves a moment by whole months.
+   * @param date - The moment.
+   * @param months - How many months to move, negative for earlier.
+   * @returns The moment that many months away.
+   */
+  addMonths(date: Date, months: number): Date {
+    return addMonths(date, months)
+  }
+
+  /**
+   * Moves a moment by minutes, rolling over into the next or previous day.
+   * @param date - The moment.
+   * @param minutes - How many minutes to move, negative for earlier.
+   * @returns The moment that many minutes away.
+   */
+  addMinutes(date: Date, minutes: number): Date {
+    return addMinutes(date, minutes)
+  }
+
+  /**
+   * Puts a moment on another day and keeps its time.
+   * @param date - The moment whose time is kept.
+   * @param day - The day to move it to.
+   * @returns The moment on that day at the same time.
+   */
+  withDay(date: Date, day: Date): Date {
+    return set(date, { date: day.getDate(), month: day.getMonth(), year: day.getFullYear() })
+  }
+
+  /**
+   * Writes the hour of a moment on a 12-hour clock: "8".
+   * @param date - The moment.
+   * @returns The hour, without a leading zero.
+   */
+  hourText(date: Date): string {
+    return format(date, HOUR)
+  }
+
+  /**
+   * Writes the minutes of a moment: "05".
+   * @param date - The moment.
+   * @returns The minutes, with a leading zero.
+   */
+  minuteText(date: Date): string {
+    return format(date, MINUTES)
+  }
+
+  /**
+   * Whether a moment is from noon on.
+   * @param date - The moment.
+   * @returns True for pm, false for am.
+   */
+  isPm(date: Date): boolean {
+    return getHours(date) >= NOON
   }
 }
