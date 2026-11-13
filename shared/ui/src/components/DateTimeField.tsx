@@ -1,158 +1,133 @@
-import type { DateTimePickerChangeEvent } from '@react-native-community/datetimepicker'
 import type { ReactElement } from 'react'
 
-import DateTimePicker, { DateTimePickerAndroid } from '@react-native-community/datetimepicker'
-import { useCallback } from 'react'
-import { Platform, Pressable } from 'react-native'
+import { useCallback, useState } from 'react'
+import { Pressable } from 'react-native'
+
+import { useT } from '@roundup/i18n'
 
 import type { TIconName } from '../lib/icons'
+import type { IDateTimeFormat } from './DateTimePicker'
 
+import { Button } from './Button'
+import { DateTimePicker } from './DateTimePicker'
 import { FieldFrame } from './Field'
 import { Icon } from './Icon'
+import { Modal } from './Modal'
 import { Text } from './Text'
-
-/** How a DateTimeField writes and reads a moment, which the caller supplies for the person's locale. */
-export interface IDateTimeFormat {
-  /**
-   * Writes a moment as the field shows it.
-   * @param date - The moment.
-   * @returns The text, such as "Sat 31 Oct, 8:00 pm".
-   */
-  display: (date: Date) => string
-  /**
-   * Writes a moment as a browser's `datetime-local` input takes it.
-   * @param date - The moment.
-   * @returns The local date and time without a zone, such as 2026-10-31T20:00.
-   */
-  toInput: (date: Date) => string
-  /**
-   * Reads what a `datetime-local` input reports.
-   * @param text - The input's value.
-   * @returns The moment, or undefined while the input is incomplete or invalid.
-   */
-  fromInput: (text: string) => Date | undefined
-}
 
 /** Props for DateTimeField. */
 export interface IDateTimeFieldProps {
-  /** Required: a field with no visible name has no accessible name either. */
+  /** Required: a field with no visible name has no accessible name either. It also titles the picker. */
   label: string
-  /** The chosen moment. */
-  value: Date
-  /** How the field writes and reads a moment. */
+  /** The chosen moment. Without one the field shows its placeholder. */
+  value?: Date
+  /** How the field and its picker write and step through moments. */
   format: IDateTimeFormat
+  /** Hint shown while there is no value. Not a substitute for the label. */
+  placeholder?: string
   /** Hint shown under the field until there is an error. */
   helper?: string
   /** Replaces the helper text and turns the field red. */
   error?: string
+  /** Makes the field inert and grayed out. */
+  disabled?: boolean
   /** The earliest moment the picker offers. */
-  minimumDate?: Date
-  /** Icon drawn at the start of the field. */
+  min?: Date
+  /** Icon drawn at the start of the field. Defaults to a clock. */
   icon?: TIconName
-  /** Called with the moment the person picks. */
+  /** Called with the moment once the person presses Done. */
   onChange: (value: Date) => void
 }
 
 /**
- * Opens Android's date dialog and then its time dialog, and reports the moment they make together.
- * @param start - The moment the dialogs start on.
- * @param minimumDate - The earliest date the dialog offers.
- * @param onChange - Called with the chosen moment once both dialogs are confirmed.
- */
-const openAndroid = (
-  start: Date,
-  minimumDate: Date | undefined,
-  onChange: (value: Date) => void,
-): void => {
-  DateTimePickerAndroid.open({
-    ...(minimumDate === undefined ? {} : { minimumDate }),
-    mode: 'date',
-    /**
-     * Moves on to the time once a date is confirmed.
-     * @param _event - What the dialog reports.
-     * @param date - The date picked.
-     */
-    onValueChange: (_event: DateTimePickerChangeEvent, date: Date): void => {
-      DateTimePickerAndroid.open({
-        mode: 'time',
-        /**
-         * Reports the date and the time together once the time is confirmed.
-         * @param _timeEvent - What the dialog reports.
-         * @param time - The time picked.
-         */
-        onValueChange: (_timeEvent: DateTimePickerChangeEvent, time: Date): void => {
-          const picked = new Date(date)
-
-          picked.setHours(time.getHours(), time.getMinutes(), 0, 0)
-          onChange(picked)
-        },
-        value: date,
-      })
-    },
-    value: start,
-  })
-}
-
-/**
- * A labeled date and time field. On iOS the system's compact picker sits in the field; on Android
- * pressing the field opens the date dialog and then the time dialog; the web version (the
- * `.web` file) uses the browser's own date and time input. All of them take the same props.
- * @returns The labeled field.
+ * A labeled date and time field: one button that shows the moment on a line and opens a
+ * DateTimePicker in a Modal titled with the label. The field keeps its value until Done is
+ * pressed; Cancel, the backdrop and Esc drop the changes. It looks and behaves the same on iOS,
+ * Android and the web, and it can sit inside another Modal: the picker's Modal opens on top.
+ * @returns The labeled field and its picker.
  */
 export const DateTimeField = ({
+  disabled = false,
   error,
   format,
   helper,
-  icon,
+  icon = 'clock',
   label,
-  minimumDate,
+  min,
   onChange,
+  placeholder,
   value,
 }: IDateTimeFieldProps): ReactElement => {
-  const handlePick = useCallback(
-    (_event: DateTimePickerChangeEvent, date: Date): void => {
-      onChange(date)
-    },
-    [onChange],
-  )
+  const { t } = useT()
+  const [open, setOpen] = useState<boolean>(false)
+  // What the picker shows while it is open, kept apart from the value until Done.
+  const [draft, setDraft] = useState<Date>(value ?? format.today())
 
   const handleOpen = useCallback((): void => {
-    openAndroid(value, minimumDate, onChange)
-  }, [minimumDate, onChange, value])
+    setDraft(value ?? format.today())
+    setOpen(true)
+  }, [format, value])
+
+  const handleClose = useCallback((): void => {
+    setOpen(false)
+  }, [])
+
+  const handleDone = useCallback((): void => {
+    onChange(draft)
+    setOpen(false)
+  }, [draft, onChange])
 
   const optional = {
     ...(error === undefined ? {} : { error }),
     ...(helper === undefined ? {} : { helper }),
   }
 
-  if (Platform.OS === 'ios') {
-    return (
-      <FieldFrame disabled={false} focused={false} label={label} {...optional}>
-        {icon === undefined ? null : <Icon decorative name={icon} tone="fg-muted" />}
-        <DateTimePicker
-          accessibilityLabel={label}
-          display="compact"
-          mode="datetime"
-          onValueChange={handlePick}
-          value={value}
-          {...(minimumDate === undefined ? {} : { minimumDate })}
-        />
-      </FieldFrame>
-    )
-  }
+  const optionalMin = min === undefined ? {} : { min }
+
+  const actions = [
+    <Button key="done" onPress={handleDone}>
+      {t('common.done')}
+    </Button>,
+    <Button key="cancel" onPress={handleClose} variant="ghost">
+      {t('common.cancel')}
+    </Button>,
+  ]
 
   return (
-    <FieldFrame disabled={false} focused={false} label={label} {...optional}>
-      <Pressable
-        accessibilityLabel={label}
-        accessibilityRole="button"
-        accessibilityValue={{ text: format.display(value) }}
-        className="min-w-0 flex-1 flex-row items-center gap-2 self-stretch focus:outline-2 focus:outline-offset-2 focus:outline-focus-ring"
-        onPress={handleOpen}
-      >
-        {icon === undefined ? null : <Icon decorative name={icon} tone="fg-muted" />}
-        <Text numberOfLines={1}>{format.display(value)}</Text>
-      </Pressable>
-    </FieldFrame>
+    <>
+      <FieldFrame disabled={disabled} focused={open} label={label} {...optional}>
+        {/* The button runs out to the box's edges, so the whole box is the tap target. */}
+        <Pressable
+          accessibilityHint={error ?? helper}
+          accessibilityLabel={label}
+          accessibilityRole="button"
+          accessibilityState={{ disabled, expanded: open }}
+          accessibilityValue={{ text: value === undefined ? undefined : format.display(value) }}
+          aria-disabled={disabled}
+          aria-expanded={open}
+          className="-mx-3 min-w-0 flex-1 flex-row items-center gap-2 self-stretch rounded-xl px-3 focus:outline-2 focus:outline-offset-2 focus:outline-focus-ring"
+          disabled={disabled}
+          onPress={handleOpen}
+        >
+          <Icon decorative name={icon} tone="fg-muted" />
+          {/* The field is a fixed 52 points tall, so its text keeps its size instead of following
+              the device's text size, which would clip it. */}
+          <Text
+            allowFontScaling={false}
+            className="min-w-0 flex-1"
+            numberOfLines={1}
+            tone={value === undefined || disabled ? 'subtle' : 'fg'}
+          >
+            {value === undefined
+              ? (placeholder ?? t('dateTimeField.placeholder'))
+              : format.display(value)}
+          </Text>
+          <Icon className="rotate-90" decorative name="chevron" size={16} tone="fg-muted" />
+        </Pressable>
+      </FieldFrame>
+      <Modal actions={actions} onClose={handleClose} title={label} visible={open}>
+        <DateTimePicker format={format} onChange={setDraft} value={draft} {...optionalMin} />
+      </Modal>
+    </>
   )
 }

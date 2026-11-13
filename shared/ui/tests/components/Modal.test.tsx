@@ -1,4 +1,7 @@
+import type { ReactElement } from 'react'
+
 import { fireEvent, screen, waitFor } from '@testing-library/react-native'
+import { useCallback, useState } from 'react'
 import { Platform } from 'react-native'
 
 import { Button } from '../../src/components/Button'
@@ -248,6 +251,50 @@ describe('Modal', () => {
       await fireEvent.press(ModalFixtures.backdrop())
 
       expect(onClose).not.toHaveBeenCalled()
+    })
+  })
+
+  describe('stacked on another modal', () => {
+    it('opens on top of the modal it sits in and leaves it open when it closes', async () => {
+      /**
+       * A modal with a second modal in its body, as a form with a date field has.
+       * @returns The outer modal.
+       */
+      const Stack = (): ReactElement => {
+        const [open, setOpen] = useState<boolean>(true)
+
+        const handleClose = useCallback((): void => {
+          setOpen(false)
+        }, [])
+
+        return (
+          <Modal title="Outer">
+            <Modal
+              actions={[
+                <Button key="ok" onPress={handleClose}>
+                  Dismiss
+                </Button>,
+              ]}
+              onClose={handleClose}
+              title="Inner"
+              visible={open}
+            />
+          </Modal>
+        )
+      }
+
+      await Render.withTheme(<Stack />)
+
+      expect(screen.getByLabelText('Outer')).toBeOnTheScreen()
+      expect(screen.getByLabelText('Inner')).toBeOnTheScreen()
+
+      await fireEvent.press(screen.getByRole('button', { name: 'Dismiss' }))
+
+      await waitFor(() => {
+        expect(screen.queryByLabelText('Inner')).toBeNull()
+      })
+
+      expect(screen.getByLabelText('Outer')).toBeOnTheScreen()
     })
   })
 })

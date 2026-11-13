@@ -225,7 +225,10 @@ const ModalBackdrop = ({ native, onPress, style }: IBackdropProps): ReactElement
  * of the home indicator, 560 points wide at most on a tablet. On the web it is a centered card at
  * every width, where a sheet at the bottom of a browser window reads as broken. Identical content
  * on web and app. It traps focus and tells assistive technology it is a (alert)dialog and when it
- * is busy; while busy nothing closes it.
+ * is busy; while busy nothing closes it. A Modal can sit in another Modal's body (a date field's
+ * picker in the New event form): it is a native modal of its own, presented from the one it is in on
+ * iOS, a second dialog on Android and the topmost modal on web, where only that one traps focus and
+ * answers Esc. Only the top one closes.
  * @returns The native modal host with its sheet or card.
  */
 export const Modal = ({

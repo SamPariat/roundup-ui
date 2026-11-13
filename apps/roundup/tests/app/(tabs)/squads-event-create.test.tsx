@@ -1,15 +1,9 @@
-import type { DateTimePickerChangeEvent } from '@react-native-community/datetimepicker'
-
-import { DateTimePickerAndroid } from '@react-native-community/datetimepicker'
-import { act, fireEvent, screen, waitFor } from 'expo-router/testing-library'
+import { fireEvent, screen, waitFor } from 'expo-router/testing-library'
 import { Platform } from 'react-native'
 
 import type { IBackend } from '../../helpers/fakes'
 
 import { EventsFixtures } from '../../helpers/events'
-
-/** What a dialog reports besides the date, which the field ignores. */
-const PICKED = { nativeEvent: {} } as unknown as DateTimePickerChangeEvent
 
 /** The backend of the current test. */
 let backend: IBackend
@@ -65,16 +59,12 @@ describe('New event modal', () => {
     await fireEvent.changeText(screen.getByLabelText('Name'), 'Saturday night out')
     await fireEvent.press(screen.getByRole('button', { name: 'Voting closes' }))
 
-    // The date dialog opens first, and the time dialog once a date is confirmed: pick the next day.
-    const next = new Date(2026, 10, 13, 20)
-    const dialogs = jest.mocked(DateTimePickerAndroid.open).mock.calls
+    // The picker opens in a second modal on top of the form: pick the day after the start.
+    await fireEvent.press(await screen.findByRole('button', { name: 'Friday 13 November' }))
+    await fireEvent.press(screen.getByRole('button', { name: 'Done' }))
 
-    await act(() => {
-      dialogs[0]?.[0].onValueChange?.(PICKED, next)
-    })
-
-    await act(() => {
-      dialogs[1]?.[0].onValueChange?.(PICKED, next)
+    await waitFor(() => {
+      expect(screen.queryByRole('button', { name: 'Done' })).toBeNull()
     })
 
     await fireEvent.press(screen.getByRole('button', { name: 'Create event' }))
@@ -82,6 +72,46 @@ describe('New event modal', () => {
     expect(await screen.findByText('Close voting before the event starts.')).toBeOnTheScreen()
     expect(screen.queryByText("Pick a time that hasn't passed yet.")).toBeNull()
     expect(backend.paths).not.toContain('POST /api/v1/squads/s1/events')
+  })
+
+  it('opens a picker over the form, which keeps its value until Done', async () => {
+    await openModal()
+    await fireEvent.press(screen.getByRole('button', { name: 'When' }))
+
+    expect(await screen.findByRole('button', { name: 'Done' })).toBeOnTheScreen()
+    // The form is still under it, and the days before now are off.
+    expect(screen.getByText('Everyone in Friday crew is invited')).toBeOnTheScreen()
+    expect(screen.getByRole('button', { name: 'Tuesday 10 November' })).toBeDisabled()
+
+    await fireEvent.press(screen.getByRole('button', { name: 'Friday 13 November' }))
+
+    expect(screen.getByText('Fri 13 Nov, 8:00 pm')).toBeOnTheScreen()
+    expect(screen.getAllByText('Thu 12 Nov, 8:00 pm')).toHaveLength(2)
+
+    await fireEvent.press(screen.getByRole('button', { name: 'Done' }))
+
+    await waitFor(() => {
+      expect(screen.queryByRole('button', { name: 'Done' })).toBeNull()
+    })
+
+    // Voting closes follows the start until it is picked itself.
+    expect(screen.getAllByText('Fri 13 Nov, 8:00 pm')).toHaveLength(2)
+  })
+
+  it('drops what was picked when the picker is cancelled', async () => {
+    await openModal()
+    await fireEvent.press(screen.getByRole('button', { name: 'When' }))
+    await fireEvent.press(await screen.findByRole('button', { name: 'Friday 13 November' }))
+
+    // The picker's Cancel comes before the form's own, which is in the form's footer.
+    await fireEvent.press(screen.getAllByRole('button', { name: 'Cancel' })[0]!)
+
+    await waitFor(() => {
+      expect(screen.queryByRole('button', { name: 'Done' })).toBeNull()
+    })
+
+    expect(screen.getAllByText('Thu 12 Nov, 8:00 pm')).toHaveLength(2)
+    expect(screen.getByText('Everyone in Friday crew is invited')).toBeOnTheScreen()
   })
 
   it('creates the event and opens it', async () => {

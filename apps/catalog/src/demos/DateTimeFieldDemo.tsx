@@ -20,9 +20,9 @@ const FORMAT: IDateTimeFormat = new DateFormatter().field
 const START = new Date(2026, 9, 31, 20)
 
 /**
- * DateTimeField resting, with a helper and with an error, and one whose chosen moment follows the
- * picker. On iOS the system picker sits in the field, on Android the field opens the date and time
- * dialogs, and on web it is the browser's own input.
+ * DateTimeField resting, with a helper, an error, without a value and disabled, and one whose
+ * chosen moment follows the picker: pressing it opens the picker in a Modal, and Done keeps what
+ * was picked. It looks the same on iOS, Android and web.
  * @returns The specimens.
  */
 export const DateTimeFieldDemo = (): ReactElement => {
@@ -31,19 +31,12 @@ export const DateTimeFieldDemo = (): ReactElement => {
   return (
     <>
       <Specimen title="default">
-        <DateTimeField
-          format={FORMAT}
-          icon="clock"
-          label="When"
-          onChange={setValue}
-          value={START}
-        />
+        <DateTimeField format={FORMAT} label="When" onChange={setValue} value={START} />
       </Specimen>
       <Specimen title="helper">
         <DateTimeField
           format={FORMAT}
           helper="People can suggest places until you start voting"
-          icon="clock"
           label="Voting closes"
           onChange={setValue}
           value={START}
@@ -53,20 +46,19 @@ export const DateTimeFieldDemo = (): ReactElement => {
         <DateTimeField
           error="Pick a start in the future."
           format={FORMAT}
-          icon="clock"
           label="When"
           onChange={setValue}
           value={START}
         />
       </Specimen>
-      <Specimen note="Pick a moment; the field keeps it." title="Interactive">
-        <DateTimeField
-          format={FORMAT}
-          icon="clock"
-          label="When"
-          onChange={setValue}
-          value={value}
-        />
+      <Specimen note="Until a moment is chosen the field shows its placeholder." title="empty">
+        <DateTimeField format={FORMAT} label="When" onChange={setValue} />
+      </Specimen>
+      <Specimen title="disabled">
+        <DateTimeField disabled format={FORMAT} label="When" onChange={setValue} value={START} />
+      </Specimen>
+      <Specimen note="Pick a moment and press Done; the field keeps it." title="Interactive">
+        <DateTimeField format={FORMAT} label="When" onChange={setValue} value={value} />
       </Specimen>
     </>
   )

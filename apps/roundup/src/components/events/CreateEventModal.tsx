@@ -132,9 +132,8 @@ export const CreateEventModal = ({
       </View>
       <DateTimeField
         format={dateField}
-        icon="clock"
         label={t('screens.events.create.whenLabel')}
-        minimumDate={earliest}
+        min={earliest}
         onChange={model.setStartsAt}
         value={model.startsAt}
         {...startError}
@@ -142,9 +141,8 @@ export const CreateEventModal = ({
       <DateTimeField
         format={dateField}
         helper={t('screens.events.create.votingHelper')}
-        icon="clock"
         label={t('screens.events.create.votingLabel')}
-        minimumDate={earliest}
+        min={earliest}
         onChange={model.setVotingCloses}
         value={model.votingCloses}
         {...votingError}
