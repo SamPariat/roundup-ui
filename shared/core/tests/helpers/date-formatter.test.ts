@@ -1,3 +1,5 @@
+import { enUS, fr } from 'date-fns/locale'
+
 import { DateFormatter } from '../../src/helpers/date-formatter'
 
 /** The helper under test. */
@@ -158,6 +160,25 @@ describe('DateFormatter', () => {
     expect(dates.isPm(new Date(2026, 10, 14, 12, 0))).toBe(true)
   })
 
+  it('follows the locale for the first day of the week', () => {
+    const sunday = new DateFormatter(enUS)
+
+    expect(sunday.weekdayLabels()).toEqual(['S', 'M', 'T', 'W', 'T', 'F', 'S'])
+    // 1 November 2026 is a Sunday, so it opens the first week.
+    expect(sunday.weeks(new Date(2026, 10, 14))[0]?.[0]?.getDate()).toBe(1)
+  })
+
+  it('follows the locale for the clock', () => {
+    const french = new DateFormatter(fr)
+    const evening = new Date(2026, 9, 31, 20, 5)
+
+    expect(dates.uses12Hour()).toBe(true)
+    expect(french.uses12Hour()).toBe(false)
+    expect(french.hourText(new Date(2026, 9, 31, 8))).toBe('08')
+    expect(french.display(evening)).toBe('sam. 31 oct., 20:05')
+    expect(french.deadline(evening.toISOString())).toBe('sam., 20:05')
+  })
+
   it('gives a date field that does the same, as one object', () => {
     const picked = new Date(2026, 9, 31, 20, 5)
     const day = new Date(2026, 10, 3)
@@ -179,5 +200,6 @@ describe('DateFormatter', () => {
     expect(dates.field.hourText(picked)).toBe('8')
     expect(dates.field.minuteText(picked)).toBe('05')
     expect(dates.field.isPm(picked)).toBe(true)
+    expect(dates.field.uses12Hour()).toBe(true)
   })
 })

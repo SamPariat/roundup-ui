@@ -1,4 +1,4 @@
-import type { WeekOptions } from 'date-fns'
+import type { Locale } from 'date-fns'
 
 import {
   addDays,
@@ -25,11 +25,23 @@ import {
 } from 'date-fns'
 import { enIN } from 'date-fns/locale'
 
-/** How a moment reads with its weekday, day and time, such as "Sat 31 Oct, 8:00 pm". */
-const EVENT_WHEN = 'EEE d MMM, h:mm aaa'
+/** How a moment reads with its weekday and day, before the time, such as "Sat 31 Oct". */
+const EVENT_DAY = 'EEE d MMM'
 
-/** How a deadline reads with its weekday and time, such as "Thu, 9:00 pm". */
-const DEADLINE = 'EEE, h:mm aaa'
+/** How a deadline reads with its weekday, before the time, such as "Thu". */
+const DEADLINE_DAY = 'EEE'
+
+/** How a time reads on a 12-hour clock, such as "8:00 pm". */
+const TIME_12 = 'h:mm aaa'
+
+/** How a time reads on a 24-hour clock, such as "20:00". */
+const TIME_24 = 'HH:mm'
+
+/** How the hour of a time reads on a 24-hour clock, with a leading zero, such as "08". */
+const HOUR_24 = 'HH'
+
+/** The pattern of the locale's short time, which holds an `a` where the locale has am and pm. */
+const MERIDIEM = 'a'
 
 /** How a past event's day reads, such as "17 Oct". */
 const PAST_DAY = 'd MMM'
@@ -57,9 +69,6 @@ const MINUTES = 'mm'
 
 /** The first hour of the afternoon on a 24-hour clock. */
 const NOON = 12
-
-/** The date-fns option that starts a week on Monday, as the calendar of a date field does. */
-const MONDAY_FIRST: WeekOptions = { weekStartsOn: 1 }
 
 /**
  * How a date field and its picker write, read and step through moments. Typed structurally, so it
@@ -160,9 +169,14 @@ export interface IDateField {
    */
   withDay: (date: Date, day: Date) => Date
   /**
-   * Writes the hour of a moment on a 12-hour clock.
+   * Whether the locale tells time on a 12-hour clock, with am and pm.
+   * @returns False when the picker should leave out its am and pm switch.
+   */
+  uses12Hour: () => boolean
+  /**
+   * Writes the hour of a moment as the locale's clock shows it.
    * @param date - The moment.
-   * @returns The hour, such as "8".
+   * @returns The hour, such as "8", or "08" on a 24-hour clock.
    */
   hourText: (date: Date) => string
   /**
@@ -179,11 +193,30 @@ export interface IDateField {
   isPm: (date: Date) => boolean
 }
 
+/** What every date-fns call that words or lays out a date is given: the locale, and in time a zone. */
+type TOptions = NonNullable<Parameters<typeof format>[2]>
+
 /**
  * Date parsing and wording for the whole client, so a moment reads the same on every screen. It is
  * the only place that calls date-fns. Deps creates one; reach it through useDeps().helpers.dates.
  */
 export class DateFormatter {
+  /** The locale that every wording, week layout and clock follows; the one place it is chosen. */
+  private readonly locale: Locale
+
+  /** The options every date-fns call is given, so a time zone would be added here and nowhere else. */
+  private readonly options: TOptions
+
+  /**
+   * Chooses the locale. The default is English as written in India, which starts the week on
+   * Monday and tells time on a 12-hour clock.
+   * @param locale - The date-fns locale to follow.
+   */
+  constructor(locale: Locale = enIN) {
+    this.locale = locale
+    this.options = { locale }
+  }
+
   /**
    * What a date field needs to write and read a moment, ready to pass as its `format` prop. It is
    * one object for the life of the helper, so passing it never changes a field's props.
@@ -228,7 +261,12 @@ export class DateFormatter {
      */
     display: (date: Date): string => this.display(date),
     /**
-     * Writes the hour of a moment on a 12-hour clock.
+     * Whether the locale tells time on a 12-hour clock, with am and pm.
+     * @returns False when the picker should leave out its am and pm switch.
+     */
+    uses12Hour: (): boolean => this.uses12Hour(),
+    /**
+     * Writes the hour of a moment as the locale's clock shows it.
      * @param date - The moment.
      * @returns The hour, such as "8".
      */
@@ -335,7 +373,7 @@ export class DateFormatter {
    * @returns The text, in the device's time zone.
    */
   display(date: Date): string {
-    return format(date, EVENT_WHEN, { locale: enIN })
+    return format(date, `${EVENT_DAY}, ${this.time()}`, this.options)
   }
 
   /**
@@ -364,7 +402,7 @@ export class DateFormatter {
    * @returns The text, in the device's time zone.
    */
   deadline(iso: string): string {
-    return format(this.parse(iso), DEADLINE, { locale: enIN })
+    return format(this.parse(iso), `${DEADLINE_DAY}, ${this.time()}`, this.options)
   }
 
   /**
@@ -373,7 +411,7 @@ export class DateFormatter {
    * @returns The text, in the device's time zone.
    */
   pastDay(iso: string): string {
-    return format(this.parse(iso), PAST_DAY, { locale: enIN })
+    return format(this.parse(iso), PAST_DAY, this.options)
   }
 
   /**
@@ -402,7 +440,7 @@ export class DateFormatter {
    * @returns The text.
    */
   monthLabel(month: Date): string {
-    return format(month, MONTH, { locale: enIN })
+    return format(month, MONTH, this.options)
   }
 
   /**
@@ -410,10 +448,10 @@ export class DateFormatter {
    * @returns Seven letters, Monday first.
    */
   weekdayLabels(): string[] {
-    const monday = startOfWeek(this.today(), MONDAY_FIRST)
+    const monday = startOfWeek(this.today(), this.options)
 
-    return eachDayOfInterval({ end: endOfWeek(monday, MONDAY_FIRST), start: monday }).map(
-      (day: Date): string => format(day, WEEKDAY_INITIAL, { locale: enIN }),
+    return eachDayOfInterval({ end: endOfWeek(monday, this.options), start: monday }).map(
+      (day: Date): string => format(day, WEEKDAY_INITIAL, this.options),
     )
   }
 
@@ -426,11 +464,11 @@ export class DateFormatter {
   weeks(month: Date): (Date | undefined)[][] {
     const starts = eachWeekOfInterval(
       { end: endOfMonth(month), start: startOfMonth(month) },
-      MONDAY_FIRST,
+      this.options,
     )
 
     return starts.map((monday: Date): (Date | undefined)[] =>
-      eachDayOfInterval({ end: endOfWeek(monday, MONDAY_FIRST), start: monday }).map(
+      eachDayOfInterval({ end: endOfWeek(monday, this.options), start: monday }).map(
         (day: Date): Date | undefined => (isSameMonth(day, month) ? day : undefined),
       ),
     )
@@ -442,7 +480,7 @@ export class DateFormatter {
    * @returns The text.
    */
   dayLabel(date: Date): string {
-    return format(date, DAY_NAME, { locale: enIN })
+    return format(date, DAY_NAME, this.options)
   }
 
   /**
@@ -522,12 +560,20 @@ export class DateFormatter {
   }
 
   /**
-   * Writes the hour of a moment on a 12-hour clock: "8".
+   * Whether the locale tells time on a 12-hour clock, with am and pm.
+   * @returns False when the picker should leave out its am and pm switch.
+   */
+  uses12Hour(): boolean {
+    return this.locale.formatLong.time({ width: 'short' }).includes(MERIDIEM)
+  }
+
+  /**
+   * Writes the hour of a moment as the locale's clock shows it: "8", or "08" on a 24-hour clock.
    * @param date - The moment.
-   * @returns The hour, without a leading zero.
+   * @returns The hour's digits.
    */
   hourText(date: Date): string {
-    return format(date, HOUR)
+    return format(date, this.uses12Hour() ? HOUR : HOUR_24, this.options)
   }
 
   /**
@@ -546,5 +592,13 @@ export class DateFormatter {
    */
   isPm(date: Date): boolean {
     return getHours(date) >= NOON
+  }
+
+  /**
+   * The pattern of a time on the locale's clock.
+   * @returns The 12-hour pattern or the 24-hour one.
+   */
+  private time(): string {
+    return this.uses12Hour() ? TIME_12 : TIME_24
   }
 }
