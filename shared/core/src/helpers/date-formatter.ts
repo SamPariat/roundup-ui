@@ -15,8 +15,6 @@ import {
   isBefore,
   isSameDay,
   isSameMonth,
-  isValid,
-  parse,
   parseISO,
   set,
   startOfDay,
@@ -45,9 +43,6 @@ const MERIDIEM = 'a'
 
 /** How a past event's day reads, such as "17 Oct". */
 const PAST_DAY = 'd MMM'
-
-/** How a `datetime-local` input spells its value: the local date and time without a zone. */
-const INPUT = "yyyy-MM-dd'T'HH:mm"
 
 /** How a month reads above its days, such as "November 2026". */
 const MONTH = 'MMMM yyyy'
@@ -81,18 +76,6 @@ export interface IDateField {
    * @returns The text, such as "Sat 31 Oct, 8:00 pm".
    */
   display: (date: Date) => string
-  /**
-   * Writes a moment as a `datetime-local` input takes it.
-   * @param date - The moment.
-   * @returns The local date and time without a zone, such as 2026-10-31T20:00.
-   */
-  toInput: (date: Date) => string
-  /**
-   * Reads a `datetime-local` input's value.
-   * @param text - The input's value.
-   * @returns The moment, or undefined while the input is incomplete or invalid.
-   */
-  fromInput: (text: string) => Date | undefined
   /**
    * Writes the month the picker is showing.
    * @param month - Any moment in the month.
@@ -222,18 +205,6 @@ export class DateFormatter {
    * one object for the life of the helper, so passing it never changes a field's props.
    */
   readonly field: IDateField = {
-    /**
-     * Reads a `datetime-local` input's value.
-     * @param text - The input's value.
-     * @returns The moment, or undefined while the input is incomplete or invalid.
-     */
-    fromInput: (text: string): Date | undefined => this.fromInput(text),
-    /**
-     * Writes a moment as a `datetime-local` input takes it.
-     * @param date - The moment.
-     * @returns The local date and time without a zone, such as 2026-10-31T20:00.
-     */
-    toInput: (date: Date): string => this.toInput(date),
     /**
      * Moves a moment by minutes, rolling over into the next or previous day.
      * @param date - The moment.
@@ -374,26 +345,6 @@ export class DateFormatter {
    */
   display(date: Date): string {
     return format(date, `${EVENT_DAY}, ${this.time()}`, this.options)
-  }
-
-  /**
-   * Writes a moment as a `datetime-local` input takes it.
-   * @param date - The moment.
-   * @returns The local date and time without a zone, such as 2026-10-31T20:00.
-   */
-  toInput(date: Date): string {
-    return format(date, INPUT)
-  }
-
-  /**
-   * Reads what a `datetime-local` input reports.
-   * @param text - The input's value.
-   * @returns The moment, or undefined while the input is incomplete or invalid.
-   */
-  fromInput(text: string): Date | undefined {
-    const date = parse(text, INPUT, new Date())
-
-    return isValid(date) ? date : undefined
   }
 
   /**

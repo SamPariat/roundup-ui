@@ -46,17 +46,6 @@ describe('DateFormatter', () => {
     expect(dates.display(new Date(2026, 9, 31, 20))).toBe('Sat 31 Oct, 8:00 pm')
   })
 
-  it('writes and reads a datetime-local value', () => {
-    const picked = new Date(2026, 9, 31, 20, 5)
-
-    expect(dates.toInput(picked)).toBe('2026-10-31T20:05')
-    expect(dates.fromInput('2026-10-31T20:05')?.getTime()).toBe(picked.getTime())
-  })
-
-  it.each(['', '2026-10-31', '2026-10-31T2', 'soon'])('reads %j as an incomplete input', (text) => {
-    expect(dates.fromInput(text)).toBeUndefined()
-  })
-
   it('writes the month the picker shows', () => {
     expect(dates.monthLabel(new Date(2026, 10, 14, 9))).toBe('November 2026')
   })
