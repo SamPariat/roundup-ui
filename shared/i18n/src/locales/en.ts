@@ -9,6 +9,7 @@ export const en = {
     appName: 'Roundup',
     back: 'Back',
     cancel: 'Cancel',
+    done: 'Done',
     loading: 'Loading',
     members_one: '{{count}} member',
     members_other: '{{count}} members',
@@ -62,6 +63,24 @@ export const en = {
   },
   tabs: {
     withCount: '{{label}}, {{total}}',
+  },
+  dateTimeField: {
+    placeholder: 'Pick a day and time',
+  },
+  dateTimePicker: {
+    previousMonth: 'Previous month',
+    nextMonth: 'Next month',
+    today: '{{day}}, today',
+    time: 'Time',
+    hour: 'Hour',
+    earlierHour: 'Earlier hour',
+    laterHour: 'Later hour',
+    minutes: 'Minutes',
+    earlierMinutes: 'Earlier by {{step}} minutes',
+    laterMinutes: 'Later by {{step}} minutes',
+    half: 'Morning or evening',
+    am: 'am',
+    pm: 'pm',
   },
   listRow: {
     spoken: '{{title}}, {{subtitle}}',
