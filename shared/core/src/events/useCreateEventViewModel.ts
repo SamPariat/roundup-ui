@@ -24,12 +24,8 @@ export interface ICreateEventViewModel {
   startsAt: Date
   /** Picks when the event starts. */
   setStartsAt: (date: Date) => void
-  /** The start as the field shows it, such as "Sat 31 Oct, 8:00 pm". */
-  startsAtText: string
   /** When voting closes: the pick, or the start when the person has not picked one. */
   votingCloses: Date
-  /** The voting deadline as the field shows it. */
-  votingClosesText: string
   /** Picks when voting closes. */
   setVotingCloses: (date: Date) => void
   /** The earliest moment the pickers offer: now. */
@@ -126,10 +122,8 @@ export const useCreateEventViewModel = (squadId: string): ICreateEventViewModel 
     setType,
     setVotingCloses,
     startsAt,
-    startsAtText: datesHelper.eventWhen(datesHelper.toIso(startsAt)),
     submit,
     type,
     votingCloses: votingCloses ?? startsAt,
-    votingClosesText: datesHelper.eventWhen(datesHelper.toIso(votingCloses ?? startsAt)),
   }
 }

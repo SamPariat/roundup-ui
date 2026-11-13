@@ -4,7 +4,7 @@ import { useRouter } from 'expo-router'
 import { useCallback } from 'react'
 import { View } from 'react-native'
 
-import { EventType, useCreateEventViewModel } from '@roundup/core'
+import { EventType, useCreateEventViewModel, useDeps } from '@roundup/core'
 import { useT } from '@roundup/i18n'
 import { Button, Chip, DateTimeField, Modal, Text, TextField } from '@roundup/ui'
 
@@ -72,6 +72,7 @@ export const CreateEventModal = ({
   const { t } = useT()
   const router = useRouter()
   const model = useCreateEventViewModel(squadId)
+  const dateField = useDeps().helpers.dates.field
   const { busy, earliest, error, invalid, name, requestId } = model
   const errorText = useErrorText(error, requestId)
 
@@ -126,21 +127,21 @@ export const CreateEventModal = ({
         </View>
       </View>
       <DateTimeField
+        format={dateField}
         icon="clock"
         label={t('screens.events.create.whenLabel')}
         minimumDate={earliest}
         onChange={model.setStartsAt}
-        text={model.startsAtText}
         value={model.startsAt}
         {...timesError}
       />
       <DateTimeField
+        format={dateField}
         helper={t('screens.events.create.votingHelper')}
         icon="clock"
         label={t('screens.events.create.votingLabel')}
         minimumDate={earliest}
         onChange={model.setVotingCloses}
-        text={model.votingClosesText}
         value={model.votingCloses}
       />
       {invalid === undefined && errorText !== undefined ? (

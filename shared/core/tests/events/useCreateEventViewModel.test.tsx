@@ -34,7 +34,6 @@ describe('useCreateEventViewModel', () => {
     expect(result.current.type).toBe(EventType.DRINKS)
     expect(result.current.startsAt.getTime()).toBe(new Date(2026, 10, 12, 20).getTime())
     expect(result.current.votingCloses).toBe(result.current.startsAt)
-    expect(result.current.startsAtText).toBe('Thu 12 Nov, 8:00 pm')
   })
 
   it('rejects a blank name without a request', async () => {

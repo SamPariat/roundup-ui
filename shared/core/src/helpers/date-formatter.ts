@@ -1,4 +1,4 @@
-import { addDays, format, formatISO, isAfter, parseISO, set } from 'date-fns'
+import { addDays, format, formatISO, isAfter, isValid, parse, parseISO, set } from 'date-fns'
 import { enIN } from 'date-fns/locale'
 
 /** How a moment reads with its weekday, day and time, such as "Sat 31 Oct, 8:00 pm". */
@@ -10,11 +10,64 @@ const DEADLINE = 'EEE, h:mm aaa'
 /** How a past event's day reads, such as "17 Oct". */
 const PAST_DAY = 'd MMM'
 
+/** How a `datetime-local` input spells its value: the local date and time without a zone. */
+const INPUT = "yyyy-MM-dd'T'HH:mm"
+
+/**
+ * How a date field writes and reads a moment. Typed structurally, so it fits shared/ui's
+ * IDateTimeFormat without core importing the UI.
+ */
+export interface IDateField {
+  /**
+   * Writes a moment as the field shows it.
+   * @param date - The moment.
+   * @returns The text, such as "Sat 31 Oct, 8:00 pm".
+   */
+  display: (date: Date) => string
+  /**
+   * Writes a moment as a `datetime-local` input takes it.
+   * @param date - The moment.
+   * @returns The local date and time without a zone, such as 2026-10-31T20:00.
+   */
+  toInput: (date: Date) => string
+  /**
+   * Reads a `datetime-local` input's value.
+   * @param text - The input's value.
+   * @returns The moment, or undefined while the input is incomplete or invalid.
+   */
+  fromInput: (text: string) => Date | undefined
+}
+
 /**
  * Date parsing and wording for the whole client, so a moment reads the same on every screen. It is
  * the only place that calls date-fns. Deps creates one; reach it through useDeps().helpers.dates.
  */
 export class DateFormatter {
+  /**
+   * What a date field needs to write and read a moment, ready to pass as its `format` prop. It is
+   * one object for the life of the helper, so passing it never changes a field's props.
+   */
+  readonly field: IDateField = {
+    /**
+     * Writes a moment as the field shows it.
+     * @param date - The moment.
+     * @returns The text, such as "Sat 31 Oct, 8:00 pm".
+     */
+    display: (date: Date): string => this.display(date),
+    /**
+     * Reads a `datetime-local` input's value.
+     * @param text - The input's value.
+     * @returns The moment, or undefined while the input is incomplete or invalid.
+     */
+    fromInput: (text: string): Date | undefined => this.fromInput(text),
+    /**
+     * Writes a moment as a `datetime-local` input takes it.
+     * @param date - The moment.
+     * @returns The local date and time, such as 2026-10-31T20:00.
+     */
+    toInput: (date: Date): string => this.toInput(date),
+  }
+
   /**
    * Reads a moment the API sent.
    * @param iso - The ISO 8601 text.
@@ -39,7 +92,36 @@ export class DateFormatter {
    * @returns The text, in the device's time zone.
    */
   eventWhen(iso: string): string {
-    return format(this.parse(iso), EVENT_WHEN, { locale: enIN })
+    return this.display(this.parse(iso))
+  }
+
+  /**
+   * Writes a moment the way an event's moment reads: "Sat 31 Oct, 8:00 pm".
+   * @param date - The moment, such as one a picker gave.
+   * @returns The text, in the device's time zone.
+   */
+  display(date: Date): string {
+    return format(date, EVENT_WHEN, { locale: enIN })
+  }
+
+  /**
+   * Writes a moment as a `datetime-local` input takes it.
+   * @param date - The moment.
+   * @returns The local date and time without a zone, such as 2026-10-31T20:00.
+   */
+  toInput(date: Date): string {
+    return format(date, INPUT)
+  }
+
+  /**
+   * Reads what a `datetime-local` input reports.
+   * @param text - The input's value.
+   * @returns The moment, or undefined while the input is incomplete or invalid.
+   */
+  fromInput(text: string): Date | undefined {
+    const date = parse(text, INPUT, new Date())
+
+    return isValid(date) ? date : undefined
   }
 
   /**

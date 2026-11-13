@@ -39,4 +39,28 @@ describe('DateFormatter', () => {
     expect(dates.isAfter(late, early)).toBe(true)
     expect(dates.isAfter(early, late.getTime())).toBe(false)
   })
+
+  it('writes a picked moment the way an event reads', () => {
+    expect(dates.display(new Date(2026, 9, 31, 20))).toBe('Sat 31 Oct, 8:00 pm')
+  })
+
+  it('writes and reads a datetime-local value', () => {
+    const picked = new Date(2026, 9, 31, 20, 5)
+
+    expect(dates.toInput(picked)).toBe('2026-10-31T20:05')
+    expect(dates.fromInput('2026-10-31T20:05')?.getTime()).toBe(picked.getTime())
+  })
+
+  it.each(['', '2026-10-31', '2026-10-31T2', 'soon'])('reads %j as an incomplete input', (text) => {
+    expect(dates.fromInput(text)).toBeUndefined()
+  })
+
+  it('gives a date field that does the same, as one object', () => {
+    const picked = new Date(2026, 9, 31, 20)
+
+    expect(dates.field).toBe(dates.field)
+    expect(dates.field.display(picked)).toBe(dates.display(picked))
+    expect(dates.field.toInput(picked)).toBe(dates.toInput(picked))
+    expect(dates.field.fromInput('2026-10-31T20:00')?.getTime()).toBe(picked.getTime())
+  })
 })

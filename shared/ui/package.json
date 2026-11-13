@@ -16,7 +16,6 @@
     "@roundup/i18n": "workspace:*",
     "class-variance-authority": "catalog:",
     "clsx": "catalog:",
-    "date-fns": "catalog:",
     "expo-blur": "catalog:",
     "expo-glass-effect": "catalog:",
     "expo-image": "catalog:",

@@ -11,14 +11,36 @@ import { FieldFrame } from './Field'
 import { Icon } from './Icon'
 import { Text } from './Text'
 
+/** How a DateTimeField writes and reads a moment, which the caller supplies for the person's locale. */
+export interface IDateTimeFormat {
+  /**
+   * Writes a moment as the field shows it.
+   * @param date - The moment.
+   * @returns The text, such as "Sat 31 Oct, 8:00 pm".
+   */
+  display: (date: Date) => string
+  /**
+   * Writes a moment as a browser's `datetime-local` input takes it.
+   * @param date - The moment.
+   * @returns The local date and time without a zone, such as 2026-10-31T20:00.
+   */
+  toInput: (date: Date) => string
+  /**
+   * Reads what a `datetime-local` input reports.
+   * @param text - The input's value.
+   * @returns The moment, or undefined while the input is incomplete or invalid.
+   */
+  fromInput: (text: string) => Date | undefined
+}
+
 /** Props for DateTimeField. */
 export interface IDateTimeFieldProps {
   /** Required: a field with no visible name has no accessible name either. */
   label: string
   /** The chosen moment. */
   value: Date
-  /** The chosen moment as the field shows it, which the caller formats for the person's locale. */
-  text?: string | undefined
+  /** How the field writes and reads a moment. */
+  format: IDateTimeFormat
   /** Hint shown under the field until there is an error. */
   helper?: string
   /** Replaces the helper text and turns the field red. */
@@ -79,12 +101,12 @@ const openAndroid = (
  */
 export const DateTimeField = ({
   error,
+  format,
   helper,
   icon,
   label,
   minimumDate,
   onChange,
-  text,
   value,
 }: IDateTimeFieldProps): ReactElement => {
   const handlePick = useCallback(
@@ -124,12 +146,12 @@ export const DateTimeField = ({
       <Pressable
         accessibilityLabel={label}
         accessibilityRole="button"
-        accessibilityValue={{ text }}
+        accessibilityValue={{ text: format.display(value) }}
         className="min-w-0 flex-1 flex-row items-center gap-2 self-stretch focus:outline-2 focus:outline-offset-2 focus:outline-focus-ring"
         onPress={handleOpen}
       >
         {icon === undefined ? null : <Icon decorative name={icon} tone="fg-muted" />}
-        <Text numberOfLines={1}>{text ?? ''}</Text>
+        <Text numberOfLines={1}>{format.display(value)}</Text>
       </Pressable>
     </FieldFrame>
   )
