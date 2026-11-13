@@ -91,7 +91,11 @@ export const VenuePage = ({ placeId }: IVenuePageProps): ReactElement => {
     return (
       <TabPage centered>
         <EmptyState
-          action={<Button onPress={handleGoToExplore}>{t('screens.venue.notFoundAction')}</Button>}
+          action={
+            <Button block onPress={handleGoToExplore}>
+              {t('screens.venue.notFoundAction')}
+            </Button>
+          }
           art="search"
           title={notFound ? t('screens.venue.notFoundTitle') : t('screens.venue.errorTitle')}
           {...(errorText === undefined ? {} : { body: errorText })}

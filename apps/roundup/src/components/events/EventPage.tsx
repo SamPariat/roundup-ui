@@ -290,7 +290,11 @@ export const EventPage = ({ eventId }: IEventPageProps): ReactElement => {
     return (
       <TabPage centered>
         <EmptyState
-          action={<Button onPress={handleGoToSquads}>{t('screens.event.notFoundAction')}</Button>}
+          action={
+            <Button block onPress={handleGoToSquads}>
+              {t('screens.event.notFoundAction')}
+            </Button>
+          }
           art="search"
           title={notFound ? t('screens.event.notFoundTitle') : t('screens.event.errorTitle')}
           {...(errorText === undefined ? {} : { body: errorText })}

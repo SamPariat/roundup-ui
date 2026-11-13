@@ -91,7 +91,11 @@ export default function ExploreScreen(): ReactElement {
     return (
       <TabPage centered>
         <EmptyState
-          action={<Button onPress={handlePress}>{label}</Button>}
+          action={
+            <Button block onPress={handlePress}>
+              {label}
+            </Button>
+          }
           art="search"
           body={t('screens.explore.denied.body')}
           title={t('screens.explore.denied.title')}

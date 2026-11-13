@@ -174,7 +174,11 @@ export default function SquadScreen(): ReactElement {
     return (
       <TabPage centered>
         <EmptyState
-          action={<Button onPress={handleGoToSquads}>{t('screens.squad.notFoundAction')}</Button>}
+          action={
+            <Button block onPress={handleGoToSquads}>
+              {t('screens.squad.notFoundAction')}
+            </Button>
+          }
           art="search"
           title={notFound ? t('screens.squad.notFoundTitle') : t('screens.squad.errorTitle')}
           {...(errorText === undefined ? {} : { body: errorText })}

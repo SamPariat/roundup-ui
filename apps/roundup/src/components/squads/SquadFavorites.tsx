@@ -52,7 +52,11 @@ const NoFavorites = (): ReactElement => {
 
   return (
     <EmptyState
-      action={<Button onPress={handleExplore}>{t('screens.squad.favorites.emptyAction')}</Button>}
+      action={
+        <Button block onPress={handleExplore}>
+          {t('screens.squad.favorites.emptyAction')}
+        </Button>
+      }
       art="favorites"
       body={t('screens.squad.favorites.emptyBody')}
       title={t('screens.squad.favorites.emptyTitle')}

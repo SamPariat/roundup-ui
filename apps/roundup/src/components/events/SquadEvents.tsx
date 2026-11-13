@@ -65,7 +65,11 @@ const NoEvents = ({ onNew, text }: IEventsStateProps): ReactElement => {
 
   return (
     <EmptyState
-      action={<Button onPress={onNew}>{t('screens.events.newEvent')}</Button>}
+      action={
+        <Button block onPress={onNew}>
+          {t('screens.events.newEvent')}
+        </Button>
+      }
       art="squads"
       body={t('screens.events.emptyBody')}
       title={t('screens.events.emptyTitle')}
