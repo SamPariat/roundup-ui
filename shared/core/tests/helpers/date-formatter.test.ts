@@ -88,6 +88,11 @@ describe('DateFormatter', () => {
     expect(dates.dayLabel(new Date(2026, 9, 31, 20))).toBe('Saturday 31 October')
   })
 
+  it('writes the number of a day without a leading zero', () => {
+    expect(dates.dayText(new Date(2026, 10, 7, 20))).toBe('7')
+    expect(dates.dayText(new Date(2026, 10, 14))).toBe('14')
+  })
+
   it('reads the clock', () => {
     const before = Date.now()
     const now = dates.today().getTime()
@@ -163,6 +168,7 @@ describe('DateFormatter', () => {
     expect(dates.field.weekdayLabels()).toEqual(dates.weekdayLabels())
     expect(dates.field.weeks(picked)).toEqual(dates.weeks(picked))
     expect(dates.field.dayLabel(picked)).toBe(dates.dayLabel(picked))
+    expect(dates.field.dayText(picked)).toBe('31')
     expect(dates.field.today().getTime()).toBeLessThanOrEqual(Date.now())
     expect(dates.field.isSameDay(picked, day)).toBe(false)
     expect(dates.field.isBeforeDay(picked, day)).toBe(true)

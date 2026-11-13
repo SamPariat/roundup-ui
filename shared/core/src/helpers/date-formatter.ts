@@ -46,6 +46,9 @@ const WEEKDAY_INITIAL = 'EEEEE'
 /** How a day reads to a screen reader, such as "Saturday 31 October". */
 const DAY_NAME = 'EEEE d MMMM'
 
+/** How a day's number reads in the picker's grid, without a leading zero, such as "7". */
+const DAY_NUMBER = 'd'
+
 /** How the hour of a time reads on a 12-hour clock, without a leading zero, such as "8". */
 const HOUR = 'h'
 
@@ -104,6 +107,12 @@ export interface IDateField {
    * @returns The text, such as "Saturday 31 October".
    */
   dayLabel: (date: Date) => string
+  /**
+   * Writes the number of a day for the picker's grid.
+   * @param date - The day.
+   * @returns The day of the month, such as "7".
+   */
+  dayText: (date: Date) => string
   /**
    * Reads the clock.
    * @returns The current moment.
@@ -262,6 +271,12 @@ export class DateFormatter {
      * @returns Midnight on the 1st.
      */
     startOfMonth: (date: Date): Date => this.startOfMonth(date),
+    /**
+     * Writes the number of a day for the picker's grid.
+     * @param date - The day to write.
+     * @returns The day of the month, such as "7".
+     */
+    dayText: (date: Date): string => this.dayText(date),
     /**
      * Reads the clock.
      * @returns The current moment.
@@ -428,6 +443,15 @@ export class DateFormatter {
    */
   dayLabel(date: Date): string {
     return format(date, DAY_NAME, { locale: enIN })
+  }
+
+  /**
+   * Writes the number of a day for the picker's grid: "7".
+   * @param date - The day to write.
+   * @returns The day of the month, without a leading zero.
+   */
+  dayText(date: Date): string {
+    return format(date, DAY_NUMBER)
   }
 
   /**
