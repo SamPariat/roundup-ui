@@ -4,46 +4,17 @@ import { useState } from 'react'
 
 import type { IDateTimeFormat } from '@roundup/ui'
 
+import { DateFormatter } from '@roundup/core/date-formatter'
 import { DateTimeField } from '@roundup/ui'
 
 import { Specimen } from '@/components/Specimen'
 
 /**
- * Pads a part of a date to two digits.
- * @param part - A day, hour or minute.
- * @returns The padded text.
+ * The date field's wording, from core's formatter. The catalog has no CoreProvider, and the
+ * package's index would pull in the native modules of its sources, so it takes the formatter by its
+ * own entry and builds it instead of reading it from the deps.
  */
-const pad = (part: number): string => String(part).padStart(2, '0')
-
-/**
- * Writes a moment for the field.
- * @param date - The moment.
- * @returns The date and time, such as "31 Oct 2026, 8:00 pm".
- */
-const display = (date: Date): string =>
-  date.toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' })
-
-/**
- * Writes a moment as a datetime-local input takes it.
- * @param date - The moment.
- * @returns The local date and time, such as 2026-10-31T20:00.
- */
-const toInput = (date: Date): string =>
-  `${String(date.getFullYear())}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`
-
-/**
- * Reads a datetime-local input's value.
- * @param text - The input's value.
- * @returns The moment, or undefined while it is incomplete.
- */
-const fromInput = (text: string): Date | undefined => {
-  const date = new Date(text)
-
-  return Number.isNaN(date.getTime()) ? undefined : date
-}
-
-/** A demo's own format, from Intl: the catalog is a demo app and does not depend on core. */
-const FORMAT: IDateTimeFormat = { display, fromInput, toInput }
+const FORMAT: IDateTimeFormat = new DateFormatter().field
 
 /** The moment the interactive specimen starts on. */
 const START = new Date(2026, 9, 31, 20)
