@@ -14,7 +14,7 @@ export interface IEmptyStateProps {
   body?: string
   /** Which illustration to draw. Defaults to squads. */
   art?: 'favorites' | 'search' | 'squads'
-  /** A button or link below the copy. Give a Button `block` to fill the width. */
+  /** A button or link below the copy. Give a Button `block` to fill its width, which is the content column up to 320 points. */
   action?: ReactNode
 }
 
@@ -127,7 +127,7 @@ export const EmptyState = ({
         {body}
       </Text>
     )}
-    {/* The wrapper spans the content column: a block Button fills it, and a link is centered in it. */}
-    {action === undefined ? null : <View className="w-full items-center">{action}</View>}
+    {/* The wrapper spans the content column, 320 points at most: a block Button fills it, and a link is centered in it. */}
+    {action === undefined ? null : <View className="w-full max-w-80 items-center">{action}</View>}
   </View>
 )
