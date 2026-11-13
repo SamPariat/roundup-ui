@@ -1,9 +1,9 @@
 import type { QueryClient } from '@tanstack/react-query'
 
 import type {
+  Member,
   SquadDetail,
   SquadDetailMembersItem,
-  SquadMember,
   SquadSummary,
   UserSummary,
 } from '@roundup/api'
@@ -130,10 +130,10 @@ export class Squads {
 
   /**
    * Maps a member to the person an avatar draws.
-   * @param member - A squad member.
+   * @param member - A squad member, or the member an event lists.
    * @returns The ID, name and photo an avatar needs.
    */
-  private toPerson(member: SquadMember): ISquadPerson {
+  toPerson(member: Member): ISquadPerson {
     return { id: member.userID, name: member.name, ...this.optional('src', member.avatarURL) }
   }
 
