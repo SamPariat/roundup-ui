@@ -72,6 +72,13 @@ const TS_PROJECTS = ['apps/*/tsconfig.json', 'shared/*/tsconfig.json']
 
 const BANNED_EVERYWHERE = [
   {
+    // Jest runs on Node, which has them, so tests pass while the app crashes on load.
+    selector:
+      'CallExpression > MemberExpression.callee[property.name=/^(toSorted|toReversed|toSpliced|with)$/]',
+    message:
+      "Hermes has no toSorted, toReversed, toSpliced or Array#with, and Jest's Node does, so tests pass and the app crashes. Sort or reverse a copy: [...items].sort(...) or items.slice().reverse().",
+  },
+  {
     selector: 'TSAnyKeyword',
     message: 'Do not use any. Use unknown and narrow it (typeof, in, a type guard or a schema).',
   },
@@ -751,6 +758,9 @@ export default [
       'unicorn/no-array-for-each': 'off',
       // Numeric separators clash with token values that mirror the design system.
       'unicorn/numeric-separators-style': 'off',
+      // These push toward toSorted and toReversed, which Hermes lacks (BANNED_EVERYWHERE bans them).
+      'unicorn/no-array-sort': 'off',
+      'unicorn/no-array-reverse': 'off',
     },
   },
   {
