@@ -1,5 +1,5 @@
-/** The two views of a squad on a phone. */
-export type TSquadTab = 'favorites' | 'members'
+/** The views of a squad. */
+export type TSquadTab = 'events' | 'favorites' | 'members'
 
 /**
  * The squad page's tab as the `tab` query parameter spells it. Static methods only.
@@ -14,7 +14,9 @@ export class SquadTab {
    * @returns The tab it names, or the default.
    */
   static parse(value: string | string[] | undefined): TSquadTab {
-    return value === 'favorites' ? 'favorites' : SquadTab.defaultTab
+    if (value === 'events' || value === 'favorites') return value
+
+    return SquadTab.defaultTab
   }
 
   /**

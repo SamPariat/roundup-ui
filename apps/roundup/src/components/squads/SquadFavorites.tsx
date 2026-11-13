@@ -18,7 +18,7 @@ import { usePullRefresh } from '@/hooks/usePullRefresh'
 import { Paths } from '@/navigation/paths'
 
 /** What the favorites views read of the squad's favorites. */
-type TFavorites = Pick<
+export type TFavorites = Pick<
   IUseSquadFavorites,
   | 'complete'
   | 'error'
@@ -166,14 +166,38 @@ interface IMembersRow {
   kind: 'members'
 }
 
-/** What the phone's list holds: the members block, or the favorites. */
-type TPhoneRow = IFavoriteRow | IMembersRow
+/** The one row of the list while the Events tab shows: the whole events block. */
+interface IEventsRow {
+  /** Tells it from a favorite. */
+  kind: 'events'
+}
+
+/** What the phone's list holds: the members or events block, or the favorites. */
+type TPhoneRow = IEventsRow | IFavoriteRow | IMembersRow
 
 /** The members block as the list's only row. */
 const MEMBERS_ROW: IMembersRow = { kind: 'members' }
 
 /** The list's rows on the Members tab. */
 const MEMBERS_ROWS: readonly IMembersRow[] = [MEMBERS_ROW]
+
+/** The events block as the list's only row. */
+const EVENTS_ROW: IEventsRow = { kind: 'events' }
+
+/** The list's rows on the Events tab. */
+const EVENTS_ROWS: readonly IEventsRow[] = [EVENTS_ROW]
+
+/**
+ * Picks the rows the list holds for a tab.
+ * @param tab - The tab that shows.
+ * @param favorites - The squad's favorites, the rows of the Favorites tab.
+ * @returns The members block, the events block or the favorites.
+ */
+const phoneRows = (tab: TSquadTab, favorites: readonly IFavoriteRow[]): readonly TPhoneRow[] => {
+  if (tab === 'events') return EVENTS_ROWS
+
+  return tab === 'favorites' ? favorites : MEMBERS_ROWS
+}
 
 /** Props for PhoneSquad. */
 export interface IPhoneSquadProps {
@@ -185,39 +209,45 @@ export interface IPhoneSquadProps {
   tab: TSquadTab
   /** The members block, drawn while the Members tab shows. */
   members: ReactElement
+  /** The events block, drawn while the Events tab shows. */
+  events: ReactElement
+  /** Loads the squad's events again, on a pull while the Events tab shows. */
+  refreshEvents: () => Promise<void>
   /** The floating Add people button, when the person may add members. */
   fab?: ReactElement | undefined
 }
 
 /**
  * The squad's body on a phone: one list under the squad's header and tabs, so switching tabs
- * changes only the rows below them. Both tabs are one column, as in the design's squad board
+ * changes only the rows below them. All tabs are one column, as in the design's squad board
  * (members and favorites are lists of rows, not grids of cards), so a tab switch never changes the
- * list's columns, which would remount it with its header. The Members tab is the members block as the list's single
- * row. The Favorites tab loads more as its end comes into view and reloads on a pull; failed
+ * list's columns, which would remount it with its header. The Members and Events tabs are their
+ * blocks as the list's single row; the Events tab reloads on a pull. The Favorites tab loads more as its end comes into view and reloads on a pull; failed
  * loads and the empty list have their own states.
  * @returns The virtualized list.
  */
 export const PhoneSquad = ({
+  events,
   fab,
   header,
   members,
+  refreshEvents,
   state,
   tab,
 }: IPhoneSquadProps): ReactElement => {
   const errorText = useErrorText(state.error, state.requestId)
-  const { handleReload, refreshing } = usePullRefresh(state.refresh)
-  const { remove, removingId } = state
   const showingFavorites = tab === 'favorites'
+  const showingEvents = tab === 'events'
+  const { handleReload, refreshing } = usePullRefresh(showingEvents ? refreshEvents : state.refresh)
+  const { remove, removingId } = state
 
   const renderRow = useCallback(
-    (row: TPhoneRow): ReactElement =>
-      'kind' in row ? (
-        <View className="max-w-160">{members}</View>
-      ) : (
-        renderFavorite(row, remove, removingId)
-      ),
-    [members, remove, removingId],
+    (row: TPhoneRow): ReactElement => {
+      if (!('kind' in row)) return renderFavorite(row, remove, removingId)
+
+      return <View className="max-w-160">{row.kind === 'events' ? events : members}</View>
+    },
+    [events, members, remove, removingId],
   )
 
   const keyOf = useCallback((row: TPhoneRow): string => ('kind' in row ? row.kind : row.id), [])
@@ -231,7 +261,7 @@ export const PhoneSquad = ({
   return (
     <TabList<TPhoneRow>
       columns={1}
-      data={showingFavorites ? state.favorites : MEMBERS_ROWS}
+      data={phoneRows(tab, state.favorites)}
       empty={errorText === undefined ? <NoFavorites /> : <FavoritesFailed text={errorText} />}
       fab={showingFavorites ? undefined : fab}
       header={header}
@@ -239,7 +269,7 @@ export const PhoneSquad = ({
       loading={showingFavorites && state.loading}
       loadingMore={showingFavorites && state.loadingMore}
       onEndReached={showingFavorites ? state.loadMore : undefined}
-      onRefresh={showingFavorites ? handleReload : undefined}
+      onRefresh={showingFavorites || showingEvents ? handleReload : undefined}
       refreshing={refreshing}
       renderItem={renderRow}
       toast={toast}

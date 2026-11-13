@@ -99,4 +99,23 @@ describe('Paths', () => {
       pathname: '/squads/venue/[placeId]',
     })
   })
+
+  it('builds the event path, under the Squads tab, with its name as the title', () => {
+    expect(Paths.squadEvent('e1', 'Saturday night out')).toEqual({
+      params: { eventId: 'e1', title: 'Saturday night out' },
+      pathname: '/squads/event/[eventId]',
+    })
+
+    expect(Paths.squadEvent('e1')).toEqual({
+      params: { eventId: 'e1' },
+      pathname: '/squads/event/[eventId]',
+    })
+  })
+
+  it('opens a squad on its Events tab', () => {
+    expect(Paths.squad('s1', { tab: 'events' })).toEqual({
+      params: { squadId: 's1', tab: 'events' },
+      pathname: '/squads/[squadId]',
+    })
+  })
 })

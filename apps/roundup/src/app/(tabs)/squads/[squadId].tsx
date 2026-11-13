@@ -8,7 +8,7 @@ import { View } from 'react-native'
 import type { ISquadMember } from '@roundup/core'
 import type { IMenuHandle, IMenuItem, ITabItem } from '@roundup/ui'
 
-import { useSquad, useSquadFavorites } from '@roundup/core'
+import { useSquad, useSquadEvents, useSquadFavorites } from '@roundup/core'
 import { useT } from '@roundup/i18n'
 import {
   Button,
@@ -24,10 +24,12 @@ import {
 
 import type { TSheet } from '@/components/squads/SquadSheets'
 
+import { EventsBlock } from '@/components/events/SquadEvents'
 import { MemberActions } from '@/components/squads/MemberActionsModal'
 import { MemberRow } from '@/components/squads/MemberRow'
-import { FavoritesAside, PhoneSquad } from '@/components/squads/SquadFavorites'
+import { PhoneSquad } from '@/components/squads/SquadFavorites'
 import { SquadSheets } from '@/components/squads/SquadSheets'
+import { WideSquad } from '@/components/squads/WideSquad'
 import { TabPage } from '@/components/TabPage'
 import { useErrorText } from '@/hooks/useErrorText'
 import { useLayout } from '@/hooks/useLayout'
@@ -35,8 +37,9 @@ import { Paths } from '@/navigation/paths'
 import { SquadTab } from '@/navigation/squad-tab'
 
 /**
- * One squad: its avatar, name and member count, then the members with an Admin badge on admins. On a phone Tabs switch between the members and the
- * favorites the squad has saved; from 1024 wide the favorites sit in an aside beside the members.
+ * One squad: its avatar, name and member count, then the members with an Admin badge on admins. On a phone Tabs switch between the members, the
+ * squad's events and the favorites it has saved; from 1024 wide the favorites sit in an aside beside the members, and the
+ * Events tab shows its events with the card that needs an answer in an aside.
  * What a person can do comes from the server's permissions: admins open a member's actions and get
  * Add people as a floating button, and everyone has the options Menu in the header, with Rename
  * squad (when allowed) and Leave squad. A squad that does not exist, or that the person is not in,
@@ -49,7 +52,7 @@ export default function SquadScreen(): ReactElement {
   const router = useRouter()
   const [sheet, setSheet] = useState<TSheet | undefined>()
   const menuRef = useRef<IMenuHandle>(null)
-  const { nav, systemChrome } = useLayout()
+  const { nav, pageHeader, systemChrome } = useLayout()
   const tab = SquadTab.parse(tabParam)
   const wide = nav === 'side'
 
@@ -57,6 +60,7 @@ export default function SquadScreen(): ReactElement {
 
   const errorText = useErrorText(error, requestId)
   const favorites = useSquadFavorites(squadId)
+  const events = useSquadEvents(squadId)
 
   const handleGoToSquads = useCallback((): void => {
     router.dismissTo(Paths.tabsSquads())
@@ -64,6 +68,10 @@ export default function SquadScreen(): ReactElement {
 
   const handleOpenRename = useCallback((): void => {
     setSheet({ kind: 'rename' })
+  }, [])
+
+  const handleOpenNewEvent = useCallback((): void => {
+    setSheet({ kind: 'event' })
   }, [])
 
   const handleOpenLeave = useCallback((): void => {
@@ -99,12 +107,17 @@ export default function SquadScreen(): ReactElement {
         ...(squad === undefined ? {} : { count: squad.memberCount }),
       },
       {
+        id: 'events',
+        label: t('screens.squad.tabs.events'),
+        ...(events.openCount === undefined ? {} : { count: events.openCount }),
+      },
+      {
         id: 'favorites',
         label: t('screens.squad.tabs.favorites'),
         ...(favorites.complete ? { count: favorites.favorites.length } : {}),
       },
     ],
-    [favorites.complete, favorites.favorites.length, squad, t],
+    [events.openCount, favorites.complete, favorites.favorites.length, squad, t],
   )
 
   const handleOpenAdd = useCallback((): void => {
@@ -117,9 +130,20 @@ export default function SquadScreen(): ReactElement {
 
   // Web and Android draw headerRight, the Menu with its own ⋯, in their own bar. iOS draws a native
   // ⋯ in the same glass as the back button, which opens the same Menu, anchored under it.
+  const newEventInHeader = pageHeader && tab === 'events'
+
   const renderHeaderRight = useCallback(
-    (): ReactElement => <Menu items={options} label={t('screens.squad.options')} />,
-    [options, t],
+    (): ReactElement => (
+      <>
+        {newEventInHeader ? (
+          <Button icon="plus" onPress={handleOpenNewEvent}>
+            {t('screens.events.newEvent')}
+          </Button>
+        ) : null}
+        <Menu items={options} label={t('screens.squad.options')} />
+      </>
+    ),
+    [handleOpenNewEvent, newEventInHeader, options, t],
   )
 
   const handleOpenOptions = useCallback((): void => {
@@ -204,6 +228,12 @@ export default function SquadScreen(): ReactElement {
     </View>
   )
 
+  const wideTabs = tabs.filter((item) => item.id !== 'favorites')
+
+  const eventsBlock = (
+    <EventsBlock newInRow={!pageHeader} onNew={handleOpenNewEvent} state={events} wide={wide} />
+  )
+
   const phoneHeader = (
     <View className="gap-4">
       {identity}
@@ -212,22 +242,25 @@ export default function SquadScreen(): ReactElement {
   )
 
   const content = wide ? (
-    <TabPage fab={addPeople}>
-      <View className="gap-6">
-        {identity}
-        <View className="flex-row items-start gap-8">
-          <View className="max-w-160 min-w-0 flex-1">{memberList}</View>
-          <View className="w-90 shrink-0">
-            <FavoritesAside state={favorites} />
-          </View>
-        </View>
-      </View>
+    <TabPage fab={tab === 'events' ? undefined : addPeople}>
+      <WideSquad
+        events={eventsBlock}
+        eventsState={events}
+        favoritesState={favorites}
+        identity={identity}
+        members={memberList}
+        onSelectTab={handleSelectTab}
+        tab={tab}
+        tabs={wideTabs}
+      />
     </TabPage>
   ) : (
     <PhoneSquad
+      events={eventsBlock}
       fab={addPeople}
       header={phoneHeader}
       members={memberList}
+      refreshEvents={events.refresh}
       state={favorites}
       tab={tab}
     />

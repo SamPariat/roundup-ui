@@ -4,8 +4,9 @@ import type { IDeps } from '@roundup/core'
 
 import { HttpStatus } from '@roundup/core'
 
-import type { IVenueState } from './venue-backend'
+import type { IEventState } from './event-backend'
 
+import { EventBackend } from './event-backend'
 import { SquadBackend } from './squad-backend'
 import { VenueBackend } from './venue-backend'
 
@@ -19,7 +20,7 @@ interface IStubUser {
 }
 
 /** What a test says the backend does. */
-export interface IBackend extends IVenueState {
+export interface IBackend extends IEventState {
   /** The profile route's user. */
   user: IStubUser
   /** True to make the refresh route hang, so the session stays in "restoring". */
@@ -185,6 +186,10 @@ export class Fakes {
       const venue = VenueBackend.answer(method, path, Fakes.bodyOf(init), backend)
 
       if (venue !== undefined) return venue
+
+      const event = await EventBackend.answer(method, path, Fakes.bodyOf(init), backend)
+
+      if (event !== undefined) return event
 
       const squad = SquadBackend.answer(method, path, Fakes.bodyOf(init), backend)
 

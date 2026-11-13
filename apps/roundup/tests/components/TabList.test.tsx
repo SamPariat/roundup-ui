@@ -116,8 +116,10 @@ const SquadBody = (): ReactElement => {
         <Text>Switch</Text>
       </Pressable>
       <PhoneSquad
+        events={<Text>Events block</Text>}
         header={<Probe name="header" />}
         members={<Text>Members block</Text>}
+        refreshEvents={jest.fn()}
         state={STATE}
         tab={tab}
       />

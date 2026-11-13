@@ -38,7 +38,7 @@ interface ISquadParams extends TQuery {
   squadId: string
   /** The squad's name, which the header shows as the page's title. */
   title?: string
-  /** The tab: members (left out) or favorites. */
+  /** The tab: members (left out), events or favorites. */
   tab?: string
 }
 
@@ -55,6 +55,14 @@ interface IVenueParams extends TQuery {
   /** The venue's Google place ID. */
   placeId: string
   /** The venue's name, which the header shows as the page's title. */
+  title?: string
+}
+
+/** The parameter the event screen needs. */
+interface IEventParams extends TQuery {
+  /** The event's ID. */
+  eventId: string
+  /** The event's name, which the header shows as the page's title. */
   title?: string
 }
 
@@ -184,6 +192,23 @@ export class Paths {
     return {
       params: { placeId, ...(title === undefined ? {} : { title }) },
       pathname: '/squads/venue/[placeId]',
+    }
+  }
+
+  /**
+   * One event, under the Squads tab, so Back returns to the squad. Needs the event's ID; its name
+   * rides along as the title query parameter.
+   * @param eventId - The event to open.
+   * @param title - The event's name, when the caller knows it.
+   * @returns The path with its parameters.
+   */
+  static squadEvent(
+    eventId: string,
+    title?: string,
+  ): ILink<'/squads/event/[eventId]', IEventParams> {
+    return {
+      params: { eventId, ...(title === undefined ? {} : { title }) },
+      pathname: '/squads/event/[eventId]',
     }
   }
 
