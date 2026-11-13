@@ -79,8 +79,8 @@ export default {
       project: ['src/**/*.ts', 'tests/**/*.ts', '*.ts'],
     },
     'shared/ui': {
-      // Metro picks the .native.ts or .web.tsx twin of a file on its platform; nothing imports it by name.
-      entry: ['src/**/*.native.ts', 'src/**/*.web.tsx'],
+      // Metro picks the .native.ts twin of a file on its platform; nothing imports it by name.
+      entry: ['src/**/*.native.ts'],
       project: ['src/**/*.{ts,tsx}', 'tests/**/*.{ts,tsx}', '*.ts'],
     },
   },
