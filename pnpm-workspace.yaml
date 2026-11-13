@@ -30,7 +30,6 @@ catalog:
   '@stylistic/eslint-plugin': '5.10.0'
   '@expo/metro-runtime': '58.0.17'
   '@react-native-async-storage/async-storage': '2.2.0'
-  '@react-native-community/datetimepicker': '9.2.1'
   '@svgr/core': '8.1.0'
   '@svgr/plugin-jsx': '8.1.0'
   '@tailwindcss/postcss': '4.3.4'

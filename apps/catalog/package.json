@@ -6,7 +6,6 @@
   "dependencies": {
     "@expo/metro-runtime": "catalog:",
     "@react-native-async-storage/async-storage": "catalog:",
-    "@react-native-community/datetimepicker": "catalog:",
     "@roundup/core": "workspace:*",
     "@roundup/i18n": "workspace:*",
     "@roundup/ui": "workspace:*",

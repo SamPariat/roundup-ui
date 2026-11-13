@@ -12,7 +12,6 @@
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "catalog:",
-    "@react-native-community/datetimepicker": "catalog:",
     "@roundup/i18n": "workspace:*",
     "class-variance-authority": "catalog:",
     "clsx": "catalog:",

@@ -30,7 +30,6 @@ export default {
       ignoreDependencies: [
         // Native modules must be direct dependencies of the app so Expo autolinking finds them
         // (pnpm does not hoist them from shared/ui), even though only shared/ui imports them.
-        '@react-native-community/datetimepicker',
         'expo-blur',
         'expo-glass-effect',
         'expo-image',
@@ -56,7 +55,6 @@ export default {
         // Native modules must be direct dependencies of the app so Expo autolinking finds them
         // (pnpm does not hoist them from shared/ui or shared/i18n), even though only those
         // packages import them.
-        '@react-native-community/datetimepicker',
         'expo-blur',
         'expo-glass-effect',
         'expo-image',
