@@ -30,6 +30,7 @@ export default {
       ignoreDependencies: [
         // Native modules must be direct dependencies of the app so Expo autolinking finds them
         // (pnpm does not hoist them from shared/ui), even though only shared/ui imports them.
+        '@react-native-community/datetimepicker',
         'expo-blur',
         'expo-glass-effect',
         'expo-image',
@@ -55,6 +56,7 @@ export default {
         // Native modules must be direct dependencies of the app so Expo autolinking finds them
         // (pnpm does not hoist them from shared/ui or shared/i18n), even though only those
         // packages import them.
+        '@react-native-community/datetimepicker',
         'expo-blur',
         'expo-glass-effect',
         'expo-image',
@@ -79,8 +81,8 @@ export default {
       project: ['src/**/*.ts', 'tests/**/*.ts', '*.ts'],
     },
     'shared/ui': {
-      // Metro picks the .native.ts twin of a file on iOS and Android; nothing imports it by name.
-      entry: ['src/**/*.native.ts'],
+      // Metro picks the .native.ts or .web.tsx twin of a file on its platform; nothing imports it by name.
+      entry: ['src/**/*.native.ts', 'src/**/*.web.tsx'],
       project: ['src/**/*.{ts,tsx}', 'tests/**/*.{ts,tsx}', '*.ts'],
     },
   },

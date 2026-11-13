@@ -9,12 +9,20 @@ describe('Skeleton', () => {
     expect(screen.getByLabelText('Loading')).toBeBusy()
   })
 
-  it.each(['card', 'item', 'search', 'squad', 'venue'] as const)(
-    'is one busy region as a %s',
-    async (variant) => {
-      await render(<Skeleton variant={variant} />)
+  it.each([
+    'answer',
+    'bar',
+    'card',
+    'event',
+    'events',
+    'item',
+    'rsvp',
+    'search',
+    'squad',
+    'venue',
+  ] as const)('is one busy region as a %s', async (variant) => {
+    await render(<Skeleton variant={variant} />)
 
-      expect(screen.getByLabelText('Loading')).toBeBusy()
-    },
-  )
+    expect(screen.getByLabelText('Loading')).toBeBusy()
+  })
 })

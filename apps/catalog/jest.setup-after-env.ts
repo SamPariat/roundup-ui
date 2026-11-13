@@ -50,3 +50,14 @@ jest.mock(
       modalModule: object
     }>('../../shared/ui/tests/helpers/modal').modalModule,
 )
+
+// The native date and time picker needs its native module, which Jest does not have; this
+// stand-in is a button whose press picks the moment an hour later, and the Android dialog is a mock.
+jest.mock(
+  '@react-native-community/datetimepicker',
+  () =>
+    jest.requireActual<{
+      /** The stand-in's module. */
+      datetimepickerModule: object
+    }>('../../shared/ui/tests/helpers/datetimepicker').datetimepickerModule,
+)

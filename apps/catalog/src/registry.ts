@@ -7,6 +7,7 @@ import { BottomNavDemo } from './demos/BottomNavDemo'
 import { ButtonDemo } from './demos/ButtonDemo'
 import { ChipDemo } from './demos/ChipDemo'
 import { ColorsDemo } from './demos/ColorsDemo'
+import { DateTimeFieldDemo } from './demos/DateTimeFieldDemo'
 import { EmptyStateDemo } from './demos/EmptyStateDemo'
 import { FloatingActionButtonDemo } from './demos/FloatingActionButtonDemo'
 import { IconDemo } from './demos/IconDemo'
@@ -113,6 +114,12 @@ const ENTRIES: readonly TEntryInput[] = [
     group: 'Inputs',
     summary: 'A labeled single-line input with helper and error text.',
     Demo: TextFieldDemo,
+  },
+  {
+    title: 'DateTimeField',
+    group: 'Inputs',
+    summary: 'A labeled date and time field that opens the platform picker.',
+    Demo: DateTimeFieldDemo,
   },
   {
     title: 'PhoneInput',

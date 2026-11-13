@@ -14,6 +14,7 @@
     "@roundup/api": "workspace:*",
     "@roundup/i18n": "workspace:*",
     "@tanstack/react-query": "catalog:",
+    "date-fns": "catalog:",
     "expo-contacts": "catalog:",
     "expo-location": "catalog:",
     "expo-network": "catalog:",
