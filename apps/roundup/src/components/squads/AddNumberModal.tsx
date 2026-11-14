@@ -1,6 +1,6 @@
 import type { ReactElement } from 'react'
 
-import { useCallback } from 'react'
+import { useCallback, useMemo } from 'react'
 
 import { useAddMemberViewModel } from '@roundup/core'
 import { useT } from '@roundup/i18n'
@@ -44,19 +44,22 @@ export const AddNumberModal = ({
     onClose()
   }, [notify, onClose, squadId, submit, t])
 
-  const actions = [
-    <Button
-      key="add"
-      loading={busy}
-      loadingLabel={t('addPeople.number.submitting')}
-      onPress={handleAdd}
-    >
-      {t('addPeople.number.submit')}
-    </Button>,
-    <Button key="cancel" onPress={onClose} variant="ghost">
-      {t('common.cancel')}
-    </Button>,
-  ]
+  const actions = useMemo(
+    (): ReactElement[] => [
+      <Button
+        key="add"
+        loading={busy}
+        loadingLabel={t('addPeople.number.submitting')}
+        onPress={handleAdd}
+      >
+        {t('addPeople.number.submit')}
+      </Button>,
+      <Button key="cancel" onPress={onClose} variant="ghost">
+        {t('common.cancel')}
+      </Button>,
+    ],
+    [busy, handleAdd, onClose, t],
+  )
 
   return (
     <Modal

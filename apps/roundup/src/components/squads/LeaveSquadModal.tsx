@@ -1,6 +1,6 @@
 import type { ReactElement } from 'react'
 
-import { useCallback } from 'react'
+import { useCallback, useMemo } from 'react'
 
 import { useSquadMembersViewModel } from '@roundup/core'
 import { useT } from '@roundup/i18n'
@@ -53,20 +53,23 @@ export const LeaveSquadModal = ({
     onLeft()
   }, [leave, name, notify, onLeft, squadId, t])
 
-  const actions = [
-    <Button
-      key="leave"
-      loading={busy}
-      loadingLabel={t('screens.squad.leave.submitting')}
-      onPress={handleConfirm}
-      variant="destructive"
-    >
-      {t('screens.squad.leave.submit')}
-    </Button>,
-    <Button key="cancel" onPress={onClose} variant="ghost">
-      {t('common.cancel')}
-    </Button>,
-  ]
+  const actions = useMemo(
+    (): ReactElement[] => [
+      <Button
+        key="leave"
+        loading={busy}
+        loadingLabel={t('screens.squad.leave.submitting')}
+        onPress={handleConfirm}
+        variant="destructive"
+      >
+        {t('screens.squad.leave.submit')}
+      </Button>,
+      <Button key="cancel" onPress={onClose} variant="ghost">
+        {t('common.cancel')}
+      </Button>,
+    ],
+    [busy, handleConfirm, onClose, t],
+  )
 
   return (
     <Modal

@@ -1,7 +1,7 @@
 import type { ReactElement } from 'react'
 
 import { useRouter } from 'expo-router'
-import { useCallback } from 'react'
+import { useCallback, useMemo } from 'react'
 
 import { useCreateSquadViewModel } from '@roundup/core'
 import { useT } from '@roundup/i18n'
@@ -38,19 +38,22 @@ export const CreateSquadModal = ({ onClose }: ICreateSquadModalProps): ReactElem
     router.push(Paths.squad(id, { title: name.trim() }))
   }, [name, onClose, router, submit])
 
-  const actions = [
-    <Button
-      key="create"
-      loading={busy}
-      loadingLabel={t('screens.squads.create.submitting')}
-      onPress={handleCreate}
-    >
-      {t('screens.squads.create.submit')}
-    </Button>,
-    <Button key="cancel" onPress={onClose} variant="ghost">
-      {t('common.cancel')}
-    </Button>,
-  ]
+  const actions = useMemo(
+    (): ReactElement[] => [
+      <Button
+        key="create"
+        loading={busy}
+        loadingLabel={t('screens.squads.create.submitting')}
+        onPress={handleCreate}
+      >
+        {t('screens.squads.create.submit')}
+      </Button>,
+      <Button key="cancel" onPress={onClose} variant="ghost">
+        {t('common.cancel')}
+      </Button>,
+    ],
+    [busy, handleCreate, onClose, t],
+  )
 
   return (
     <Modal

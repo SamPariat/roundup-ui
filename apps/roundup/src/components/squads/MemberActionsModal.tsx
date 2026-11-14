@@ -1,6 +1,6 @@
 import type { ReactElement } from 'react'
 
-import { useCallback, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 
 import type { ISquadMember, ISquadPermissions } from '@roundup/core'
 import type { IListRowProps } from '@roundup/ui'
@@ -83,13 +83,6 @@ export const MemberActionsModal = ({
   const { t } = useT()
   const notify = useNotify()
 
-  // Modals have no close button, so a ghost Cancel dismisses this one.
-  const actions = [
-    <Button key="cancel" onPress={onClose} variant="ghost">
-      {t('common.cancel')}
-    </Button>,
-  ]
-
   const [chosen, setChosen] = useState<TMemberAction | undefined>()
 
   const { busyUserId, error, makeAdmin, remove, removeAdmin, requestId } =
@@ -106,6 +99,16 @@ export const MemberActionsModal = ({
    */
   const working = (action: TMemberAction): Pick<IListRowProps, 'working'> =>
     busy && chosen === action ? { working: t('screens.squad.member.saving') } : {}
+
+  // Modals have no close button, so a ghost Cancel dismisses this one.
+  const actions = useMemo(
+    (): ReactElement[] => [
+      <Button key="cancel" onPress={onClose} variant="ghost">
+        {t('common.cancel')}
+      </Button>,
+    ],
+    [onClose, t],
+  )
 
   // The sheet closes once the change is made, so the notice over the app says what changed.
   const handleAction = useCallback(
