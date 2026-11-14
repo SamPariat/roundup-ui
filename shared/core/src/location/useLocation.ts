@@ -43,9 +43,11 @@ export interface IUseLocation {
  * refusal, or no position being available, is the denied phase. A known position stays the same
  * until retry is called; a refusal or a failed read is asked again when the app comes back to the foreground, as
  * it does after the person allowed access in Settings or in the browser.
+ * @param ask - Whether to ask for access now. A screen where the position is optional, like the
+ * Suggest a place sheet before anything is typed, waits; a position already read is used anyway.
  * @returns The phase, the position and the retry action.
  */
-export const useLocation = (): IUseLocation => {
+export const useLocation = (ask = true): IUseLocation => {
   const { location } = useDeps()
 
   const { data, isFetching, isPending, refetch } = useQuery({
@@ -59,6 +61,7 @@ export const useLocation = (): IUseLocation => {
       return location.current()
     },
     queryKey: LOCATION_KEY,
+    enabled: ask,
     refetchOnWindowFocus: LocationRefetch.onReturn,
     retry: false,
     staleTime: Infinity,

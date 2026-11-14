@@ -80,6 +80,7 @@ export class EventFixtures {
       ],
       nominations: [
         {
+          address: '12 MG Road',
           canRemove: true,
           name: 'Skyline Bar',
           nominatedBy: 'u2',
@@ -87,10 +88,19 @@ export class EventFixtures {
           placeID: 'p1',
           priceLevel: 2,
           rating: 4.5,
+          voteCount: 1,
+          votedByMe: false,
+          voters: [{ avatarURL: '', name: 'Meera', userID: 'u2' }],
         },
       ],
-      permissions: { canRsvp: true, canStartVoting: true },
-      votedCount: 0,
+      permissions: {
+        canNominate: true,
+        canRsvp: true,
+        canStartVoting: true,
+        canVote: true,
+      },
+      myVote: null,
+      votedCount: 1,
       ...overrides,
     }
   }

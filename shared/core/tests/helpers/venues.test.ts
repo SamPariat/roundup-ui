@@ -152,6 +152,31 @@ describe('Venues', () => {
     })
   })
 
+  describe('Venues.toVisit', () => {
+    it('maps a visited venue onto a row with its thumbnail and the day of its last visit', () => {
+      expect(venues.toVisit(VenueFixtures.visit('v1'))).toEqual({
+        address: 'v1 MG Road',
+        avgSpendInPaise: 150_000,
+        id: 'v1',
+        lastVisitedOn: '18th Oct 2026',
+        name: 'Venue v1',
+        photo: 'https://lh3.googleusercontent.com/place-photos/v1=s4800-w800',
+        photoCredit: { name: 'Asha Rao', url: 'https://maps.google.com/maps/contrib/1' },
+        visitCount: 3,
+      })
+    })
+
+    it('leaves out what the API does not know', () => {
+      const row = venues.toVisit(
+        VenueFixtures.visit('v1', { address: '', avgSpendInPaise: null, photo: null }),
+      )
+
+      expect(row).not.toHaveProperty('address')
+      expect(row).not.toHaveProperty('avgSpendInPaise')
+      expect(row).not.toHaveProperty('photo')
+    })
+  })
+
   describe('Venues.toInfo', () => {
     it("adds today's hours without the day, the week, the first review and the squads", () => {
       const info = venues.toInfo(VenueFixtures.detail('v1'), WEDNESDAY)

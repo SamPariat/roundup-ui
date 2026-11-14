@@ -79,6 +79,84 @@ describe('useEvent', () => {
     expect(calls.filter((call) => call === 'GET /api/v1/events/e1').length).toBeGreaterThan(1)
   })
 
+  it('votes for a place, loading the event again, and sends nothing for the place already voted for', async () => {
+    const network = Fakes.stubNetwork({
+      ...SESSION,
+      'GET /api/v1/events/e1': Fakes.ok(
+        EventFixtures.detail('e1', { myVote: 'p1', status: EventStatus.VOTING }),
+      ),
+      'PUT /api/v1/events/e1/vote': Fakes.ok(
+        EventFixtures.detail('e1', { myVote: 'p2', status: EventStatus.VOTING }),
+      ),
+    })
+
+    const core = await VenueFixtures.signedInCore()
+    const { result } = await renderHook(() => useEvent('e1'), { wrapper: core.wrapper })
+
+    await waitFor(() => {
+      expect(result.current.event?.myVote).toBe('p1')
+    })
+
+    const [skyline] = result.current.event!.nominations
+    const other = { ...skyline!, id: 'p2' }
+    let same: boolean | undefined
+
+    await act(async () => {
+      same = await result.current.vote(skyline!)
+    })
+
+    expect(same).toBe(false)
+    expect(network.requests.filter((request) => request.path.endsWith('/vote'))).toEqual([])
+
+    let done: boolean | undefined
+
+    await act(async () => {
+      done = await result.current.vote(other)
+    })
+
+    expect(done).toBe(true)
+    expect(result.current.votingId).toBeUndefined()
+
+    expect(network.requests.find((request) => request.path.endsWith('/vote'))?.body).toEqual({
+      placeID: 'p2',
+    })
+  })
+
+  it('shows the place a vote is being sent for while it is sent', async () => {
+    const gate = Promise.withResolvers<boolean>()
+
+    Fakes.stubNetwork({
+      ...SESSION,
+      'GET /api/v1/events/e1': Fakes.ok(EventFixtures.detail('e1')),
+      'PUT /api/v1/events/e1/vote': {
+        ...Fakes.ok(EventFixtures.detail('e1')),
+        gate: gate.promise,
+      },
+    })
+
+    const core = await VenueFixtures.signedInCore()
+    const { result } = await renderHook(() => useEvent('e1'), { wrapper: core.wrapper })
+
+    await waitFor(() => {
+      expect(result.current.event).toBeDefined()
+    })
+
+    let sent: Promise<boolean> | undefined
+
+    await act(() => {
+      sent = result.current.vote(result.current.event!.nominations[0]!)
+    })
+
+    expect(result.current.votingId).toBe('p1')
+
+    await act(async () => {
+      gate.resolve(true)
+      await sent
+    })
+
+    expect(result.current.votingId).toBeUndefined()
+  })
+
   it('maps a conflict on starting voting to its message', async () => {
     Fakes.stubNetwork({
       ...SESSION,

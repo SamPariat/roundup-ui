@@ -6,6 +6,7 @@ import {
   ApiError,
   HttpStatus,
   removeNomination,
+  vote as sendVote,
   setRSVP,
   startVoting,
   useGetEvent,
@@ -34,6 +35,12 @@ type TAction =
       placeId: string
     }
   | {
+      /** A vote is being sent. */
+      kind: 'vote'
+      /** The place being voted for. */
+      placeId: string
+    }
+  | {
       /** Voting is being started. */
       kind: 'start'
     }
@@ -50,12 +57,19 @@ export interface IUseEvent {
   answering: RSVPStatus | undefined
   /** The place being taken back; undefined when idle. */
   removingId: string | undefined
+  /** The place a vote is being sent for; undefined when idle. */
+  votingId: string | undefined
   /** True while voting is being started. */
   starting: boolean
   /** Sends the signed-in person's answer. Resolves true when it worked. */
   rsvp: (status: RSVPStatus) => Promise<boolean>
   /** Takes a suggestion back. Resolves true when it worked. */
   remove: (nomination: IEventNomination) => Promise<boolean>
+  /**
+   * Votes for a place, moving the person's vote from the one they gave before. Resolves false
+   * without a request when the person already voted for this place.
+   */
+  vote: (nomination: IEventNomination) => Promise<boolean>
   /** Opens voting, which closes the suggestions. Resolves true when it worked. */
   start: () => Promise<boolean>
   /** The message key to show, or undefined. */
@@ -95,6 +109,7 @@ export const useEvent = (eventId: string): IUseEvent => {
   )
 
   const squadId = event?.squadId
+  const myVote = event?.myVote
 
   const act = useCallback(
     async (next: TAction, request: () => Promise<unknown>): Promise<boolean> => {
@@ -130,6 +145,16 @@ export const useEvent = (eventId: string): IUseEvent => {
     [act, eventId],
   )
 
+  const vote = useCallback(
+    (nomination: IEventNomination): Promise<boolean> =>
+      nomination.id === myVote
+        ? Promise.resolve(false)
+        : act({ kind: 'vote', placeId: nomination.id }, () =>
+            sendVote(eventId, { placeID: nomination.id }),
+          ),
+    [act, eventId, myVote],
+  )
+
   const start = useCallback(
     (): Promise<boolean> => act({ kind: 'start' }, () => startVoting(eventId)),
     [act, eventId],
@@ -147,5 +172,7 @@ export const useEvent = (eventId: string): IUseEvent => {
     rsvp,
     start,
     starting: running?.kind === 'start',
+    vote,
+    votingId: running?.kind === 'vote' ? running.placeId : undefined,
   }
 }
