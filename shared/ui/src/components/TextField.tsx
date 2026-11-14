@@ -67,14 +67,15 @@ export const TextField = ({
     >
       {icon === undefined ? null : <Icon decorative name={icon} tone="fg-muted" />}
       {/* The field is a fixed 52 points tall, so its text (and placeholder) keeps its size instead
-          of following the device's text size, which would clip it. The label and helper scale. */}
+          of following the device's text size, which would clip it. The label and helper scale.
+          The frame shows focus with its accent border, so the input draws no browser outline. */}
       <TextInput
         accessibilityHint={error ?? helper}
         accessibilityLabel={label}
         allowFontScaling={false}
         aria-disabled={disabled}
         aria-invalid={error !== undefined}
-        className="min-w-0 flex-1 p-0 type-body text-fg"
+        className="min-w-0 flex-1 p-0 type-body text-fg outline-none"
         editable={!disabled}
         onBlur={onBlur}
         onChangeText={onChangeText}

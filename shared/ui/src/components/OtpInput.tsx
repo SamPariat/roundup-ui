@@ -94,6 +94,7 @@ export const OtpInput = ({
             </View>
           ))}
         </View>
+        {/* The next cell shows focus with its accent border, so the input draws no browser outline. */}
         <TextInput
           accessibilityHint={error}
           accessibilityLabel={label}
@@ -101,7 +102,7 @@ export const OtpInput = ({
           autoComplete="sms-otp"
           autoFocus={autoFocus}
           caretHidden
-          className="absolute inset-0 text-transparent opacity-1"
+          className="absolute inset-0 text-transparent opacity-1 outline-none"
           inputMode="numeric"
           keyboardType="number-pad"
           maxLength={length}
