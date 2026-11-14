@@ -1,4 +1,6 @@
-import { useEffect, useState } from 'react'
+import type { KeyboardEventName } from 'react-native'
+
+import { useCallback, useEffect, useState } from 'react'
 import { Keyboard, Platform } from 'react-native'
 
 /**
@@ -10,22 +12,33 @@ import { Keyboard, Platform } from 'react-native'
 export const useKeyboardShown = (): boolean => {
   const [shown, setShown] = useState<boolean>(false)
 
+  const showEvent: KeyboardEventName = Platform.select({
+    default: 'keyboardDidShow',
+    ios: 'keyboardWillShow',
+  })
+
+  const hideEvent: KeyboardEventName = Platform.select({
+    default: 'keyboardDidHide',
+    ios: 'keyboardWillHide',
+  })
+
+  const handleShow = useCallback((): void => {
+    setShown(true)
+  }, [])
+
+  const handleHide = useCallback((): void => {
+    setShown(false)
+  }, [])
+
   useEffect(() => {
-    const ios = Platform.OS === 'ios'
-
-    const show = Keyboard.addListener(ios ? 'keyboardWillShow' : 'keyboardDidShow', () => {
-      setShown(true)
-    })
-
-    const hide = Keyboard.addListener(ios ? 'keyboardWillHide' : 'keyboardDidHide', () => {
-      setShown(false)
-    })
+    const show = Keyboard.addListener(showEvent, handleShow)
+    const hide = Keyboard.addListener(hideEvent, handleHide)
 
     return () => {
       show.remove()
       hide.remove()
     }
-  }, [])
+  }, [handleHide, handleShow, hideEvent, showEvent])
 
   return shown
 }

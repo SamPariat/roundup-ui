@@ -75,6 +75,7 @@ export const CreateEventModal = ({
   const dateField = useDeps().helpers.dates.field
   const { busy, earliest, error, invalid, name, requestId } = model
   const errorText = useErrorText(error, requestId)
+  // Each input shows the message of its own check; a failed request shows under the form.
   const nameText = useErrorText(invalid.name)
   const startText = useErrorText(invalid.startsAt)
   const votingText = useErrorText(invalid.votingCloses)
@@ -87,11 +88,6 @@ export const CreateEventModal = ({
     onClose()
     router.push(Paths.squadEvent(id, name.trim()))
   }, [model, name, onClose, router])
-
-  // Each input shows the message of its own check; a failed request shows under the form.
-  const nameError = nameText === undefined ? {} : { error: nameText }
-  const startError = startText === undefined ? {} : { error: startText }
-  const votingError = votingText === undefined ? {} : { error: votingText }
 
   const actions = [
     <Button
@@ -120,7 +116,7 @@ export const CreateEventModal = ({
         onChangeText={model.setName}
         placeholder={t('screens.events.create.namePlaceholder')}
         value={name}
-        {...nameError}
+        {...(nameText === undefined ? {} : { error: nameText })}
       />
       <View className="gap-2">
         <Text variant="label">{t('screens.events.create.typeLabel')}</Text>
@@ -136,7 +132,7 @@ export const CreateEventModal = ({
         min={earliest}
         onChange={model.setStartsAt}
         value={model.startsAt}
-        {...startError}
+        {...(startText === undefined ? {} : { error: startText })}
       />
       <DateTimeField
         format={dateField}
@@ -145,7 +141,7 @@ export const CreateEventModal = ({
         min={earliest}
         onChange={model.setVotingCloses}
         value={model.votingCloses}
-        {...votingError}
+        {...(votingText === undefined ? {} : { error: votingText })}
       />
       {errorText === undefined ? null : (
         <Text aria-live="polite" role="alert" tone="danger" variant="body-sm">

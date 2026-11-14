@@ -13,8 +13,8 @@ export interface ITabSidesProps {
   children: ReactNode
 }
 
-/** Fills the screen; SafeAreaView takes a style, not a className. */
-const FILL: ViewStyle = { flex: 1 }
+/** Fills the screen; SafeAreaView takes a style, not a className. Tab screens share it. */
+export const FILL: ViewStyle = { flex: 1 }
 
 /** The sides iOS's system chrome can stand along. */
 const SIDES: readonly Edge[] = ['left', 'right']

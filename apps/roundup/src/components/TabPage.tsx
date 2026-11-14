@@ -1,5 +1,4 @@
 import type { ReactElement, ReactNode } from 'react'
-import type { ViewStyle } from 'react-native'
 import type { Edge } from 'react-native-safe-area-context'
 
 import { ScrollView, View } from 'react-native'
@@ -8,7 +7,7 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { cn } from '@roundup/ui'
 
 import { TabFabLayer } from '@/components/TabFabLayer'
-import { TabSides } from '@/components/TabSides'
+import { FILL, TabSides } from '@/components/TabSides'
 import { useLayout } from '@/hooks/useLayout'
 
 /** Props for TabPage. */
@@ -20,9 +19,6 @@ export interface ITabPageProps {
   /** The screen's FloatingActionButton, floated over the bottom-right of the content. */
   fab?: ReactElement | undefined
 }
-
-/** Fills the screen; SafeAreaView takes a style, not a className. */
-const FILL: ViewStyle = { flex: 1 }
 
 /**
  * The edges of the visible area on iOS: below the header, above the floating tab bar and clear of

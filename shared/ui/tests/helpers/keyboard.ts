@@ -1,7 +1,7 @@
 import type { KeyboardEventName } from 'react-native'
 
 import { act } from '@testing-library/react-native'
-import { Keyboard } from 'react-native'
+import { Keyboard, Platform } from 'react-native'
 
 /**
  * Keyboard test helpers. Static methods only.
@@ -18,6 +18,19 @@ export class KeyboardFixtures {
       KeyboardFixtures.listeners.set(name, listener as () => void)
 
       return { remove: jest.fn() }
+    })
+  }
+
+  /**
+   * Makes Platform.select follow Platform.OS as a test sets it. Jest's React Native preset answers
+   * every select from the iOS entry, so code that picks a keyboard event by platform would hear
+   * iOS's events on Android too.
+   */
+  static followPlatform(): void {
+    jest.spyOn(Platform, 'select').mockImplementation((spec) => {
+      const entries = spec as Record<string, unknown>
+
+      return entries[Platform.OS] ?? entries['default']
     })
   }
 

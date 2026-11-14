@@ -42,6 +42,15 @@ export interface ICreateEventViewModel {
   submit: () => Promise<string | undefined>
 }
 
+/** What the name field says when it is empty. */
+const NAME_PROBLEM: TErrorKey = 'errors.invalidEventName'
+
+/** What the start field says when the start is not in the future. */
+const START_PROBLEM: TErrorKey = 'errors.invalidEventStart'
+
+/** What the voting field says when voting would close after the event starts. */
+const VOTING_PROBLEM: TErrorKey = 'errors.invalidEventVoting'
+
 /**
  * The view model of the New event modal: checks the name and the times, creates the event as a
  * draft and loads the squad's events again.
@@ -63,12 +72,10 @@ export const useCreateEventViewModel = (squadId: string): ICreateEventViewModel 
     const trimmed = name.trim()
 
     const problems: Partial<Record<TCreateEventField, TErrorKey>> = {
-      ...(trimmed === '' ? { name: 'errors.invalidEventName' as const } : {}),
-      ...(datesHelper.isAfter(startsAt, now())
-        ? {}
-        : { startsAt: 'errors.invalidEventStart' as const }),
+      ...(trimmed === '' ? { name: NAME_PROBLEM } : {}),
+      ...(datesHelper.isAfter(startsAt, now()) ? {} : { startsAt: START_PROBLEM }),
       ...(votingCloses !== undefined && datesHelper.isAfter(votingCloses, startsAt)
-        ? { votingCloses: 'errors.invalidEventVoting' as const }
+        ? { votingCloses: VOTING_PROBLEM }
         : {}),
     }
 

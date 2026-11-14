@@ -98,7 +98,7 @@ describe('New event modal', () => {
     expect(screen.getAllByText('Fri 13th Nov 2026, 8:00 pm')).toHaveLength(2)
   })
 
-  it('drops what was picked when the picker is cancelled', async () => {
+  it('drops what was picked when the picker is canceled', async () => {
     await openModal()
     await fireEvent.press(screen.getByRole('button', { name: 'When' }))
     await fireEvent.press(await screen.findByRole('button', { name: 'Friday 13 November' }))

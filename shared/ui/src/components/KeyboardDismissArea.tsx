@@ -26,10 +26,10 @@ const handleDismissKeyboard = (): void => {
 export const KeyboardDismissArea = ({
   children,
   className,
-}: IKeyboardDismissAreaProps): ReactElement =>
-  Platform.OS === 'web' ? (
-    <View className={className}>{children}</View>
-  ) : (
+}: IKeyboardDismissAreaProps): ReactElement => {
+  if (Platform.OS === 'web') return <View className={className}>{children}</View>
+
+  return (
     <Pressable
       accessible={false}
       className={className}
@@ -39,3 +39,4 @@ export const KeyboardDismissArea = ({
       {children}
     </Pressable>
   )
+}

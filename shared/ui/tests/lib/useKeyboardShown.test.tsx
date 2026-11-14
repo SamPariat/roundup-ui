@@ -9,6 +9,7 @@ describe('useKeyboardShown', () => {
 
   beforeEach(() => {
     KeyboardFixtures.capture()
+    KeyboardFixtures.followPlatform()
   })
 
   afterEach(() => {
