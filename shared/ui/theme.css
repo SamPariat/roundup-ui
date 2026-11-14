@@ -408,3 +408,13 @@
   letter-spacing: 0px;
   font-variant: tabular-nums;
 }
+
+/*
+ * The focus ring is for the keyboard. A click or a tap focuses a pressable on the web too, and the
+ * focus: classes would ring it; the browser's :focus-visible tells the two apart, so focus that did
+ * not come from the keyboard draws no ring. On iOS and Android only a keyboard moves focus, so the
+ * focus: classes already mean that there. Unlayered, so it wins over the utilities.
+ */
+:focus:not(:focus-visible) {
+  outline: none;
+}
