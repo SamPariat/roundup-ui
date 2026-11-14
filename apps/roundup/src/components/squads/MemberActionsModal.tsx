@@ -71,37 +71,21 @@ export const MemberActionsModal = ({
 }: IMemberActionsModalProps): ReactElement => {
   const { t } = useT()
 
+  // Modals have no close button, so a ghost Cancel dismisses this one.
+  const actions = [
+    <Button key="cancel" onPress={onClose} variant="ghost">
+      {t('common.cancel')}
+    </Button>,
+  ]
+
+  const [chosen, setChosen] = useState<TMemberAction | undefined>()
+
   const { busyUserId, error, makeAdmin, remove, removeAdmin, requestId } =
     useSquadMembersViewModel(squadId)
 
   const errorText = useErrorText(error, requestId)
-  const [chosen, setChosen] = useState<TMemberAction | undefined>()
   const available = MemberActions.available(member, permissions)
   const busy = busyUserId === member.id
-
-  const perform = useCallback(
-    async (action: TMemberAction, request: () => Promise<boolean>): Promise<void> => {
-      setChosen(action)
-
-      if (await request()) onClose()
-    },
-    [onClose],
-  )
-
-  const handlePromote = useCallback(
-    (): Promise<void> => perform(MemberAction.MAKE_ADMIN, () => makeAdmin(member.id)),
-    [makeAdmin, member.id, perform],
-  )
-
-  const handleDemote = useCallback(
-    (): Promise<void> => perform(MemberAction.REMOVE_ADMIN, () => removeAdmin(member.id)),
-    [member.id, perform, removeAdmin],
-  )
-
-  const handleKick = useCallback(
-    (): Promise<void> => perform(MemberAction.REMOVE, () => remove(member.id)),
-    [member.id, perform, remove],
-  )
 
   /**
    * What the row the person pressed says while its request runs.
@@ -111,12 +95,29 @@ export const MemberActionsModal = ({
   const working = (action: TMemberAction): Pick<IListRowProps, 'working'> =>
     busy && chosen === action ? { working: t('screens.squad.member.saving') } : {}
 
-  // Modals have no close button, so a ghost Cancel dismisses this one.
-  const actions = [
-    <Button key="cancel" onPress={onClose} variant="ghost">
-      {t('common.cancel')}
-    </Button>,
-  ]
+  const handleAction = useCallback(
+    async (action: TMemberAction, request: () => Promise<boolean>): Promise<void> => {
+      setChosen(action)
+
+      if (await request()) onClose()
+    },
+    [onClose],
+  )
+
+  const handlePromote = useCallback(
+    (): Promise<void> => handleAction(MemberAction.MAKE_ADMIN, () => makeAdmin(member.id)),
+    [makeAdmin, member.id, handleAction],
+  )
+
+  const handleDemote = useCallback(
+    (): Promise<void> => handleAction(MemberAction.REMOVE_ADMIN, () => removeAdmin(member.id)),
+    [member.id, handleAction, removeAdmin],
+  )
+
+  const handleKick = useCallback(
+    (): Promise<void> => handleAction(MemberAction.REMOVE, () => remove(member.id)),
+    [member.id, handleAction, remove],
+  )
 
   return (
     <Modal

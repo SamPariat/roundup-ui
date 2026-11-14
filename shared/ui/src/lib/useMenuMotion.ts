@@ -53,8 +53,22 @@ const BLUR_PX = 40
  */
 export const useMenuMotion = (web: boolean): IMenuMotion => {
   const reduced = useReducedMotion()
+
   // 0 is closed and 1 is open.
   const progress = useSharedValue<number>(0)
+
+  const style = useAnimatedStyle((): IGlassStyle => {
+    const value = progress.get()
+    const scale = interpolate(value, [0, 1], [reduced ? 1 : FROM_SCALE, 1])
+    const drop = interpolate(value, [0, 1], [reduced ? 0 : FROM_Y, 0])
+
+    return {
+      opacity: value,
+      transform: [{ translateY: drop }, { scale }],
+      transformOrigin: 'top right',
+      ...(web ? { backdropFilter: `blur(${value * BLUR_PX}px) saturate(1.8)` } : {}),
+    }
+  })
 
   const open = useCallback((): void => {
     progress.set(0)
@@ -73,19 +87,6 @@ export const useMenuMotion = (web: boolean): IMenuMotion => {
     },
     [progress],
   )
-
-  const style = useAnimatedStyle((): IGlassStyle => {
-    const value = progress.get()
-    const scale = interpolate(value, [0, 1], [reduced ? 1 : FROM_SCALE, 1])
-    const drop = interpolate(value, [0, 1], [reduced ? 0 : FROM_Y, 0])
-
-    return {
-      opacity: value,
-      transform: [{ translateY: drop }, { scale }],
-      transformOrigin: 'top right',
-      ...(web ? { backdropFilter: `blur(${value * BLUR_PX}px) saturate(1.8)` } : {}),
-    }
-  })
 
   return { close, open, style }
 }

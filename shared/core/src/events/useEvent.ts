@@ -73,10 +73,12 @@ export interface IUseEvent {
 export const useEvent = (eventId: string): IUseEvent => {
   const { helpers } = useDeps()
   const eventsHelper = helpers.events
+
+  const [action, setAction] = useState<TAction | undefined>()
+
   const signedIn = useSignedIn()
   const { me } = useMe()
   const { busy, error: actionError, requestId: actionRequestId, run } = useAttempt()
-  const [action, setAction] = useState<TAction | undefined>()
 
   const { data, error, isPending } = useGetEvent(eventId, undefined, {
     query: { enabled: signedIn },
@@ -84,6 +86,8 @@ export const useEvent = (eventId: string): IUseEvent => {
 
   const detail = data?.data
   const meId = me?.id
+  const message = error === null ? undefined : helpers.errors.toMessage(error, 'event')
+  const running = busy ? action : undefined
 
   const event = useMemo(
     (): IEventInfo | undefined => detail && eventsHelper.toInfo(detail, meId),
@@ -130,9 +134,6 @@ export const useEvent = (eventId: string): IUseEvent => {
     (): Promise<boolean> => act({ kind: 'start' }, () => startVoting(eventId)),
     [act, eventId],
   )
-
-  const message = error === null ? undefined : helpers.errors.toMessage(error, 'event')
-  const running = busy ? action : undefined
 
   return {
     answering: running?.kind === 'rsvp' ? running.status : undefined,

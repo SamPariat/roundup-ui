@@ -13,6 +13,7 @@ import { FRAME_OPTIONS, useFrame } from '@/hooks/useFrame'
  */
 export const Toolbar = (): ReactElement => {
   const { preference, setPreference } = useTheme()
+
   const { setWidth, width } = useFrame()
 
   return (

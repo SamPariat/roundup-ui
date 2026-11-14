@@ -37,9 +37,10 @@ export const PhoneInput = ({
   onChangeText,
   value,
 }: IPhoneInputProps): ReactElement => {
-  const { focused, onBlur, onFocus } = useFocus()
   const placeholderColor = useRoleColor('fg-subtle')
   const { t } = useT()
+
+  const { focused, onBlur, onFocus } = useFocus()
 
   return (
     <FieldFrame

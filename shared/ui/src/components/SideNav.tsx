@@ -75,6 +75,7 @@ export const SideNav = ({
   value = 'squads',
 }: ISideNavProps): ReactElement => {
   const { t } = useT()
+
   const defaults = useDefaultNavItems()
   const shown = items ?? defaults
 

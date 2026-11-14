@@ -29,8 +29,9 @@ export function generateStaticParams(): Record<string, string>[] {
 export default function ComponentScreen(): ReactElement {
   const { component } = useLocalSearchParams<'/[component]'>()
   const router = useRouter()
-  const wide = useWide()
   const entry = Registry.find(component)
+
+  const wide = useWide()
 
   const handleBack = useCallback((): void => {
     if (router.canGoBack()) router.back()

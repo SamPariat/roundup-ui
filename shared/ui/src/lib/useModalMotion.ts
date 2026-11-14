@@ -87,11 +87,37 @@ export const useModalMotion = (options: IModalMotionOptions): IModalMotion => {
   const { busy, onClose, sheet, visible } = options
   const reduced = useReducedMotion()
   const { height } = useWindowDimensions()
+
   // 0 is closed and 1 is open.
   const progress = useSharedValue<number>(0)
   // Whether the modal has finished opening and is up. The host stays mounted while the parent
   // shows it or while it is still open, so the closing motion can play after the parent hides it.
   const [opened, setOpened] = useState<boolean>(false)
+
+  const backdrop = useAnimatedStyle((): IGlassStyle => {
+    if (sheet) return { opacity: progress.get() }
+
+    return {
+      backdropFilter: `blur(${progress.get() * BACKDROP_BLUR_PX}px)`,
+      opacity: progress.get(),
+    }
+  })
+
+  const panel = useAnimatedStyle((): IGlassStyle => {
+    if (sheet) {
+      const slide = interpolate(progress.get(), [0, 1], [reduced ? 0 : height, 0])
+
+      return { transform: [{ translateY: slide }] }
+    }
+
+    const scale = interpolate(progress.get(), [0, 1], [reduced ? 1 : CARD_FROM, 1])
+
+    return {
+      backdropFilter: `blur(${progress.get() * CARD_BLUR_PX}px) saturate(1.5)`,
+      opacity: progress.get(),
+      transform: [{ scale }],
+    }
+  })
 
   const animateTo = useCallback(
     (toValue: 0 | 1, done?: () => void): void => {
@@ -121,6 +147,20 @@ export const useModalMotion = (options: IModalMotionOptions): IModalMotion => {
     setOpened(false)
   }, [])
 
+  const stopMotion = useCallback((): void => {
+    cancelAnimation(progress)
+  }, [progress])
+
+  const finishClose = useCallback((): void => {
+    setOpened(false)
+    onClose?.()
+  }, [onClose])
+
+  // A close the person asks for plays the closing motion first, then tells the parent.
+  const requestClose = useCallback((): void => {
+    if (!busy) animateTo(0, finishClose)
+  }, [animateTo, busy, finishClose])
+
   // Moves toward what the parent asks for: opens when shown, closes when hidden. Nothing to do
   // once the two agree. Each motion records where it ended in its end callback.
   useEffect(() => {
@@ -135,48 +175,9 @@ export const useModalMotion = (options: IModalMotionOptions): IModalMotion => {
     animateTo(0, markClosed)
   }, [animateTo, markClosed, markOpened, opened, visible])
 
-  const stopMotion = useCallback((): void => {
-    cancelAnimation(progress)
-  }, [progress])
-
   // An animation still running when the modal unmounts is cancelled, so it does not keep running
   // on the UI thread or call back into a component that is gone.
   useEffect((): (() => void) => stopMotion, [stopMotion])
-
-  const finishClose = useCallback((): void => {
-    setOpened(false)
-    onClose?.()
-  }, [onClose])
-
-  // A close the person asks for plays the closing motion first, then tells the parent.
-  const requestClose = useCallback((): void => {
-    if (!busy) animateTo(0, finishClose)
-  }, [animateTo, busy, finishClose])
-
-  const backdrop = useAnimatedStyle((): IGlassStyle => {
-    if (sheet) return { opacity: progress.get() }
-
-    return {
-      backdropFilter: `blur(${progress.get() * BACKDROP_BLUR_PX}px)`,
-      opacity: progress.get(),
-    }
-  })
-
-  const panel = useAnimatedStyle((): IGlassStyle => {
-    if (sheet) {
-      const slide = interpolate(progress.get(), [0, 1], [reduced ? 0 : height, 0])
-
-      return { transform: [{ translateY: slide }] }
-    }
-
-    const scale = interpolate(progress.get(), [0, 1], [reduced ? 1 : CARD_FROM, 1])
-
-    return {
-      backdropFilter: `blur(${progress.get() * CARD_BLUR_PX}px) saturate(1.5)`,
-      opacity: progress.get(),
-      transform: [{ scale }],
-    }
-  })
 
   return {
     backdrop,

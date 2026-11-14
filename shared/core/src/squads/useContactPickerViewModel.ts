@@ -79,11 +79,25 @@ class Picker {
  */
 export const useContactPickerViewModel = (squadId: string): IContactPickerViewModel => {
   const { contacts } = useDeps()
-  const lookup = useContactLookup(squadId)
-  const adding = useAddMemberViewModel(squadId)
+
   const [picked, setPicked] = useState<ReadonlySet<string>>(() => new Set())
   const [added, setAdded] = useState<ReadonlySet<string>>(() => new Set())
   const [query, setQuery] = useState<string>('')
+
+  const lookup = useContactLookup(squadId)
+  const adding = useAddMemberViewModel(squadId)
+
+  const isPicked = useCallback((userId: string): boolean => picked.has(userId), [picked])
+
+  const toggle = useCallback((userId: string): void => {
+    setPicked((current) => {
+      const next = new Set(current)
+
+      if (!next.delete(userId)) next.add(userId)
+
+      return next
+    })
+  }, [])
 
   const load = useCallback(
     (): Promise<IPickerLoad> => Picker.load(contacts, lookup.lookup),
@@ -116,18 +130,6 @@ export const useContactPickerViewModel = (squadId: string): IContactPickerViewMo
 
     return found.filter((person) => person.name.toLowerCase().includes(needle))
   }, [found, query])
-
-  const isPicked = useCallback((userId: string): boolean => picked.has(userId), [picked])
-
-  const toggle = useCallback((userId: string): void => {
-    setPicked((current) => {
-      const next = new Set(current)
-
-      if (!next.delete(userId)) next.add(userId)
-
-      return next
-    })
-  }, [])
 
   const add = useCallback(async (): Promise<boolean> => {
     for (const person of found.filter((match) => picked.has(match.id))) {

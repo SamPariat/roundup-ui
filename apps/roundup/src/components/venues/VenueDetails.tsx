@@ -28,8 +28,35 @@ const NOT_DIALABLE = /[^\d+]/g
  */
 export const VenueDetails = ({ venue }: IVenueDetailsProps): ReactElement => {
   const { t } = useT()
-  const [hoursOpen, setHoursOpen] = useState<boolean>(false)
   const { phone, website } = venue
+
+  const hoursTitle =
+    venue.hoursToday === undefined
+      ? t('screens.venue.hours')
+      : t('screens.venue.hoursToday', { hours: venue.hoursToday })
+
+  const savedNames = venue.savedIn
+    .filter((squad) => squad.saved)
+    .map((squad) => squad.squadName)
+    .join(NAME_SEPARATOR)
+
+  const otherNames = venue.savedIn
+    .filter((squad) => !squad.saved)
+    .map((squad) => squad.squadName)
+    .join(NAME_SEPARATOR)
+
+  const savedTitle =
+    savedNames === ''
+      ? t('screens.venue.savedInNone')
+      : t('screens.venue.savedIn', { names: savedNames })
+
+  const notSaved =
+    savedNames === '' || otherNames === ''
+      ? {}
+      : { subtitle: t('screens.venue.notSavedIn', { names: otherNames }) }
+
+  const [hoursOpen, setHoursOpen] = useState<boolean>(false)
+  const hoursHint = hoursOpen ? t('screens.venue.hoursHide') : t('screens.venue.hoursSee')
 
   const handleToggleHours = useCallback((): void => {
     setHoursOpen((open) => !open)
@@ -42,33 +69,6 @@ export const VenueDetails = ({ venue }: IVenueDetailsProps): ReactElement => {
   const handleOpenWebsite = useCallback((): void => {
     if (website !== undefined) void Linking.openURL(website)
   }, [website])
-
-  const savedNames = venue.savedIn
-    .filter((squad) => squad.saved)
-    .map((squad) => squad.squadName)
-    .join(NAME_SEPARATOR)
-
-  const otherNames = venue.savedIn
-    .filter((squad) => !squad.saved)
-    .map((squad) => squad.squadName)
-    .join(NAME_SEPARATOR)
-
-  const hoursTitle =
-    venue.hoursToday === undefined
-      ? t('screens.venue.hours')
-      : t('screens.venue.hoursToday', { hours: venue.hoursToday })
-
-  const hoursHint = hoursOpen ? t('screens.venue.hoursHide') : t('screens.venue.hoursSee')
-
-  const savedTitle =
-    savedNames === ''
-      ? t('screens.venue.savedInNone')
-      : t('screens.venue.savedIn', { names: savedNames })
-
-  const notSaved =
-    savedNames === '' || otherNames === ''
-      ? {}
-      : { subtitle: t('screens.venue.notSavedIn', { names: otherNames }) }
 
   return (
     <List>

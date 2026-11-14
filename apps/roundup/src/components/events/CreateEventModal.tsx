@@ -41,15 +41,15 @@ interface ITypeChipProps {
 const TypeChip = ({ kind, onSelect, value }: ITypeChipProps): ReactElement => {
   const { t } = useT()
 
-  const handleSelect = useCallback((): void => {
-    onSelect(kind)
-  }, [kind, onSelect])
-
   const labels: Record<EventType, string> = {
     [EventType.BOTH]: t('screens.events.create.types.both'),
     [EventType.DINING]: t('screens.events.create.types.dinner'),
     [EventType.DRINKS]: t('screens.events.create.types.drinks'),
   }
+
+  const handleSelect = useCallback((): void => {
+    onSelect(kind)
+  }, [kind, onSelect])
 
   return (
     <Chip onPress={handleSelect} selected={value === kind}>
@@ -71,6 +71,7 @@ export const CreateEventModal = ({
 }: ICreateEventModalProps): ReactElement => {
   const { t } = useT()
   const router = useRouter()
+
   const model = useCreateEventViewModel(squadId)
   const dateField = useDeps().helpers.dates.field
   const { busy, earliest, error, invalid, name, requestId, submit } = model

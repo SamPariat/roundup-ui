@@ -35,9 +35,11 @@ export interface ISaveVenueViewModel {
 export const useSaveVenueViewModel = (placeId: string): ISaveVenueViewModel => {
   const { helpers } = useDeps()
   const venuesHelper = helpers.venues
+
+  const [busySquadId, setBusySquadId] = useState<string | undefined>()
+
   const { loading, venue } = useVenue(placeId)
   const { busy, error, requestId, run } = useAttempt()
-  const [busySquadId, setBusySquadId] = useState<string | undefined>()
 
   const toggle = useCallback(
     async (squad: ISavedIn): Promise<boolean> => {

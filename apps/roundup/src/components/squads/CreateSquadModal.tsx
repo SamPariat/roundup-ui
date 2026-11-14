@@ -25,6 +25,7 @@ export interface ICreateSquadModalProps {
 export const CreateSquadModal = ({ onClose }: ICreateSquadModalProps): ReactElement => {
   const { t } = useT()
   const router = useRouter()
+
   const { busy, error, name, requestId, setName, submit } = useCreateSquadViewModel()
   const errorText = useErrorText(error, requestId)
 

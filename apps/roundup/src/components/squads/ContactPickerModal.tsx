@@ -33,6 +33,7 @@ export const ContactPickerModal = ({
   squadId,
 }: IContactPickerModalProps): ReactElement => {
   const { t } = useT()
+
   const picker = useContactPickerViewModel(squadId)
   const errorText = useErrorText(picker.error, picker.requestId)
 

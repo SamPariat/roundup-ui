@@ -52,11 +52,13 @@ export const VenuePage = ({ placeId }: IVenuePageProps): ReactElement => {
   const { t } = useT()
   const router = useRouter()
   const { nav, systemChrome } = useLayout()
-  const [saving, setSaving] = useState<boolean>(false)
-  const { error, loading, notFound, requestId, venue } = useVenue(placeId)
-  const errorText = useErrorText(error, requestId)
   const wide = nav === 'side'
   const inHeader = wide && !systemChrome
+
+  const [saving, setSaving] = useState<boolean>(false)
+
+  const { error, loading, notFound, requestId, venue } = useVenue(placeId)
+  const errorText = useErrorText(error, requestId)
 
   const handleGoToExplore = useCallback((): void => {
     router.dismissTo(Paths.tabsExplore())

@@ -36,7 +36,6 @@ interface IFilter {
  */
 export default function ExploreScreen(): ReactElement {
   const { t } = useT()
-
   const { filter, query, radiusKm, setRadiusKm, setText, text, toggleFilter } = useExploreParams()
 
   const {

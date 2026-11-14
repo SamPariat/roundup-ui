@@ -23,9 +23,10 @@ export interface ISquadNameField {
  * @returns The field and its request state.
  */
 export const useSquadName = (initialName: string): ISquadNameField => {
+  const [typed, setTyped] = useState<string>(initialName)
+
   const attempt = useAttempt()
   const { clear, fail } = attempt
-  const [typed, setTyped] = useState<string>(initialName)
 
   const setName = useCallback(
     (text: string): void => {

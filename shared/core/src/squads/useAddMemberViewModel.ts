@@ -35,7 +35,9 @@ export const useAddMemberViewModel = (squadId: string): IAddMemberViewModel => {
   const { helpers } = useDeps()
   const phoneHelper = helpers.phone
   const squadsHelper = helpers.squads
+
   const [digits, setDigits] = useState<string>('')
+
   const { busy, clear, error, fail, requestId, run } = useAttempt()
 
   const setPhone = useCallback(

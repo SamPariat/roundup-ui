@@ -49,6 +49,7 @@ export interface IUseSquads {
 export const useSquads = (): IUseSquads => {
   const { helpers } = useDeps()
   const squadsHelper = helpers.squads
+
   const signedIn = useSignedIn()
 
   const { error, hasMore, loading, loadingMore, loadMore, pages, refresh } = usePages({
@@ -56,13 +57,13 @@ export const useSquads = (): IUseSquads => {
     queryKey: getListSquadsQueryKey(),
   })
 
+  const message = error === null ? undefined : helpers.errors.toMessage(error, 'squad')
+
   const squads = useMemo(
     (): ISquadCard[] =>
       pages?.flatMap((page) => page.data.squads.map((squad) => squadsHelper.toCard(squad))) ?? [],
     [pages, squadsHelper],
   )
-
-  const message = error === null ? undefined : helpers.errors.toMessage(error, 'squad')
 
   return {
     error: message?.key,

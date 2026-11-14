@@ -257,12 +257,14 @@ export const Modal = ({
   tone = 'content',
   visible = true,
 }: IModalProps): ReactElement => {
-  const titleRef = useRef<TTitleElement>(null)
   const sheet = Platform.OS !== 'web'
   const confirm = tone === 'confirm'
 
-  // While a request is in flight only the loading Button stays active; Buttons read this context.
-  const actionContext = useMemo((): IActionContextValue => ({ busy, block: sheet }), [busy, sheet])
+  // The sheet runs to the bottom edge, so its last action stays clear of the home indicator.
+  const { bottom, top } = useSafeAreaInsets()
+  const { height } = useWindowDimensions()
+
+  const titleRef = useRef<TTitleElement>(null)
 
   // Every way of closing plays the closing motion first: the backdrop, Esc and the Android back
   // button. While busy none of them does anything.
@@ -273,9 +275,12 @@ export const Modal = ({
     visible,
   })
 
-  // The sheet runs to the bottom edge, so its last action stays clear of the home indicator.
-  const { bottom, top } = useSafeAreaInsets()
-  const { height } = useWindowDimensions()
+  // The keyboard already covers the home indicator, and the KeyboardAvoidingView lifts the sheet
+  // by the keyboard's full height, so keeping the inset too would float the sheet above the keys.
+  const keyboardShown = useKeyboardShown()
+
+  // While a request is in flight only the loading Button stays active; Buttons read this context.
+  const actionContext = useMemo((): IActionContextValue => ({ busy, block: sheet }), [busy, sheet])
 
   // The cap is a number, not a percentage: the parents are as tall as their content, and Yoga has
   // no height to take a percentage of, so a percentage cap let the sheet outgrow the screen or
@@ -286,10 +291,6 @@ export const Modal = ({
     (): ViewStyle => ({ maxHeight: sheet ? height - top - SHEET_GAP : height * CARD_SHARE }),
     [height, sheet, top],
   )
-
-  // The keyboard already covers the home indicator, and the KeyboardAvoidingView lifts the sheet
-  // by the keyboard's full height, so keeping the inset too would float the sheet above the keys.
-  const keyboardShown = useKeyboardShown()
 
   const sheetPadding = useMemo((): undefined | ViewStyle => {
     if (!sheet) return undefined

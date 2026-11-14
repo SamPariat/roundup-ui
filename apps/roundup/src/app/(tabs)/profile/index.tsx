@@ -20,6 +20,7 @@ export default function ProfileScreen(): ReactElement {
   const router = useRouter()
   const { t } = useT()
   const { helpers } = useDeps()
+
   const { loading, me, signOut } = useProfileViewModel()
 
   const handleEditProfile = useCallback((): void => {

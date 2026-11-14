@@ -239,6 +239,7 @@ export const EventPage = ({ eventId }: IEventPageProps): ReactElement => {
   const { t } = useT()
   const router = useRouter()
   const { nav, pageHeader } = useLayout()
+  const wide = nav === 'side'
 
   const {
     answering,
@@ -256,7 +257,6 @@ export const EventPage = ({ eventId }: IEventPageProps): ReactElement => {
 
   const { squad } = useSquad(event?.squadId)
   const errorText = useErrorText(error, requestId)
-  const wide = nav === 'side'
   const startable = event?.status === EventStatus.DRAFT && event.permissions.canStartVoting
 
   const handleStart = useCallback(async (): Promise<void> => {

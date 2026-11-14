@@ -36,9 +36,11 @@ export interface ISquadMembersViewModel {
 export const useSquadMembersViewModel = (squadId: string): ISquadMembersViewModel => {
   const { helpers } = useDeps()
   const squadsHelper = helpers.squads
+
+  const [busyUserId, setBusyUserId] = useState<string | undefined>()
+
   const { members } = useSquad(squadId)
   const { busy, error, fail, requestId, run } = useAttempt()
-  const [busyUserId, setBusyUserId] = useState<string | undefined>()
 
   const act = useCallback(
     async (

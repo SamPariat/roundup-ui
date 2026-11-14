@@ -47,6 +47,7 @@ export const useExploreParams = (): IExploreParams => {
   const router = useRouter()
   const navigation = useNavigation<NativeStackNavigationProp<TExploreRoutes>>()
   const { q, radius, type } = params
+
   // Words typed that the URL does not hold yet, or holds only trimmed.
   const [draft, setDraft] = useState<IDraft | undefined>()
   const timerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
@@ -58,9 +59,19 @@ export const useExploreParams = (): IExploreParams => {
     [q, radius, type],
   )
 
+  const { filter } = state
+
+  // The field keeps the words as typed until the URL changes to something else, so a space typed
+  // at either end is not trimmed away while the person is still typing.
+  const keeping =
+    draft !== undefined &&
+    (!draft.written || ExploreParams.queryOf(draft.text) === ExploreParams.queryOf(state.query))
+
+  const text = keeping ? draft.text : state.query
+
   // Writes through this screen's own navigation, not the router's, which writes to whichever screen
   // is in front: that is how the words of a blurred screen can still reach their own URL.
-  const write = useCallback(
+  const handleWrite = useCallback(
     (text: string): void => {
       pendingRef.current = undefined
       navigation.setParams({ q: ExploreParams.queryOf(text) })
@@ -73,28 +84,24 @@ export const useExploreParams = (): IExploreParams => {
 
   // Going to a place, or away, writes the words that are waiting at once, so the field and the
   // results agree when the person comes back, and no write is left to land on another screen.
-  const flush = useCallback(
+  const handleFocus = useCallback(
     (): (() => void) => (): void => {
       clearTimeout(timerRef.current)
 
-      if (pendingRef.current !== undefined) write(pendingRef.current)
+      if (pendingRef.current !== undefined) handleWrite(pendingRef.current)
     },
-    [write],
+    [handleWrite],
   )
-
-  useFocusEffect(flush)
 
   const setText = useCallback(
     (text: string): void => {
       clearTimeout(timerRef.current)
       pendingRef.current = text
       setDraft({ text, written: false })
-      timerRef.current = setTimeout(write, DEBOUNCE, text)
+      timerRef.current = setTimeout(handleWrite, DEBOUNCE, text)
     },
-    [write],
+    [handleWrite],
   )
-
-  const { filter } = state
 
   const toggleFilter = useCallback(
     (next: TVenueType): void => {
@@ -110,13 +117,7 @@ export const useExploreParams = (): IExploreParams => {
     [router],
   )
 
-  // The field keeps the words as typed until the URL changes to something else, so a space typed
-  // at either end is not trimmed away while the person is still typing.
-  const keeping =
-    draft !== undefined &&
-    (!draft.written || ExploreParams.queryOf(draft.text) === ExploreParams.queryOf(state.query))
-
-  const text = keeping ? draft.text : state.query
+  useFocusEffect(handleFocus)
 
   return { ...state, setRadiusKm, setText, text, toggleFilter }
 }

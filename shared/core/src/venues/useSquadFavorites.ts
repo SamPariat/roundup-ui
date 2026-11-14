@@ -70,10 +70,12 @@ export const useSquadFavorites = (squadId: string): IUseSquadFavorites => {
   const { helpers } = useDeps()
   const venuesHelper = helpers.venues
   const { width: windowWidth } = useWindowDimensions()
+
+  const [removingId, setRemovingId] = useState<string | undefined>()
+
   const signedIn = useSignedIn()
   const { me } = useMe()
   const { busy, error: removeError, requestId: removeRequestId, run } = useAttempt()
-  const [removingId, setRemovingId] = useState<string | undefined>()
 
   const { error, hasMore, loading, loadingMore, loadMore, pages, refresh } = usePages({
     fetchPage: signedIn
@@ -83,6 +85,7 @@ export const useSquadFavorites = (squadId: string): IUseSquadFavorites => {
   })
 
   const meId = me?.id
+  const message = error === null ? undefined : helpers.errors.toMessage(error, 'squad')
 
   const favorites = useMemo(
     (): IFavoriteRow[] =>
@@ -111,8 +114,6 @@ export const useSquadFavorites = (squadId: string): IUseSquadFavorites => {
     },
     [busy, run, squadId, venuesHelper],
   )
-
-  const message = error === null ? undefined : helpers.errors.toMessage(error, 'squad')
 
   return {
     complete: !hasMore && pages !== undefined,

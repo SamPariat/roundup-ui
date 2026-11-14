@@ -47,6 +47,7 @@ interface IThemedProps {
  */
 const Themed = ({ fontsReady }: IThemedProps): ReactElement => {
   const { loaded, name } = useTheme()
+
   const gate = useRouteGate()
 
   useSplash(fontsReady && loaded && gate !== 'loading')
@@ -75,7 +76,6 @@ const Themed = ({ fontsReady }: IThemedProps): ReactElement => {
  */
 export default function RootLayout(): null | ReactElement {
   const [loaded, error] = useFonts(FONTS)
-
   const ready = loaded || error !== null
 
   // Native waits for the fonts behind the splash screen. Web renders at once so the static

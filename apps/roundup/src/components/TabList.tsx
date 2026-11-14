@@ -99,30 +99,15 @@ export const TabList = <T,>({
   const { gutter, gutterClass, systemChrome } = useLayout()
   const headerHeight = useHeaderHeight()
   const { width: windowWidth } = useBreakpoint()
+
   const [measured, setMeasured] = useState<number | undefined>()
   // Until the list is measured, the window's width stands in for its own, so the first layout
   // usually keeps the columns the list started with instead of remounting it (the key follows them).
   const columns = columnsProp ?? Layout.columnsFor(measured ?? windowWidth, gutter)
 
-  const handleLayout = useCallback((event: LayoutChangeEvent): void => {
-    setMeasured(event.nativeEvent.layout.width)
-  }, [])
-
   // A cell never grows past its column, so a short last row keeps the width of the others.
   const columnStyle = useMemo((): ViewStyle => ({ maxWidth: `${100 / columns}%` }), [columns])
   const placeholderStyle = useMemo((): ViewStyle => ({ width: `${100 / columns}%` }), [columns])
-
-  // In a grid each row lays its cells out side by side, so flex-1 shares the row's width. A single
-  // column has no row: flex-1 would act on the height there and collapse the cell to nothing, so
-  // the list would measure every card as 0 tall and leave blank gaps as it scrolls.
-  const cell = useCallback(
-    ({ item }: ListRenderItemInfo<T>): ReactElement => (
-      <View className={cn('min-w-0 p-1.5', columns > 1 && 'flex-1')} style={columnStyle}>
-        {renderItem(item)}
-      </View>
-    ),
-    [columnStyle, columns, renderItem],
-  )
 
   // The cells carry 6 points of padding on every side, so the list itself sits 6 outside the gutter
   // to keep the cards on it, and the header takes the 6 back and adds the last 6 of the 12 row gap.
@@ -176,6 +161,22 @@ export const TabList = <T,>({
     loadingPlaceholder
   ) : (
     <View className="flex-1 justify-center px-1.5">{empty}</View>
+  )
+
+  const handleLayout = useCallback((event: LayoutChangeEvent): void => {
+    setMeasured(event.nativeEvent.layout.width)
+  }, [])
+
+  // In a grid each row lays its cells out side by side, so flex-1 shares the row's width. A single
+  // column has no row: flex-1 would act on the height there and collapse the cell to nothing, so
+  // the list would measure every card as 0 tall and leave blank gaps as it scrolls.
+  const cell = useCallback(
+    ({ item }: ListRenderItemInfo<T>): ReactElement => (
+      <View className={cn('min-w-0 p-1.5', columns > 1 && 'flex-1')} style={columnStyle}>
+        {renderItem(item)}
+      </View>
+    ),
+    [columnStyle, columns, renderItem],
   )
 
   return (

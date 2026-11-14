@@ -30,6 +30,7 @@ export const AddNumberModal = ({
   squadName,
 }: IAddNumberModalProps): ReactElement => {
   const { t } = useT()
+
   const { busy, error, phone, requestId, setPhone, submit } = useAddMemberViewModel(squadId)
   const errorText = useErrorText(error, requestId)
 

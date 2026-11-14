@@ -35,8 +35,10 @@ export interface INameViewModel {
  */
 export const useNameViewModel = (initialName = ''): INameViewModel => {
   const { queryClient } = useDeps()
-  const { busy, clear, error, fail, requestId, run } = useAttempt()
+
   const [typed, setTyped] = useState<string>(initialName)
+
+  const { busy, clear, error, fail, requestId, run } = useAttempt()
 
   const setName = useCallback(
     (text: string): void => {

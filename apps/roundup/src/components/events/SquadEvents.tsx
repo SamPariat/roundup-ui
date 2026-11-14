@@ -86,6 +86,7 @@ const NoEvents = ({ onNew, text }: IEventsStateProps): ReactElement => {
  */
 export const EventsBlock = ({ newInRow, onNew, state, wide }: IEventsBlockProps): ReactElement => {
   const { t } = useT()
+
   const errorText = useErrorText(state.error, state.requestId)
   const { answering, needsAnswer, past, upcoming } = state
 

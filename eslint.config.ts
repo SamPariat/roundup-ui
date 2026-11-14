@@ -27,6 +27,8 @@ import globals from 'globals'
 import path from 'node:path'
 import tseslint from 'typescript-eslint'
 
+import { hookOrder } from './eslint-hook-order'
+
 /**
  * Syntax banned in every TypeScript file. Each block that sets no-restricted-syntax spreads these,
  * because a later block's setting replaces an earlier one's for the files they share.
@@ -674,6 +676,7 @@ export default [
             '**/jest.setup*.ts',
             'knip.ts',
             'jest-svg-transform.ts',
+            'eslint-hook-order*.ts',
           ],
         },
       ],
@@ -972,6 +975,18 @@ export default [
   },
   // ── Formatting ──────────────────────────────────────────────
   // Prettier owns formatting; turning off the clashing ESLint rules must come last.
+  {
+    // Every component and hook lays its hooks out in one order, with a blank line between groups,
+    // so a reader always knows where to look (eslint-hook-order.ts has the order).
+    files: ['apps/*/src/**/*.{ts,tsx}', 'shared/*/src/**/*.{ts,tsx}'],
+    plugins: { roundup: { rules: { 'hook-order': hookOrder } } },
+    rules: { 'roundup/hook-order': 'error' },
+  },
+  {
+    // The rule's own test runs on node:test, whose describe and it sonarjs does not recognize.
+    files: ['eslint-hook-order.test.ts'],
+    rules: { 'sonarjs/no-empty-test-file': 'off' },
+  },
   prettier,
   {
     // Blank lines between statements are not Prettier's business (it only collapses runs of them),

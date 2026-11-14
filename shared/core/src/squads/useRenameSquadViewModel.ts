@@ -36,6 +36,7 @@ export const useRenameSquadViewModel = (
 ): IRenameSquadViewModel => {
   const { helpers } = useDeps()
   const squadsHelper = helpers.squads
+
   const { attempt, name, setName, validName } = useSquadName(currentName)
   const { busy, error, requestId, run } = attempt
 

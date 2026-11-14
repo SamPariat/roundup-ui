@@ -40,8 +40,11 @@ export interface IPhotoStripProps {
  */
 export const PhotoStrip = ({ className, photos }: IPhotoStripProps): null | ReactElement => {
   const { t } = useT()
+
   const [width, setWidth] = useState<number>(0)
   const [index, setIndex] = useState<number>(0)
+
+  const pageStyle = useMemo((): ViewStyle => ({ width }), [width])
 
   const handleLayout = useCallback((event: LayoutChangeEvent): void => {
     setWidth(event.nativeEvent.layout.width)
@@ -54,8 +57,6 @@ export const PhotoStrip = ({ className, photos }: IPhotoStripProps): null | Reac
     },
     [width],
   )
-
-  const pageStyle = useMemo((): ViewStyle => ({ width }), [width])
 
   if (photos.length === 0) return null
 

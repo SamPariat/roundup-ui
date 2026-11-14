@@ -37,6 +37,7 @@ export const useContactLookup = (squadId: string): IContactLookup => {
   const { helpers } = useDeps()
   const phoneHelper = helpers.phone
   const squadsHelper = helpers.squads
+
   const { members } = useSquad(squadId)
   const { busy, error, requestId, run } = useAttempt()
 

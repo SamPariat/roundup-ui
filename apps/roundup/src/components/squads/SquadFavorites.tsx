@@ -95,13 +95,14 @@ const AsideBody = ({ state }: ISquadFavoritesProps): ReactElement => {
  */
 export const FavoritesAside = ({ state }: ISquadFavoritesProps): ReactElement => {
   const { t } = useT()
-  const errorText = useErrorText(state.error, state.requestId)
   const count = state.favorites.length
 
   const heading = t(
     state.complete ? 'screens.squad.favorites.saved' : 'screens.squad.favorites.savedMore',
     { count },
   )
+
+  const errorText = useErrorText(state.error, state.requestId)
 
   /**
    *
@@ -245,6 +246,11 @@ export const PhoneSquad = ({
   const { handleReload, refreshing } = usePullRefresh(showingEvents ? refreshEvents : state.refresh)
   const { remove, removingId } = state
 
+  // A first load that failed fills the screen; once rows exist, an error (a failed Remove from
+  // favorites, or a later page) is a Toast over them, which the empty state cannot show.
+  const failed = showingFavorites && errorText !== undefined && state.favorites.length > 0
+  const toast = failed ? <Toast tone="error">{errorText}</Toast> : undefined
+
   const renderRow = useCallback(
     (row: TPhoneRow): ReactElement => {
       if (!('kind' in row)) return renderFavorite(row, remove, removingId)
@@ -256,12 +262,6 @@ export const PhoneSquad = ({
   )
 
   const keyOf = useCallback((row: TPhoneRow): string => ('kind' in row ? row.kind : row.id), [])
-
-  // A first load that failed fills the screen; once rows exist, an error (a failed Remove from
-  // favorites, or a later page) is a Toast over them, which the empty state cannot show.
-  const failed = showingFavorites && errorText !== undefined && state.favorites.length > 0
-
-  const toast = failed ? <Toast tone="error">{errorText}</Toast> : undefined
 
   return (
     <TabList<TPhoneRow>
