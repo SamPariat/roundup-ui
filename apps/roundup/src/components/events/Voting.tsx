@@ -5,7 +5,7 @@ import { View } from 'react-native'
 
 import type { IEventInfo, IUseEvent } from '@roundup/core'
 
-import { useDeps } from '@roundup/core'
+import { EVENT_LIVE_SECONDS, useDeps } from '@roundup/core'
 import { useT } from '@roundup/i18n'
 import { Badge, Icon, Text } from '@roundup/ui'
 
@@ -64,13 +64,13 @@ export const VotingSummary = ({ event }: IVotingProps): ReactElement => {
           when: event.votingCloses,
         })}
       </Text>
-      {/* Votes come in from the rest of the squad, so the page says how to see the latest. On the
-          web there is nothing to pull; it loads again when the tab comes back into view. */}
-      {canPull ? (
-        <Text tone="subtle" variant="caption">
-          {t('screens.event.pullHint')}
-        </Text>
-      ) : null}
+      {/* Votes come in from the rest of the squad: the page says how often it looks, and on a phone
+          that a pull looks now. */}
+      <Text tone="subtle" variant="caption">
+        {canPull
+          ? t('screens.event.liveHintPull', { seconds: EVENT_LIVE_SECONDS })
+          : t('screens.event.liveHint', { seconds: EVENT_LIVE_SECONDS })}
+      </Text>
     </View>
   )
 }

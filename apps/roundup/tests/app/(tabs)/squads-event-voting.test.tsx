@@ -89,7 +89,7 @@ describe('event page while voting', () => {
   it('says to pull down for the latest votes, and loads the event again when pulled', async () => {
     await openEvent()
 
-    expect(screen.getByText('Pull down to see the latest votes')).toBeOnTheScreen()
+    expect(screen.getByText('Updates every 45 seconds · pull down to update now')).toBeOnTheScreen()
 
     const before = loads()
 

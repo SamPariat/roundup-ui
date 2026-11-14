@@ -46,8 +46,11 @@ type TAction =
       kind: 'start'
     }
 
-/** How often a live event loads again while voting is open, in milliseconds. */
-const LIVE_MS = 45_000
+/** How often a live event loads again while voting is open, in seconds; the page says so. */
+export const EVENT_LIVE_SECONDS = 45
+
+/** The same, in milliseconds, as TanStack Query's refetchInterval takes it. */
+const LIVE_MS = EVENT_LIVE_SECONDS * 1000
 
 /** Votes that came in from the rest of the squad since the page last looked. */
 export interface IFreshVotes {
