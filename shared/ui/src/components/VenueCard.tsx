@@ -169,15 +169,19 @@ export const VenueCard = ({
   saved,
   types = NO_TYPES,
 }: IVenueCardProps): ReactElement => (
-  <View className="overflow-hidden rounded-2xl bg-bg-raised">
+  // It grows to fill what it is in, so cards in a grid row end level; on its own it is as tall as
+  // its content.
+  <View className="grow overflow-hidden rounded-2xl bg-bg-raised">
     <VenueMedia onSave={onSave} photo={photo} photoCredit={photoCredit} saved={saved} />
     <View className="gap-1 px-4 pt-3 pb-4">
       <Text heading={3} variant="body-strong">
         {name}
       </Text>
       {address === undefined ? null : (
-        <View className="flex-row items-center gap-2">
-          <Icon decorative name="pin" size={16} tone="fg-muted" />
+        // The pin stays by the first line of an address that wraps; 2 points down centers it on
+        // that line's 20.
+        <View className="flex-row items-start gap-2">
+          <Icon className="mt-0.5" decorative name="pin" size={16} tone="fg-muted" />
           <Text className="min-w-0 flex-1" tone="muted" variant="body-sm">
             {address}
           </Text>
