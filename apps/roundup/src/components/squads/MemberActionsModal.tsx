@@ -1,6 +1,6 @@
 import type { ReactElement } from 'react'
 
-import { useCallback, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 
 import type { ISquadMember, ISquadPermissions } from '@roundup/core'
 import type { IListRowProps } from '@roundup/ui'
@@ -10,6 +10,7 @@ import { useT } from '@roundup/i18n'
 import { Avatar, Button, Icon, List, ListRow, Modal, Toast } from '@roundup/ui'
 
 import { useErrorText } from '@/hooks/useErrorText'
+import { useNotify } from '@/hooks/useNotify'
 
 /** Something the person may do to another member. */
 /** What can be done to a member, as a constant object in the same shape orval gives Role. */
@@ -21,6 +22,16 @@ const MemberAction = {
 
 /** One of the member actions. */
 export type TMemberAction = (typeof MemberAction)[keyof typeof MemberAction]
+
+/** What the notice over the app says once each action is done and the sheet has closed. */
+const DONE_KEYS: Record<
+  TMemberAction,
+  'notices.madeAdmin' | 'notices.removedAdmin' | 'notices.removedMember'
+> = {
+  [MemberAction.MAKE_ADMIN]: 'notices.madeAdmin',
+  [MemberAction.REMOVE_ADMIN]: 'notices.removedAdmin',
+  [MemberAction.REMOVE]: 'notices.removedMember',
+}
 
 /**
  * Member action helpers. Static methods only.
@@ -70,13 +81,7 @@ export const MemberActionsModal = ({
   squadId,
 }: IMemberActionsModalProps): ReactElement => {
   const { t } = useT()
-
-  // Modals have no close button, so a ghost Cancel dismisses this one.
-  const actions = [
-    <Button key="cancel" onPress={onClose} variant="ghost">
-      {t('common.cancel')}
-    </Button>,
-  ]
+  const notify = useNotify()
 
   const [chosen, setChosen] = useState<TMemberAction | undefined>()
 
@@ -95,13 +100,32 @@ export const MemberActionsModal = ({
   const working = (action: TMemberAction): Pick<IListRowProps, 'working'> =>
     busy && chosen === action ? { working: t('screens.squad.member.saving') } : {}
 
+  // Modals have no close button, so a ghost Cancel dismisses this one.
+  const actions = useMemo(
+    (): ReactElement[] => [
+      <Button key="cancel" onPress={onClose} variant="ghost">
+        {t('common.cancel')}
+      </Button>,
+    ],
+    [onClose, t],
+  )
+
+  // The sheet closes once the change is made, so the notice over the app says what changed.
   const handleAction = useCallback(
     async (action: TMemberAction, request: () => Promise<boolean>): Promise<void> => {
       setChosen(action)
 
-      if (await request()) onClose()
+      if (!(await request())) return
+
+      notify({
+        id: `${action}-${member.id}`,
+        message: t(DONE_KEYS[action], { name: member.name }),
+        tone: 'success',
+      })
+
+      onClose()
     },
-    [onClose],
+    [member.id, member.name, notify, onClose, t],
   )
 
   const handlePromote = useCallback(

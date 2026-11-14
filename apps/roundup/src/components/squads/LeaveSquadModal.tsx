@@ -1,12 +1,13 @@
 import type { ReactElement } from 'react'
 
-import { useCallback } from 'react'
+import { useCallback, useMemo } from 'react'
 
 import { useSquadMembersViewModel } from '@roundup/core'
 import { useT } from '@roundup/i18n'
 import { Button, Modal, Toast } from '@roundup/ui'
 
 import { useErrorText } from '@/hooks/useErrorText'
+import { useNotify } from '@/hooks/useNotify'
 
 /** Props for LeaveSquadModal. */
 export interface ILeaveSquadModalProps {
@@ -36,6 +37,7 @@ export const LeaveSquadModal = ({
   squadId,
 }: ILeaveSquadModalProps): ReactElement => {
   const { t } = useT()
+  const notify = useNotify()
 
   const { busyUserId, error, leave, requestId } = useSquadMembersViewModel(squadId)
   const errorText = useErrorText(error, requestId)
@@ -43,24 +45,31 @@ export const LeaveSquadModal = ({
 
   // onLeft runs straight after the request resolves, before React renders this modal's own state
   // change, so the squad page never re-renders without its squad.
+  // The person lands on their squads, where nothing says the squad went, so the notice does.
   const handleConfirm = useCallback(async (): Promise<void> => {
-    if (await leave()) onLeft()
-  }, [leave, onLeft])
+    if (!(await leave())) return
 
-  const actions = [
-    <Button
-      key="leave"
-      loading={busy}
-      loadingLabel={t('screens.squad.leave.submitting')}
-      onPress={handleConfirm}
-      variant="destructive"
-    >
-      {t('screens.squad.leave.submit')}
-    </Button>,
-    <Button key="cancel" onPress={onClose} variant="ghost">
-      {t('common.cancel')}
-    </Button>,
-  ]
+    notify({ id: `left-${squadId}`, message: t('notices.leftSquad', { name }), tone: 'success' })
+    onLeft()
+  }, [leave, name, notify, onLeft, squadId, t])
+
+  const actions = useMemo(
+    (): ReactElement[] => [
+      <Button
+        key="leave"
+        loading={busy}
+        loadingLabel={t('screens.squad.leave.submitting')}
+        onPress={handleConfirm}
+        variant="destructive"
+      >
+        {t('screens.squad.leave.submit')}
+      </Button>,
+      <Button key="cancel" onPress={onClose} variant="ghost">
+        {t('common.cancel')}
+      </Button>,
+    ],
+    [busy, handleConfirm, onClose, t],
+  )
 
   return (
     <Modal

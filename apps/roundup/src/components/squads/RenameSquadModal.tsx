@@ -1,7 +1,7 @@
 import type { ReactElement } from 'react'
 
 import { useRouter } from 'expo-router'
-import { useCallback } from 'react'
+import { useCallback, useMemo } from 'react'
 
 import { useRenameSquadViewModel } from '@roundup/core'
 import { useT } from '@roundup/i18n'
@@ -48,19 +48,22 @@ export const RenameSquadModal = ({
     onClose()
   }, [name, onClose, router, submit])
 
-  const actions = [
-    <Button
-      key="save"
-      loading={busy}
-      loadingLabel={t('screens.squad.rename.submitting')}
-      onPress={handleSave}
-    >
-      {t('screens.squad.rename.submit')}
-    </Button>,
-    <Button key="cancel" onPress={onClose} variant="ghost">
-      {t('common.cancel')}
-    </Button>,
-  ]
+  const actions = useMemo(
+    (): ReactElement[] => [
+      <Button
+        key="save"
+        loading={busy}
+        loadingLabel={t('screens.squad.rename.submitting')}
+        onPress={handleSave}
+      >
+        {t('screens.squad.rename.submit')}
+      </Button>,
+      <Button key="cancel" onPress={onClose} variant="ghost">
+        {t('common.cancel')}
+      </Button>,
+    ],
+    [busy, handleSave, onClose, t],
+  )
 
   return (
     <Modal

@@ -1,5 +1,7 @@
 import type { ReactElement } from 'react'
 
+import { useMemo } from 'react'
+
 import { useSaveVenueViewModel } from '@roundup/core'
 import { useT } from '@roundup/i18n'
 import { Button, List, Modal, Skeleton, Text, Toast } from '@roundup/ui'
@@ -26,15 +28,18 @@ export interface ISaveVenueModalProps {
 export const SaveVenueModal = ({ name, onClose, placeId }: ISaveVenueModalProps): ReactElement => {
   const { t } = useT()
 
-  const actions = [
-    <Button key="done" onPress={onClose}>
-      {t('saveVenue.done')}
-    </Button>,
-  ]
-
   const { busySquadId, error, loading, requestId, squads, toggle } = useSaveVenueViewModel(placeId)
   const errorText = useErrorText(error, requestId)
   const busy = busySquadId !== undefined
+
+  const actions = useMemo(
+    (): ReactElement[] => [
+      <Button key="done" onPress={onClose}>
+        {t('saveVenue.done')}
+      </Button>,
+    ],
+    [onClose, t],
+  )
 
   return (
     <Modal

@@ -77,6 +77,7 @@ describe('squad page', () => {
     })
 
     expect(screen.queryByRole('button', { name: /^Make admin/ })).toBeNull()
+    expect(await screen.findByText('Meera Iyer is now an admin')).toBeOnTheScreen()
   })
 
   it('removes an admin back to member', async () => {
@@ -91,6 +92,8 @@ describe('squad page', () => {
     await waitFor(() => {
       expect(screen.getAllByText('Admin')).toHaveLength(1)
     })
+
+    expect(await screen.findByText('Kabir Rao is no longer an admin')).toBeOnTheScreen()
   })
 
   it('removes a member from the squad', async () => {
@@ -105,6 +108,8 @@ describe('squad page', () => {
     await waitFor(() => {
       expect(screen.queryByText('Meera Iyer')).toBeNull()
     })
+
+    expect(await screen.findByText('Removed Meera Iyer from the squad')).toBeOnTheScreen()
   })
 
   it('renames the squad', async () => {
@@ -156,6 +161,7 @@ describe('squad page', () => {
     expect(screen).toHavePathname('/squads')
     expect(screen.queryByText('Squad not found')).toBeNull()
     expect(backend.paths).toContain('DELETE /api/v1/squads/s1/members/u1')
+    expect(await screen.findByText('You left Friday crew')).toBeOnTheScreen()
   })
 
   it('shows not found for a squad that is not there', async () => {

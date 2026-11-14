@@ -1,6 +1,6 @@
 import type { ReactElement } from 'react'
 
-import { useCallback } from 'react'
+import { useCallback, useMemo } from 'react'
 import { Linking, View } from 'react-native'
 
 import { useContactPickerViewModel } from '@roundup/core'
@@ -9,6 +9,7 @@ import { Button, Icon, List, ListRow, Modal, Skeleton, Text, TextField, Toast } 
 
 import { PersonRow } from './PersonRow'
 import { useErrorText } from '@/hooks/useErrorText'
+import { useNotify } from '@/hooks/useNotify'
 
 /** Props for ContactPickerModal. */
 export interface IContactPickerModalProps {
@@ -33,17 +34,48 @@ export const ContactPickerModal = ({
   squadId,
 }: IContactPickerModalProps): ReactElement => {
   const { t } = useT()
+  const notify = useNotify()
 
   const picker = useContactPickerViewModel(squadId)
+  const { add, busy, phase, pickedCount } = picker
+  // Adding is busy only once the contacts are in, not while they load.
+  const adding = busy && phase === 'ready'
   const errorText = useErrorText(picker.error, picker.requestId)
 
   const handleOpenSettings = useCallback((): void => {
     void Linking.openSettings()
   }, [])
 
+  // The sheet closes once they are in, so the notice over the app says how many joined.
   const handleAdd = useCallback(async (): Promise<void> => {
-    if (await picker.add()) onClose()
-  }, [onClose, picker])
+    if (!(await add())) return
+
+    notify({
+      id: `added-${squadId}-${String(pickedCount)}`,
+      message: t('notices.added', { count: pickedCount }),
+      tone: 'success',
+    })
+
+    onClose()
+  }, [add, notify, onClose, pickedCount, squadId, t])
+
+  const actions = useMemo(
+    (): ReactElement[] => [
+      <Button
+        disabled={pickedCount === 0}
+        key="add"
+        loading={adding}
+        loadingLabel={t('addPeople.adding', { count: pickedCount })}
+        onPress={handleAdd}
+      >
+        {pickedCount === 0 ? t('addPeople.addNone') : t('addPeople.add', { count: pickedCount })}
+      </Button>,
+      <Button key="cancel" onPress={onClose} variant="ghost">
+        {t('common.cancel')}
+      </Button>,
+    ],
+    [adding, handleAdd, onClose, pickedCount, t],
+  )
 
   if (picker.phase === 'denied') {
     return (
@@ -63,29 +95,12 @@ export const ContactPickerModal = ({
     )
   }
 
-  const count = picker.pickedCount
-
-  const actions = [
-    <Button
-      disabled={count === 0}
-      key="add"
-      loading={picker.busy && picker.phase === 'ready'}
-      loadingLabel={t('addPeople.adding', { count })}
-      onPress={handleAdd}
-    >
-      {count === 0 ? t('addPeople.addNone') : t('addPeople.add', { count })}
-    </Button>,
-    <Button key="cancel" onPress={onClose} variant="ghost">
-      {t('common.cancel')}
-    </Button>,
-  ]
-
   const emptyText = picker.query.trim() === '' ? t('addPeople.none') : t('addPeople.noMatch')
 
   return (
     <Modal
       actions={actions}
-      busy={picker.busy && picker.phase === 'ready'}
+      busy={adding}
       onClose={onClose}
       subtitle={t('addPeople.subtitle')}
       title={t('addPeople.title')}

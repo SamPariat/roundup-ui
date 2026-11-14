@@ -92,6 +92,9 @@ describe('squad events', () => {
     await waitFor(() => {
       expect(screen.queryByText('Needs your answer')).toBeNull()
     })
+
+    // The card is gone, so the notice over the app says the answer went through.
+    expect(await screen.findByText('You said maybe to Saturday night out')).toBeOnTheScreen()
   })
 
   it('opens the event from the card', async () => {

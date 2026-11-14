@@ -85,6 +85,7 @@ describe('add people with contacts', () => {
 
     expect(await screen.findByText('Zoya Khan')).toBeOnTheScreen()
     expect(screen.queryByText('Your contacts on Roundup')).toBeNull()
+    expect(await screen.findByText('Added 1 person')).toBeOnTheScreen()
   })
 
   it('narrows the list by the search text', async () => {
@@ -149,6 +150,7 @@ describe('add people on web', () => {
     })
 
     expect(backend.paths).toContain('POST /api/v1/squads/s1/members')
+    expect(await screen.findByText('Added 1 person')).toBeOnTheScreen()
   })
 
   it('shows the message when the number is not on Roundup', async () => {

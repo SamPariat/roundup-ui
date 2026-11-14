@@ -1,12 +1,13 @@
 import type { ReactElement } from 'react'
 
-import { useCallback } from 'react'
+import { useCallback, useMemo } from 'react'
 
 import { useAddMemberViewModel } from '@roundup/core'
 import { useT } from '@roundup/i18n'
 import { Button, Modal, PhoneInput } from '@roundup/ui'
 
 import { useErrorText } from '@/hooks/useErrorText'
+import { useNotify } from '@/hooks/useNotify'
 
 /** Props for AddNumberModal. */
 export interface IAddNumberModalProps {
@@ -30,27 +31,35 @@ export const AddNumberModal = ({
   squadName,
 }: IAddNumberModalProps): ReactElement => {
   const { t } = useT()
+  const notify = useNotify()
 
   const { busy, error, phone, requestId, setPhone, submit } = useAddMemberViewModel(squadId)
   const errorText = useErrorText(error, requestId)
 
+  // The sheet closes once they are in, so the notice over the app says they joined.
   const handleAdd = useCallback(async (): Promise<void> => {
-    if (await submit()) onClose()
-  }, [onClose, submit])
+    if (!(await submit())) return
 
-  const actions = [
-    <Button
-      key="add"
-      loading={busy}
-      loadingLabel={t('addPeople.number.submitting')}
-      onPress={handleAdd}
-    >
-      {t('addPeople.number.submit')}
-    </Button>,
-    <Button key="cancel" onPress={onClose} variant="ghost">
-      {t('common.cancel')}
-    </Button>,
-  ]
+    notify({ id: `added-${squadId}-1`, message: t('notices.added', { count: 1 }), tone: 'success' })
+    onClose()
+  }, [notify, onClose, squadId, submit, t])
+
+  const actions = useMemo(
+    (): ReactElement[] => [
+      <Button
+        key="add"
+        loading={busy}
+        loadingLabel={t('addPeople.number.submitting')}
+        onPress={handleAdd}
+      >
+        {t('addPeople.number.submit')}
+      </Button>,
+      <Button key="cancel" onPress={onClose} variant="ghost">
+        {t('common.cancel')}
+      </Button>,
+    ],
+    [busy, handleAdd, onClose, t],
+  )
 
   return (
     <Modal

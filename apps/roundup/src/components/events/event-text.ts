@@ -60,6 +60,29 @@ export class EventText {
   }
 
   /**
+   * Says what the person answered, for the notice after they answer from a card.
+   * @param t - The translator.
+   * @param status - Going, maybe or not going.
+   * @param name - What the event is called, as its card shows it.
+   * @returns "You're going to Saturday night out", and so on.
+   */
+  static answered(t: TTranslate, status: RSVPStatus, name: string): string {
+    switch (status) {
+      case RSVPStatus.GOING: {
+        return t('notices.going', { name })
+      }
+
+      case RSVPStatus.MAYBE: {
+        return t('notices.maybe', { name })
+      }
+
+      case RSVPStatus.NOT_GOING: {
+        return t('notices.notGoing', { name })
+      }
+    }
+  }
+
+  /**
    * Names the kind of night.
    * @param t - The translator.
    * @param type - Drinks, dining or both.

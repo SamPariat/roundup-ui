@@ -14,6 +14,18 @@ export const en = {
     members_one: '{{count}} member',
     members_other: '{{count}} members',
   },
+  // What the notice over the app says after an action whose result is no longer on screen.
+  notices: {
+    leftSquad: 'You left {{name}}',
+    going: "You're going to {{name}}",
+    maybe: 'You said maybe to {{name}}',
+    notGoing: "You can't make it to {{name}}",
+    madeAdmin: '{{name}} is now an admin',
+    removedAdmin: '{{name}} is no longer an admin',
+    removedMember: 'Removed {{name}} from the squad',
+    added_one: 'Added {{count}} person',
+    added_other: 'Added {{count}} people',
+  },
   nav: {
     main: 'Main',
     sidebar: 'Sidebar',
