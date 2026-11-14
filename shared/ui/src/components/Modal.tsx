@@ -22,6 +22,7 @@ import type { TMotionStyle } from '../lib/useModalMotion'
 import { ActionContext } from '../lib/action-context'
 import { cn } from '../lib/cn'
 import { ABSOLUTE_FILL } from '../lib/fill'
+import { useKeyboardShown } from '../lib/useKeyboardShown'
 import { useModalMotion } from '../lib/useModalMotion'
 import { useTheme } from '../theme/theme'
 import { Surface } from './Surface'
@@ -60,6 +61,12 @@ export interface IModalProps {
 
 /** The padding inside the modal, in points; the sheet adds the home indicator's inset below it. */
 const PADDING = 24
+
+/**
+ * The sheet's bottom padding while the keyboard is up, in points. The keyboard covers the home
+ * indicator, so its inset is dropped, and the last action sits this close above the keys.
+ */
+const KEYBOARD_GAP = 16
 
 /** How much of the window a web card may take, as a share of its height. */
 const CARD_SHARE = 0.85
@@ -273,10 +280,15 @@ export const Modal = ({
     [height, sheet, top],
   )
 
-  const sheetPadding = useMemo(
-    (): undefined | ViewStyle => (sheet ? { paddingBottom: PADDING + bottom } : undefined),
-    [bottom, sheet],
-  )
+  // The keyboard already covers the home indicator, and the KeyboardAvoidingView lifts the sheet
+  // by the keyboard's full height, so keeping the inset too would float the sheet above the keys.
+  const keyboardShown = useKeyboardShown()
+
+  const sheetPadding = useMemo((): undefined | ViewStyle => {
+    if (!sheet) return undefined
+
+    return { paddingBottom: keyboardShown ? KEYBOARD_GAP : PADDING + bottom }
+  }, [bottom, keyboardShown, sheet])
 
   const handleFocusTitle = useCallback((): void => {
     ModalFocus.moveFocusTo(titleRef.current)

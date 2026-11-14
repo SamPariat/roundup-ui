@@ -7,6 +7,7 @@ import { Platform } from 'react-native'
 import { Button } from '../../src/components/Button'
 import { Modal } from '../../src/components/Modal'
 import { Text } from '../../src/components/Text'
+import { KeyboardFixtures } from '../helpers/keyboard'
 import { Render } from '../helpers/render'
 
 /**
@@ -50,6 +51,29 @@ class ModalFixtures {
     }
 
     return undefined
+  }
+
+  /**
+   * The sheet's bottom padding, which the Modal sets on the dialog Surface.
+   * @returns The padding in points.
+   */
+  static paddingBottom(): unknown {
+    const style: unknown = screen.getByLabelText('Add member').props['style']
+    const styles: unknown[] = Array.isArray(style) ? style.flat() : [style]
+
+    return styles
+      .map(
+        (entry) =>
+          (
+            entry as
+              | undefined
+              | {
+                  /** The bottom padding. */
+                  paddingBottom?: unknown
+                }
+          )?.paddingBottom,
+      )
+      .findLast((value) => value !== undefined)
   }
 
   /**
@@ -116,6 +140,30 @@ describe('Modal', () => {
 
       // The window is 1334 points tall here and the safe area has no insets.
       expect(ModalFixtures.maxHeight()).toBe(1334 - 16)
+    })
+
+    it('drops the home indicator inset while the keyboard is up', async () => {
+      Platform.OS = 'ios'
+      KeyboardFixtures.capture()
+
+      await Render.withTheme(
+        <Modal title="Add member">
+          <Text>Body</Text>
+        </Modal>,
+      )
+
+      // 24 points of padding over an inset of 0 here.
+      expect(ModalFixtures.paddingBottom()).toBe(24)
+
+      await KeyboardFixtures.emit('keyboardWillShow')
+
+      expect(ModalFixtures.paddingBottom()).toBe(16)
+
+      await KeyboardFixtures.emit('keyboardWillHide')
+
+      expect(ModalFixtures.paddingBottom()).toBe(24)
+
+      jest.restoreAllMocks()
     })
 
     it('keeps the web card to 85% of the window', async () => {
