@@ -56,6 +56,58 @@ describe('useEvent', () => {
     expect(loads()).toBe(before + 1)
   })
 
+  it("reports votes from the rest of the squad, but not the person's own", async () => {
+    const voting = { status: EventStatus.VOTING, totalVotes: 1 }
+
+    Fakes.stubNetwork({
+      ...SESSION,
+      'GET /api/v1/events/e1': Fakes.ok(EventFixtures.detail('e1', { ...voting, myVote: null })),
+    })
+
+    const core = await VenueFixtures.signedInCore()
+    const { result } = await renderHook(() => useEvent('e1', true), { wrapper: core.wrapper })
+
+    await waitFor(() => {
+      expect(result.current.event).toBeDefined()
+    })
+
+    expect(result.current.freshVotes).toBeUndefined()
+
+    // The person votes: one more vote, but it is theirs.
+    Fakes.stubNetwork({
+      ...SESSION,
+      'GET /api/v1/events/e1': Fakes.ok(
+        EventFixtures.detail('e1', { ...voting, myVote: 'p1', totalVotes: 2 }),
+      ),
+    })
+
+    await act(async () => {
+      await result.current.refresh()
+    })
+
+    await waitFor(() => {
+      expect(result.current.event?.myVote).toBe('p1')
+    })
+
+    expect(result.current.freshVotes).toBeUndefined()
+
+    // Two others vote.
+    Fakes.stubNetwork({
+      ...SESSION,
+      'GET /api/v1/events/e1': Fakes.ok(
+        EventFixtures.detail('e1', { ...voting, myVote: 'p1', totalVotes: 4 }),
+      ),
+    })
+
+    await act(async () => {
+      await result.current.refresh()
+    })
+
+    await waitFor(() => {
+      expect(result.current.freshVotes).toEqual({ count: 2, id: 1 })
+    })
+  })
+
   it('says not found for an event that is not there', async () => {
     Fakes.stubNetwork({
       ...SESSION,

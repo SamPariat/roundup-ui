@@ -25,7 +25,7 @@ export type {
 export { useCreateEventViewModel } from './events/useCreateEventViewModel'
 export type { ICreateEventViewModel, TCreateEventField } from './events/useCreateEventViewModel'
 export { useEvent } from './events/useEvent'
-export type { IUseEvent } from './events/useEvent'
+export type { IFreshVotes, IUseEvent } from './events/useEvent'
 export { useNominateViewModel } from './events/useNominateViewModel'
 export type { INominateViewModel } from './events/useNominateViewModel'
 export { useSquadEvents } from './events/useSquadEvents'

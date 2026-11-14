@@ -65,6 +65,7 @@ const CONTEXT_HOOKS: ReadonlySet<string> = new Set([
   'useLayout',
   'useLocalSearchParams',
   'useNavigation',
+  'useNotify',
   'usePathname',
   'useQueryClient',
   'useReducedMotion',

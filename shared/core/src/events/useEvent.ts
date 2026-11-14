@@ -4,6 +4,7 @@ import type { RSVPStatus } from '@roundup/api'
 
 import {
   ApiError,
+  EventStatus,
   HttpStatus,
   removeNomination,
   vote as sendVote,
@@ -45,6 +46,17 @@ type TAction =
       kind: 'start'
     }
 
+/** How often a live event loads again while voting is open, in milliseconds. */
+const LIVE_MS = 45_000
+
+/** Votes that came in from the rest of the squad since the page last looked. */
+export interface IFreshVotes {
+  /** Grows by one each time, so the same count coming twice is still a new arrival. */
+  id: number
+  /** How many came in. */
+  count: number
+}
+
 /** What an event's page shows and does. */
 export interface IUseEvent {
   /** The event, once loaded. */
@@ -74,6 +86,8 @@ export interface IUseEvent {
   start: () => Promise<boolean>
   /** Loads the event again, for pull to refresh and for coming back to the page. */
   refresh: () => Promise<void>
+  /** Votes from the rest of the squad that came in since the last load; undefined until some do. */
+  freshVotes: IFreshVotes | undefined
   /** The message key to show, or undefined. */
   error: TErrorKey | undefined
   /** The request ID for the generic message. */
@@ -82,15 +96,20 @@ export interface IUseEvent {
 
 /**
  * Loads one event with its members, suggestions and what the signed-in person may do, and runs
- * those actions, after which the event and the squad's list load again.
+ * those actions, after which the event and the squad's list load again. While the page is live and
+ * voting is open, it loads again every 45 seconds and reports votes from the rest of the squad.
  * @param eventId - Which event to load.
+ * @param live - Whether the page is in front of the person, so a voting event keeps itself current.
  * @returns The event, the loading state and the actions.
  */
-export const useEvent = (eventId: string): IUseEvent => {
+export const useEvent = (eventId: string, live = false): IUseEvent => {
   const { helpers } = useDeps()
   const eventsHelper = helpers.events
 
   const [action, setAction] = useState<TAction | undefined>()
+  // The rest of the squad's votes at the last load, and what came in since.
+  const [othersSeen, setOthersSeen] = useState<number | undefined>()
+  const [freshVotes, setFreshVotes] = useState<IFreshVotes | undefined>()
 
   const signedIn = useSignedIn()
   const { me } = useMe()
@@ -99,10 +118,34 @@ export const useEvent = (eventId: string): IUseEvent => {
   // Votes and answers change while the person is away, so coming back to the app or the browser
   // tab always loads the event again, however fresh it was.
   const { data, error, isPending, refetch } = useGetEvent(eventId, undefined, {
-    query: { enabled: signedIn, refetchOnWindowFocus: 'always' },
+    query: {
+      enabled: signedIn,
+      /**
+       * Loads again every 45 seconds while the page is live and voting is open.
+       * @param query - The event's query, with its latest answer.
+       * @returns The interval in milliseconds, or false to stay put.
+       */
+      refetchInterval: (query) =>
+        live && query.state.data?.data.status === EventStatus.VOTING ? LIVE_MS : false,
+      refetchOnWindowFocus: 'always',
+    },
   })
 
   const detail = data?.data
+  // Votes cast by everyone but the person: their own first vote, or a change of mind, is not news.
+  const ownVote = detail?.myVote === undefined || detail.myVote === null ? 0 : 1
+  const others = detail === undefined ? undefined : (detail.totalVotes ?? 0) - ownVote
+
+  // Kept as state from the previous load rather than an effect, as React advises for a value that
+  // follows another: the arrival is noticed during the render that brings it.
+  if (others !== undefined && others !== othersSeen) {
+    setOthersSeen(others)
+
+    if (othersSeen !== undefined && others > othersSeen) {
+      setFreshVotes({ count: others - othersSeen, id: (freshVotes?.id ?? 0) + 1 })
+    }
+  }
+
   const meId = me?.id
   const message = error === null ? undefined : helpers.errors.toMessage(error, 'event')
   const running = busy ? action : undefined
@@ -172,6 +215,7 @@ export const useEvent = (eventId: string): IUseEvent => {
     answering: running?.kind === 'rsvp' ? running.status : undefined,
     error: actionError ?? message?.key,
     event,
+    freshVotes,
     loading: signedIn && isPending,
     notFound: ApiError.is(error) && error.status === HttpStatus.notFound,
     refresh,

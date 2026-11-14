@@ -3,8 +3,8 @@ import type { ReactElement } from 'react'
 import type { ViewStyle } from 'react-native'
 import type { Edge } from 'react-native-safe-area-context'
 
-import { Stack, useFocusEffect, useRouter } from 'expo-router'
-import { useCallback, useMemo, useRef, useState } from 'react'
+import { Stack, useFocusEffect, useIsFocused, useRouter } from 'expo-router'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Pressable, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
@@ -23,6 +23,7 @@ import { Ballots, VotingSummary } from '@/components/events/Voting'
 import { TabPage } from '@/components/TabPage'
 import { useErrorText } from '@/hooks/useErrorText'
 import { useLayout } from '@/hooks/useLayout'
+import { useNotify } from '@/hooks/useNotify'
 import { usePullRefresh } from '@/hooks/usePullRefresh'
 import { Paths } from '@/navigation/paths'
 
@@ -326,6 +327,8 @@ export const EventPage = ({ eventId }: IEventPageProps): ReactElement => {
   const { t } = useT()
   const router = useRouter()
   const { nav, pageHeader } = useLayout()
+  const live = useIsFocused()
+  const notify = useNotify()
   const wide = nav === 'side'
 
   const [suggesting, setSuggesting] = useState<boolean>(false)
@@ -336,6 +339,7 @@ export const EventPage = ({ eventId }: IEventPageProps): ReactElement => {
     answering,
     error,
     event,
+    freshVotes,
     loading,
     notFound,
     refresh,
@@ -347,7 +351,7 @@ export const EventPage = ({ eventId }: IEventPageProps): ReactElement => {
     starting,
     vote,
     votingId,
-  } = useEvent(eventId)
+  } = useEvent(eventId, live)
 
   const { squad } = useSquad(event?.squadId)
   const errorText = useErrorText(error, requestId)
@@ -373,6 +377,18 @@ export const EventPage = ({ eventId }: IEventPageProps): ReactElement => {
     focusedRef.current = true
   }, [refresh])
 
+  // Votes from the rest of the squad came in while the page was open: the ballot has already
+  // updated, and the notice says so.
+  const handleFreshVotes = useCallback((): void => {
+    if (freshVotes === undefined) return
+
+    notify({
+      id: `votes-${String(freshVotes.id)}`,
+      message: t('screens.event.newVotes', { count: freshVotes.count }),
+      tone: 'info',
+    })
+  }, [freshVotes, notify, t])
+
   const handleGoToSquads = useCallback((): void => {
     router.dismissTo(Paths.tabsSquads())
   }, [router])
@@ -397,6 +413,7 @@ export const EventPage = ({ eventId }: IEventPageProps): ReactElement => {
   )
 
   useFocusEffect(handleFocus)
+  useEffect(handleFreshVotes, [handleFreshVotes])
 
   if (notFound || (event === undefined && error !== undefined)) {
     return (

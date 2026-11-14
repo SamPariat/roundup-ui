@@ -279,6 +279,7 @@ export class EventBackend {
         canStartVoting: draft && creator && event.nominations.length > 0,
         canVote: voting,
       },
+      totalVotes: Object.keys(votes).length,
       votedCount: Object.keys(votes).length,
     }
   }

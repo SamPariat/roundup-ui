@@ -23,6 +23,33 @@ const openEvent = async (): Promise<void> => {
  */
 const loads = (): number => backend.paths.filter((path) => path === 'GET /api/v1/events/e1').length
 
+/**
+ * Voting page test helpers. Static methods only.
+ */
+class VotingFixtures {
+  /**
+   * Pulls the page down, as a person does to see the latest: calls the refresh control of the view
+   * the page scrolls in.
+   */
+  static async pull(): Promise<void> {
+    let node = screen.getByText('Pick one. You can change it until voting closes.').parent
+
+    while (node !== null && node.props['refreshControl'] === undefined) node = node.parent
+
+    const control = node?.props['refreshControl'] as
+      | undefined
+      | {
+          /** The control's props, with what a pull calls. */
+          props: {
+            /** Loads the page again. */
+            onRefresh: () => Promise<void>
+          }
+        }
+
+    await control?.props.onRefresh()
+  }
+}
+
 describe('event page while voting', () => {
   beforeEach(() => {
     jest.replaceProperty(Platform, 'OS', 'android')
@@ -66,28 +93,35 @@ describe('event page while voting', () => {
 
     const before = loads()
 
-    // The page scrolls in a view whose refresh control a pull triggers.
-    let node = screen.getByText('Pick one. You can change it until voting closes.').parent
-
-    while (node !== null && node.props['refreshControl'] === undefined) node = node.parent
-
-    const control = node?.props['refreshControl'] as
-      | undefined
-      | {
-          /** The control's props, with what a pull calls. */
-          props: {
-            /** Loads the page again. */
-            onRefresh: () => Promise<void>
-          }
-        }
-
     await act(async () => {
-      await control?.props.onRefresh()
+      await VotingFixtures.pull()
     })
 
     await waitFor(() => {
       expect(loads()).toBe(before + 1)
     })
+  })
+
+  it('says when votes from the rest of the squad come in', async () => {
+    const [event] = backend.events ?? []
+
+    if (event === undefined) throw new Error('No event')
+
+    // Only the person has voted when the page opens.
+    event.votes = { u1: 'p2' }
+
+    await openEvent()
+
+    expect(screen.queryByText(/new votes? came in/)).toBeNull()
+
+    // Two others vote while the page is open.
+    event.votes = { u1: 'p2', u2: 'p1', u3: 'p1' }
+
+    await act(async () => {
+      await VotingFixtures.pull()
+    })
+
+    expect(await screen.findByText('2 new votes came in')).toBeOnTheScreen()
   })
 
   it('marks the place the person voted for as their vote and selected', async () => {
