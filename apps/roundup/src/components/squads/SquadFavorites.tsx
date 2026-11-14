@@ -143,7 +143,7 @@ const renderFavorite = (
   remove: TFavorites['remove'],
   removingId: string | undefined,
 ): ReactElement => (
-  <View className="max-w-160 overflow-hidden rounded-2xl border border-border bg-bg-raised">
+  <View className="overflow-hidden rounded-2xl border border-border bg-bg-raised">
     <FavoriteRowItem favorite={favorite} onRemove={remove} removing={removingId === favorite.id} />
   </View>
 )
@@ -249,7 +249,8 @@ export const PhoneSquad = ({
     (row: TPhoneRow): ReactElement => {
       if (!('kind' in row)) return renderFavorite(row, remove, removingId)
 
-      return <View className="max-w-160">{row.kind === 'events' ? events : members}</View>
+      // The rows run the full width of the tabs above them, on a tablet or an open Duo too.
+      return row.kind === 'events' ? events : members
     },
     [events, members, remove, removingId],
   )
