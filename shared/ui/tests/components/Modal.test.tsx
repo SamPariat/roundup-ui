@@ -2,7 +2,7 @@ import type { ReactElement } from 'react'
 
 import { fireEvent, screen, waitFor } from '@testing-library/react-native'
 import { useCallback, useState } from 'react'
-import { Platform } from 'react-native'
+import { Keyboard, Platform } from 'react-native'
 
 import { Button } from '../../src/components/Button'
 import { Modal } from '../../src/components/Modal'
@@ -153,6 +153,23 @@ describe('Modal', () => {
       )
 
       expect(ModalFixtures.paddingBottom()).toBe(34 + 8)
+    })
+
+    it('puts the keyboard away when the sheet is tapped outside its fields', async () => {
+      Platform.OS = 'ios'
+      const dismiss = jest.spyOn(Keyboard, 'dismiss')
+
+      await Render.withTheme(
+        <Modal title="Add member">
+          <Text>Body</Text>
+        </Modal>,
+      )
+
+      await fireEvent.press(screen.getByText('Add member'))
+
+      expect(dismiss).toHaveBeenCalled()
+
+      jest.restoreAllMocks()
     })
 
     it('drops the home indicator inset while the keyboard is up', async () => {

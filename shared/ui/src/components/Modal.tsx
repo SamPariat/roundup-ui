@@ -5,6 +5,7 @@ import { BlurView } from 'expo-blur'
 import { useCallback, useMemo, useRef } from 'react'
 import {
   AccessibilityInfo,
+  Keyboard,
   KeyboardAvoidingView,
   Modal as NativeModal,
   Platform,
@@ -173,6 +174,9 @@ const ModalContent = ({
       alwaysBounceVertical={false}
       className="mt-4 shrink"
       contentContainerClassName="gap-3"
+      // A tap on a button or a field still lands while the keyboard is up; a tap on the gaps
+      // between them puts it away.
+      keyboardShouldPersistTaps="handled"
       pointerEvents={busy ? 'none' : 'auto'}
     >
       {body === undefined ? null : (
@@ -184,6 +188,39 @@ const ModalContent = ({
     </ScrollView>
   )
 }
+
+/** Puts the keyboard away. */
+const handleDismissKeyboard = (): void => {
+  Keyboard.dismiss()
+}
+
+/** Props for the area of the sheet that puts the keyboard away. */
+interface IKeyboardDismissAreaProps {
+  /** The sheet. */
+  children: ReactElement
+  /** Whether it is the app's sheet; the web card leaves focus to the browser. */
+  sheet: boolean
+}
+
+/**
+ * Puts the keyboard away when a tap lands on the sheet outside its buttons and fields: its title,
+ * its padding or the space between its actions. The body's scroll view only answers taps inside it,
+ * which in a one-field sheet is little more than the field. Screen readers skip it.
+ * @returns The sheet, wrapped on the app.
+ */
+const KeyboardDismissArea = ({ children, sheet }: IKeyboardDismissAreaProps): ReactElement =>
+  sheet ? (
+    <Pressable
+      accessible={false}
+      className="shrink"
+      focusable={false}
+      onPress={handleDismissKeyboard}
+    >
+      {children}
+    </Pressable>
+  ) : (
+    children
+  )
 
 /** Props for the backdrop behind the modal. */
 interface IBackdropProps {
@@ -324,43 +361,45 @@ export const Modal = ({
           style={maxHeight}
         >
           <Animated.View className="shrink" style={sheet ? panel : [panel, CARD_CORNERS]}>
-            <Surface
-              accessibilityLabel={title}
-              accessibilityViewIsModal
-              aria-busy={busy}
-              aria-modal
-              className={cn(
-                'shrink border border-glass-edge px-6 pt-6',
-                sheet
-                  ? 'rounded-t-[20px] border-x-0 border-b-0 shadow-sheet'
-                  : 'rounded-[20px] shadow-toast',
-                !sheet && 'bg-glass pb-6',
-              )}
-              role={confirm ? 'alertdialog' : 'dialog'}
-              style={sheetPadding}
-            >
-              <ModalHeader
-                leading={leading}
-                subtitle={subtitle}
-                title={title}
-                titleRef={titleRef}
-              />
-              <ModalContent body={body} busy={busy}>
-                {children}
-              </ModalContent>
-              {actions !== undefined && actions.length > 0 ? (
-                <ActionContext value={actionContext}>
-                  <View
-                    className={cn(
-                      'mt-6 gap-2',
-                      !sheet && 'flex-row-reverse flex-wrap justify-start',
-                    )}
-                  >
-                    {actions}
-                  </View>
-                </ActionContext>
-              ) : null}
-            </Surface>
+            <KeyboardDismissArea sheet={sheet}>
+              <Surface
+                accessibilityLabel={title}
+                accessibilityViewIsModal
+                aria-busy={busy}
+                aria-modal
+                className={cn(
+                  'shrink border border-glass-edge px-6 pt-6',
+                  sheet
+                    ? 'rounded-t-[20px] border-x-0 border-b-0 shadow-sheet'
+                    : 'rounded-[20px] shadow-toast',
+                  !sheet && 'bg-glass pb-6',
+                )}
+                role={confirm ? 'alertdialog' : 'dialog'}
+                style={sheetPadding}
+              >
+                <ModalHeader
+                  leading={leading}
+                  subtitle={subtitle}
+                  title={title}
+                  titleRef={titleRef}
+                />
+                <ModalContent body={body} busy={busy}>
+                  {children}
+                </ModalContent>
+                {actions !== undefined && actions.length > 0 ? (
+                  <ActionContext value={actionContext}>
+                    <View
+                      className={cn(
+                        'mt-6 gap-2',
+                        !sheet && 'flex-row-reverse flex-wrap justify-start',
+                      )}
+                    >
+                      {actions}
+                    </View>
+                  </ActionContext>
+                ) : null}
+              </Surface>
+            </KeyboardDismissArea>
           </Animated.View>
         </View>
       </KeyboardAvoidingView>
