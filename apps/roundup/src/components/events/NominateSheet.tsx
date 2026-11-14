@@ -1,8 +1,9 @@
 import type { ReactElement } from 'react'
 
 import { useCallback, useMemo, useState } from 'react'
-import { Linking, Platform, View } from 'react-native'
+import { View } from 'react-native'
 
+import type { en } from '@roundup/i18n'
 import type { ITabItem, TIconName } from '@roundup/ui'
 
 import { useNominateViewModel } from '@roundup/core'
@@ -12,6 +13,7 @@ import { Button, List, Modal, Skeleton, Tabs, Text, TextField, Toast } from '@ro
 import { EventText } from '@/components/events/event-text'
 import { PlaceRow } from '@/components/events/PlaceRow'
 import { useDebounced } from '@/hooks/useDebounced'
+import { useDeniedAction } from '@/hooks/useDeniedAction'
 import { useErrorText } from '@/hooks/useErrorText'
 
 /** Props for NominateSheet. */
@@ -42,6 +44,16 @@ interface IPlaceItem {
   name: string
   /** The line under the name; left out when nothing is known of it. */
   subtitle: string | undefined
+}
+
+/** A message of the Suggest a place sheet, as its full translation key. */
+type TSuggestKey = `screens.event.suggest.${keyof typeof en.screens.event.suggest}`
+
+/** What an empty list says, for each tab and for the search results. */
+const EMPTY_KEYS: Record<'results' | TNominateTab, TSuggestKey> = {
+  favorites: 'screens.event.suggest.emptyFavorites',
+  history: 'screens.event.suggest.emptyHistory',
+  results: 'screens.event.suggest.emptyResults',
 }
 
 /** How many placeholder rows show while a list loads. */
@@ -84,6 +96,7 @@ export const NominateSheet = ({
   } = useNominateViewModel(eventId, squadId, query)
 
   const errorText = useErrorText(error, requestId)
+  const denied = useDeniedAction(retryLocation)
   const words = query.trim()
   const busy = suggestingId !== undefined
   const searchDenied = words !== '' && phase === 'denied'
@@ -97,12 +110,7 @@ export const NominateSheet = ({
   }
 
   const loading = showResults ? searching || typing || phase === 'locating' : tabLoading[tab]
-
-  const emptyText = {
-    favorites: t('screens.event.suggest.emptyFavorites'),
-    history: t('screens.event.suggest.emptyHistory'),
-    results: t('screens.event.suggest.emptyResults'),
-  }[showResults ? 'results' : tab]
+  const emptyText = t(EMPTY_KEYS[showResults ? 'results' : tab])
 
   const items = useMemo(
     (): ITabItem[] => [
@@ -156,20 +164,9 @@ export const NominateSheet = ({
     [onClose, t],
   )
 
-  const handleOpenSettings = useCallback((): void => {
-    void Linking.openSettings()
-  }, [])
-
   const handleTab = useCallback((id: string): void => {
     setTab(id === 'history' ? 'history' : 'favorites')
   }, [])
-
-  const deniedLabel = Platform.select({
-    default: t('screens.explore.denied.openSettings'),
-    web: t('screens.explore.denied.tryAgain'),
-  })
-
-  const deniedPress = Platform.select({ default: handleOpenSettings, web: retryLocation })
 
   return (
     <Modal
@@ -192,8 +189,8 @@ export const NominateSheet = ({
           <Text tone="muted" variant="body-sm">
             {t('screens.explore.denied.body')}
           </Text>
-          <Button onPress={deniedPress} size="sm" variant="secondary">
-            {deniedLabel}
+          <Button onPress={denied.onPress} size="sm" variant="secondary">
+            {denied.label}
           </Button>
         </View>
       ) : null}
