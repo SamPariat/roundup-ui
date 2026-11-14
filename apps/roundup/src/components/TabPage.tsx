@@ -44,6 +44,7 @@ export const TabPage = ({ centered = false, children, fab }: ITabPageProps): Rea
         <ScrollView
           contentContainerClassName={cn('pt-6', fab === undefined ? 'pb-6' : 'pb-24', frame)}
           contentInsetAdjustmentBehavior="automatic"
+          keyboardDismissMode="on-drag"
           keyboardShouldPersistTaps="handled"
         >
           {children}

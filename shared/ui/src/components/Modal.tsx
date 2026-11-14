@@ -5,7 +5,6 @@ import { BlurView } from 'expo-blur'
 import { useCallback, useMemo, useRef } from 'react'
 import {
   AccessibilityInfo,
-  Keyboard,
   KeyboardAvoidingView,
   Modal as NativeModal,
   Platform,
@@ -26,6 +25,7 @@ import { ABSOLUTE_FILL } from '../lib/fill'
 import { useKeyboardShown } from '../lib/useKeyboardShown'
 import { useModalMotion } from '../lib/useModalMotion'
 import { useTheme } from '../theme/theme'
+import { KeyboardDismissArea } from './KeyboardDismissArea'
 import { Surface } from './Surface'
 import { Text } from './Text'
 
@@ -189,39 +189,6 @@ const ModalContent = ({
   )
 }
 
-/** Puts the keyboard away. */
-const handleDismissKeyboard = (): void => {
-  Keyboard.dismiss()
-}
-
-/** Props for the area of the sheet that puts the keyboard away. */
-interface IKeyboardDismissAreaProps {
-  /** The sheet. */
-  children: ReactElement
-  /** Whether it is the app's sheet; the web card leaves focus to the browser. */
-  sheet: boolean
-}
-
-/**
- * Puts the keyboard away when a tap lands on the sheet outside its buttons and fields: its title,
- * its padding or the space between its actions. The body's scroll view only answers taps inside it,
- * which in a one-field sheet is little more than the field. Screen readers skip it.
- * @returns The sheet, wrapped on the app.
- */
-const KeyboardDismissArea = ({ children, sheet }: IKeyboardDismissAreaProps): ReactElement =>
-  sheet ? (
-    <Pressable
-      accessible={false}
-      className="shrink"
-      focusable={false}
-      onPress={handleDismissKeyboard}
-    >
-      {children}
-    </Pressable>
-  ) : (
-    children
-  )
-
 /** Props for the backdrop behind the modal. */
 interface IBackdropProps {
   /** Called when the backdrop is tapped. */
@@ -361,7 +328,7 @@ export const Modal = ({
           style={maxHeight}
         >
           <Animated.View className="shrink" style={sheet ? panel : [panel, CARD_CORNERS]}>
-            <KeyboardDismissArea sheet={sheet}>
+            <KeyboardDismissArea className="shrink">
               <Surface
                 accessibilityLabel={title}
                 accessibilityViewIsModal

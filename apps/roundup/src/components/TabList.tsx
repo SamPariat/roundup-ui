@@ -5,7 +5,7 @@ import { useHeaderHeight } from 'expo-router/react-navigation'
 import { useCallback, useMemo, useState } from 'react'
 import { FlatList, RefreshControl, View } from 'react-native'
 
-import { cn, Skeleton, useBreakpoint } from '@roundup/ui'
+import { cn, KeyboardDismissArea, Skeleton, useBreakpoint } from '@roundup/ui'
 
 import { TabFabLayer } from '@/components/TabFabLayer'
 import { Layout, useLayout } from '@/hooks/useLayout'
@@ -181,7 +181,9 @@ export const TabList = <T,>({
     <View className="flex-1">
       {top === undefined ? null : (
         <View className="bg-bg" style={topStyle}>
-          <View className={cn(FRAME, 'pt-4.5 pb-1.5', gutterClass)}>{top}</View>
+          <KeyboardDismissArea className={cn(FRAME, 'pt-4.5 pb-1.5', gutterClass)}>
+            {top}
+          </KeyboardDismissArea>
         </View>
       )}
       <View className="-mx-1.5 flex-1" onLayout={handleLayout}>
@@ -199,6 +201,8 @@ export const TabList = <T,>({
           contentInsetAdjustmentBehavior="automatic"
           data={data}
           key={columns}
+          // Scrolling the results puts the search keyboard away, like the system's lists.
+          keyboardDismissMode="on-drag"
           keyboardShouldPersistTaps="handled"
           keyExtractor={keyExtractor}
           ListEmptyComponent={placeholder}
