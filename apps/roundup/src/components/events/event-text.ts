@@ -1,8 +1,18 @@
-import type { IEventCard, IEventInfo, IEventNomination, IRsvpCounts } from '@roundup/core'
+import type {
+  IEventCard,
+  IEventInfo,
+  IEventNomination,
+  IFavoriteRow,
+  IRsvpCounts,
+  IVenueCard,
+  IVisitRow,
+} from '@roundup/core'
 import type { useT } from '@roundup/i18n'
 import type { TBadgeProps, TIconName } from '@roundup/ui'
 
 import { EventStatus, EventType, RSVPStatus } from '@roundup/core'
+
+import { SavedBy } from '@/components/squads/saved-by'
 
 /** The translator `useT` gives, with its keys checked. */
 type TTranslate = ReturnType<typeof useT>['t']
@@ -125,7 +135,7 @@ export class EventText {
    * @param card - The event whose line it is.
    * @returns The line under the event's name.
    */
-  static whenLine(t: TTranslate, card: IEventCard): string {
+  static whenLine(t: TTranslate, card: Pick<IEventCard, 'type' | 'when'>): string {
     return t('screens.events.line.when', {
       type: EventText.type(t, card.type),
       when: card.when,
@@ -218,6 +228,59 @@ export class EventText {
     }
 
     return EventText.join(t, parts)
+  }
+
+  /**
+   * Describes a favorite for the Suggest a place sheet: "Saved by Meera and 2 others · 4.5".
+   * @param t - The translator.
+   * @param row - The favorite place, whose savers and rating the line reads.
+   * @returns The subtitle.
+   */
+  static favoriteLine(t: TTranslate, row: IFavoriteRow): string {
+    const parts = [SavedBy.sentence(t, row.savers)]
+
+    if (row.rating !== undefined) parts.push(row.rating.toFixed(1))
+
+    return EventText.join(
+      t,
+      parts.filter((part) => part !== ''),
+    )
+  }
+
+  /**
+   * Describes a place the squad has been to for the Suggest a place sheet: "Been 3 times · last 18th Oct 2026".
+   * @param t - The translator.
+   * @param row - The visited place.
+   * @returns The subtitle.
+   */
+  static visitLine(t: TTranslate, row: IVisitRow): string {
+    return t('screens.event.suggest.visits', { count: row.visitCount, date: row.lastVisitedOn })
+  }
+
+  /**
+   * Describes a search result for the Suggest a place sheet: "4.5 · ₹₹ · 100 Feet Rd".
+   * @param t - The translator.
+   * @param venue - The place found.
+   * @returns The subtitle, or undefined when nothing is known of it.
+   */
+  static venueLine(t: TTranslate, venue: IVenueCard): string | undefined {
+    const parts = [
+      ...(venue.rating === undefined ? [] : [venue.rating.toFixed(1)]),
+      ...(venue.priceLevel > 0 ? [t('price.mark').repeat(venue.priceLevel)] : []),
+      ...(venue.address === undefined ? [] : [venue.address]),
+    ]
+
+    return parts.length === 0 ? undefined : EventText.join(t, parts)
+  }
+
+  /**
+   * Says what a member answered, for the "Who's coming" list.
+   * @param t - The translator.
+   * @param answer - Their answer; undefined while they have not answered.
+   * @returns "Going", "Maybe", "Can't make it" or "Hasn't answered".
+   */
+  static memberLine(t: TTranslate, answer: RSVPStatus | undefined): string {
+    return answer === undefined ? t('screens.event.noAnswer') : EventText.answer(t, answer)
   }
 
   /**

@@ -4,19 +4,22 @@ import type { ViewStyle } from 'react-native'
 import type { Edge } from 'react-native-safe-area-context'
 
 import { Stack, useRouter } from 'expo-router'
-import { useCallback, useMemo } from 'react'
-import { View } from 'react-native'
+import { useCallback, useMemo, useState } from 'react'
+import { Pressable, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
 import type { IEventInfo, IUseEvent } from '@roundup/core'
 
 import { EventStatus, useEvent, useSquad } from '@roundup/core'
 import { useT } from '@roundup/i18n'
-import { AvatarGroup, Badge, Button, EmptyState, List, Skeleton, Text } from '@roundup/ui'
+import { AvatarGroup, Badge, Button, EmptyState, Icon, List, Skeleton, Text } from '@roundup/ui'
 
 import { EventText } from '@/components/events/event-text'
+import { EventMembers } from '@/components/events/EventMembers'
+import { NominateSheet } from '@/components/events/NominateSheet'
 import { NominationRow } from '@/components/events/NominationRow'
 import { RsvpChips } from '@/components/events/RsvpChips'
+import { Ballots, VotingSummary } from '@/components/events/Voting'
 import { TabPage } from '@/components/TabPage'
 import { useErrorText } from '@/hooks/useErrorText'
 import { useLayout } from '@/hooks/useLayout'
@@ -119,13 +122,16 @@ interface IPlacesProps extends ISectionProps {
   removingId: string | undefined
   /** Takes a suggestion back. */
   onRemove: IUseEvent['remove']
+  /** Opens the Suggest a place sheet. */
+  onSuggest: () => void
 }
 
 /**
- * The places suggested so far, each with a Remove button where the person may take it back.
- * @returns The heading and the list.
+ * The places suggested so far, each with a Remove button where the person may take it back, and a
+ * dashed Suggest a place link under them for a person who may suggest.
+ * @returns The heading, the list and the link.
  */
-const Places = ({ event, onRemove, removingId }: IPlacesProps): ReactElement => {
+const Places = ({ event, onRemove, onSuggest, removingId }: IPlacesProps): ReactElement => {
   const { t } = useT()
 
   return (
@@ -150,8 +156,88 @@ const Places = ({ event, onRemove, removingId }: IPlacesProps): ReactElement => 
           ))}
         </List>
       )}
+      {event.permissions.canNominate ? (
+        <Pressable
+          accessibilityRole="button"
+          className="min-h-12 flex-row items-center justify-center gap-2 rounded-xl border border-dashed border-border-strong hover:bg-bg-hover focus:outline-2 focus:outline-offset-2 focus:outline-focus-ring"
+          onPress={onSuggest}
+        >
+          <Icon decorative name="plus" tone="accent" />
+          <Text tone="accent" variant="label">
+            {t('screens.event.suggest.title')}
+          </Text>
+        </Pressable>
+      ) : null}
     </View>
   )
+}
+
+/**
+ * The top of the page: the draft's summary, or the voting summary with its countdown.
+ * @returns The summary that fits the event's status.
+ */
+const Lead = ({
+  event,
+  squadName,
+}: ISectionProps & {
+  /** The squad's name, once it has loaded. */ squadName: string | undefined
+}): ReactElement =>
+  event.status === EventStatus.VOTING ? (
+    <VotingSummary event={event} />
+  ) : (
+    <Summary event={event} squadName={squadName} />
+  )
+
+/** Props for Aside. */
+interface IAsideProps extends ISectionProps {
+  /** True on the wide layout, where the aside sits beside the page. */
+  wide: boolean
+}
+
+/**
+ * What sits under the answer: who is going for a draft; for voting, the "Who's coming" list of the
+ * wide layout, which a phone leaves out.
+ * @returns The card or list, or null.
+ */
+const Aside = ({ event, wide }: IAsideProps): null | ReactElement => {
+  if (event.status !== EventStatus.VOTING) return <Going event={event} />
+
+  return wide ? <EventMembers event={event} /> : null
+}
+
+/** Props for Stage. */
+interface IStageProps extends IPlacesProps, IAsideProps {
+  /** The place a vote is being sent for, if any. */
+  votingId: IUseEvent['votingId']
+  /** Votes for a place. */
+  onVote: IUseEvent['vote']
+}
+
+/**
+ * The part of the page that changes with the event's life: the places to vote on while it is a
+ * draft, the ballot while it is open for voting.
+ * @returns The places or the ballot, or null once voting is over.
+ */
+const Stage = ({
+  event,
+  onRemove,
+  onSuggest,
+  onVote,
+  removingId,
+  votingId,
+  wide,
+}: IStageProps): null | ReactElement => {
+  if (event.status === EventStatus.DRAFT) {
+    return (
+      <Places event={event} onRemove={onRemove} onSuggest={onSuggest} removingId={removingId} />
+    )
+  }
+
+  if (event.status === EventStatus.VOTING) {
+    return <Ballots event={event} onVote={onVote} votingId={votingId} wide={wide} />
+  }
+
+  return null
 }
 
 /** Props for EventLoading. */
@@ -241,6 +327,8 @@ export const EventPage = ({ eventId }: IEventPageProps): ReactElement => {
   const { nav, pageHeader } = useLayout()
   const wide = nav === 'side'
 
+  const [suggesting, setSuggesting] = useState<boolean>(false)
+
   const {
     answering,
     error,
@@ -253,6 +341,8 @@ export const EventPage = ({ eventId }: IEventPageProps): ReactElement => {
     rsvp,
     start,
     starting,
+    vote,
+    votingId,
   } = useEvent(eventId)
 
   const { squad } = useSquad(event?.squadId)
@@ -262,6 +352,14 @@ export const EventPage = ({ eventId }: IEventPageProps): ReactElement => {
   const handleStart = useCallback(async (): Promise<void> => {
     await start()
   }, [start])
+
+  const handleOpenSuggest = useCallback((): void => {
+    setSuggesting(true)
+  }, [])
+
+  const handleCloseSuggest = useCallback((): void => {
+    setSuggesting(false)
+  }, [])
 
   const handleGoToSquads = useCallback((): void => {
     router.dismissTo(Paths.tabsSquads())
@@ -307,13 +405,21 @@ export const EventPage = ({ eventId }: IEventPageProps): ReactElement => {
     return <EventLoading wide={wide} />
   }
 
-  const draft = event.status === EventStatus.DRAFT
-
-  const summary = <Summary event={event} squadName={squad?.name} />
+  const summary = <Lead event={event} squadName={squad?.name} />
   const answer = <Answer answering={answering} event={event} onAnswer={rsvp} />
-  const going = <Going event={event} />
+  const aside = <Aside event={event} wide={wide} />
 
-  const places = draft ? <Places event={event} onRemove={remove} removingId={removingId} /> : null
+  const stage = (
+    <Stage
+      event={event}
+      onRemove={remove}
+      onSuggest={handleOpenSuggest}
+      onVote={vote}
+      removingId={removingId}
+      votingId={votingId}
+      wide={wide}
+    />
+  )
 
   const alert =
     errorText === undefined ? null : (
@@ -326,7 +432,7 @@ export const EventPage = ({ eventId }: IEventPageProps): ReactElement => {
     <View className="flex-row items-start gap-8">
       <View className="min-w-0 flex-1 gap-4">
         {summary}
-        {places}
+        {stage}
         {startable ? (
           <Text tone="muted" variant="caption">
             {t('screens.event.startNote')}
@@ -335,15 +441,15 @@ export const EventPage = ({ eventId }: IEventPageProps): ReactElement => {
       </View>
       <View className="w-90 shrink-0 gap-4">
         {answer}
-        {going}
+        {aside}
       </View>
     </View>
   ) : (
     <View className="gap-5">
       {summary}
       {answer}
-      {going}
-      {places}
+      {aside}
+      {stage}
     </View>
   )
 
@@ -360,6 +466,14 @@ export const EventPage = ({ eventId }: IEventPageProps): ReactElement => {
         </View>
       </TabPage>
       {footer}
+      {suggesting ? (
+        <NominateSheet
+          eventId={eventId}
+          eventName={event.name}
+          onClose={handleCloseSuggest}
+          squadId={event.squadId}
+        />
+      ) : null}
     </View>
   )
 }

@@ -2,6 +2,8 @@ import type { ReactElement } from 'react'
 
 import { Stack } from 'expo-router'
 
+import type { ILocationSource } from '@roundup/core'
+
 import type { IStubEvent, IStubNomination } from './event-backend'
 import type { IBackend } from './fakes'
 import type { IStubSquad } from './squad-backend'
@@ -85,9 +87,10 @@ export class EventsFixtures {
    * Opens the app at a route of the squads stack, signed in.
    * @param backend - What the stubbed backend answers.
    * @param url - Where the app opens.
+   * @param location - The fake location source, for a screen that asks where the person is.
    * @returns A promise that resolves once it has rendered.
    */
-  static open(backend: IBackend, url: string): Promise<void> {
+  static open(backend: IBackend, url: string, location?: ILocationSource): Promise<void> {
     return Render.app(
       {
         'squads/[squadId]': SquadScreen,
@@ -95,7 +98,7 @@ export class EventsFixtures {
         'squads/event/[eventId]': EventScreen,
         'squads/index': SquadsScreen,
       },
-      { backend, saved: 'r1', url },
+      { backend, saved: 'r1', url, ...(location === undefined ? {} : { location }) },
     )
   }
 }

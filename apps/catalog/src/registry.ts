@@ -30,6 +30,7 @@ import { SafeAreaDemo } from './demos/SafeAreaDemo'
 import { ScreenDemo } from './demos/ScreenDemo'
 import { SideNavDemo } from './demos/SideNavDemo'
 import { SkeletonDemo } from './demos/SkeletonDemo'
+import { SpinnerDemo } from './demos/SpinnerDemo'
 import { SquadCardDemo } from './demos/SquadCardDemo'
 import { SurfaceDemo } from './demos/SurfaceDemo'
 import { TabsDemo } from './demos/TabsDemo'
@@ -217,6 +218,12 @@ const ENTRIES: readonly TEntryInput[] = [
     group: 'Display',
     summary: 'Placeholders for a list row and a venue card while data loads.',
     Demo: SkeletonDemo,
+  },
+  {
+    title: 'Spinner',
+    group: 'Feedback',
+    summary: 'A small turning ring for a control whose request is in flight.',
+    Demo: SpinnerDemo,
   },
   {
     title: 'Toast',

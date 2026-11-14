@@ -98,7 +98,7 @@ describe('squad events', () => {
     await openEvents()
     await fireEvent.press(screen.getByRole('button', { name: 'Open and vote' }))
 
-    expect(await screen.findByText(/^Started by you/)).toBeOnTheScreen()
+    expect(await screen.findByText(/^Pick one/)).toBeOnTheScreen()
     expect(screen).toHavePathname('/squads/event/e1')
   })
 
