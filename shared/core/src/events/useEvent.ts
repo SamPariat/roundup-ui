@@ -14,7 +14,7 @@ import {
 } from '@roundup/api'
 
 import type { TErrorKey } from '../helpers/error-key'
-import type { IEventInfo, IEventNomination } from './types'
+import type { IEventInfo, IEventNomination, IOthersBallot } from './types'
 
 import { useAttempt } from '../auth/useAttempt'
 import { useMe } from '../auth/useMe'
@@ -53,7 +53,7 @@ const LIVE_MS = 45_000
 export interface IFreshVotes {
   /** Grows by one each time, so the same count coming twice is still a new arrival. */
   id: number
-  /** How many came in. */
+  /** How many new votes came in; 0 when the rest of the squad only changed theirs. */
   count: number
 }
 
@@ -107,8 +107,8 @@ export const useEvent = (eventId: string, live = false): IUseEvent => {
   const eventsHelper = helpers.events
 
   const [action, setAction] = useState<TAction | undefined>()
-  // The rest of the squad's votes at the last load, and what came in since.
-  const [othersSeen, setOthersSeen] = useState<number | undefined>()
+  // The rest of the squad's votes at the last load, and what changed since.
+  const [othersSeen, setOthersSeen] = useState<IOthersBallot | undefined>()
   const [freshVotes, setFreshVotes] = useState<IFreshVotes | undefined>()
 
   const signedIn = useSignedIn()
@@ -132,17 +132,20 @@ export const useEvent = (eventId: string, live = false): IUseEvent => {
   })
 
   const detail = data?.data
-  // Votes cast by everyone but the person: their own first vote, or a change of mind, is not news.
-  const ownVote = detail?.myVote === undefined || detail.myVote === null ? 0 : 1
-  const others = detail === undefined ? undefined : (detail.totalVotes ?? 0) - ownVote
+  // Everyone's votes but the person's own: their own vote, wherever it moves, is not news.
+  const others = detail === undefined ? undefined : eventsHelper.othersBallot(detail)
 
   // Kept as state from the previous load rather than an effect, as React advises for a value that
-  // follows another: the arrival is noticed during the render that brings it.
-  if (others !== undefined && others !== othersSeen) {
+  // follows another: a change is noticed during the render that brings it. New votes and changed
+  // votes both count.
+  if (others !== undefined && others.key !== othersSeen?.key) {
     setOthersSeen(others)
 
-    if (othersSeen !== undefined && others > othersSeen) {
-      setFreshVotes({ count: others - othersSeen, id: (freshVotes?.id ?? 0) + 1 })
+    if (othersSeen !== undefined) {
+      setFreshVotes({
+        count: Math.max(0, others.total - othersSeen.total),
+        id: (freshVotes?.id ?? 0) + 1,
+      })
     }
   }
 

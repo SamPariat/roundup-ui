@@ -7,6 +7,35 @@ import { EventFixtures, SESSION } from '../helpers/event-fixtures'
 import { Fakes } from '../helpers/fakes'
 import { VenueFixtures } from '../helpers/venue-fixtures'
 
+/**
+ * useEvent test helpers. Static methods only.
+ */
+class VoteFixtures {
+  /**
+   * Serves voting event e1 with these votes on its two places.
+   * @param p1 - Votes on Skyline Bar, none of them the person's.
+   * @param p2 - Votes on Brew Cafe.
+   * @param mine - Whether one of Brew Cafe's votes is the person's.
+   */
+  static serve(p1: number, p2: number, mine: boolean): void {
+    const [place] = EventFixtures.detail('e1').nominations ?? []
+
+    Fakes.stubNetwork({
+      ...SESSION,
+      'GET /api/v1/events/e1': Fakes.ok(
+        EventFixtures.detail('e1', {
+          myVote: mine ? 'p2' : null,
+          nominations: [
+            { ...place, voteCount: p1, votedByMe: false },
+            { ...place, name: 'Brew Cafe', placeID: 'p2', voteCount: p2, votedByMe: mine },
+          ],
+          status: EventStatus.VOTING,
+        }),
+      ),
+    })
+  }
+}
+
 describe('useEvent', () => {
   it('maps the detail: who started it, who is going, the places and the permissions', async () => {
     Fakes.stubNetwork({ ...SESSION, 'GET /api/v1/events/e1': Fakes.ok(EventFixtures.detail('e1')) })
@@ -56,55 +85,49 @@ describe('useEvent', () => {
     expect(loads()).toBe(before + 1)
   })
 
-  it("reports votes from the rest of the squad, but not the person's own", async () => {
-    const voting = { status: EventStatus.VOTING, totalVotes: 1 }
-
-    Fakes.stubNetwork({
-      ...SESSION,
-      'GET /api/v1/events/e1': Fakes.ok(EventFixtures.detail('e1', { ...voting, myVote: null })),
-    })
+  it("reports votes and changed votes from the rest of the squad, but not the person's own", async () => {
+    VoteFixtures.serve(1, 0, false)
 
     const core = await VenueFixtures.signedInCore()
     const { result } = await renderHook(() => useEvent('e1', true), { wrapper: core.wrapper })
+
+    /**
+     * Loads the event again and waits until the hook shows the new answer.
+     * @param check - What holds once the new answer is in.
+     */
+    const reload = async (check: () => void): Promise<void> => {
+      await act(async () => {
+        await result.current.refresh()
+      })
+
+      await waitFor(check)
+    }
 
     await waitFor(() => {
       expect(result.current.event).toBeDefined()
     })
 
-    expect(result.current.freshVotes).toBeUndefined()
+    // The person votes for Brew Cafe: one more vote, but it is theirs.
+    VoteFixtures.serve(1, 1, true)
 
-    // The person votes: one more vote, but it is theirs.
-    Fakes.stubNetwork({
-      ...SESSION,
-      'GET /api/v1/events/e1': Fakes.ok(
-        EventFixtures.detail('e1', { ...voting, myVote: 'p1', totalVotes: 2 }),
-      ),
-    })
-
-    await act(async () => {
-      await result.current.refresh()
-    })
-
-    await waitFor(() => {
-      expect(result.current.event?.myVote).toBe('p1')
+    await reload(() => {
+      expect(result.current.event?.myVote).toBe('p2')
     })
 
     expect(result.current.freshVotes).toBeUndefined()
 
-    // Two others vote.
-    Fakes.stubNetwork({
-      ...SESSION,
-      'GET /api/v1/events/e1': Fakes.ok(
-        EventFixtures.detail('e1', { ...voting, myVote: 'p1', totalVotes: 4 }),
-      ),
+    // Someone moves their vote from Skyline Bar to Brew Cafe: no new votes, but the votes changed.
+    VoteFixtures.serve(0, 2, true)
+
+    await reload(() => {
+      expect(result.current.freshVotes).toEqual({ count: 0, id: 1 })
     })
 
-    await act(async () => {
-      await result.current.refresh()
-    })
+    // Two more vote for Skyline Bar.
+    VoteFixtures.serve(2, 2, true)
 
-    await waitFor(() => {
-      expect(result.current.freshVotes).toEqual({ count: 2, id: 1 })
+    await reload(() => {
+      expect(result.current.freshVotes).toEqual({ count: 2, id: 2 })
     })
   })
 

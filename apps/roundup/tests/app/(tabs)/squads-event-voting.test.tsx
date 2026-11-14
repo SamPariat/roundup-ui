@@ -124,6 +124,23 @@ describe('event page while voting', () => {
     expect(await screen.findByText('2 new votes came in')).toBeOnTheScreen()
   })
 
+  it('says the votes changed when someone else moves their vote', async () => {
+    const [event] = backend.events ?? []
+
+    if (event === undefined) throw new Error('No event')
+
+    await openEvent()
+
+    // Meera moves her vote from Skyline Bar to Brew Cafe.
+    event.votes = { u1: 'p2', u2: 'p2', u3: 'p1' }
+
+    await act(async () => {
+      await VotingFixtures.pull()
+    })
+
+    expect(await screen.findByText('The votes changed')).toBeOnTheScreen()
+  })
+
   it('marks the place the person voted for as their vote and selected', async () => {
     await openEvent()
 

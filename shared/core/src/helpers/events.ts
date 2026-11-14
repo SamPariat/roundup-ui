@@ -24,6 +24,7 @@ import type {
   IEventMember,
   IEventNomination,
   IEventWinner,
+  IOthersBallot,
   IRsvpCounts,
 } from '../events/types'
 import type { TPriceLevel } from '../venues/types'
@@ -94,6 +95,28 @@ export class Events {
       ...(closedAt === undefined ? {} : { closedOn: this.dates.day(closedAt) }),
       ...(myRsvp === undefined ? {} : { myRsvp }),
       ...(winner === undefined ? {} : { winner }),
+    }
+  }
+
+  /**
+   * The rest of the squad's votes, place by place: each place's votes without the person's own.
+   * Comparing two of these tells whether anyone else voted or changed their vote; the person's own
+   * vote, wherever it moves, never changes it.
+   * @param detail - The event's detail.
+   * @returns Their total and where their votes stand.
+   */
+  othersBallot(detail: EventDetail): IOthersBallot {
+    const places = (detail.nominations ?? [])
+      .map((nomination) => ({
+        id: nomination.placeID ?? '',
+        votes: (nomination.voteCount ?? 0) - (nomination.votedByMe === true ? 1 : 0),
+      }))
+      .filter((place) => place.votes > 0)
+      .sort((a, b) => a.id.localeCompare(b.id))
+
+    return {
+      key: places.map((place) => `${place.id}:${String(place.votes)}`).join(','),
+      total: places.reduce((sum, place) => sum + place.votes, 0),
     }
   }
 

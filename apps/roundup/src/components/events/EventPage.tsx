@@ -377,14 +377,17 @@ export const EventPage = ({ eventId }: IEventPageProps): ReactElement => {
     focusedRef.current = true
   }, [refresh])
 
-  // Votes from the rest of the squad came in while the page was open: the ballot has already
-  // updated, and the notice says so.
+  // The rest of the squad voted, or changed their votes, while the page was open: the ballot has
+  // already updated, and the notice says so.
   const handleFreshVotes = useCallback((): void => {
     if (freshVotes === undefined) return
 
     notify({
       id: `votes-${String(freshVotes.id)}`,
-      message: t('screens.event.newVotes', { count: freshVotes.count }),
+      message:
+        freshVotes.count > 0
+          ? t('screens.event.newVotes', { count: freshVotes.count })
+          : t('screens.event.votesChanged'),
       tone: 'info',
     })
   }, [freshVotes, notify, t])

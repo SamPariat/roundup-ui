@@ -146,3 +146,11 @@ export interface IEventInfo {
   /** What the signed-in person may do. */
   permissions: IEventPermissions
 }
+
+/** The rest of the squad's votes on an event: everyone's but the person's own. */
+export interface IOthersBallot {
+  /** How many votes they cast. */
+  total: number
+  /** Where they stand, place by place, as one comparable string; places with no votes are left out. */
+  key: string
+}

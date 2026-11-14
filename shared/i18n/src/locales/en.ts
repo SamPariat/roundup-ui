@@ -434,6 +434,7 @@ export const en = {
       pullHint: 'Pull down to see the latest votes',
       newVotes_one: '{{count}} new vote came in',
       newVotes_other: '{{count}} new votes came in',
+      votesChanged: 'The votes changed',
       closesIn: 'Closes in {{left}}',
       votedLine: '{{when}} · {{voted}} of {{members}} voted',
       pickOne: 'Pick one. You can change it until voting closes.',
