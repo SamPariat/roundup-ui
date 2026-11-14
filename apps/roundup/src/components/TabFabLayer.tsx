@@ -25,14 +25,18 @@ const LAYER: ViewStyle = {
   top: 0,
 }
 
-/** The edge iOS's floating tab bar covers. */
-const BOTTOM: readonly Edge[] = ['bottom']
+/**
+ * The edges iOS's floating tab bar can cover: the bottom on a phone, and a side on the open iPhone
+ * Duo in landscape, where it stands upright along the edge. The layer is absolute, so it does not
+ * sit inside TabSides' padding and takes the side insets itself.
+ */
+const TAB_BAR_EDGES: readonly Edge[] = ['bottom', 'left', 'right']
 
 /**
  * Lays a FloatingActionButton over a TabPage or TabList body. The button lands in the corner of the
  * content column (the same max width and gutter as the content, so on a wide screen it sits beside
  * the cards rather than at the window's edge). On iOS the layer stops at the safe area, which
- * leaves out the floating tab bar. Taps outside the button reach the content beneath.
+ * leaves out the floating tab bar, below or beside the content. Taps outside the button reach the content beneath.
  * @returns The layer holding the button.
  */
 export const TabFabLayer = ({ children }: ITabFabLayerProps): ReactElement => {
@@ -47,7 +51,7 @@ export const TabFabLayer = ({ children }: ITabFabLayerProps): ReactElement => {
   )
 
   return systemChrome ? (
-    <SafeAreaView edges={BOTTOM} pointerEvents="box-none" style={LAYER}>
+    <SafeAreaView edges={TAB_BAR_EDGES} pointerEvents="box-none" style={LAYER}>
       {column}
     </SafeAreaView>
   ) : (

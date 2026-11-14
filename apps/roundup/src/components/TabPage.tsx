@@ -8,6 +8,7 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { cn } from '@roundup/ui'
 
 import { TabFabLayer } from '@/components/TabFabLayer'
+import { TabSides } from '@/components/TabSides'
 import { useLayout } from '@/hooks/useLayout'
 
 /** Props for TabPage. */
@@ -23,8 +24,11 @@ export interface ITabPageProps {
 /** Fills the screen; SafeAreaView takes a style, not a className. */
 const FILL: ViewStyle = { flex: 1 }
 
-/** The edges of the visible area on iOS: below the header and above the floating tab bar. */
-const VISIBLE: readonly Edge[] = ['top', 'bottom']
+/**
+ * The edges of the visible area on iOS: below the header, above the floating tab bar and clear of
+ * the column of system chrome the open iPhone Duo stands along one side.
+ */
+const VISIBLE: readonly Edge[] = ['top', 'bottom', 'left', 'right']
 
 /**
  * The body of every screen inside a tab: centered at most max-content wide, with the side gutter.
@@ -40,7 +44,7 @@ export const TabPage = ({ centered = false, children, fab }: ITabPageProps): Rea
 
   if (!centered) {
     return (
-      <View className="flex-1">
+      <TabSides>
         <ScrollView
           contentContainerClassName={cn('pt-6', fab === undefined ? 'pb-6' : 'pb-24', frame)}
           contentInsetAdjustmentBehavior="automatic"
@@ -50,7 +54,7 @@ export const TabPage = ({ centered = false, children, fab }: ITabPageProps): Rea
           {children}
         </ScrollView>
         {fab === undefined ? null : <TabFabLayer>{fab}</TabFabLayer>}
-      </View>
+      </TabSides>
     )
   }
 

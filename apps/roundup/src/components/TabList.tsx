@@ -8,6 +8,7 @@ import { FlatList, RefreshControl, View } from 'react-native'
 import { cn, KeyboardDismissArea, Skeleton, useBreakpoint } from '@roundup/ui'
 
 import { TabFabLayer } from '@/components/TabFabLayer'
+import { TabSides } from '@/components/TabSides'
 import { Layout, useLayout } from '@/hooks/useLayout'
 
 /** Props for TabList. */
@@ -178,7 +179,7 @@ export const TabList = <T,>({
   )
 
   return (
-    <View className="flex-1">
+    <TabSides>
       {top === undefined ? null : (
         <View className="bg-bg" style={topStyle}>
           <KeyboardDismissArea className={cn(FRAME, 'pt-4.5 pb-1.5', gutterClass)}>
@@ -226,6 +227,6 @@ export const TabList = <T,>({
           </View>
         </TabFabLayer>
       )}
-    </View>
+    </TabSides>
   )
 }
