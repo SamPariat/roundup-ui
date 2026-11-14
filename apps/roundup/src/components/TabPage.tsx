@@ -1,7 +1,7 @@
 import type { ReactElement, ReactNode } from 'react'
 import type { Edge } from 'react-native-safe-area-context'
 
-import { ScrollView, View } from 'react-native'
+import { RefreshControl, ScrollView, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
 import { cn } from '@roundup/ui'
@@ -18,6 +18,10 @@ export interface ITabPageProps {
   centered?: boolean
   /** The screen's FloatingActionButton, floated over the bottom-right of the content. */
   fab?: ReactElement | undefined
+  /** Loads the page again when the person pulls it down; without it the page does not pull. */
+  onRefresh?: (() => Promise<void>) | undefined
+  /** True while a pull to refresh is loading. */
+  refreshing?: boolean
 }
 
 /**
@@ -34,7 +38,13 @@ const VISIBLE: readonly Edge[] = ['top', 'bottom', 'left', 'right']
  * with room left below the content so the last row scrolls clear of it.
  * @returns The scrolling or centered page.
  */
-export const TabPage = ({ centered = false, children, fab }: ITabPageProps): ReactElement => {
+export const TabPage = ({
+  centered = false,
+  children,
+  fab,
+  onRefresh,
+  refreshing = false,
+}: ITabPageProps): ReactElement => {
   const { gutterClass, systemChrome } = useLayout()
   const frame = cn('mx-auto w-full max-w-content', gutterClass)
 
@@ -46,6 +56,11 @@ export const TabPage = ({ centered = false, children, fab }: ITabPageProps): Rea
           contentInsetAdjustmentBehavior="automatic"
           keyboardDismissMode="on-drag"
           keyboardShouldPersistTaps="handled"
+          refreshControl={
+            onRefresh === undefined ? undefined : (
+              <RefreshControl onRefresh={onRefresh} refreshing={refreshing} />
+            )
+          }
         >
           {children}
         </ScrollView>

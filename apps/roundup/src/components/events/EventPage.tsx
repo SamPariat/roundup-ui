@@ -3,8 +3,8 @@ import type { ReactElement } from 'react'
 import type { ViewStyle } from 'react-native'
 import type { Edge } from 'react-native-safe-area-context'
 
-import { Stack, useRouter } from 'expo-router'
-import { useCallback, useMemo, useState } from 'react'
+import { Stack, useFocusEffect, useRouter } from 'expo-router'
+import { useCallback, useMemo, useRef, useState } from 'react'
 import { Pressable, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
@@ -23,6 +23,7 @@ import { Ballots, VotingSummary } from '@/components/events/Voting'
 import { TabPage } from '@/components/TabPage'
 import { useErrorText } from '@/hooks/useErrorText'
 import { useLayout } from '@/hooks/useLayout'
+import { usePullRefresh } from '@/hooks/usePullRefresh'
 import { Paths } from '@/navigation/paths'
 
 /** Props for EventPage. */
@@ -328,6 +329,8 @@ export const EventPage = ({ eventId }: IEventPageProps): ReactElement => {
   const wide = nav === 'side'
 
   const [suggesting, setSuggesting] = useState<boolean>(false)
+  // The first focus is the page opening, which loads the event anyway.
+  const focusedRef = useRef<boolean>(false)
 
   const {
     answering,
@@ -335,6 +338,7 @@ export const EventPage = ({ eventId }: IEventPageProps): ReactElement => {
     event,
     loading,
     notFound,
+    refresh,
     remove,
     removingId,
     requestId,
@@ -347,6 +351,7 @@ export const EventPage = ({ eventId }: IEventPageProps): ReactElement => {
 
   const { squad } = useSquad(event?.squadId)
   const errorText = useErrorText(error, requestId)
+  const { handleReload, refreshing } = usePullRefresh(refresh)
   const startable = event?.status === EventStatus.DRAFT && event.permissions.canStartVoting
 
   const handleStart = useCallback(async (): Promise<void> => {
@@ -360,6 +365,13 @@ export const EventPage = ({ eventId }: IEventPageProps): ReactElement => {
   const handleCloseSuggest = useCallback((): void => {
     setSuggesting(false)
   }, [])
+
+  // Coming back to the page from another screen loads the event again: votes and answers change.
+  const handleFocus = useCallback((): void => {
+    if (focusedRef.current) void refresh()
+
+    focusedRef.current = true
+  }, [refresh])
 
   const handleGoToSquads = useCallback((): void => {
     router.dismissTo(Paths.tabsSquads())
@@ -383,6 +395,8 @@ export const EventPage = ({ eventId }: IEventPageProps): ReactElement => {
     (): NativeStackNavigationOptions => ({ headerRight: renderHeaderRight }),
     [renderHeaderRight],
   )
+
+  useFocusEffect(handleFocus)
 
   if (notFound || (event === undefined && error !== undefined)) {
     return (
@@ -459,7 +473,7 @@ export const EventPage = ({ eventId }: IEventPageProps): ReactElement => {
   return (
     <View className="flex-1">
       <Stack.Screen options={headerOptions} />
-      <TabPage>
+      <TabPage onRefresh={handleReload} refreshing={refreshing}>
         <View className="gap-4">
           {alert}
           {body}

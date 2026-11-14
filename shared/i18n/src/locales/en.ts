@@ -431,6 +431,7 @@ export const en = {
       startVoting: 'Start voting',
       startingVoting: 'Starting…',
       startNote: 'Suggestions close when voting starts',
+      pullHint: 'Pull down to see the latest votes',
       closesIn: 'Closes in {{left}}',
       votedLine: '{{when}} · {{voted}} of {{members}} voted',
       pickOne: 'Pick one. You can change it until voting closes.',

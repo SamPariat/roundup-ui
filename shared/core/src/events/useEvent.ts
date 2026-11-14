@@ -72,6 +72,8 @@ export interface IUseEvent {
   vote: (nomination: IEventNomination) => Promise<boolean>
   /** Opens voting, which closes the suggestions. Resolves true when it worked. */
   start: () => Promise<boolean>
+  /** Loads the event again, for pull to refresh and for coming back to the page. */
+  refresh: () => Promise<void>
   /** The message key to show, or undefined. */
   error: TErrorKey | undefined
   /** The request ID for the generic message. */
@@ -94,8 +96,10 @@ export const useEvent = (eventId: string): IUseEvent => {
   const { me } = useMe()
   const { busy, error: actionError, requestId: actionRequestId, run } = useAttempt()
 
-  const { data, error, isPending } = useGetEvent(eventId, undefined, {
-    query: { enabled: signedIn },
+  // Votes and answers change while the person is away, so coming back to the app or the browser
+  // tab always loads the event again, however fresh it was.
+  const { data, error, isPending, refetch } = useGetEvent(eventId, undefined, {
+    query: { enabled: signedIn, refetchOnWindowFocus: 'always' },
   })
 
   const detail = data?.data
@@ -160,12 +164,17 @@ export const useEvent = (eventId: string): IUseEvent => {
     [act, eventId],
   )
 
+  const refresh = useCallback(async (): Promise<void> => {
+    await refetch()
+  }, [refetch])
+
   return {
     answering: running?.kind === 'rsvp' ? running.status : undefined,
     error: actionError ?? message?.key,
     event,
     loading: signedIn && isPending,
     notFound: ApiError.is(error) && error.status === HttpStatus.notFound,
+    refresh,
     remove,
     removingId: running?.kind === 'remove' ? running.placeId : undefined,
     requestId: actionRequestId ?? message?.requestId,

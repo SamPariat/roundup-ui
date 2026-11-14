@@ -9,6 +9,9 @@ import { Breakpoint, useBreakpoint } from '@roundup/ui'
  */
 const SYSTEM_CHROME: boolean = Platform.OS === 'ios'
 
+/** Whether a scrolling page can be pulled down to load again: the phone apps, not the web. */
+const CAN_PULL: boolean = Platform.OS !== 'web'
+
 /** The widest the content gets, which max-w-content sets in CSS. */
 const CONTENT_MAX = 1200
 
@@ -30,6 +33,8 @@ export interface IShellLayout {
   systemChrome: boolean
   /** True where the page's own header bar (PageHeader) holds a screen's actions: desktop web and Android. */
   pageHeader: boolean
+  /** True where a scrolling page can be pulled down to load again: iOS and Android. */
+  canPull: boolean
 }
 
 /**
@@ -61,6 +66,7 @@ export class Layout {
     const phone = step === 'phone'
 
     return {
+      canPull: CAN_PULL,
       gutter: phone ? 16 : 32,
       gutterClass: phone ? 'px-4' : 'px-8',
       nav,

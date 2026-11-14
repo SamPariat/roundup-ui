@@ -1,4 +1,4 @@
-import { fireEvent, screen, waitFor } from 'expo-router/testing-library'
+import { act, fireEvent, screen, waitFor } from 'expo-router/testing-library'
 import { Platform } from 'react-native'
 
 import type { IBackend } from '../../helpers/fakes'
@@ -16,6 +16,12 @@ const openEvent = async (): Promise<void> => {
   await EventsFixtures.open(backend, '/squads/event/e1')
   await screen.findByText('Pick one. You can change it until voting closes.')
 }
+
+/**
+ * Counts how many times the event was loaded so far.
+ * @returns The number of requests for event e1.
+ */
+const loads = (): number => backend.paths.filter((path) => path === 'GET /api/v1/events/e1').length
 
 describe('event page while voting', () => {
   beforeEach(() => {
@@ -51,6 +57,37 @@ describe('event page while voting', () => {
     expect(
       screen.getByText('The most votes wins. A tie goes to the first place suggested.'),
     ).toBeOnTheScreen()
+  })
+
+  it('says to pull down for the latest votes, and loads the event again when pulled', async () => {
+    await openEvent()
+
+    expect(screen.getByText('Pull down to see the latest votes')).toBeOnTheScreen()
+
+    const before = loads()
+
+    // The page scrolls in a view whose refresh control a pull triggers.
+    let node = screen.getByText('Pick one. You can change it until voting closes.').parent
+
+    while (node !== null && node.props['refreshControl'] === undefined) node = node.parent
+
+    const control = node?.props['refreshControl'] as
+      | undefined
+      | {
+          /** The control's props, with what a pull calls. */
+          props: {
+            /** Loads the page again. */
+            onRefresh: () => Promise<void>
+          }
+        }
+
+    await act(async () => {
+      await control?.props.onRefresh()
+    })
+
+    await waitFor(() => {
+      expect(loads()).toBe(before + 1)
+    })
   })
 
   it('marks the place the person voted for as their vote and selected', async () => {

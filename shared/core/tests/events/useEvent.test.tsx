@@ -27,6 +27,35 @@ describe('useEvent', () => {
     })
   })
 
+  it('loads the event again on refresh', async () => {
+    const network = Fakes.stubNetwork({
+      ...SESSION,
+      'GET /api/v1/events/e1': Fakes.ok(EventFixtures.detail('e1')),
+    })
+
+    const core = await VenueFixtures.signedInCore()
+    const { result } = await renderHook(() => useEvent('e1'), { wrapper: core.wrapper })
+
+    await waitFor(() => {
+      expect(result.current.event).toBeDefined()
+    })
+
+    /**
+     * Counts the event's loads so far.
+     * @returns How many times the event was asked for.
+     */
+    const loads = (): number =>
+      network.requests.filter((request) => request.path === '/api/v1/events/e1').length
+
+    const before = loads()
+
+    await act(async () => {
+      await result.current.refresh()
+    })
+
+    expect(loads()).toBe(before + 1)
+  })
+
   it('says not found for an event that is not there', async () => {
     Fakes.stubNetwork({
       ...SESSION,

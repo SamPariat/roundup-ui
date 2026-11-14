@@ -12,6 +12,7 @@ import { Badge, Icon, Text } from '@roundup/ui'
 import { Ballot } from '@/components/events/ballot'
 import { EventText } from '@/components/events/event-text'
 import { VoteCard } from '@/components/events/VoteCard'
+import { useLayout } from '@/hooks/useLayout'
 import { useNow } from '@/hooks/useNow'
 
 /** Props for the voting sections. */
@@ -38,6 +39,7 @@ export interface IBallotsProps extends IVotingProps {
 export const VotingSummary = ({ event }: IVotingProps): ReactElement => {
   const { t } = useT()
   const { helpers } = useDeps()
+  const { canPull } = useLayout()
 
   const now = useNow()
 
@@ -62,6 +64,13 @@ export const VotingSummary = ({ event }: IVotingProps): ReactElement => {
           when: event.votingCloses,
         })}
       </Text>
+      {/* Votes come in from the rest of the squad, so the page says how to see the latest. On the
+          web there is nothing to pull; it loads again when the tab comes back into view. */}
+      {canPull ? (
+        <Text tone="subtle" variant="caption">
+          {t('screens.event.pullHint')}
+        </Text>
+      ) : null}
     </View>
   )
 }
