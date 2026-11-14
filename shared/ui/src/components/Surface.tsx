@@ -53,11 +53,12 @@ export const Surface = ({
   tone = 'raised',
   ...props
 }: TSurfaceProps): ReactElement => {
-  const { available, reduced } = useGlass()
   const { name } = useTheme()
-  const glass = available && !reduced
   const { className: solid, strength, tint } = TONES[tone]
   const tintColor = useRoleColor(tint)
+
+  const { available, reduced } = useGlass()
+  const glass = available && !reduced
 
   return (
     <View className={cn(glass ? 'overflow-hidden' : solid, className)} {...props}>

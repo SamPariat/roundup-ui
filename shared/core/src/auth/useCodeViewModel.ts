@@ -44,27 +44,15 @@ export interface ICodeViewModel {
 export const useCodeViewModel = (phone: string): ICodeViewModel => {
   const { helpers, now } = useDeps()
   const codeHelper = helpers.code
-  const { signIn } = useSession()
-  const { busy, clear, error, fail, requestId, run } = useAttempt()
+
   const [typed, setTyped] = useState<string>('')
   const [sentAt, setSentAt] = useState<number>(now)
   const [current, setCurrent] = useState<number>(now)
   const resendIn = Math.max(0, RESEND_SECONDS - Math.floor((current - sentAt) / SECOND))
-
   const expired = resendIn === 0
 
-  // Ticks once a second while the countdown runs, and stops at zero.
-  useEffect(() => {
-    const timer = expired
-      ? undefined
-      : setInterval(() => {
-          setCurrent(now())
-        }, SECOND)
-
-    return () => {
-      if (timer !== undefined) clearInterval(timer)
-    }
-  }, [expired, now])
+  const { signIn } = useSession()
+  const { busy, clear, error, fail, requestId, run } = useAttempt()
 
   const verify = useCallback(
     (digits: string): Promise<boolean | undefined> =>
@@ -113,6 +101,19 @@ export const useCodeViewModel = (phone: string): ICodeViewModel => {
       setCurrent(restarted)
     }
   }, [now, phone, run])
+
+  // Ticks once a second while the countdown runs, and stops at zero.
+  useEffect(() => {
+    const timer = expired
+      ? undefined
+      : setInterval(() => {
+          setCurrent(now())
+        }, SECOND)
+
+    return () => {
+      if (timer !== undefined) clearInterval(timer)
+    }
+  }, [expired, now])
 
   return { busy, code: typed, error, requestId, resend, resendIn, setCode, submit }
 }

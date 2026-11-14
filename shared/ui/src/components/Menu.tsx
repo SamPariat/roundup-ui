@@ -160,19 +160,30 @@ const MenuRow = ({ item, onPick }: IMenuRowProps): ReactElement => {
  * @returns The trigger (unless anchored), and the menu while open.
  */
 export const Menu = ({ anchor, chip, items, label, ref }: IMenuProps): ReactElement => {
+  const { width } = useWindowDimensions()
+  // The screen's header height, read from its context so a Menu outside a navigator (a test, the
+  // catalog) falls back to the top safe area instead of throwing as useHeaderHeight would.
+  const headerHeight = use(HeaderHeightContext)
+  const { top: safeTop } = useSafeAreaInsets()
+
   const triggerRef = useRef<ComponentRef<typeof View>>(null)
   // The action picked, run once the menu has gone; undefined when it closed without a pick.
   const pendingRef = useRef<(() => void) | undefined>(undefined)
   const [open, setOpen] = useState<boolean>(false)
   // Where the card goes, once the trigger has been measured.
   const [place, setPlace] = useState<IMenuPlace | undefined>()
-  const { width } = useWindowDimensions()
-  // The screen's header height, read from its context so a Menu outside a navigator (a test, the
-  // catalog) falls back to the top safe area instead of throwing as useHeaderHeight would.
-  const headerHeight = use(HeaderHeightContext)
-  const { top: safeTop } = useSafeAreaInsets()
+
   const motion = useMenuMotion(Platform.OS === 'web')
   const { open: playOpen } = motion
+  const { close: playClose } = motion
+
+  const cardPlace = useMemo(
+    (): ViewStyle =>
+      place === undefined
+        ? { ...CARD_SHAPE, opacity: 0, position: 'absolute' }
+        : { ...CARD_SHAPE, position: 'absolute', right: place.right, top: place.top },
+    [place],
+  )
 
   const handleOpen = useCallback((): void => {
     setOpen(true)
@@ -193,8 +204,6 @@ export const Menu = ({ anchor, chip, items, label, ref }: IMenuProps): ReactElem
     )
   }, [anchor, headerHeight, playOpen, safeTop, width])
 
-  useImperativeHandle(ref, (): IMenuHandle => ({ open: handleOpen }), [handleOpen])
-
   const runPending = useCallback((): void => {
     const action = pendingRef.current
 
@@ -211,8 +220,6 @@ export const Menu = ({ anchor, chip, items, label, ref }: IMenuProps): ReactElem
     if (!WAIT_FOR_DISMISS) runPending()
   }, [runPending])
 
-  const { close: playClose } = motion
-
   const handleClose = useCallback((): void => {
     pendingRef.current = undefined
     playClose(handleClosed)
@@ -226,19 +233,13 @@ export const Menu = ({ anchor, chip, items, label, ref }: IMenuProps): ReactElem
     [handleClosed, playClose],
   )
 
-  const cardPlace = useMemo(
-    (): ViewStyle =>
-      place === undefined
-        ? { ...CARD_SHAPE, opacity: 0, position: 'absolute' }
-        : { ...CARD_SHAPE, position: 'absolute', right: place.right, top: place.top },
-    [place],
-  )
+  const button =
+    anchor === undefined ? <MenuTrigger chip={chip} label={label} onOpen={handleOpen} /> : null
+
+  useImperativeHandle(ref, (): IMenuHandle => ({ open: handleOpen }), [handleOpen])
 
   const plain = items.filter((item) => item.destructive !== true)
   const danger = items.filter((item) => item.destructive === true)
-
-  const button =
-    anchor === undefined ? <MenuTrigger chip={chip} label={label} onOpen={handleOpen} /> : null
 
   return (
     <View collapsable={false} ref={triggerRef}>

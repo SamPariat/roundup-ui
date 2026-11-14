@@ -312,12 +312,11 @@ interface IHalfButtonProps {
  */
 const HalfButton = ({ active, onSelect, pm }: IHalfButtonProps): ReactElement => {
   const { t } = useT()
+  const label = pm ? t('dateTimePicker.pm') : t('dateTimePicker.am')
 
   const handlePress = useCallback((): void => {
     onSelect(pm)
   }, [onSelect, pm])
-
-  const label = pm ? t('dateTimePicker.pm') : t('dateTimePicker.am')
 
   return (
     <Pressable
@@ -353,8 +352,10 @@ export const DateTimePicker = ({
   value,
 }: IDateTimePickerProps): ReactElement => {
   const { t } = useT()
+
   // The first day of the month on show, which the arrows move.
   const [month, setMonth] = useState<Date>(format.startOfMonth(value))
+
   const today = useMemo((): Date => format.today(), [format])
   const weekdays = useMemo((): string[] => format.weekdayLabels(), [format])
   const monthLabel = useMemo((): string => format.monthLabel(month), [format, month])

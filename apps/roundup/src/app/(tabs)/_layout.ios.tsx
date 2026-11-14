@@ -14,12 +14,13 @@ import { useTabItems } from '@/hooks/useTabItems'
  * @returns The system tab bar with one trigger per destination.
  */
 export default function TabsLayout(): ReactElement {
-  const items = useTabItems()
   // The system tab bar and the screens behind it take no className, so the theme's role colors
   // are read here: the selected tab in the accent and each screen on the page background. Each
   // tab's stack draws the header, and TabPage insets the body below it and adds the gutter.
   const accent = useRoleColor('accent')
   const background = useRoleColor('bg')
+
+  const items = useTabItems()
 
   const contentStyle = useMemo((): ViewStyle => ({ backgroundColor: background }), [background])
 

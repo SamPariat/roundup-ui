@@ -29,6 +29,7 @@ export interface IAttempt {
  */
 export const useAttempt = (): IAttempt => {
   const { helpers } = useDeps()
+
   const [busy, setBusy] = useState<boolean>(false)
   const [error, setError] = useState<TErrorKey | undefined>()
   const [requestId, setRequestId] = useState<string | undefined>()

@@ -71,13 +71,29 @@ export const MemberActionsModal = ({
 }: IMemberActionsModalProps): ReactElement => {
   const { t } = useT()
 
+  // Modals have no close button, so a ghost Cancel dismisses this one.
+  const actions = [
+    <Button key="cancel" onPress={onClose} variant="ghost">
+      {t('common.cancel')}
+    </Button>,
+  ]
+
+  const [chosen, setChosen] = useState<TMemberAction | undefined>()
+
   const { busyUserId, error, makeAdmin, remove, removeAdmin, requestId } =
     useSquadMembersViewModel(squadId)
 
   const errorText = useErrorText(error, requestId)
-  const [chosen, setChosen] = useState<TMemberAction | undefined>()
   const available = MemberActions.available(member, permissions)
   const busy = busyUserId === member.id
+
+  /**
+   * What the row the person pressed says while its request runs.
+   * @param action - The row's action.
+   * @returns The text, or an empty object on every other row.
+   */
+  const working = (action: TMemberAction): Pick<IListRowProps, 'working'> =>
+    busy && chosen === action ? { working: t('screens.squad.member.saving') } : {}
 
   const perform = useCallback(
     async (action: TMemberAction, request: () => Promise<boolean>): Promise<void> => {
@@ -102,21 +118,6 @@ export const MemberActionsModal = ({
     (): Promise<void> => perform(MemberAction.REMOVE, () => remove(member.id)),
     [member.id, perform, remove],
   )
-
-  /**
-   * What the row the person pressed says while its request runs.
-   * @param action - The row's action.
-   * @returns The text, or an empty object on every other row.
-   */
-  const working = (action: TMemberAction): Pick<IListRowProps, 'working'> =>
-    busy && chosen === action ? { working: t('screens.squad.member.saving') } : {}
-
-  // Modals have no close button, so a ghost Cancel dismisses this one.
-  const actions = [
-    <Button key="cancel" onPress={onClose} variant="ghost">
-      {t('common.cancel')}
-    </Button>,
-  ]
 
   return (
     <Modal

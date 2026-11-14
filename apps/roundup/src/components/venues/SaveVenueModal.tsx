@@ -25,15 +25,16 @@ export interface ISaveVenueModalProps {
  */
 export const SaveVenueModal = ({ name, onClose, placeId }: ISaveVenueModalProps): ReactElement => {
   const { t } = useT()
-  const { busySquadId, error, loading, requestId, squads, toggle } = useSaveVenueViewModel(placeId)
-  const errorText = useErrorText(error, requestId)
-  const busy = busySquadId !== undefined
 
   const actions = [
     <Button key="done" onPress={onClose}>
       {t('saveVenue.done')}
     </Button>,
   ]
+
+  const { busySquadId, error, loading, requestId, squads, toggle } = useSaveVenueViewModel(placeId)
+  const errorText = useErrorText(error, requestId)
+  const busy = busySquadId !== undefined
 
   return (
     <Modal

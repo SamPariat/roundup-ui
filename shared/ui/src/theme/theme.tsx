@@ -73,8 +73,31 @@ interface IThemeProviderProps {
  */
 export const ThemeProvider = ({ children }: IThemeProviderProps): ReactElement => {
   const device = useColorScheme()
+
   const [preference, setPreference] = useState<TThemePreference>('system')
   const [loaded, setLoaded] = useState<boolean>(false)
+
+  // The static HTML is rendered as Mocha; the device's real scheme is applied one pass later.
+  const hydrated = useHydrated()
+  const name = Theme.nameFor(preference, hydrated ? device : null)
+
+  const choosePreference = useCallback((next: TThemePreference): void => {
+    setPreference(next)
+
+    AsyncStorage.setItem(THEME_STORAGE_KEY, next).catch(() => {
+      // The choice still applies for this session.
+    })
+  }, [])
+
+  const value = useMemo(
+    (): ITheme => ({
+      name,
+      preference,
+      loaded,
+      setPreference: choosePreference,
+    }),
+    [name, preference, loaded, choosePreference],
+  )
 
   useEffect(() => {
     let active = true
@@ -114,28 +137,6 @@ export const ThemeProvider = ({ children }: IThemeProviderProps): ReactElement =
       }
     } else Appearance.setColorScheme(override)
   }, [preference])
-
-  const choosePreference = useCallback((next: TThemePreference): void => {
-    setPreference(next)
-
-    AsyncStorage.setItem(THEME_STORAGE_KEY, next).catch(() => {
-      // The choice still applies for this session.
-    })
-  }, [])
-
-  // The static HTML is rendered as Mocha; the device's real scheme is applied one pass later.
-  const hydrated = useHydrated()
-  const name = Theme.nameFor(preference, hydrated ? device : null)
-
-  const value = useMemo(
-    (): ITheme => ({
-      name,
-      preference,
-      loaded,
-      setPreference: choosePreference,
-    }),
-    [name, preference, loaded, choosePreference],
-  )
 
   return <ThemeContext value={value}>{children}</ThemeContext>
 }

@@ -47,6 +47,7 @@ export const useExploreParams = (): IExploreParams => {
   const router = useRouter()
   const navigation = useNavigation<NativeStackNavigationProp<TExploreRoutes>>()
   const { q, radius, type } = params
+
   // Words typed that the URL does not hold yet, or holds only trimmed.
   const [draft, setDraft] = useState<IDraft | undefined>()
   const timerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
@@ -57,6 +58,16 @@ export const useExploreParams = (): IExploreParams => {
     (): IExploreState => ExploreParams.parse({ q, radius, type }),
     [q, radius, type],
   )
+
+  const { filter } = state
+
+  // The field keeps the words as typed until the URL changes to something else, so a space typed
+  // at either end is not trimmed away while the person is still typing.
+  const keeping =
+    draft !== undefined &&
+    (!draft.written || ExploreParams.queryOf(draft.text) === ExploreParams.queryOf(state.query))
+
+  const text = keeping ? draft.text : state.query
 
   // Writes through this screen's own navigation, not the router's, which writes to whichever screen
   // is in front: that is how the words of a blurred screen can still reach their own URL.
@@ -82,8 +93,6 @@ export const useExploreParams = (): IExploreParams => {
     [write],
   )
 
-  useFocusEffect(flush)
-
   const setText = useCallback(
     (text: string): void => {
       clearTimeout(timerRef.current)
@@ -93,8 +102,6 @@ export const useExploreParams = (): IExploreParams => {
     },
     [write],
   )
-
-  const { filter } = state
 
   const toggleFilter = useCallback(
     (next: TVenueType): void => {
@@ -110,13 +117,7 @@ export const useExploreParams = (): IExploreParams => {
     [router],
   )
 
-  // The field keeps the words as typed until the URL changes to something else, so a space typed
-  // at either end is not trimmed away while the person is still typing.
-  const keeping =
-    draft !== undefined &&
-    (!draft.written || ExploreParams.queryOf(draft.text) === ExploreParams.queryOf(state.query))
-
-  const text = keeping ? draft.text : state.query
+  useFocusEffect(flush)
 
   return { ...state, setRadiusKm, setText, text, toggleFilter }
 }

@@ -33,6 +33,7 @@ export const useVenue = (placeId: string): IUseVenue => {
   const { helpers, now } = useDeps()
   const venuesHelper = helpers.venues
   const { width: windowWidth } = useWindowDimensions()
+
   const signedIn = useSignedIn()
 
   const { data, error, isPending } = useGetVenue(
@@ -42,13 +43,12 @@ export const useVenue = (placeId: string): IUseVenue => {
   )
 
   const detail = data?.data
+  const message = error === null ? undefined : helpers.errors.toMessage(error, 'venue')
 
   const venue = useMemo(
     (): IVenueInfo | undefined => detail && venuesHelper.toInfo(detail, now()),
     [detail, now, venuesHelper],
   )
-
-  const message = error === null ? undefined : helpers.errors.toMessage(error, 'venue')
 
   return {
     error: message?.key,

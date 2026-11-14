@@ -51,54 +51,21 @@ export default function SquadScreen(): ReactElement {
   const { squadId, tab: tabParam } = useLocalSearchParams<'/squads/[squadId]'>()
   const { t } = useT()
   const router = useRouter()
-  const [sheet, setSheet] = useState<TSheet | undefined>()
-  const menuRef = useRef<IMenuHandle>(null)
   const { nav, pageHeader, systemChrome } = useLayout()
   const tab = SquadTab.parse(tabParam)
   const wide = nav === 'side'
 
-  const { error, loading, members, notFound, permissions, requestId, squad } = useSquad(squadId)
+  // Web and Android draw headerRight, the Menu with its own ⋯, in their own bar. iOS draws a native
+  // ⋯ in the same glass as the back button, which opens the same Menu, anchored under it.
+  const newEventInHeader = pageHeader && tab === 'events'
 
+  const [sheet, setSheet] = useState<TSheet | undefined>()
+  const menuRef = useRef<IMenuHandle>(null)
+
+  const { error, loading, members, notFound, permissions, requestId, squad } = useSquad(squadId)
   const errorText = useErrorText(error, requestId)
   const favorites = useSquadFavorites(squadId)
   const events = useSquadEvents(squadId)
-
-  const handleGoToSquads = useCallback((): void => {
-    router.dismissTo(Paths.tabsSquads())
-  }, [router])
-
-  const handleOpenRename = useCallback((): void => {
-    setSheet({ kind: 'rename' })
-  }, [])
-
-  const handleOpenNewEvent = useCallback((): void => {
-    setSheet({ kind: 'event' })
-  }, [])
-
-  const handleOpenLeave = useCallback((): void => {
-    setSheet({ kind: 'leave' })
-  }, [])
-
-  // Rename squad for people the server lets edit it, then Leave squad, which the Menu puts last.
-  const options = useMemo((): IMenuItem[] => {
-    const leave: IMenuItem = {
-      destructive: true,
-      icon: 'logout',
-      label: t('screens.squad.leaveRow'),
-      onPress: handleOpenLeave,
-    }
-
-    if (permissions?.canEditSquad !== true) return [leave]
-
-    return [{ icon: 'edit', label: t('screens.squad.renameRow'), onPress: handleOpenRename }, leave]
-  }, [handleOpenLeave, handleOpenRename, permissions, t])
-
-  const handleSelectTab = useCallback(
-    (id: string): void => {
-      router.setParams({ tab: SquadTab.serialize(SquadTab.parse(id)) })
-    },
-    [router],
-  )
 
   const tabs = useMemo(
     (): ITabItem[] => [
@@ -121,31 +88,36 @@ export default function SquadScreen(): ReactElement {
     [events.openCount, favorites.complete, favorites.favorites.length, squad, t],
   )
 
+  const handleGoToSquads = useCallback((): void => {
+    router.dismissTo(Paths.tabsSquads())
+  }, [router])
+
+  const handleOpenRename = useCallback((): void => {
+    setSheet({ kind: 'rename' })
+  }, [])
+
+  const handleOpenNewEvent = useCallback((): void => {
+    setSheet({ kind: 'event' })
+  }, [])
+
+  const handleOpenLeave = useCallback((): void => {
+    setSheet({ kind: 'leave' })
+  }, [])
+
+  const handleSelectTab = useCallback(
+    (id: string): void => {
+      router.setParams({ tab: SquadTab.serialize(SquadTab.parse(id)) })
+    },
+    [router],
+  )
+
   const handleOpenAdd = useCallback((): void => {
     setSheet({ kind: 'add' })
   }, [])
 
-  const openMember = useCallback((member: ISquadMember): void => {
+  const handleOpenMember = useCallback((member: ISquadMember): void => {
     setSheet({ kind: 'member', memberId: member.id })
   }, [])
-
-  // Web and Android draw headerRight, the Menu with its own ⋯, in their own bar. iOS draws a native
-  // ⋯ in the same glass as the back button, which opens the same Menu, anchored under it.
-  const newEventInHeader = pageHeader && tab === 'events'
-
-  const renderHeaderRight = useCallback(
-    (): ReactElement => (
-      <>
-        {newEventInHeader ? (
-          <Button icon="plus" onPress={handleOpenNewEvent}>
-            {t('screens.events.newEvent')}
-          </Button>
-        ) : null}
-        <Menu items={options} label={t('screens.squad.options')} />
-      </>
-    ),
-    [handleOpenNewEvent, newEventInHeader, options, t],
-  )
 
   const handleOpenOptions = useCallback((): void => {
     menuRef.current?.open()
@@ -161,6 +133,34 @@ export default function SquadScreen(): ReactElement {
       },
     ],
     [handleOpenOptions, t],
+  )
+
+  // Rename squad for people the server lets edit it, then Leave squad, which the Menu puts last.
+  const options = useMemo((): IMenuItem[] => {
+    const leave: IMenuItem = {
+      destructive: true,
+      icon: 'logout',
+      label: t('screens.squad.leaveRow'),
+      onPress: handleOpenLeave,
+    }
+
+    if (permissions?.canEditSquad !== true) return [leave]
+
+    return [{ icon: 'edit', label: t('screens.squad.renameRow'), onPress: handleOpenRename }, leave]
+  }, [handleOpenLeave, handleOpenRename, permissions, t])
+
+  const renderHeaderRight = useCallback(
+    (): ReactElement => (
+      <>
+        {newEventInHeader ? (
+          <Button icon="plus" onPress={handleOpenNewEvent}>
+            {t('screens.events.newEvent')}
+          </Button>
+        ) : null}
+        <Menu items={options} label={t('screens.squad.options')} />
+      </>
+    ),
+    [handleOpenNewEvent, newEventInHeader, options, t],
   )
 
   const headerOptions = useMemo(
@@ -228,7 +228,7 @@ export default function SquadScreen(): ReactElement {
             key={member.id}
             member={member}
             onSelect={
-              MemberActions.available(member, permissions).length > 0 ? openMember : undefined
+              MemberActions.available(member, permissions).length > 0 ? handleOpenMember : undefined
             }
           />
         ))}

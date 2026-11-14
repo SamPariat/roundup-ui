@@ -40,6 +40,7 @@ export class Breakpoint {
  */
 export const useBreakpoint = (): IBreakpointState => {
   const { width: live } = useWindowDimensions()
+
   const hydrated = useHydrated()
   const width = hydrated ? live : 0
 

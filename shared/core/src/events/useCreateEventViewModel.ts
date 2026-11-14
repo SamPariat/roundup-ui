@@ -61,12 +61,15 @@ export const useCreateEventViewModel = (squadId: string): ICreateEventViewModel 
   const { helpers, now } = useDeps()
   const datesHelper = helpers.dates
   const eventsHelper = helpers.events
-  const { busy, clear, error, requestId, run } = useAttempt()
+
   const [name, setName] = useState<string>('')
   const [type, setType] = useState<EventType>(EventType.DRINKS)
   const [startsAt, setStartsAt] = useState<Date>(() => eventsHelper.defaultStart(now()))
   const [votingCloses, setVotingCloses] = useState<Date | undefined>()
   const [invalid, setInvalid] = useState<Partial<Record<TCreateEventField, TErrorKey>>>({})
+
+  const { busy, clear, error, requestId, run } = useAttempt()
+
   // Read once when the form opens, so the pickers get the same moment on every render; submit
   // still checks the start against the clock at that time.
   const earliest = useMemo((): Date => new Date(now()), [now])

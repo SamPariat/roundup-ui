@@ -32,14 +32,12 @@ export const SaveSquadRow = ({
   squad,
 }: ISaveSquadRowProps): ReactElement => {
   const { t } = useT()
+  const tick = squad.saved ? <Icon label={t('saveVenue.saved')} name="check" tone="accent" /> : null
+  const hint = squad.saved ? t('saveVenue.saved') : t('saveVenue.tapToSave')
 
   const handlePress = useCallback(async (): Promise<void> => {
     await onToggle(squad)
   }, [onToggle, squad])
-
-  const tick = squad.saved ? <Icon label={t('saveVenue.saved')} name="check" tone="accent" /> : null
-
-  const hint = squad.saved ? t('saveVenue.saved') : t('saveVenue.tapToSave')
 
   return (
     <ListRow

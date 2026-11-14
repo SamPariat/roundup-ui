@@ -40,10 +40,12 @@ const NO_MEMBERS: ISquadMember[] = []
 export const useSquad = (squadId?: string): IUseSquad => {
   const { helpers } = useDeps()
   const squadsHelper = helpers.squads
+
   const signedIn = useSignedIn()
   const wanted = signedIn && squadId !== undefined
   const { data, error, isPending } = useGetSquad(squadId ?? '', { query: { enabled: wanted } })
   const detail = data?.data
+  const message = error === null ? undefined : helpers.errors.toMessage(error, 'squad')
 
   const members = useMemo(
     (): ISquadMember[] | undefined =>
@@ -60,8 +62,6 @@ export const useSquad = (squadId?: string): IUseSquad => {
     (): ISquadPermissions | undefined => detail && squadsHelper.toPermissions(detail),
     [detail, squadsHelper],
   )
-
-  const message = error === null ? undefined : helpers.errors.toMessage(error, 'squad')
 
   return {
     error: message?.key,

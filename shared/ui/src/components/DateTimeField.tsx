@@ -60,23 +60,10 @@ export const DateTimeField = ({
   value,
 }: IDateTimeFieldProps): ReactElement => {
   const { t } = useT()
+
   const [open, setOpen] = useState<boolean>(false)
   // What the picker shows while it is open, kept apart from the value until Done.
   const [draft, setDraft] = useState<Date>(value ?? format.today())
-
-  const handleOpen = useCallback((): void => {
-    setDraft(value ?? format.today())
-    setOpen(true)
-  }, [format, value])
-
-  const handleClose = useCallback((): void => {
-    setOpen(false)
-  }, [])
-
-  const handleDone = useCallback((): void => {
-    onChange(draft)
-    setOpen(false)
-  }, [draft, onChange])
 
   // The field's text, written once a render instead of for both the label and the value.
   const shown = useMemo(
@@ -98,6 +85,20 @@ export const DateTimeField = ({
     (): Pick<IDateTimePickerProps, 'min'> => (min === undefined ? {} : { min }),
     [min],
   )
+
+  const handleOpen = useCallback((): void => {
+    setDraft(value ?? format.today())
+    setOpen(true)
+  }, [format, value])
+
+  const handleClose = useCallback((): void => {
+    setOpen(false)
+  }, [])
+
+  const handleDone = useCallback((): void => {
+    onChange(draft)
+    setOpen(false)
+  }, [draft, onChange])
 
   const actions = useMemo(
     (): ReactElement[] => [

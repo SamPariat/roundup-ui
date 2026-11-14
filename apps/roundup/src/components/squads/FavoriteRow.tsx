@@ -54,10 +54,6 @@ export const FavoriteRowItem = ({
   const { t } = useT()
   const router = useRouter()
 
-  const handleOpen = useCallback((): void => {
-    router.push(Paths.squadVenue(favorite.id, favorite.name))
-  }, [favorite.id, favorite.name, router])
-
   const items = useMemo(
     (): IMenuItem[] => [
       {
@@ -72,6 +68,10 @@ export const FavoriteRowItem = ({
     ],
     [favorite, onRemove, t],
   )
+
+  const handleOpen = useCallback((): void => {
+    router.push(Paths.squadVenue(favorite.id, favorite.name))
+  }, [favorite.id, favorite.name, router])
 
   let action: null | ReactElement = null
 

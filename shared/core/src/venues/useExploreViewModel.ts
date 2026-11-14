@@ -80,6 +80,7 @@ export const useExploreViewModel = ({
   const { helpers } = useDeps()
   const venuesHelper = helpers.venues
   const { width: windowWidth } = useWindowDimensions()
+
   const signedIn = useSignedIn()
   const { coordinates, phase, retry } = useLocation()
   const words = query.trim()

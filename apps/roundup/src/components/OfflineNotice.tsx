@@ -10,6 +10,7 @@ import { Notifier } from '@roundup/ui'
  */
 export const OfflineNotice = (): ReactElement => {
   const { t } = useT()
+
   const notice = useOfflineNotice()
 
   return (

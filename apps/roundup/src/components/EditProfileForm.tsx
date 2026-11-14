@@ -25,6 +25,7 @@ export interface IEditProfileFormProps {
  */
 export const EditProfileForm = ({ id, name }: IEditProfileFormProps): ReactElement => {
   const { t } = useT()
+
   const handleGoBack = useBack()
   const { busy, error, name: typed, requestId, setName, submit } = useNameViewModel(name)
   const errorText = useErrorText(error, requestId)

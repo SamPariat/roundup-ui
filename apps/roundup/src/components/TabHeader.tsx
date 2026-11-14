@@ -24,6 +24,7 @@ const TAB_ROOT = 'index'
 export const TabHeader = ({ options, route }: NativeStackHeaderProps): ReactElement => {
   const { t } = useT()
   const { gutterClass, nav } = useLayout()
+
   const tab = useTabItem(useCurrentTab())
   const goBack = useBack(tab.href)
   const pushed = route.name !== TAB_ROOT

@@ -17,6 +17,7 @@ import { Paths } from '@/navigation/paths'
  */
 export default function WelcomeScreen(): ReactElement {
   const router = useRouter()
+
   const gate = useRouteGate()
 
   const handleStart = useCallback((): void => {

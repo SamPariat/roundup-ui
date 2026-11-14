@@ -14,6 +14,7 @@ import { Specimen } from '@/components/Specimen'
  */
 export const ThemeSwitchDemo = (): ReactElement => {
   const { name, preference, setPreference } = useTheme()
+
   const [local, setLocal] = useState<TThemeChoice>('system')
 
   return (

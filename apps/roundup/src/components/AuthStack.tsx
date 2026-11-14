@@ -15,8 +15,9 @@ import { useRouteGate } from '@/hooks/useRouteGate'
  * @returns The guarded stack, or null while the session loads.
  */
 export const AuthStack = (): null | ReactElement => {
-  const gate = useRouteGate()
   const background = useRoleColor('bg')
+
+  const gate = useRouteGate()
 
   if (gate === 'loading') return null
 

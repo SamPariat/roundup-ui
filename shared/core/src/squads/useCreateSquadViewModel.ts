@@ -31,6 +31,7 @@ export interface ICreateSquadViewModel {
 export const useCreateSquadViewModel = (): ICreateSquadViewModel => {
   const { helpers } = useDeps()
   const squadsHelper = helpers.squads
+
   const { attempt, name, setName, validName } = useSquadName('')
   const { busy, error, requestId, run } = attempt
 

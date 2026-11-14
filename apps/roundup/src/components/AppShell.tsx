@@ -29,9 +29,10 @@ export interface IAppShellProps {
  */
 export const AppShell = ({ children, current }: IAppShellProps): ReactElement => {
   const { nav } = useLayout()
+  const { helpers } = useDeps()
+
   const items = useTabItems()
   const { me } = useMe()
-  const { helpers } = useDeps()
 
   const user = useMemo((): INavUser | undefined => {
     if (me === undefined) return undefined

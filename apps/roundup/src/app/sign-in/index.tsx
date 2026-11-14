@@ -18,6 +18,7 @@ import { Paths } from '@/navigation/paths'
 export default function PhoneScreen(): ReactElement {
   const { t } = useT()
   const router = useRouter()
+
   const { busy, error, phone, requestId, setPhone, submit } = usePhoneViewModel()
   const errorText = useErrorText(error, requestId)
 

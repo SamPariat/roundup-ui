@@ -30,6 +30,7 @@ export interface IBottomNavProps {
  */
 export const BottomNav = ({ items, onChange, value = 'squads' }: IBottomNavProps): ReactElement => {
   const { t } = useT()
+
   const defaults = useDefaultNavItems()
   const shown = items ?? defaults
 

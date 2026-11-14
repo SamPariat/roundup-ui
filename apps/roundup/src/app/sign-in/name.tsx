@@ -16,6 +16,7 @@ import { useErrorText } from '@/hooks/useErrorText'
  */
 export default function NameScreen(): ReactElement {
   const { t } = useT()
+
   const { busy, error, name, requestId, setName, submit } = useNameViewModel()
   const errorText = useErrorText(error, requestId)
 

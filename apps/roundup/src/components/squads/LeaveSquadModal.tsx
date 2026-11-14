@@ -36,6 +36,7 @@ export const LeaveSquadModal = ({
   squadId,
 }: ILeaveSquadModalProps): ReactElement => {
   const { t } = useT()
+
   const { busyUserId, error, leave, requestId } = useSquadMembersViewModel(squadId)
   const errorText = useErrorText(error, requestId)
   const busy = busyUserId !== undefined

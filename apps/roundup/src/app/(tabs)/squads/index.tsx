@@ -21,8 +21,10 @@ import { usePullRefresh } from '@/hooks/usePullRefresh'
  */
 export default function SquadsScreen(): ReactElement {
   const { t } = useT()
-  const { hasMore, loading, loadingMore, loadMore, refresh, squads } = useSquads()
+
   const [creating, setCreating] = useState<boolean>(false)
+
+  const { hasMore, loading, loadingMore, loadMore, refresh, squads } = useSquads()
   const { handleReload, refreshing } = usePullRefresh(refresh)
 
   const handleOpenCreate = useCallback((): void => {

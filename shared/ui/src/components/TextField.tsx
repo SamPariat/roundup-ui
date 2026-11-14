@@ -53,8 +53,9 @@ export const TextField = ({
   type = 'text',
   value,
 }: ITextFieldProps): ReactElement => {
-  const { focused, onBlur, onFocus } = useFocus()
   const placeholderColor = useRoleColor('fg-subtle')
+
+  const { focused, onBlur, onFocus } = useFocus()
 
   return (
     <FieldFrame

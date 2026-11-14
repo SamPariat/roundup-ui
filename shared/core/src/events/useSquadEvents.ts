@@ -72,14 +72,18 @@ export interface IUseSquadEvents {
 export const useSquadEvents = (squadId: string): IUseSquadEvents => {
   const { helpers } = useDeps()
   const eventsHelper = helpers.events
+
+  const [answering, setAnswering] = useState<IAnswering | undefined>()
+
   const signedIn = useSignedIn()
   const { busy, error: answerError, requestId: answerRequestId, run } = useAttempt()
-  const [answering, setAnswering] = useState<IAnswering | undefined>()
 
   const { error, hasMore, loading, loadingMore, loadMore, pages, refresh } = usePages({
     fetchPage: signedIn ? pageFetcher(squadId) : undefined,
     queryKey: getListSquadEventsQueryKey(squadId),
   })
+
+  const message = error === null ? undefined : helpers.errors.toMessage(error, 'event')
 
   const events = useMemo(
     (): IEventCard[] =>
@@ -118,8 +122,6 @@ export const useSquadEvents = (squadId: string): IUseSquadEvents => {
     },
     [busy, eventsHelper, run, squadId],
   )
-
-  const message = error === null ? undefined : helpers.errors.toMessage(error, 'event')
 
   return {
     answering: busy ? answering : undefined,

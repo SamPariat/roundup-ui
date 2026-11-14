@@ -36,6 +36,7 @@ const NOTICES = {
 export const useOfflineNotice = (): INetworkNotice | undefined => {
   const { helpers, network } = useDeps()
   const noticeHelper = helpers.notice
+
   const [phase, setPhase] = useState<TPhase>('online')
 
   useEffect(() => {
