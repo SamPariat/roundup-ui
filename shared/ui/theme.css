@@ -381,3 +381,30 @@
   letter-spacing: 0px;
   font-variant: tabular-nums;
 }
+
+/* A day of the date picker's month, as the design system's .ru-dtp-day draws it. */
+@utility type-day {
+  font-family: Onest-Regular;
+  font-size: 15px;
+  line-height: 20px;
+  letter-spacing: 0px;
+  font-variant: tabular-nums;
+}
+
+/* Today or the chosen day in the date picker's month. */
+@utility type-day-strong {
+  font-family: Onest-SemiBold;
+  font-size: 15px;
+  line-height: 20px;
+  letter-spacing: 0px;
+  font-variant: tabular-nums;
+}
+
+/* The hour or minutes between a time stepper's arrows, as .ru-dtp-step-value draws them. */
+@utility type-stepper {
+  font-family: Onest-SemiBold;
+  font-size: 18px;
+  line-height: 24px;
+  letter-spacing: 0px;
+  font-variant: tabular-nums;
+}

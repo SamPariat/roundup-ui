@@ -82,19 +82,32 @@ class ModalFixtures {
    * @returns The backdrop's host element.
    */
   static backdrop() {
+    const [backdrop] = ModalFixtures.backdrops()
+
+    if (backdrop === undefined) throw new Error('The modal has no backdrop')
+
+    return backdrop
+  }
+
+  /**
+   * Every backdrop on screen, outermost first: one per open modal.
+   * @returns The backdrops' host elements.
+   */
+  static backdrops() {
     let root = screen.getByLabelText('Add member')
 
     while (root.parent !== null) root = root.parent
 
+    const found: (typeof root)[] = []
     const pending = [root]
 
-    for (let node = pending.pop(); node !== undefined; node = pending.pop()) {
-      if (node.props['importantForAccessibility'] === 'no-hide-descendants') return node
+    for (let node = pending.shift(); node !== undefined; node = pending.shift()) {
+      if (node.props['importantForAccessibility'] === 'no-hide-descendants') found.push(node)
 
       for (const child of node.children) if (typeof child !== 'string') pending.push(child)
     }
 
-    throw new Error('The modal has no backdrop')
+    return found
   }
 }
 
@@ -105,6 +118,24 @@ describe('Modal', () => {
     afterEach(() => {
       Platform.OS = originalOs
       Reflect.deleteProperty(globalThis, 'document')
+    })
+
+    it("leaves a nested modal's backdrop clear, so the screen dims once", async () => {
+      Platform.OS = 'ios'
+
+      await Render.withTheme(
+        <Modal title="New event">
+          <Modal nested title="Add member">
+            <Text>Body</Text>
+          </Modal>
+        </Modal>,
+      )
+
+      const [outer, inner] = ModalFixtures.backdrops()
+
+      // The outer one blurs and dims; the inner one draws nothing but still takes a tap to close.
+      expect(outer?.children.length).toBeGreaterThan(0)
+      expect(inner?.children).toHaveLength(0)
     })
 
     it('draws its own opening motion in the app instead of the system one', async () => {

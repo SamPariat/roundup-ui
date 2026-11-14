@@ -58,6 +58,12 @@ export interface IModalProps {
   visible?: boolean
   /** Called when a tap on the backdrop, Esc or the Android back button asks to close. Not called while busy. */
   onClose?: () => void
+  /**
+   * It opens from inside another Modal's body, like a date field's picker in the New event form.
+   * That Modal already dims the screen, so this one leaves its backdrop clear; a tap on it still
+   * asks to close. Default false.
+   */
+  nested?: boolean
 }
 
 /** The padding inside the modal, in points; at the bottom the sheet sits a small gap over the home indicator instead when that is taller. */
@@ -197,6 +203,11 @@ interface IBackdropProps {
   style: TMotionStyle
   /** Whether to draw expo-blur's view: the app's sheet. The web blurs through the motion style. */
   native: boolean
+  /**
+   * Whether it dims and blurs the screen. A Modal inside another one leaves it clear, since the
+   * outer backdrop already covers the screen, but a tap on it still asks to close.
+   */
+  dim: boolean
 }
 
 /**
@@ -205,12 +216,12 @@ interface IBackdropProps {
  * Android back button instead. Android cannot blur another window, so it gets the scrim alone.
  * @returns The pressable, blurred backdrop.
  */
-const ModalBackdrop = ({ native, onPress, style }: IBackdropProps): ReactElement => {
+const ModalBackdrop = ({ dim, native, onPress, style }: IBackdropProps): ReactElement => {
   const { name } = useTheme()
 
   return (
     // NativeWind does not style Reanimated views, so the fill is a style here too.
-    <Animated.View style={[ABSOLUTE_FILL, style]}>
+    <Animated.View style={dim ? [ABSOLUTE_FILL, style] : ABSOLUTE_FILL}>
       <Pressable
         accessible={false}
         aria-hidden
@@ -219,14 +230,14 @@ const ModalBackdrop = ({ native, onPress, style }: IBackdropProps): ReactElement
         importantForAccessibility="no-hide-descendants"
         onPress={onPress}
       >
-        {native ? (
+        {native && dim ? (
           <BlurView
             intensity={BACKDROP_BLUR}
             style={ABSOLUTE_FILL}
             tint={name === 'latte' ? 'light' : 'dark'}
           />
         ) : null}
-        <View className="absolute inset-0 bg-scrim" />
+        {dim ? <View className="absolute inset-0 bg-scrim" /> : null}
       </Pressable>
     </Animated.View>
   )
@@ -251,6 +262,7 @@ export const Modal = ({
   busy = false,
   children,
   leading,
+  nested = false,
   onClose,
   subtitle,
   title,
@@ -321,7 +333,7 @@ export const Modal = ({
         behavior={Platform.select({ ios: 'padding' })}
         className={cn('flex-1', sheet ? 'justify-end' : 'items-center justify-center p-6')}
       >
-        <ModalBackdrop native={sheet} onPress={requestClose} style={backdrop} />
+        <ModalBackdrop dim={!nested} native={sheet} onPress={requestClose} style={backdrop} />
         {/* NativeWind does not style Reanimated views, so the size lives on a plain View and the
             animated one inside it only moves. */}
         <View

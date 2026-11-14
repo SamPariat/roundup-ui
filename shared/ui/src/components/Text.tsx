@@ -27,6 +27,9 @@ const textVariants = cva('', {
       caption: 'type-caption',
       otp: 'type-otp',
       numeric: 'type-numeric',
+      day: 'type-day',
+      'day-strong': 'type-day-strong',
+      stepper: 'type-stepper',
     },
     tone: {
       fg: 'text-fg',

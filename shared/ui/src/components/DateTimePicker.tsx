@@ -216,7 +216,7 @@ const DayButton = ({
     >
       {/* The circle is a fixed 44 points, so its number keeps its size instead of following the
           device's text size, which would clip it. */}
-      <Text allowFontScaling={false} tone={tone} variant={emphasized ? 'label' : 'numeric'}>
+      <Text allowFontScaling={false} tone={tone} variant={emphasized ? 'day-strong' : 'day'}>
         {text}
       </Text>
     </Pressable>
@@ -287,8 +287,8 @@ const Stepper = ({
       accessibilityLiveRegion="polite"
       allowFontScaling={false}
       aria-live="polite"
-      className="min-w-8 text-center"
-      variant="body-strong"
+      className="min-w-6 text-center"
+      variant="stepper"
     >
       {text}
     </Text>
@@ -325,7 +325,7 @@ const HalfButton = ({ active, onSelect, pm }: IHalfButtonProps): ReactElement =>
       accessibilityState={{ checked: active }}
       aria-checked={active}
       className={cn(
-        'h-10 w-12 items-center justify-center rounded-lg focus:outline-2 focus:outline-offset-2 focus:outline-focus-ring',
+        'h-10 w-11 items-center justify-center rounded-lg focus:outline-2 focus:outline-offset-2 focus:outline-focus-ring',
         active ? 'border border-border bg-bg-raised' : 'hover:bg-bg-hover',
       )}
       onPress={handlePress}
@@ -496,7 +496,7 @@ export const DateTimePicker = ({
       </View>
       <View className="gap-2 border-t border-border pt-3">
         <Text variant="label">{t('dateTimePicker.time')}</Text>
-        <View className="flex-row flex-wrap items-center gap-2">
+        <View className="flex-row flex-wrap items-center gap-1.5">
           <Stepper
             earlierLabel={t('dateTimePicker.earlierHour')}
             label={t('dateTimePicker.hour')}
@@ -505,7 +505,7 @@ export const DateTimePicker = ({
             onLater={handleLaterHour}
             text={format.hourText(value)}
           />
-          <Text aria-hidden tone="muted" variant="body-strong">
+          <Text aria-hidden tone="muted" variant="stepper">
             :
           </Text>
           <Stepper

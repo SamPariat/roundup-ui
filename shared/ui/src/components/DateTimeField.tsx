@@ -36,6 +36,11 @@ export interface IDateTimeFieldProps {
   min?: Date
   /** Icon drawn at the start of the field. Defaults to a clock. */
   icon?: TIconName
+  /**
+   * The field sits in a Modal's body, so its picker opens on that Modal and leaves the screen to
+   * that Modal's dimming instead of dimming it again. Default false.
+   */
+  nested?: boolean
   /** Called with the moment once the person presses Done. */
   onChange: (value: Date) => void
 }
@@ -55,6 +60,7 @@ export const DateTimeField = ({
   icon = 'clock',
   label,
   min,
+  nested = false,
   onChange,
   placeholder,
   value,
@@ -142,7 +148,7 @@ export const DateTimeField = ({
           <Icon className="rotate-90" decorative name="chevron" size={16} tone="fg-muted" />
         </Pressable>
       </FieldFrame>
-      <Modal actions={actions} onClose={handleClose} title={label} visible={open}>
+      <Modal actions={actions} nested={nested} onClose={handleClose} title={label} visible={open}>
         <DateTimePicker format={format} onChange={setDraft} value={draft} {...optionalMin} />
       </Modal>
     </>
