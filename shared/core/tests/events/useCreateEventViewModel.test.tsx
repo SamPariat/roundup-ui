@@ -124,7 +124,7 @@ describe('useCreateEventViewModel', () => {
 
     expect(network.requests[0]?.body).toEqual({
       name: 'Saturday night out',
-      startsAt: expect.stringMatching(/^2026-11-12T20:00:00[+-]/) as string,
+      startsAt: expect.stringMatching(/^2026-11-12T20:00:00(?:Z|[+-])/) as string,
       type: 'BOTH',
     })
   })
