@@ -6,6 +6,8 @@ import { GROUPS, REGISTRY, Registry } from '@/registry'
 const NOT_COMPONENTS: ReadonlySet<string> = new Set([
   // A static helper class: Breakpoint.of maps a window width to a breakpoint.
   'Breakpoint',
+  // A wrapper that only puts the keyboard away on a tap: it draws nothing of its own.
+  'KeyboardDismissArea',
   // A provider: it renders nothing of its own. The catalog's layout wraps every page in it.
   'ThemeProvider',
 ])

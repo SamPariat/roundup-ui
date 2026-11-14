@@ -10,6 +10,7 @@ import {
   Platform,
   Pressable,
   ScrollView,
+  useWindowDimensions,
   View,
 } from 'react-native'
 import Animated from 'react-native-reanimated'
@@ -21,8 +22,10 @@ import type { TMotionStyle } from '../lib/useModalMotion'
 import { ActionContext } from '../lib/action-context'
 import { cn } from '../lib/cn'
 import { ABSOLUTE_FILL } from '../lib/fill'
+import { useKeyboardShown } from '../lib/useKeyboardShown'
 import { useModalMotion } from '../lib/useModalMotion'
 import { useTheme } from '../theme/theme'
+import { KeyboardDismissArea } from './KeyboardDismissArea'
 import { Surface } from './Surface'
 import { Text } from './Text'
 
@@ -57,8 +60,23 @@ export interface IModalProps {
   onClose?: () => void
 }
 
-/** The padding inside the modal, in points; the sheet adds the home indicator's inset below it. */
+/** The padding inside the modal, in points; at the bottom the sheet sits a small gap over the home indicator instead when that is taller. */
 const PADDING = 24
+
+/** The gap between the home indicator's inset and the sheet's last action, in points. */
+const SAFE_AREA_GAP = 8
+
+/**
+ * The sheet's bottom padding while the keyboard is up, in points. The keyboard covers the home
+ * indicator, so its inset is dropped, and the last action sits this close above the keys.
+ */
+const KEYBOARD_GAP = 16
+
+/** How much of the window a web card may take, as a share of its height. */
+const CARD_SHARE = 0.85
+
+/** The gap the sheet keeps under the status bar and the notch, in points. */
+const SHEET_GAP = 16
 
 /** How strongly the app blurs the screen behind the sheet, on expo-blur's 0 to 100 scale. */
 const BACKDROP_BLUR = 24
@@ -156,6 +174,9 @@ const ModalContent = ({
       alwaysBounceVertical={false}
       className="mt-4 shrink"
       contentContainerClassName="gap-3"
+      // A tap on a button or a field still lands while the keyboard is up; a tap on the gaps
+      // between them puts it away.
+      keyboardShouldPersistTaps="handled"
       pointerEvents={busy ? 'none' : 'auto'}
     >
       {body === undefined ? null : (
@@ -218,7 +239,10 @@ const ModalBackdrop = ({ native, onPress, style }: IBackdropProps): ReactElement
  * of the home indicator, 560 points wide at most on a tablet. On the web it is a centered card at
  * every width, where a sheet at the bottom of a browser window reads as broken. Identical content
  * on web and app. It traps focus and tells assistive technology it is a (alert)dialog and when it
- * is busy; while busy nothing closes it.
+ * is busy; while busy nothing closes it. A Modal can sit in another Modal's body (a date field's
+ * picker in the New event form): it is a native modal of its own, presented from the one it is in on
+ * iOS, a second dialog on Android and the topmost modal on web, where only that one traps focus and
+ * answers Esc. Only the top one closes.
  * @returns The native modal host with its sheet or card.
  */
 export const Modal = ({
@@ -250,12 +274,32 @@ export const Modal = ({
   })
 
   // The sheet runs to the bottom edge, so its last action stays clear of the home indicator.
-  const { bottom } = useSafeAreaInsets()
+  const { bottom, top } = useSafeAreaInsets()
+  const { height } = useWindowDimensions()
 
-  const sheetPadding = useMemo(
-    (): undefined | ViewStyle => (sheet ? { paddingBottom: PADDING + bottom } : undefined),
-    [bottom, sheet],
+  // The cap is a number, not a percentage: the parents are as tall as their content, and Yoga has
+  // no height to take a percentage of, so a percentage cap let the sheet outgrow the screen or
+  // scroll too early. The sheet may fill the screen below the status bar; the card keeps its
+  // share. Whatever is taller scrolls in the body, because everything between the wrapper and the
+  // body shrinks.
+  const maxHeight = useMemo(
+    (): ViewStyle => ({ maxHeight: sheet ? height - top - SHEET_GAP : height * CARD_SHARE }),
+    [height, sheet, top],
   )
+
+  // The keyboard already covers the home indicator, and the KeyboardAvoidingView lifts the sheet
+  // by the keyboard's full height, so keeping the inset too would float the sheet above the keys.
+  const keyboardShown = useKeyboardShown()
+
+  const sheetPadding = useMemo((): undefined | ViewStyle => {
+    if (!sheet) return undefined
+
+    if (keyboardShown) return { paddingBottom: KEYBOARD_GAP }
+
+    // A small gap over the home indicator's inset keeps the last action clear of it; the full
+    // padding on top of the inset left a band of empty sheet. Phones without one keep the padding.
+    return { paddingBottom: Math.max(PADDING, bottom + SAFE_AREA_GAP) }
+  }, [bottom, keyboardShown, sheet])
 
   const handleFocusTitle = useCallback((): void => {
     ModalFocus.moveFocusTo(titleRef.current)
@@ -280,46 +324,49 @@ export const Modal = ({
         {/* NativeWind does not style Reanimated views, so the size lives on a plain View and the
             animated one inside it only moves. */}
         <View
-          className={cn('max-h-[85%]', sheet ? 'mx-auto w-full max-w-140' : 'w-120 max-w-full')}
+          className={cn('shrink', sheet ? 'mx-auto w-full max-w-140' : 'w-120 max-w-full')}
+          style={maxHeight}
         >
-          <Animated.View className="max-h-full" style={sheet ? panel : [panel, CARD_CORNERS]}>
-            <Surface
-              accessibilityLabel={title}
-              accessibilityViewIsModal
-              aria-busy={busy}
-              aria-modal
-              className={cn(
-                'max-h-full border border-glass-edge px-6 pt-6',
-                sheet
-                  ? 'rounded-t-[20px] border-x-0 border-b-0 shadow-sheet'
-                  : 'rounded-[20px] shadow-toast',
-                !sheet && 'bg-glass pb-6',
-              )}
-              role={confirm ? 'alertdialog' : 'dialog'}
-              style={sheetPadding}
-            >
-              <ModalHeader
-                leading={leading}
-                subtitle={subtitle}
-                title={title}
-                titleRef={titleRef}
-              />
-              <ModalContent body={body} busy={busy}>
-                {children}
-              </ModalContent>
-              {actions !== undefined && actions.length > 0 ? (
-                <ActionContext value={actionContext}>
-                  <View
-                    className={cn(
-                      'mt-6 gap-2',
-                      !sheet && 'flex-row-reverse flex-wrap justify-start',
-                    )}
-                  >
-                    {actions}
-                  </View>
-                </ActionContext>
-              ) : null}
-            </Surface>
+          <Animated.View className="shrink" style={sheet ? panel : [panel, CARD_CORNERS]}>
+            <KeyboardDismissArea className="shrink">
+              <Surface
+                accessibilityLabel={title}
+                accessibilityViewIsModal
+                aria-busy={busy}
+                aria-modal
+                className={cn(
+                  'shrink border border-glass-edge px-6 pt-6',
+                  sheet
+                    ? 'rounded-t-[20px] border-x-0 border-b-0 shadow-sheet'
+                    : 'rounded-[20px] shadow-toast',
+                  !sheet && 'bg-glass pb-6',
+                )}
+                role={confirm ? 'alertdialog' : 'dialog'}
+                style={sheetPadding}
+              >
+                <ModalHeader
+                  leading={leading}
+                  subtitle={subtitle}
+                  title={title}
+                  titleRef={titleRef}
+                />
+                <ModalContent body={body} busy={busy}>
+                  {children}
+                </ModalContent>
+                {actions !== undefined && actions.length > 0 ? (
+                  <ActionContext value={actionContext}>
+                    <View
+                      className={cn(
+                        'mt-6 gap-2',
+                        !sheet && 'flex-row-reverse flex-wrap justify-start',
+                      )}
+                    >
+                      {actions}
+                    </View>
+                  </ActionContext>
+                ) : null}
+              </Surface>
+            </KeyboardDismissArea>
           </Animated.View>
         </View>
       </KeyboardAvoidingView>

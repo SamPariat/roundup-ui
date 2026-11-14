@@ -12,7 +12,11 @@ export const EmptyStateDemo = (): ReactElement => (
   <>
     <Specimen title="art=squads (default) · body · action">
       <EmptyState
-        action={<Button icon="plus">Create a squad</Button>}
+        action={
+          <Button block icon="plus">
+            Create a squad
+          </Button>
+        }
         body="Squads you create or join show up here."
         title="No squads yet"
       />
@@ -26,7 +30,11 @@ export const EmptyStateDemo = (): ReactElement => (
     </Specimen>
     <Specimen title="art=favorites · action">
       <EmptyState
-        action={<Button variant="secondary">Explore venues</Button>}
+        action={
+          <Button block variant="secondary">
+            Explore venues
+          </Button>
+        }
         art="favorites"
         body="Tap the bookmark on a venue to keep it here."
         title="Nothing saved"

@@ -91,7 +91,11 @@ export default function ExploreScreen(): ReactElement {
     return (
       <TabPage centered>
         <EmptyState
-          action={<Button onPress={handlePress}>{label}</Button>}
+          action={
+            <Button block onPress={handlePress}>
+              {label}
+            </Button>
+          }
           art="search"
           body={t('screens.explore.denied.body')}
           title={t('screens.explore.denied.title')}
@@ -115,9 +119,11 @@ export default function ExploreScreen(): ReactElement {
             value={text}
           />
         </View>
+        {/* Beside the field the chips center on its 52 point box, not on the box and its label:
+            they sit at the bottom and rise 8, half the 16 the box is taller than a chip. */}
         <View
           accessibilityLabel={t('screens.explore.filters.label')}
-          className="max-w-full flex-row flex-wrap gap-2"
+          className="max-w-full flex-row flex-wrap gap-2 md:mb-2 md:self-end"
           role="group"
         >
           {filters.map((item) => (

@@ -11,10 +11,23 @@ import { useReducedMotion } from '../lib/useReducedMotion'
 export interface ISkeletonProps {
   /**
    * Which placeholder shape: a list `row`, a flush `item` row (an avatar and two lines, as in a
-   * modal or a card of rows), a venue `card`, the `search` field with its chips and caption, or the
-   * whole `venue` page, or the whole `squad` page. Defaults to row.
+   * modal or a card of rows), a venue `card`, the `search` field with its chips and caption, the
+   * whole `venue` page, the whole `squad` page, a squad's `events` tab, the `answer` card beside it,
+   * an `event`'s page, the `rsvp` aside beside that, or a `bar` for a pinned action. Defaults to
+   * row.
    */
-  variant?: 'card' | 'item' | 'row' | 'search' | 'squad' | 'venue'
+  variant?:
+    | 'answer'
+    | 'bar'
+    | 'card'
+    | 'event'
+    | 'events'
+    | 'item'
+    | 'row'
+    | 'rsvp'
+    | 'search'
+    | 'squad'
+    | 'venue'
   /** How many rows to draw, for `row` and `item`. Ignored by the other shapes. Defaults to 1. */
   count?: number
 }
@@ -64,6 +77,26 @@ const Items = ({ count }: IItemsProps): ReactElement => (
         </View>
       </View>
     ))}
+  </View>
+)
+
+/** Props for the bordered card of four lines. */
+interface ILinesCardProps {
+  /** Height and placement classes. */
+  className: string
+}
+
+/**
+ * A raised, bordered card with a title and three lines, the placeholder of a venue's aside, an
+ * event's card and the card that needs an answer.
+ * @returns The bordered card of four lines.
+ */
+const LinesCard = ({ className }: ILinesCardProps): ReactElement => (
+  <View className={cn('gap-2.5 rounded-2xl border border-border bg-bg-raised p-4', className)}>
+    <Block className="h-4 w-11/20" />
+    <Block className="h-3 w-2/5" />
+    <Block className="h-3 w-7/10" />
+    <Block className="h-3 w-3/10" />
   </View>
 )
 
@@ -118,12 +151,7 @@ const VenuePlaceholder = (): ReactElement => {
         <Items count={3} />
         <Block className="h-3.5 w-1/2 lg:hidden" />
       </View>
-      <View className="hidden h-80 gap-2.5 rounded-2xl border border-border bg-bg-raised p-4 lg:flex lg:w-80">
-        <Block className="h-4 w-11/20" />
-        <Block className="h-3 w-2/5" />
-        <Block className="h-3 w-7/10" />
-        <Block className="h-3 w-3/10" />
-      </View>
+      <LinesCard className="hidden h-80 lg:flex lg:w-80" />
     </View>
   )
 }
@@ -173,6 +201,81 @@ const SquadPlaceholder = (): ReactElement => {
   )
 }
 
+/** Props for the answer chips and card. */
+interface IRsvpBlocksProps {
+  /** Height of the card under the chips. */
+  cardClassName: string
+}
+
+/**
+ * The three RSVP chips and the card of who is going, as blocks.
+ * @returns The chips and the card.
+ */
+const RsvpBlocks = ({ cardClassName }: IRsvpBlocksProps): ReactElement => (
+  <>
+    <View className="flex-row gap-2">
+      <Block className="h-9 w-19" />
+      <Block className="h-9 w-17" />
+      <Block className="h-9 w-26" />
+    </View>
+    <LinesCard className={cardClassName} />
+  </>
+)
+
+/**
+ * A squad's Events tab below its tabs: a heading, two event cards, a heading and the past rows;
+ * from the desktop width the cards sit side by side and a third row joins.
+ * @returns The placeholder, announced as a single busy region.
+ */
+const EventsPlaceholder = (): ReactElement => {
+  const { t } = useT()
+
+  return (
+    <View accessibilityLabel={t('common.loading')} accessible aria-busy className="gap-4">
+      <Block className="h-5 w-21/50" />
+      <View className="gap-4 lg:flex-row">
+        <LinesCard className="h-34 lg:h-38 lg:flex-1" />
+        <LinesCard className="h-34 lg:h-38 lg:flex-1" />
+      </View>
+      <Block className="h-5 w-21/50" />
+      <View className="lg:hidden">
+        <Items count={2} />
+      </View>
+      <View className="hidden lg:flex">
+        <Items count={3} />
+      </View>
+    </View>
+  )
+}
+
+/**
+ * An event's page: its status line, title and date, then on phones the answer chips and the card of
+ * who is going, a heading and three rows. From the desktop width the chips and card move to the
+ * aside, which the `rsvp` variant draws.
+ * @returns The placeholder, announced as a single busy region.
+ */
+const EventPlaceholder = (): ReactElement => {
+  const { t } = useT()
+
+  return (
+    <View accessibilityLabel={t('common.loading')} accessible aria-busy className="gap-4">
+      <View className="gap-2">
+        <View className="flex-row gap-2">
+          <Block className="h-6 w-18" />
+          <Block className="h-3.5 w-30" />
+        </View>
+        <Block className="h-5.5 w-31/50" />
+        <Block className="h-3.5 w-4/5" />
+      </View>
+      <View className="gap-4 lg:hidden">
+        <RsvpBlocks cardClassName="h-18" />
+      </View>
+      <Block className="h-5 w-21/50" />
+      <Items count={3} />
+    </View>
+  )
+}
+
 /**
  * Loading is shape-first. The group is one busy region named "Loading"; the shapes are decoration.
  * @returns The placeholder, announced as a single busy region.
@@ -185,6 +288,34 @@ export const Skeleton = ({ count = 1, variant = 'row' }: ISkeletonProps): ReactE
   if (variant === 'venue') return <VenuePlaceholder />
 
   if (variant === 'squad') return <SquadPlaceholder />
+
+  if (variant === 'events') return <EventsPlaceholder />
+
+  if (variant === 'event') return <EventPlaceholder />
+
+  if (variant === 'answer') {
+    return (
+      <View accessibilityLabel={t('common.loading')} accessible aria-busy>
+        <LinesCard className="h-90" />
+      </View>
+    )
+  }
+
+  if (variant === 'rsvp') {
+    return (
+      <View accessibilityLabel={t('common.loading')} accessible aria-busy className="gap-4">
+        <RsvpBlocks cardClassName="h-24" />
+      </View>
+    )
+  }
+
+  if (variant === 'bar') {
+    return (
+      <View accessibilityLabel={t('common.loading')} accessible aria-busy>
+        <Block className="h-12 w-full" />
+      </View>
+    )
+  }
 
   if (variant === 'item') {
     return (

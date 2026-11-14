@@ -6,7 +6,9 @@ import type { INetworkSource } from '../network/types'
 import type { ISessionStore } from '../session/types'
 
 import { ContactsSource } from '../contacts/contacts-source'
+import { DateFormatter } from '../helpers/date-formatter'
 import { ErrorKey } from '../helpers/error-key'
+import { Events } from '../helpers/events'
 import { Notice } from '../helpers/notice'
 import { OtpCode } from '../helpers/otp-code'
 import { Phone } from '../helpers/phone'
@@ -34,8 +36,12 @@ export interface IDeps {
   helpers: {
     /** Sign-in code parsing. */
     code: OtpCode
+    /** Date parsing and wording. */
+    dates: DateFormatter
     /** Error to message mapping. */
     errors: ErrorKey
+    /** Event model mapping and cache refreshes, on the query client below. */
+    events: Events
     /** Connection notice phases. */
     notice: Notice
     /** Phone number parsing and formatting. */
@@ -115,19 +121,24 @@ export class Deps {
 
   /**
    * Creates one of each helper.
-   * @param queryClient - The cache the squad and venue helpers refresh.
+   * @param queryClient - The cache the squad, event and venue helpers refresh.
    * @param query - The retry policy, already built for the query client.
-   * @returns OtpCode, ErrorKey, Notice, Phone, Query, Squads and Venues, keyed as IDeps names them.
+   * @returns OtpCode, DateFormatter, ErrorKey, Events, Notice, Phone, Query, Squads and Venues, keyed as IDeps names them.
    */
   private static helpers(queryClient: QueryClient, query: Query): IDeps['helpers'] {
+    const dates = new DateFormatter()
+    const squads = new Squads(queryClient, dates)
+
     return {
       code: new OtpCode(),
+      dates,
       errors: new ErrorKey(),
+      events: new Events(queryClient, dates, squads),
       notice: new Notice(),
       phone: new Phone(),
       query,
-      squads: new Squads(queryClient),
-      venues: new Venues(queryClient),
+      squads,
+      venues: new Venues(queryClient, dates),
     }
   }
 }

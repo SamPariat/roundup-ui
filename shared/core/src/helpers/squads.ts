@@ -1,9 +1,9 @@
 import type { QueryClient } from '@tanstack/react-query'
 
 import type {
+  Member,
   SquadDetail,
   SquadDetailMembersItem,
-  SquadMember,
   SquadSummary,
   UserSummary,
 } from '@roundup/api'
@@ -18,6 +18,7 @@ import type {
   ISquadPermissions,
   ISquadPerson,
 } from '../squads/types'
+import type { DateFormatter } from './date-formatter'
 
 /**
  * Squad mapping and cache helpers, on the query client they refresh. Deps creates one; reach it
@@ -28,12 +29,17 @@ export class Squads {
   /** The cache the squads live in. */
   private readonly queryClient: QueryClient
 
+  /** Writes the day a squad was made. */
+  private readonly dates: DateFormatter
+
   /**
    * Builds the helpers on the cache they refresh.
    * @param queryClient - The TanStack Query cache.
+   * @param dates - Writes the day a squad was made.
    */
-  constructor(queryClient: QueryClient) {
+  constructor(queryClient: QueryClient, dates: DateFormatter) {
     this.queryClient = queryClient
+    this.dates = dates
   }
 
   /**
@@ -58,11 +64,17 @@ export class Squads {
    * @returns The squad.
    */
   toInfo(detail: SquadDetail): ISquadInfo {
+    const creator = detail.members.find((member) => member.userID === detail.createdBy)
+    const creatorName = detail.createdByName ?? ''
+
     return {
+      createdByMe: creator?.isMe === true,
+      createdOn: this.dates.day(detail.createdAt),
       id: detail.id,
       memberCount: detail.memberCount,
       name: detail.name,
       ...this.optional('avatarURL', detail.avatarURL),
+      ...this.optional('createdByName', creatorName),
     }
   }
 
@@ -130,10 +142,10 @@ export class Squads {
 
   /**
    * Maps a member to the person an avatar draws.
-   * @param member - A squad member.
+   * @param member - A squad member, or the member an event lists.
    * @returns The ID, name and photo an avatar needs.
    */
-  private toPerson(member: SquadMember): ISquadPerson {
+  toPerson(member: Member): ISquadPerson {
     return { id: member.userID, name: member.name, ...this.optional('src', member.avatarURL) }
   }
 

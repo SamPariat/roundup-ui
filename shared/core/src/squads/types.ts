@@ -65,4 +65,10 @@ export interface ISquadInfo {
   avatarURL?: string
   /** How many people are in it. */
   memberCount: number
+  /** The day it was made, such as "11th Nov 2026". */
+  createdOn: string
+  /** Whether the signed-in person made it. */
+  createdByMe: boolean
+  /** The name of who made it; left out once they have left or while they have no name. */
+  createdByName?: string
 }

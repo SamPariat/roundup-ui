@@ -1,5 +1,6 @@
 import { screen } from '@testing-library/react-native'
 
+import { Button } from '../../src/components/Button'
 import { EmptyState } from '../../src/components/EmptyState'
 import { Render } from '../helpers/render'
 
@@ -16,5 +17,17 @@ describe('EmptyState', () => {
     )
 
     expect(screen.getByText('Make one and add your friends.')).toBeOnTheScreen()
+  })
+
+  it('gives its action the width of the content column, 320 points at most', async () => {
+    await Render.withTheme(
+      <EmptyState action={<Button block>New event</Button>} title="No events yet" />,
+    )
+
+    const button = screen.getByRole('button', { name: 'New event' })
+
+    expect(button).toHaveProp('className', expect.stringContaining('w-full'))
+    expect(button.parent).toHaveProp('className', expect.stringContaining('w-full'))
+    expect(button.parent).toHaveProp('className', expect.stringContaining('max-w-80'))
   })
 })

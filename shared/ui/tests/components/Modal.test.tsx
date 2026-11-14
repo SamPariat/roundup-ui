@@ -1,9 +1,13 @@
+import type { ReactElement } from 'react'
+
 import { fireEvent, screen, waitFor } from '@testing-library/react-native'
-import { Platform } from 'react-native'
+import { useCallback, useState } from 'react'
+import { Keyboard, Platform } from 'react-native'
 
 import { Button } from '../../src/components/Button'
 import { Modal } from '../../src/components/Modal'
 import { Text } from '../../src/components/Text'
+import { KeyboardFixtures } from '../helpers/keyboard'
 import { Render } from '../helpers/render'
 
 /**
@@ -20,6 +24,56 @@ class ModalFixtures {
     while (node.props['onRequestClose'] === undefined && node.parent !== null) node = node.parent
 
     return node
+  }
+
+  /**
+   * The tallest the dialog may grow, which is set on the view around it.
+   * @returns The cap in points.
+   */
+  static maxHeight(): number | undefined {
+    let node = screen.getByLabelText('Add member').parent
+
+    while (node !== null) {
+      const cap = (
+        node.props['style'] as
+          | undefined
+          | {
+              /**
+               *
+               */
+              maxHeight?: unknown
+            }
+      )?.maxHeight
+
+      if (typeof cap === 'number') return cap
+
+      node = node.parent
+    }
+
+    return undefined
+  }
+
+  /**
+   * The sheet's bottom padding, which the Modal sets on the dialog Surface.
+   * @returns The padding in points.
+   */
+  static paddingBottom(): unknown {
+    const style: unknown = screen.getByLabelText('Add member').props['style']
+    const styles: unknown[] = Array.isArray(style) ? style.flat() : [style]
+
+    return styles
+      .map(
+        (entry) =>
+          (
+            entry as
+              | undefined
+              | {
+                  /** The bottom padding. */
+                  paddingBottom?: unknown
+                }
+          )?.paddingBottom,
+      )
+      .findLast((value) => value !== undefined)
   }
 
   /**
@@ -73,6 +127,90 @@ describe('Modal', () => {
       await Render.withTheme(<Modal title="Add member" />)
 
       expect(ModalFixtures.modalHost().props['animationType']).toBe('none')
+    })
+
+    it('lets the sheet grow to the status bar, so a form that fits shows whole', async () => {
+      Platform.OS = 'ios'
+
+      await Render.withTheme(
+        <Modal title="Add member">
+          <Text>Body</Text>
+        </Modal>,
+      )
+
+      // The window is 1334 points tall here and the safe area has no insets.
+      expect(ModalFixtures.maxHeight()).toBe(1334 - 16)
+    })
+
+    it('sits the last action a small gap over the home indicator', async () => {
+      Platform.OS = 'ios'
+
+      await Render.withTheme(
+        <Modal title="Add member">
+          <Text>Body</Text>
+        </Modal>,
+        { insets: { bottom: 34, left: 0, right: 0, top: 59 } },
+      )
+
+      expect(ModalFixtures.paddingBottom()).toBe(34 + 8)
+    })
+
+    it('puts the keyboard away when the sheet is tapped outside its fields', async () => {
+      Platform.OS = 'ios'
+      const dismiss = jest.spyOn(Keyboard, 'dismiss')
+
+      await Render.withTheme(
+        <Modal title="Add member">
+          <Text>Body</Text>
+        </Modal>,
+      )
+
+      await fireEvent.press(screen.getByText('Add member'))
+
+      expect(dismiss).toHaveBeenCalled()
+
+      jest.restoreAllMocks()
+    })
+
+    it('drops the home indicator inset while the keyboard is up', async () => {
+      Platform.OS = 'ios'
+      KeyboardFixtures.capture()
+
+      await Render.withTheme(
+        <Modal title="Add member">
+          <Text>Body</Text>
+        </Modal>,
+      )
+
+      // 24 points of padding over an inset of 0 here.
+      expect(ModalFixtures.paddingBottom()).toBe(24)
+
+      await KeyboardFixtures.emit('keyboardWillShow')
+
+      expect(ModalFixtures.paddingBottom()).toBe(16)
+
+      await KeyboardFixtures.emit('keyboardWillHide')
+
+      expect(ModalFixtures.paddingBottom()).toBe(24)
+
+      jest.restoreAllMocks()
+    })
+
+    it('keeps the web card to 85% of the window', async () => {
+      Platform.OS = 'web'
+
+      Object.defineProperty(globalThis, 'document', {
+        configurable: true,
+        value: { documentElement: { dataset: {}, style: {} } },
+      })
+
+      await Render.withTheme(
+        <Modal title="Add member">
+          <Text>Body</Text>
+        </Modal>,
+      )
+
+      expect(ModalFixtures.maxHeight()).toBeCloseTo(1334 * 0.85)
     })
   })
 
@@ -191,6 +329,50 @@ describe('Modal', () => {
       await fireEvent.press(ModalFixtures.backdrop())
 
       expect(onClose).not.toHaveBeenCalled()
+    })
+  })
+
+  describe('stacked on another modal', () => {
+    it('opens on top of the modal it sits in and leaves it open when it closes', async () => {
+      /**
+       * A modal with a second modal in its body, as a form with a date field has.
+       * @returns The outer modal.
+       */
+      const Stack = (): ReactElement => {
+        const [open, setOpen] = useState<boolean>(true)
+
+        const handleClose = useCallback((): void => {
+          setOpen(false)
+        }, [])
+
+        return (
+          <Modal title="Outer">
+            <Modal
+              actions={[
+                <Button key="ok" onPress={handleClose}>
+                  Dismiss
+                </Button>,
+              ]}
+              onClose={handleClose}
+              title="Inner"
+              visible={open}
+            />
+          </Modal>
+        )
+      }
+
+      await Render.withTheme(<Stack />)
+
+      expect(screen.getByLabelText('Outer')).toBeOnTheScreen()
+      expect(screen.getByLabelText('Inner')).toBeOnTheScreen()
+
+      await fireEvent.press(screen.getByRole('button', { name: 'Dismiss' }))
+
+      await waitFor(() => {
+        expect(screen.queryByLabelText('Inner')).toBeNull()
+      })
+
+      expect(screen.getByLabelText('Outer')).toBeOnTheScreen()
     })
   })
 })

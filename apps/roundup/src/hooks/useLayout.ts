@@ -28,6 +28,8 @@ export interface IShellLayout {
   gutterClass: 'px-4' | 'px-8'
   /** True on iOS, where the system tab bar and header replace AppShell. */
   systemChrome: boolean
+  /** True where the page's own header bar (PageHeader) holds a screen's actions: desktop web and Android. */
+  pageHeader: boolean
 }
 
 /**
@@ -62,6 +64,7 @@ export class Layout {
       gutter: phone ? 16 : 32,
       gutterClass: phone ? 'px-4' : 'px-8',
       nav,
+      pageHeader: nav === 'side' && !SYSTEM_CHROME,
       systemChrome: SYSTEM_CHROME,
     }
   }

@@ -76,7 +76,9 @@ export const SquadCard = ({
       </View>
       <View className="flex-row items-center justify-between gap-3">
         <AvatarGroup max={4} people={members} size={28} total={count} />
-        <View className="flex-row items-center gap-2">
+        {/* The count and the badge may wrap under each other on a narrow card rather than run out
+            of it: a grid cell is as narrow as 280 points, and five faces take most of that. */}
+        <View className="min-w-0 shrink flex-row flex-wrap items-center justify-end gap-2">
           <Text tone="muted" variant="caption">
             {countText}
           </Text>

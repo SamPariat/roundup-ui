@@ -3,7 +3,9 @@ import { QueryClient } from '@tanstack/react-query'
 import { ApiError, getListSquadsQueryKey, HttpStatus } from '@roundup/api'
 
 import { Deps } from '../../src/di/deps'
+import { DateFormatter } from '../../src/helpers/date-formatter'
 import { ErrorKey } from '../../src/helpers/error-key'
+import { Events } from '../../src/helpers/events'
 import { Notice } from '../../src/helpers/notice'
 import { OtpCode } from '../../src/helpers/otp-code'
 import { Phone } from '../../src/helpers/phone'
@@ -64,7 +66,9 @@ describe('Deps.create', () => {
     const { helpers } = Deps.create()
 
     expect(helpers.code).toBeInstanceOf(OtpCode)
+    expect(helpers.dates).toBeInstanceOf(DateFormatter)
     expect(helpers.errors).toBeInstanceOf(ErrorKey)
+    expect(helpers.events).toBeInstanceOf(Events)
     expect(helpers.notice).toBeInstanceOf(Notice)
     expect(helpers.phone).toBeInstanceOf(Phone)
     expect(helpers.query).toBeInstanceOf(Query)

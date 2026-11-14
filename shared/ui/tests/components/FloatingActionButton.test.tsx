@@ -33,4 +33,15 @@ describe('FloatingActionButton', () => {
 
     expect(onPress).toHaveBeenCalledTimes(1)
   })
+
+  it('is a solid accent button with a shadow and no glass', async () => {
+    await Render.withTheme(<FloatingActionButton icon="plus">New squad</FloatingActionButton>)
+
+    const button = screen.getByRole('button', { name: 'New squad' })
+
+    expect(button).toHaveProp('className', expect.stringContaining('bg-accent'))
+    expect(button).toHaveProp('className', expect.stringContaining('shadow-toast'))
+    expect(button).toHaveProp('className', expect.not.stringContaining('/75'))
+    expect(button).toHaveProp('className', expect.not.stringContaining('blur'))
+  })
 })

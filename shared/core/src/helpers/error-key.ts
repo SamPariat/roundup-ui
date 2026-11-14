@@ -9,6 +9,7 @@ export type TErrorKey = `errors.${keyof typeof en.errors}`
 export type TErrorContext =
   | 'addMember'
   | 'code'
+  | 'event'
   | 'favorite'
   | 'name'
   | 'phone'
@@ -25,6 +26,7 @@ const SQUAD_FULL = 'squad is full'
 const BY_STATUS: Partial<Record<number, Partial<Record<TErrorContext, TErrorKey>>>> = {
   [HttpStatus.badRequest]: {
     code: 'errors.wrongCode',
+    event: 'errors.invalidEvent',
     name: 'errors.invalidName',
     phone: 'errors.invalidPhone',
     squadName: 'errors.invalidSquadName',
@@ -32,11 +34,12 @@ const BY_STATUS: Partial<Record<number, Partial<Record<TErrorContext, TErrorKey>
   [HttpStatus.unauthorized]: { code: 'errors.wrongCode' },
   [HttpStatus.notFound]: {
     addMember: 'errors.notOnRoundup',
+    event: 'errors.eventNotFound',
     favorite: 'errors.venueNotFound',
     squad: 'errors.squadNotFound',
     venue: 'errors.venueNotFound',
   },
-  [HttpStatus.conflict]: { role: 'errors.needsAnAdmin' },
+  [HttpStatus.conflict]: { event: 'errors.eventChanged', role: 'errors.needsAnAdmin' },
 }
 
 /** An error ready to show: the message key and, for the generic message, the request to quote. */
@@ -54,8 +57,8 @@ export class ErrorKey {
   /**
    * Maps whatever a request threw to a message key. 400 is invalid input, 401 a wrong code, 429 too
    * many requests (or too many tries at a code), 404 a missing squad or a number not on Roundup,
-   * 409 a member already there, a full squad or a squad left without an admin, 404 on a venue or
-   * on saving one a place that cannot be found, 0 no connection, and anything else a generic message that carries the request ID so a person can quote it.
+   * 409 a member already there, a full squad, a squad left without an admin or an event that has moved on, 404 on a venue or an event,
+   * or on saving one a place that cannot be found, 0 no connection, and anything else a generic message that carries the request ID so a person can quote it.
    * @param error - What was thrown.
    * @param context - Which step failed.
    * @returns The key to translate and the request ID to fill in.

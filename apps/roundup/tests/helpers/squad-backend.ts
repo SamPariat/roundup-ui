@@ -129,7 +129,7 @@ export class SquadBackend {
   private static summary(squad: IStubSquad): Record<string, unknown> {
     return {
       avatarURL: '',
-      createdAt: '2026-01-01T00:00:00Z',
+      createdAt: '2026-01-01T10:00:00Z',
       createdBy: ME,
       id: squad.id,
       memberCount: squad.members.length,

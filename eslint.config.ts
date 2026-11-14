@@ -556,7 +556,7 @@ export default [
     plugins: { boundaries },
     settings: {
       'boundaries/elements': [
-        // The catalog is one element: it may import ui and i18n and itself, and nothing may import it.
+        // The catalog is one element: it may import core, ui and i18n and itself, and nothing may import it.
         { type: 'catalog', pattern: 'apps/catalog/**', partialMatch: false },
         { type: 'routes', pattern: 'apps/roundup/src/app/**', partialMatch: false },
         { type: 'components', pattern: 'apps/roundup/src/components/**', partialMatch: false },
@@ -634,7 +634,7 @@ export default [
             {
               // Not apps/roundup: the two apps share nothing but the packages under shared/.
               from: { element: { type: 'catalog' } },
-              allow: { to: { element: { type: ['catalog', 'ui', 'i18n'] } } },
+              allow: { to: { element: { type: ['catalog', 'core', 'ui', 'i18n'] } } },
             },
             {
               from: { element: { type: 'core' } },

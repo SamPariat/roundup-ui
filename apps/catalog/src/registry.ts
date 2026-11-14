@@ -7,6 +7,8 @@ import { BottomNavDemo } from './demos/BottomNavDemo'
 import { ButtonDemo } from './demos/ButtonDemo'
 import { ChipDemo } from './demos/ChipDemo'
 import { ColorsDemo } from './demos/ColorsDemo'
+import { DateTimeFieldDemo } from './demos/DateTimeFieldDemo'
+import { DateTimePickerDemo } from './demos/DateTimePickerDemo'
 import { EmptyStateDemo } from './demos/EmptyStateDemo'
 import { FloatingActionButtonDemo } from './demos/FloatingActionButtonDemo'
 import { IconDemo } from './demos/IconDemo'
@@ -113,6 +115,18 @@ const ENTRIES: readonly TEntryInput[] = [
     group: 'Inputs',
     summary: 'A labeled single-line input with helper and error text.',
     Demo: TextFieldDemo,
+  },
+  {
+    title: 'DateTimeField',
+    group: 'Inputs',
+    summary: 'A labeled date and time field that opens a DateTimePicker in a Modal.',
+    Demo: DateTimeFieldDemo,
+  },
+  {
+    title: 'DateTimePicker',
+    group: 'Inputs',
+    summary: 'A month of days and a time, for the body of a Modal.',
+    Demo: DateTimePickerDemo,
   },
   {
     title: 'PhoneInput',

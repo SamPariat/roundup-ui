@@ -15,6 +15,15 @@ describe('Layout.forWidth', () => {
   })
 })
 
+describe('Layout.forWidth pageHeader', () => {
+  it('holds a screen actions in the page header only on a desktop width without system chrome', () => {
+    const { pageHeader, systemChrome } = Layout.forWidth(1440)
+
+    expect(pageHeader).toBe(!systemChrome)
+    expect(Layout.forWidth(390).pageHeader).toBe(false)
+  })
+})
+
 describe('Layout.columnsFor', () => {
   it.each([
     [0, 16, 1],

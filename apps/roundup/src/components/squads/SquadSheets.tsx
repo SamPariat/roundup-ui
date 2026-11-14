@@ -8,6 +8,7 @@ import { AddPeopleModal } from './AddPeopleModal'
 import { LeaveSquadModal } from './LeaveSquadModal'
 import { MemberActionsModal } from './MemberActionsModal'
 import { RenameSquadModal } from './RenameSquadModal'
+import { CreateEventModal } from '@/components/events/CreateEventModal'
 
 /** Which dialog is open on a squad's page. */
 export type TSheet =
@@ -19,7 +20,7 @@ export type TSheet =
     }
   | {
       /** One of the dialogs that needs nothing more. */
-      kind: 'add' | 'leave' | 'rename'
+      kind: 'add' | 'event' | 'leave' | 'rename'
     }
 
 /** Props for SquadSheets. */
@@ -40,7 +41,7 @@ export interface ISquadSheetsProps {
 
 /**
  * The dialogs of a squad's page. Only the open one is mounted, so each starts fresh when opened.
- * The options Menu opens Rename squad and Leave squad.
+ * The options Menu opens Rename squad and Leave squad; New event opens the New event modal.
  * @returns The open dialog, or null.
  */
 export const SquadSheets = ({
@@ -58,6 +59,10 @@ export const SquadSheets = ({
   switch (sheet?.kind) {
     case 'add': {
       return <AddPeopleModal onClose={handleClose} squadId={squad.id} squadName={squad.name} />
+    }
+
+    case 'event': {
+      return <CreateEventModal onClose={handleClose} squadId={squad.id} squadName={squad.name} />
     }
 
     case 'leave': {

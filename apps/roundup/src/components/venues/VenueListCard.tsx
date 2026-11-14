@@ -28,10 +28,11 @@ export const VenueListCard = ({ venue }: IVenueListCardProps): ReactElement => {
   }, [router, venue.id, venue.name])
 
   return (
+    // It grows to its grid row, so the cards side by side end level whatever their text.
     <Pressable
       accessibilityLabel={venue.name}
       accessibilityRole="button"
-      className="rounded-2xl focus:outline-2 focus:outline-offset-2 focus:outline-focus-ring"
+      className="grow rounded-2xl focus:outline-2 focus:outline-offset-2 focus:outline-focus-ring"
       onPress={handleOpen}
     >
       <VenueCard {...venue} />

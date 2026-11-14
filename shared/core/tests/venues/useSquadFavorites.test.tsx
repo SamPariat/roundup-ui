@@ -52,7 +52,7 @@ describe('useSquadFavorites', () => {
       name: 'Venue v1',
       rating: 4.5,
       savedByMe: true,
-      savedOn: '18 Oct',
+      savedOn: '18th Oct 2026',
     })
 
     expect(result.current.favorites[0]?.photo).toBe(
