@@ -196,6 +196,18 @@ Each rule in `eslint.config.ts` carries a comment saying why it is on.
 - **No nested ternaries** (`no-nested-ternary` and SonarJS): use an early return, a lookup object or a small named helper.
 - **No inline functions in JSX props** (`react/jsx-no-bind`, refs and DOM components included): pass a module-level function, a `useCallback`, or a handler that reads its data from props.
 - **Blank lines in a fixed pattern** (`@stylistic/padding-line-between-statements`): before `return`/`throw`/`break`/`continue`, after a declaration group (single-line declarations may stack), around blocks, multi-line expressions and exports, and after directives. Test files add `jest/padding-around-all`. Neither rule is in `eslint-config-prettier`'s disable list, so no ordering trick is needed.
+- **Hooks in a fixed order** (`roundup/hook-order`, in `eslint-hook-order.ts`): a component or hook body runs, top to bottom:
+  1. context reads (`useT`, `useRouter`, `useDeps`, `useLayout`, route params);
+  2. state and refs;
+  3. data and view model hooks;
+  4. derived values (`useMemo` and plain values);
+  5. handlers (`useCallback`);
+  6. values built from handlers (`actions`, menu `options`);
+  7. effects;
+  8. then early returns and the JSX.
+
+  A statement that reads something from a later group belongs to that group and sits after it, so `useState<string>(squad.name)` goes after `useSquad`. Groups are split by one blank line, and single-line context reads, state and data hooks stack without one. The rule's test runs with `make test` (`pnpm run test:lint-rules`).
+
 - **SonarQube rules** through `eslint-plugin-sonarjs`, every rule of its recommended set at error. A disabled rule needs a documented reason. `sonar-project.properties` is ready for a SonarCloud project; no service is connected.
 - **JSDoc on everything** (`eslint-plugin-jsdoc`): functions, arrow functions, interfaces, type aliases, properties, enums and exported variables, with a description, `@param` and `@returns` descriptions, hyphens before them, and no types in the comment. Callbacks passed as arguments (`describe`, `it`, `.map`, `useEffect`) are exempt. Props are documented once, on their interface.
 - **Every string in `@roundup/i18n`** and **default Tailwind classes** (see above).
