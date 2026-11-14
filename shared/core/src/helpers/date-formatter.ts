@@ -23,8 +23,8 @@ import {
 } from 'date-fns'
 import { enIN } from 'date-fns/locale'
 
-/** How a moment reads with its weekday and day, before the time, such as "Sat 31 Oct". */
-const EVENT_DAY = 'EEE d MMM'
+/** How a moment reads with its weekday and day, before the time, such as "Sat 31st Oct 2026". */
+const EVENT_DAY = 'EEE do MMM yyyy'
 
 /** How a deadline reads with its weekday, before the time, such as "Thu". */
 const DEADLINE_DAY = 'EEE'
@@ -41,8 +41,8 @@ const HOUR_24 = 'HH'
 /** The pattern of the locale's short time, which holds an `a` where the locale has am and pm. */
 const MERIDIEM = 'a'
 
-/** How a past event's day reads, such as "17 Oct". */
-const PAST_DAY = 'd MMM'
+/** How a day reads on its own, such as "17th Oct 2026". */
+const DAY = 'do MMM yyyy'
 
 /** How a month reads above its days, such as "November 2026". */
 const MONTH = 'MMMM yyyy'
@@ -73,7 +73,7 @@ export interface IDateField {
   /**
    * Writes a moment as the field shows it.
    * @param date - The moment.
-   * @returns The text, such as "Sat 31 Oct, 8:00 pm".
+   * @returns The text, such as "Sat 31st Oct 2026, 8:00 pm".
    */
   display: (date: Date) => string
   /**
@@ -228,7 +228,7 @@ export class DateFormatter {
     /**
      * Writes a moment as the field shows it.
      * @param date - The moment.
-     * @returns The text, such as "Sat 31 Oct, 8:00 pm".
+     * @returns The text, such as "Sat 31st Oct 2026, 8:00 pm".
      */
     display: (date: Date): string => this.display(date),
     /**
@@ -330,7 +330,7 @@ export class DateFormatter {
   }
 
   /**
-   * Writes an event's moment: "Sat 31 Oct, 8:00 pm".
+   * Writes an event's moment: "Sat 31st Oct 2026, 8:00 pm".
    * @param iso - The moment, as the API sends it.
    * @returns The text, in the device's time zone.
    */
@@ -339,7 +339,7 @@ export class DateFormatter {
   }
 
   /**
-   * Writes a moment the way an event's moment reads: "Sat 31 Oct, 8:00 pm".
+   * Writes a moment the way an event's moment reads: "Sat 31st Oct 2026, 8:00 pm".
    * @param date - The moment, such as one a picker gave.
    * @returns The text, in the device's time zone.
    */
@@ -357,12 +357,13 @@ export class DateFormatter {
   }
 
   /**
-   * Writes the day a past event closed: "17 Oct".
+   * Writes the day of a moment on its own, such as when a past event closed, a place was saved or
+   * a squad was made: "17th Oct 2026".
    * @param iso - The moment, as the API sends it.
    * @returns The text, in the device's time zone.
    */
-  pastDay(iso: string): string {
-    return format(this.parse(iso), PAST_DAY, this.options)
+  day(iso: string): string {
+    return format(this.parse(iso), DAY, this.options)
   }
 
   /**

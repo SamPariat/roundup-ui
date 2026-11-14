@@ -189,10 +189,8 @@ describe('useSquads', () => {
       defaultOptions: { queries: { gcTime: Infinity, retry: false } },
     })
 
-    const helpers = {
-      ...Deps.create({ queryClient }).helpers,
-      squads: new TaggedSquads(queryClient),
-    }
+    const base = Deps.create({ queryClient }).helpers
+    const helpers = { ...base, squads: new TaggedSquads(queryClient, base.dates) }
 
     const core = TestCore.create({ helpers, queryClient })
 

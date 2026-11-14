@@ -61,7 +61,7 @@ describe('squad events', () => {
     expect(screen.getByText('Confirmed')).toBeOnTheScreen()
     expect(screen.getByRole('heading', { name: 'Past' })).toBeOnTheScreen()
     expect(screen.getByRole('button', { name: /^Diwali drinks/ })).toBeOnTheScreen()
-    expect(screen.getByText('5 Nov · 3 went')).toBeOnTheScreen()
+    expect(screen.getByText('5th Nov 2026 · 3 went')).toBeOnTheScreen()
     expect(screen.getByRole('tab', { name: 'Events, 2' })).toBeSelected()
   })
 

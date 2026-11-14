@@ -30,7 +30,7 @@ export class SquadFixtures {
   static summary(id: string, overrides: Partial<SquadSummary> = {}): SquadSummary {
     return {
       avatarURL: '',
-      createdAt: '2026-01-01T00:00:00Z',
+      createdAt: '2026-01-01T10:00:00Z',
       createdBy: 'u1',
       id,
       memberCount: 1,
@@ -50,7 +50,7 @@ export class SquadFixtures {
   static detail(id: string, overrides: Partial<SquadDetail> = {}): SquadDetail {
     return {
       avatarURL: '',
-      createdAt: '2026-01-01T00:00:00Z',
+      createdAt: '2026-01-01T10:00:00Z',
       createdBy: 'u1',
       createdByName: 'Name u1',
       id,

@@ -17,6 +17,7 @@ import type {
   IVenueReview,
   TPriceLevel,
 } from '../venues/types'
+import type { DateFormatter } from './date-formatter'
 
 /** The price levels the API can send, indexed by level, so a number is checked instead of cast. */
 const PRICE_LEVELS: readonly TPriceLevel[] = [0, 1, 2, 3, 4]
@@ -30,9 +31,6 @@ const MAX_TAGS = 3
 /** Days in a week, and the offset that makes Monday (Google's first line) index 0 from getDay(). */
 const WEEK = 7
 const FROM_SUNDAY = 6
-
-/** How a save's date reads in a row: the day and the month, such as "18 Oct". */
-const SAVED_ON = new Intl.DateTimeFormat('en-IN', { day: 'numeric', month: 'short' })
 
 /** What separates the day from the hours in Google's lines, such as "Monday: 5:00 PM – 11:00 PM". */
 const DAY_SEPARATOR = ': '
@@ -66,12 +64,17 @@ export class Venues {
   /** The cache the venues live in. */
   private readonly queryClient: QueryClient
 
+  /** Writes the day a place was saved. */
+  private readonly dates: DateFormatter
+
   /**
    * Builds the helpers on the cache they refresh.
    * @param queryClient - The TanStack Query cache.
+   * @param dates - Writes the day a place was saved.
    */
-  constructor(queryClient: QueryClient) {
+  constructor(queryClient: QueryClient, dates: DateFormatter) {
     this.queryClient = queryClient
+    this.dates = dates
   }
 
   /**
@@ -132,7 +135,7 @@ export class Venues {
       name: favorite.name,
       priceLevel: PRICE_LEVELS[favorite.priceLevel] ?? 0,
       savedByMe: favorite.savedByMe,
-      savedOn: SAVED_ON.format(new Date(favorite.lastSavedAt)),
+      savedOn: this.dates.day(favorite.lastSavedAt),
       savers: favorite.savedBy.map((member) => this.toSaver(member, meId)),
       ...(favorite.address === '' ? {} : { address: favorite.address }),
       ...(favorite.photo === null ? {} : this.photoFields(favorite.photo)),

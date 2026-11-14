@@ -10,7 +10,12 @@ import { Squads } from '../../src/helpers/squads'
 
 /** The helper under test, on a cache of its own. */
 const queryClient = new QueryClient()
-const events = new Events(queryClient, new DateFormatter(), new Squads(queryClient))
+
+const events = new Events(
+  queryClient,
+  new DateFormatter(),
+  new Squads(queryClient, new DateFormatter()),
+)
 
 /**
  * Builds a list item.
@@ -44,7 +49,7 @@ describe('Events.toCard', () => {
       nominationCount: 3,
       rsvpCounts: { going: 5, maybe: 1, notGoing: 0, pending: 6 },
       votingCloses: 'Thu, 9:00 pm',
-      when: 'Sat 31 Oct, 8:00 pm',
+      when: 'Sat 31st Oct 2026, 8:00 pm',
     })
   })
 
@@ -73,7 +78,7 @@ describe('Events.toCard', () => {
     )
 
     expect(card.winner).toEqual({ address: '12th Main', name: 'The Lantern Terrace' })
-    expect(card.closedOn).toBe('17 Oct')
+    expect(card.closedOn).toBe('17th Oct 2026')
   })
 })
 

@@ -10,6 +10,25 @@ import { SquadFixtures } from '../helpers/squad-fixtures'
 const REFRESH = { 'POST /api/v1/auth/refresh': Fakes.ok(Fakes.pair('a2', 'r2')) }
 
 describe('useSquad', () => {
+  it('leaves the creator out once they have left the squad', async () => {
+    Fakes.stubNetwork({
+      ...REFRESH,
+      'GET /api/v1/squads/s1': Fakes.ok(
+        SquadFixtures.detail('s1', { createdBy: 'gone', createdByName: null }),
+      ),
+    })
+
+    const { wrapper } = await SquadFixtures.signedInCore()
+    const { result } = await renderHook(() => useSquad('s1'), { wrapper })
+
+    await waitFor(() => {
+      expect(result.current.squad).toBeDefined()
+    })
+
+    expect(result.current.squad?.createdByMe).toBe(false)
+    expect(result.current.squad?.createdByName).toBeUndefined()
+  })
+
   it('loads the squad, its members and the permissions', async () => {
     Fakes.stubNetwork({
       ...REFRESH,
@@ -23,7 +42,15 @@ describe('useSquad', () => {
       expect(result.current.squad).toBeDefined()
     })
 
-    expect(result.current.squad).toEqual({ id: 's1', memberCount: 2, name: 'Squad s1' })
+    expect(result.current.squad).toEqual({
+      createdByMe: true,
+      createdByName: 'Name u1',
+      createdOn: '1st Jan 2026',
+      id: 's1',
+      memberCount: 2,
+      name: 'Squad s1',
+    })
+
     expect(result.current.myRole).toBe('ADMIN')
     expect(result.current.permissions?.canEditSquad).toBe(true)
     expect(result.current.loading).toBe(false)

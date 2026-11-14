@@ -90,7 +90,7 @@ export class Events {
       type: summary.type ?? EventType.DRINKS,
       votingCloses: this.dates.deadline(summary.votingDeadline ?? startsAt),
       when: this.dates.eventWhen(startsAt),
-      ...(closedAt === undefined ? {} : { closedOn: this.dates.pastDay(closedAt) }),
+      ...(closedAt === undefined ? {} : { closedOn: this.dates.day(closedAt) }),
       ...(myRsvp === undefined ? {} : { myRsvp }),
       ...(winner === undefined ? {} : { winner }),
     }

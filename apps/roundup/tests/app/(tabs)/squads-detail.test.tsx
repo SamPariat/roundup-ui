@@ -23,7 +23,7 @@ describe('squad page', () => {
     await SquadsFixtures.open(backend, '/squads/s1')
 
     expect(await screen.findByRole('heading', { name: 'Members' })).toBeOnTheScreen()
-    expect(screen.getByText('3 members')).toBeOnTheScreen()
+    expect(screen.getByText('3 members · Started by you on 1st Jan 2026')).toBeOnTheScreen()
     expect(screen.getByText('Asha Rao (you)')).toBeOnTheScreen()
     expect(screen.getAllByText('Admin')).toHaveLength(2)
   })

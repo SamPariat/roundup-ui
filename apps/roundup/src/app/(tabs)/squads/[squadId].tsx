@@ -27,6 +27,7 @@ import type { TSheet } from '@/components/squads/SquadSheets'
 import { EventsBlock } from '@/components/events/SquadEvents'
 import { MemberActions } from '@/components/squads/MemberActionsModal'
 import { MemberRow } from '@/components/squads/MemberRow'
+import { SquadStarted } from '@/components/squads/squad-started'
 import { PhoneSquad } from '@/components/squads/SquadFavorites'
 import { SquadSheets } from '@/components/squads/SquadSheets'
 import { WideSquad } from '@/components/squads/WideSquad'
@@ -208,7 +209,10 @@ export default function SquadScreen(): ReactElement {
         name: squad.name,
         ...(squad.avatarURL === undefined ? {} : { src: squad.avatarURL }),
       }}
-      subtitle={t('common.members', { count: squad.memberCount })}
+      subtitle={t('screens.squad.subtitle', {
+        members: t('common.members', { count: squad.memberCount }),
+        started: SquadStarted.line(t, squad),
+      })}
       title={squad.name}
     />
   )

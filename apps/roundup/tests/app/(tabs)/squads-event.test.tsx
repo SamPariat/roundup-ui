@@ -42,8 +42,12 @@ describe('event page', () => {
 
     expect(screen.getByText('Planning')).toBeOnTheScreen()
     expect(screen.getByText('Drinks · Friday crew')).toBeOnTheScreen()
-    expect(screen.getByText('Sat 14 Nov, 8:00 pm')).toBeOnTheScreen()
-    expect(screen.getByText('Started by you · voting closes Thu 12 Nov, 9:00 pm')).toBeOnTheScreen()
+    expect(screen.getByText('Sat 14th Nov 2026, 8:00 pm')).toBeOnTheScreen()
+
+    expect(
+      screen.getByText('Started by you · voting closes Thu 12th Nov 2026, 9:00 pm'),
+    ).toBeOnTheScreen()
+
     expect(screen.getByText("2 going · 1 maybe · 0 haven't answered")).toBeOnTheScreen()
     expect(screen.getByRole('button', { name: 'Going' })).toBeSelected()
   })
@@ -125,7 +129,7 @@ describe('event page', () => {
     expect(screen.queryByRole('button', { name: 'Remove Skyline Bar' })).toBeNull()
 
     expect(
-      screen.getByText('Started by Meera Iyer · voting closes Thu 12 Nov, 9:00 pm'),
+      screen.getByText('Started by Meera Iyer · voting closes Thu 12th Nov 2026, 9:00 pm'),
     ).toBeOnTheScreen()
   })
 

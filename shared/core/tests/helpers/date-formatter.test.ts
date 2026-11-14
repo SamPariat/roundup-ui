@@ -10,15 +10,15 @@ const SATURDAY_EVENING = new Date(2026, 9, 31, 20).toISOString()
 
 describe('DateFormatter', () => {
   it('writes an event moment with its weekday, day and time', () => {
-    expect(dates.eventWhen(SATURDAY_EVENING)).toBe('Sat 31 Oct, 8:00 pm')
+    expect(dates.eventWhen(SATURDAY_EVENING)).toBe('Sat 31st Oct 2026, 8:00 pm')
   })
 
   it('writes a deadline with its weekday and time', () => {
     expect(dates.deadline(new Date(2026, 9, 29, 21).toISOString())).toBe('Thu, 9:00 pm')
   })
 
-  it('writes the day a past event closed', () => {
-    expect(dates.pastDay(new Date(2026, 9, 17, 23).toISOString())).toBe('17 Oct')
+  it('writes a day on its own with its ordinal and year', () => {
+    expect(dates.day(new Date(2026, 9, 17, 23).toISOString())).toBe('17th Oct 2026')
   })
 
   it('reads the API text into the same moment, and writes a picked moment back', () => {
@@ -43,7 +43,7 @@ describe('DateFormatter', () => {
   })
 
   it('writes a picked moment the way an event reads', () => {
-    expect(dates.display(new Date(2026, 9, 31, 20))).toBe('Sat 31 Oct, 8:00 pm')
+    expect(dates.display(new Date(2026, 9, 31, 20))).toBe('Sat 31st Oct 2026, 8:00 pm')
   })
 
   it('writes the month the picker shows', () => {
@@ -164,7 +164,7 @@ describe('DateFormatter', () => {
     expect(dates.uses12Hour()).toBe(true)
     expect(french.uses12Hour()).toBe(false)
     expect(french.hourText(new Date(2026, 9, 31, 8))).toBe('08')
-    expect(french.display(evening)).toBe('sam. 31 oct., 20:05')
+    expect(french.display(evening)).toBe('sam. 31 oct. 2026, 20:05')
     expect(french.deadline(evening.toISOString())).toBe('sam., 20:05')
   })
 

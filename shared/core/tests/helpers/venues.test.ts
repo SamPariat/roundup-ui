@@ -3,6 +3,7 @@ import { PixelRatio } from 'react-native'
 
 import { getGetVenueQueryKey, getListFavoritesQueryKey } from '@roundup/api'
 
+import { DateFormatter } from '../../src/helpers/date-formatter'
 import { Venues } from '../../src/helpers/venues'
 import { VenueFixtures } from './venue-fixtures'
 
@@ -11,7 +12,7 @@ const WEDNESDAY = new Date(2026, 10, 11, 12).getTime()
 
 /** The helpers under test, on a client that never garbage-collects (its timer would keep Jest alive). */
 const queryClient = new QueryClient({ defaultOptions: { queries: { gcTime: Infinity } } })
-const venues = new Venues(queryClient)
+const venues = new Venues(queryClient, new DateFormatter())
 
 describe('Venues', () => {
   afterEach(() => {
@@ -127,7 +128,7 @@ describe('Venues', () => {
         rating: 4.5,
         reviews: 120,
         savedByMe: false,
-        savedOn: '18 Oct',
+        savedOn: '18th Oct 2026',
         savers: [{ id: 'u2', isMe: false, name: 'Meera' }],
       })
     })

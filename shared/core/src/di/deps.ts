@@ -127,7 +127,7 @@ export class Deps {
    */
   private static helpers(queryClient: QueryClient, query: Query): IDeps['helpers'] {
     const dates = new DateFormatter()
-    const squads = new Squads(queryClient)
+    const squads = new Squads(queryClient, dates)
 
     return {
       code: new OtpCode(),
@@ -138,7 +138,7 @@ export class Deps {
       phone: new Phone(),
       query,
       squads,
-      venues: new Venues(queryClient),
+      venues: new Venues(queryClient, dates),
     }
   }
 }

@@ -40,7 +40,7 @@ describe('useSquadEvents', () => {
     expect(result.current.past.map((event) => event.id)).toEqual(['e3'])
     expect(result.current.openCount).toBe(2)
     expect(result.current.needsAnswer?.id).toBe('e2')
-    expect(result.current.past[0]?.closedOn).toBe('17 Oct')
+    expect(result.current.past[0]?.closedOn).toBe('17th Oct 2026')
   })
 
   it('loads the next page on loadMore', async () => {

@@ -43,7 +43,7 @@ describe('squad favorites', () => {
     await openFavorites()
 
     expect(await screen.findByRole('button', { name: /^Skyline Bar/ })).toBeOnTheScreen()
-    expect(screen.getAllByText('Saved by you and Meera · 18 Oct')).toHaveLength(2)
+    expect(screen.getAllByText('Saved by you and Meera · 18th Oct 2026')).toHaveLength(2)
     expect(screen.getByRole('tab', { name: 'Favorites, 2' })).toBeSelected()
     expect(screen.getByRole('tab', { name: 'Members, 3' })).toBeOnTheScreen()
   })
@@ -86,7 +86,7 @@ describe('squad favorites', () => {
     await openFavorites()
     await screen.findByRole('button', { name: /^Skyline Bar/ })
     await fireEvent.press(screen.getByRole('button', { name: 'Options for Skyline Bar' }))
-    await fireEvent.press(screen.getByRole('menuitem', { name: 'Remove from favorites' }))
+    await fireEvent.press(screen.getByRole('menuitem', { name: 'Remove' }))
 
     await waitFor(() => {
       expect(screen.queryByRole('button', { name: /^Skyline Bar/ })).toBeNull()
@@ -101,7 +101,7 @@ describe('squad favorites', () => {
     await openFavorites()
     await screen.findByRole('button', { name: /^Skyline Bar/ })
     await fireEvent.press(screen.getByRole('button', { name: 'Options for Skyline Bar' }))
-    await fireEvent.press(screen.getByRole('menuitem', { name: 'Remove from favorites' }))
+    await fireEvent.press(screen.getByRole('menuitem', { name: 'Remove' }))
 
     expect(await screen.findByRole('alert')).toBeOnTheScreen()
     expect(screen.getByRole('button', { name: /^Skyline Bar/ })).toBeOnTheScreen()

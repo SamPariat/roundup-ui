@@ -43,7 +43,7 @@ describe('New event modal', () => {
   it('starts tomorrow at 8 pm, which the voting deadline follows', async () => {
     await openModal()
 
-    expect(screen.getAllByText('Thu 12 Nov, 8:00 pm')).toHaveLength(2)
+    expect(screen.getAllByText('Thu 12th Nov 2026, 8:00 pm')).toHaveLength(2)
   })
 
   it('refuses a blank name and sends nothing', async () => {
@@ -85,8 +85,8 @@ describe('New event modal', () => {
 
     await fireEvent.press(screen.getByRole('button', { name: 'Friday 13 November' }))
 
-    expect(screen.getByText('Fri 13 Nov, 8:00 pm')).toBeOnTheScreen()
-    expect(screen.getAllByText('Thu 12 Nov, 8:00 pm')).toHaveLength(2)
+    expect(screen.getByText('Fri 13th Nov 2026, 8:00 pm')).toBeOnTheScreen()
+    expect(screen.getAllByText('Thu 12th Nov 2026, 8:00 pm')).toHaveLength(2)
 
     await fireEvent.press(screen.getByRole('button', { name: 'Done' }))
 
@@ -95,7 +95,7 @@ describe('New event modal', () => {
     })
 
     // Voting closes follows the start until it is picked itself.
-    expect(screen.getAllByText('Fri 13 Nov, 8:00 pm')).toHaveLength(2)
+    expect(screen.getAllByText('Fri 13th Nov 2026, 8:00 pm')).toHaveLength(2)
   })
 
   it('drops what was picked when the picker is cancelled', async () => {
@@ -110,7 +110,7 @@ describe('New event modal', () => {
       expect(screen.queryByRole('button', { name: 'Done' })).toBeNull()
     })
 
-    expect(screen.getAllByText('Thu 12 Nov, 8:00 pm')).toHaveLength(2)
+    expect(screen.getAllByText('Thu 12th Nov 2026, 8:00 pm')).toHaveLength(2)
     expect(screen.getByText('Everyone in Friday crew is invited')).toBeOnTheScreen()
   })
 
