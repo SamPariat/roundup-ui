@@ -7,6 +7,7 @@ import { useT } from '@roundup/i18n'
 import { Button, Modal, PhoneInput } from '@roundup/ui'
 
 import { useErrorText } from '@/hooks/useErrorText'
+import { useNotify } from '@/hooks/useNotify'
 
 /** Props for AddNumberModal. */
 export interface IAddNumberModalProps {
@@ -30,13 +31,18 @@ export const AddNumberModal = ({
   squadName,
 }: IAddNumberModalProps): ReactElement => {
   const { t } = useT()
+  const notify = useNotify()
 
   const { busy, error, phone, requestId, setPhone, submit } = useAddMemberViewModel(squadId)
   const errorText = useErrorText(error, requestId)
 
+  // The sheet closes once they are in, so the notice over the app says they joined.
   const handleAdd = useCallback(async (): Promise<void> => {
-    if (await submit()) onClose()
-  }, [onClose, submit])
+    if (!(await submit())) return
+
+    notify({ id: `added-${squadId}-1`, message: t('notices.added', { count: 1 }), tone: 'success' })
+    onClose()
+  }, [notify, onClose, squadId, submit, t])
 
   const actions = [
     <Button

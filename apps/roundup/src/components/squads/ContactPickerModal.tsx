@@ -9,6 +9,7 @@ import { Button, Icon, List, ListRow, Modal, Skeleton, Text, TextField, Toast } 
 
 import { PersonRow } from './PersonRow'
 import { useErrorText } from '@/hooks/useErrorText'
+import { useNotify } from '@/hooks/useNotify'
 
 /** Props for ContactPickerModal. */
 export interface IContactPickerModalProps {
@@ -33,17 +34,28 @@ export const ContactPickerModal = ({
   squadId,
 }: IContactPickerModalProps): ReactElement => {
   const { t } = useT()
+  const notify = useNotify()
 
   const picker = useContactPickerViewModel(squadId)
+  const { add, pickedCount } = picker
   const errorText = useErrorText(picker.error, picker.requestId)
 
   const handleOpenSettings = useCallback((): void => {
     void Linking.openSettings()
   }, [])
 
+  // The sheet closes once they are in, so the notice over the app says how many joined.
   const handleAdd = useCallback(async (): Promise<void> => {
-    if (await picker.add()) onClose()
-  }, [onClose, picker])
+    if (!(await add())) return
+
+    notify({
+      id: `added-${squadId}-${String(pickedCount)}`,
+      message: t('notices.added', { count: pickedCount }),
+      tone: 'success',
+    })
+
+    onClose()
+  }, [add, notify, onClose, pickedCount, squadId, t])
 
   if (picker.phase === 'denied') {
     return (

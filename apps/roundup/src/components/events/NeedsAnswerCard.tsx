@@ -12,6 +12,7 @@ import { Button, Text } from '@roundup/ui'
 
 import { EventText } from '@/components/events/event-text'
 import { RsvpChips } from '@/components/events/RsvpChips'
+import { useNotify } from '@/hooks/useNotify'
 import { Paths } from '@/navigation/paths'
 
 /** Props for NeedsAnswerCard. */
@@ -36,14 +37,28 @@ export const NeedsAnswerCard = ({
 }: INeedsAnswerCardProps): ReactElement => {
   const { t } = useT()
   const router = useRouter()
+  const notify = useNotify()
 
   const handleOpen = useCallback((): void => {
     router.push(Paths.squadEvent(event.id, event.name))
   }, [event.id, event.name, router])
 
+  // Answering can take the card off the list, so the notice over the app says it worked.
   const handleAnswer = useCallback(
-    (status: RSVPStatus): Promise<boolean> => onAnswer(event, status),
-    [event, onAnswer],
+    async (status: RSVPStatus): Promise<boolean> => {
+      const done = await onAnswer(event, status)
+
+      if (done) {
+        notify({
+          id: `answer-${event.id}-${status}`,
+          message: EventText.answered(t, status, event.name),
+          tone: 'success',
+        })
+      }
+
+      return done
+    },
+    [event, notify, onAnswer, t],
   )
 
   const voting = event.status === EventStatus.VOTING && !event.hasVoted
