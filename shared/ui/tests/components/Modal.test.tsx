@@ -120,12 +120,12 @@ describe('Modal', () => {
       Reflect.deleteProperty(globalThis, 'document')
     })
 
-    it('leaves the backdrop of a modal inside another one clear, so the screen dims once', async () => {
+    it("leaves a nested modal's backdrop clear, so the screen dims once", async () => {
       Platform.OS = 'ios'
 
       await Render.withTheme(
         <Modal title="New event">
-          <Modal title="Add member">
+          <Modal nested title="Add member">
             <Text>Body</Text>
           </Modal>
         </Modal>,

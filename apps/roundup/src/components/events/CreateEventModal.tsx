@@ -134,6 +134,7 @@ export const CreateEventModal = ({
         format={dateField}
         label={t('screens.events.create.whenLabel')}
         min={earliest}
+        nested
         onChange={model.setStartsAt}
         value={model.startsAt}
         {...(startText === undefined ? {} : { error: startText })}
@@ -143,6 +144,7 @@ export const CreateEventModal = ({
         helper={t('screens.events.create.votingHelper')}
         label={t('screens.events.create.votingLabel')}
         min={earliest}
+        nested
         onChange={model.setVotingCloses}
         value={model.votingCloses}
         {...(votingText === undefined ? {} : { error: votingText })}

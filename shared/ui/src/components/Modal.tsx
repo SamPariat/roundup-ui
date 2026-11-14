@@ -2,7 +2,7 @@ import type { ComponentRef, ReactElement, ReactNode, RefObject } from 'react'
 import type { ViewStyle } from 'react-native'
 
 import { BlurView } from 'expo-blur'
-import { use, useCallback, useMemo, useRef } from 'react'
+import { useCallback, useMemo, useRef } from 'react'
 import {
   AccessibilityInfo,
   KeyboardAvoidingView,
@@ -22,7 +22,6 @@ import type { TMotionStyle } from '../lib/useModalMotion'
 import { ActionContext } from '../lib/action-context'
 import { cn } from '../lib/cn'
 import { ABSOLUTE_FILL } from '../lib/fill'
-import { ModalNestingContext } from '../lib/modal-nesting'
 import { useKeyboardShown } from '../lib/useKeyboardShown'
 import { useModalMotion } from '../lib/useModalMotion'
 import { useTheme } from '../theme/theme'
@@ -59,6 +58,12 @@ export interface IModalProps {
   visible?: boolean
   /** Called when a tap on the backdrop, Esc or the Android back button asks to close. Not called while busy. */
   onClose?: () => void
+  /**
+   * It opens from inside another Modal's body, like a date field's picker in the New event form.
+   * That Modal already dims the screen, so this one leaves its backdrop clear; a tap on it still
+   * asks to close. Default false.
+   */
+  nested?: boolean
 }
 
 /** The padding inside the modal, in points; at the bottom the sheet sits a small gap over the home indicator instead when that is taller. */
@@ -257,6 +262,7 @@ export const Modal = ({
   busy = false,
   children,
   leading,
+  nested = false,
   onClose,
   subtitle,
   title,
@@ -269,8 +275,6 @@ export const Modal = ({
   // The sheet runs to the bottom edge, so its last action stays clear of the home indicator.
   const { bottom, top } = useSafeAreaInsets()
   const { height } = useWindowDimensions()
-  // Inside another Modal's body, that one's backdrop already dims the screen.
-  const nested = use(ModalNestingContext)
 
   const titleRef = useRef<TTitleElement>(null)
 
@@ -360,10 +364,7 @@ export const Modal = ({
                   titleRef={titleRef}
                 />
                 <ModalContent body={body} busy={busy}>
-                  {/* A Modal opened from the body, like a date field's picker, stacks on this one. */}
-                  {children === undefined ? undefined : (
-                    <ModalNestingContext value>{children}</ModalNestingContext>
-                  )}
+                  {children}
                 </ModalContent>
                 {actions !== undefined && actions.length > 0 ? (
                   <ActionContext value={actionContext}>
