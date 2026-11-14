@@ -95,7 +95,7 @@ export const MemberActionsModal = ({
   const working = (action: TMemberAction): Pick<IListRowProps, 'working'> =>
     busy && chosen === action ? { working: t('screens.squad.member.saving') } : {}
 
-  const perform = useCallback(
+  const handleAction = useCallback(
     async (action: TMemberAction, request: () => Promise<boolean>): Promise<void> => {
       setChosen(action)
 
@@ -105,18 +105,18 @@ export const MemberActionsModal = ({
   )
 
   const handlePromote = useCallback(
-    (): Promise<void> => perform(MemberAction.MAKE_ADMIN, () => makeAdmin(member.id)),
-    [makeAdmin, member.id, perform],
+    (): Promise<void> => handleAction(MemberAction.MAKE_ADMIN, () => makeAdmin(member.id)),
+    [makeAdmin, member.id, handleAction],
   )
 
   const handleDemote = useCallback(
-    (): Promise<void> => perform(MemberAction.REMOVE_ADMIN, () => removeAdmin(member.id)),
-    [member.id, perform, removeAdmin],
+    (): Promise<void> => handleAction(MemberAction.REMOVE_ADMIN, () => removeAdmin(member.id)),
+    [member.id, handleAction, removeAdmin],
   )
 
   const handleKick = useCallback(
-    (): Promise<void> => perform(MemberAction.REMOVE, () => remove(member.id)),
-    [member.id, perform, remove],
+    (): Promise<void> => handleAction(MemberAction.REMOVE, () => remove(member.id)),
+    [member.id, handleAction, remove],
   )
 
   return (

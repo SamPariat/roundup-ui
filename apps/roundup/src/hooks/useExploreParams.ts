@@ -71,7 +71,7 @@ export const useExploreParams = (): IExploreParams => {
 
   // Writes through this screen's own navigation, not the router's, which writes to whichever screen
   // is in front: that is how the words of a blurred screen can still reach their own URL.
-  const write = useCallback(
+  const handleWrite = useCallback(
     (text: string): void => {
       pendingRef.current = undefined
       navigation.setParams({ q: ExploreParams.queryOf(text) })
@@ -84,13 +84,13 @@ export const useExploreParams = (): IExploreParams => {
 
   // Going to a place, or away, writes the words that are waiting at once, so the field and the
   // results agree when the person comes back, and no write is left to land on another screen.
-  const flush = useCallback(
+  const handleFocus = useCallback(
     (): (() => void) => (): void => {
       clearTimeout(timerRef.current)
 
-      if (pendingRef.current !== undefined) write(pendingRef.current)
+      if (pendingRef.current !== undefined) handleWrite(pendingRef.current)
     },
-    [write],
+    [handleWrite],
   )
 
   const setText = useCallback(
@@ -98,9 +98,9 @@ export const useExploreParams = (): IExploreParams => {
       clearTimeout(timerRef.current)
       pendingRef.current = text
       setDraft({ text, written: false })
-      timerRef.current = setTimeout(write, DEBOUNCE, text)
+      timerRef.current = setTimeout(handleWrite, DEBOUNCE, text)
     },
-    [write],
+    [handleWrite],
   )
 
   const toggleFilter = useCallback(
@@ -117,7 +117,7 @@ export const useExploreParams = (): IExploreParams => {
     [router],
   )
 
-  useFocusEffect(flush)
+  useFocusEffect(handleFocus)
 
   return { ...state, setRadiusKm, setText, text, toggleFilter }
 }
