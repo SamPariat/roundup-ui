@@ -59,8 +59,11 @@ export interface IModalProps {
   onClose?: () => void
 }
 
-/** The padding inside the modal, in points; at the bottom the sheet uses the home indicator's inset instead when that is larger. */
+/** The padding inside the modal, in points; at the bottom the sheet sits a small gap over the home indicator instead when that is taller. */
 const PADDING = 24
+
+/** The gap between the home indicator's inset and the sheet's last action, in points. */
+const SAFE_AREA_GAP = 8
 
 /**
  * The sheet's bottom padding while the keyboard is up, in points. The keyboard covers the home
@@ -289,9 +292,9 @@ export const Modal = ({
 
     if (keyboardShown) return { paddingBottom: KEYBOARD_GAP }
 
-    // The home indicator's inset is gap enough on its own; adding the padding on top of it left a
-    // band of empty sheet under the last action. Phones without one keep the padding.
-    return { paddingBottom: Math.max(PADDING, bottom) }
+    // A small gap over the home indicator's inset keeps the last action clear of it; the full
+    // padding on top of the inset left a band of empty sheet. Phones without one keep the padding.
+    return { paddingBottom: Math.max(PADDING, bottom + SAFE_AREA_GAP) }
   }, [bottom, keyboardShown, sheet])
 
   const handleFocusTitle = useCallback((): void => {
