@@ -448,7 +448,7 @@ export const en = {
         title: 'Suggest a place',
         subtitle: '{{name}}',
         searchLabel: 'Search places',
-        searchPlaceholder: 'Search bars and restaurants',
+        searchPlaceholder: 'Bars, restaurants, cafés and more',
         favorites: 'Squad favorites',
         history: 'Been before',
         action: 'Suggest',
