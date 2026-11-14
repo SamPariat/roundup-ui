@@ -28,6 +28,43 @@ describe('DateFormatter', () => {
     expect(dates.parse(dates.toIso(picked)).getTime()).toBe(picked.getTime())
   })
 
+  describe('left', () => {
+    /** 10:00 UTC on 14 November 2026, so no zone moves the day. */
+    const NOW = Date.UTC(2026, 10, 14, 10)
+
+    /**
+     * An instant after NOW.
+     * @param minutes - How many minutes after.
+     * @param seconds - How many seconds more.
+     * @returns The instant as the API sends it.
+     */
+    const after = (minutes: number, seconds = 0): string =>
+      new Date(NOW + minutes * 60_000 + seconds * 1000).toISOString()
+
+    it('words the two largest units', () => {
+      expect(dates.left(NOW, after(3 * 24 * 60 + 21 * 60 + 15))).toBe('3 days 21 hours')
+      expect(dates.left(NOW, after(5 * 60 + 12, 30))).toBe('5 hours 12 minutes')
+      expect(dates.left(NOW, after(40, 10))).toBe('40 minutes')
+    })
+
+    it('leaves out a unit that is zero', () => {
+      expect(dates.left(NOW, after(24 * 60 + 10))).toBe('1 day')
+      expect(dates.left(NOW, after(3 * 60))).toBe('3 hours')
+    })
+
+    it('says less than a minute under a minute and once the moment has passed', () => {
+      expect(dates.left(NOW, after(0, 59))).toBe('less than a minute')
+      expect(dates.left(NOW, after(-60))).toBe('less than a minute')
+      expect(dates.left(NOW, after(1))).toBe('1 minute')
+    })
+
+    it('follows the locale', () => {
+      expect(new DateFormatter(fr).left(NOW, after(3 * 24 * 60 + 21 * 60 + 15))).toBe(
+        '3 jours 21 heures',
+      )
+    })
+  })
+
   it('finds tomorrow at an hour, on the hour', () => {
     const tomorrow = dates.tomorrowAt(new Date(2026, 10, 11, 12, 34, 56).getTime(), 20)
 

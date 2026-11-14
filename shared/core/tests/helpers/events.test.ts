@@ -7,6 +7,7 @@ import { EventStatus, RSVPStatus } from '@roundup/api'
 import { DateFormatter } from '../../src/helpers/date-formatter'
 import { Events } from '../../src/helpers/events'
 import { Squads } from '../../src/helpers/squads'
+import { EventFixtures } from './event-fixtures'
 
 /** The helper under test, on a cache of its own. */
 const queryClient = new QueryClient()
@@ -79,6 +80,65 @@ describe('Events.toCard', () => {
 
     expect(card.winner).toEqual({ address: '12th Main', name: 'The Lantern Terrace' })
     expect(card.closedOn).toBe('17th Oct 2026')
+  })
+})
+
+describe('Events.toInfo', () => {
+  /** Wednesday evening in the zone the tests run in, as the API would send it. */
+  const DEADLINE = new Date(2026, 10, 18, 21).toISOString()
+
+  it('maps the voting: counts, the deadline, my vote, the members and each place votes', () => {
+    const detail = EventFixtures.detail('e1', {
+      memberCount: 4,
+      myVote: 'p1',
+      status: EventStatus.VOTING,
+      votedCount: 2,
+      votingDeadline: DEADLINE,
+    })
+
+    const info = events.toInfo(detail, 'u1')
+
+    expect(info).toMatchObject({
+      memberCount: 4,
+      members: [
+        { id: 'u1', isMe: true, name: 'Asha' },
+        { id: 'u2', isMe: false, name: 'Meera', rsvp: RSVPStatus.GOING },
+      ],
+      myVote: 'p1',
+      permissions: { canNominate: true, canRsvp: true, canStartVoting: true, canVote: true },
+      votedCount: 2,
+      votingCloses: 'Wed 18th Nov 2026, 9:00 pm',
+      votingDeadline: DEADLINE,
+    })
+
+    expect(info.nominations[0]).toMatchObject({
+      address: '12 MG Road',
+      voteCount: 1,
+      votedByMe: false,
+      voters: [{ id: 'u2', name: 'Meera' }],
+    })
+  })
+
+  it('leaves out the vote and the address the API does not send, and reads absent counts as none', () => {
+    const detail = EventFixtures.detail('e1', { nominations: [{ placeID: 'p1' }] })
+
+    delete detail.memberCount
+    delete detail.permissions
+    delete detail.votedCount
+
+    const info = events.toInfo(detail, 'u1')
+
+    expect(info).not.toHaveProperty('myVote')
+    expect(info.nominations[0]).not.toHaveProperty('address')
+    expect(info.nominations[0]).toMatchObject({ voteCount: 0, voters: [], votedByMe: false })
+    expect(info).toMatchObject({ memberCount: 2, votedCount: 0 })
+
+    expect(info.permissions).toEqual({
+      canNominate: false,
+      canRsvp: false,
+      canStartVoting: false,
+      canVote: false,
+    })
   })
 })
 

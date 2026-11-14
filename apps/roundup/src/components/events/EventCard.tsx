@@ -32,10 +32,11 @@ export const EventCard = ({ event }: IEventCardProps): ReactElement => {
   }, [event.id, event.name, router])
 
   return (
+    // It grows to its grid row, so the cards side by side end level whatever their text.
     <Pressable
       accessibilityLabel={event.name}
       accessibilityRole="button"
-      className="gap-3 rounded-2xl border border-border bg-bg-raised p-4 hover:bg-bg-hover focus:outline-2 focus:outline-offset-2 focus:outline-focus-ring"
+      className="grow gap-3 rounded-2xl border border-border bg-bg-raised p-4 hover:bg-bg-hover focus:outline-2 focus:outline-offset-2 focus:outline-focus-ring"
       onPress={handleOpen}
     >
       <View className="flex-row items-start justify-between gap-2">

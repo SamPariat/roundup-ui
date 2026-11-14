@@ -1,9 +1,9 @@
 import { useMemo } from 'react'
 import { useWindowDimensions } from 'react-native'
 
-import type { SearchVenues200, SearchVenuesParams } from '@roundup/api'
+import type { SearchVenuesParams } from '@roundup/api'
 
-import { getSearchVenuesQueryKey, searchVenues } from '@roundup/api'
+import { getSearchVenuesQueryKey } from '@roundup/api'
 
 import type { TErrorKey } from '../helpers/error-key'
 import type { TLocationPhase } from '../location/useLocation'
@@ -13,19 +13,7 @@ import { useDeps } from '../di/useDeps'
 import { useLocation } from '../location/useLocation'
 import { usePages } from '../paging/usePages'
 import { useSignedIn } from '../session/useSignedIn'
-
-/** Meters in a kilometer, which the API's radius is in. */
-const METERS_PER_KM = 1000
-
-/**
- * Builds the function that asks for one page of a search.
- * @param params - What to search for.
- * @returns The function that takes a page's cursor.
- */
-const pageFetcher =
-  (params: SearchVenuesParams) =>
-  (cursor: string | undefined): Promise<SearchVenues200> =>
-    searchVenues({ ...params, ...(cursor === undefined ? {} : { cursor }) })
+import { METERS_PER_KM, searchPageFetcher } from './venue-search'
 
 /** What the Explore screen shows and does. */
 export interface IExploreViewModel {
@@ -98,7 +86,7 @@ export const useExploreViewModel = ({
   )
 
   const { error, hasMore, loading, loadingMore, loadMore, pages, refresh } = usePages({
-    fetchPage: signedIn && params !== undefined ? pageFetcher(params) : undefined,
+    fetchPage: signedIn && params !== undefined ? searchPageFetcher(params) : undefined,
     // Every loaded page would be asked for again (paid Places calls); a pull reloads instead.
     refetchOnFocus: false,
     // Keeps the last results on screen while a new search loads, so typing does not flash.

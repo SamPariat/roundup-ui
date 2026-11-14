@@ -83,6 +83,14 @@ export interface IEventNomination {
   priceLevel: TPriceLevel
   /** True when the signed-in person may take the suggestion back. */
   canRemove: boolean
+  /** The street address; left out when empty. */
+  address?: string
+  /** How many members voted for it. */
+  voteCount: number
+  /** The members who voted for it, for the avatars. */
+  voters: ISquadPerson[]
+  /** True when the signed-in person voted for it. */
+  votedByMe: boolean
 }
 
 /** What the signed-in person may do in an event right now. */
@@ -91,6 +99,10 @@ export interface IEventPermissions {
   canRsvp: boolean
   /** May start voting. */
   canStartVoting: boolean
+  /** May suggest a place. */
+  canNominate: boolean
+  /** May vote for a place. */
+  canVote: boolean
 }
 
 /** Everything an event's page shows. */
@@ -107,8 +119,10 @@ export interface IEventInfo {
   status: EventStatus
   /** When it starts, such as "Sat 31 Oct, 8:00 pm". */
   when: string
-  /** When voting closes, such as "Thu 29 Oct, 9:00 pm". */
+  /** When voting closes, such as "Thu 29 Oct 2026, 9:00 pm". */
   votingCloses: string
+  /** When voting closes, as the API sends it, to count down to with DateFormatter.left. */
+  votingDeadline: string
   /** Who started it; left out when they have left the squad. */
   createdByName?: string
   /** True when the signed-in person started it. */
@@ -117,10 +131,26 @@ export interface IEventInfo {
   myRsvp?: RSVPStatus
   /** The members who are going, for the avatars. */
   going: ISquadPerson[]
+  /** Every current member with their answer, for the "Who's coming" list. */
+  members: IEventMember[]
+  /** How many members the squad has. */
+  memberCount: number
+  /** How many current members have voted. */
+  votedCount: number
+  /** The place the signed-in person voted for; left out until they vote. */
+  myVote?: string
   /** How many answered each way. */
   rsvpCounts: IRsvpCounts
   /** The places suggested so far. */
   nominations: IEventNomination[]
   /** What the signed-in person may do. */
   permissions: IEventPermissions
+}
+
+/** The rest of the squad's votes on an event: everyone's but the person's own. */
+export interface IOthersBallot {
+  /** How many votes they cast. */
+  total: number
+  /** Where they stand, place by place, as one comparable string; places with no votes are left out. */
+  key: string
 }

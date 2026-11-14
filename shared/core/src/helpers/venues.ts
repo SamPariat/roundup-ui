@@ -2,7 +2,16 @@ import type { QueryClient } from '@tanstack/react-query'
 
 import { PixelRatio } from 'react-native'
 
-import type { Favorite, Member, Photo, Review, SavedIn, Venue, VenueDetail } from '@roundup/api'
+import type {
+  Favorite,
+  Member,
+  Photo,
+  Review,
+  SavedIn,
+  Venue,
+  VenueDetail,
+  VisitSummary,
+} from '@roundup/api'
 
 import { getGetVenueQueryKey, getListFavoritesQueryKey, PhotoWidthParameter } from '@roundup/api'
 
@@ -15,6 +24,7 @@ import type {
   IVenueInfo,
   IVenuePhoto,
   IVenueReview,
+  IVisitRow,
   TPriceLevel,
 } from '../venues/types'
 import type { DateFormatter } from './date-formatter'
@@ -140,6 +150,23 @@ export class Venues {
       ...(favorite.address === '' ? {} : { address: favorite.address }),
       ...(favorite.photo === null ? {} : this.photoFields(favorite.photo)),
       ...(rated ? { rating: favorite.averageRating, reviews: favorite.ratingCount } : {}),
+    }
+  }
+
+  /**
+   * Maps a venue of a squad's visit history onto a row.
+   * @param visit - The visit summary the API sent.
+   * @returns The row, its photo a thumbnail and its latest visit as a day.
+   */
+  toVisit(visit: VisitSummary): IVisitRow {
+    return {
+      id: visit.placeID,
+      lastVisitedOn: this.dates.day(visit.lastVisitedAt),
+      name: visit.name,
+      visitCount: visit.visitCount,
+      ...(visit.address === '' ? {} : { address: visit.address }),
+      ...(visit.avgSpendInPaise === null ? {} : { avgSpendInPaise: visit.avgSpendInPaise }),
+      ...(visit.photo === null ? {} : this.photoFields(visit.photo)),
     }
   }
 

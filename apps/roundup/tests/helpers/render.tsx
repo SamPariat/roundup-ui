@@ -13,7 +13,7 @@ import type { FakeNetwork, IBackend } from './fakes'
 
 import { Fakes } from './fakes'
 import { AuthStack } from '@/components/AuthStack'
-import { OfflineNotice } from '@/components/OfflineNotice'
+import { NoticeHost } from '@/components/NoticeHost'
 
 /** Insets and frame of a phone, so the safe-area hooks have values. */
 const METRICS = {
@@ -64,8 +64,7 @@ export class Render {
       <SafeAreaProvider initialMetrics={METRICS}>
         <ThemeProvider>
           <CoreProvider deps={deps}>
-            {guarded ? <AuthStack /> : <Slot />}
-            <OfflineNotice />
+            <NoticeHost>{guarded ? <AuthStack /> : <Slot />}</NoticeHost>
           </CoreProvider>
         </ThemeProvider>
       </SafeAreaProvider>

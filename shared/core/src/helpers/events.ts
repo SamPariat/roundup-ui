@@ -5,6 +5,7 @@ import type {
   EventMember,
   EventPlace,
   EventSummary,
+  GetEvent200,
   Nomination,
   RSVPCounts,
 } from '@roundup/api'
@@ -23,6 +24,7 @@ import type {
   IEventMember,
   IEventNomination,
   IEventWinner,
+  IOthersBallot,
   IRsvpCounts,
 } from '../events/types'
 import type { TPriceLevel } from '../venues/types'
@@ -97,6 +99,28 @@ export class Events {
   }
 
   /**
+   * The rest of the squad's votes, place by place: each place's votes without the person's own.
+   * Comparing two of these tells whether anyone else voted or changed their vote; the person's own
+   * vote, wherever it moves, never changes it.
+   * @param detail - The event's detail.
+   * @returns Their total and where their votes stand.
+   */
+  othersBallot(detail: EventDetail): IOthersBallot {
+    const places = (detail.nominations ?? [])
+      .map((nomination) => ({
+        id: nomination.placeID ?? '',
+        votes: (nomination.voteCount ?? 0) - (nomination.votedByMe === true ? 1 : 0),
+      }))
+      .filter((place) => place.votes > 0)
+      .sort((a, b) => a.id.localeCompare(b.id))
+
+    return {
+      key: places.map((place) => `${place.id}:${String(place.votes)}`).join(','),
+      total: places.reduce((sum, place) => sum + place.votes, 0),
+    }
+  }
+
+  /**
    * Maps an event's detail answer onto what its page shows.
    * @param detail - The detail answer.
    * @param meId - The signed-in person's user ID; undefined while unknown.
@@ -108,27 +132,36 @@ export class Events {
     const myRsvp = detail.myRsvp ?? undefined
     const permissions = detail.permissions
     const createdByName = detail.createdByName ?? undefined
+    const myVote = detail.myVote ?? undefined
+    const votingDeadline = detail.votingDeadline ?? startsAt
 
     return {
       createdByMe: detail.createdBy !== undefined && detail.createdBy === meId,
       going: members.filter((member) => member.rsvp === RSVPStatus.GOING),
       id: detail.id ?? '',
+      memberCount: detail.memberCount ?? members.length,
+      members,
       name: detail.name ?? '',
       nominations: (detail.nominations ?? []).map((nomination) =>
         this.toNomination(nomination, meId),
       ),
       permissions: {
+        canNominate: permissions?.canNominate ?? false,
         canRsvp: permissions?.canRsvp ?? false,
         canStartVoting: permissions?.canStartVoting ?? false,
+        canVote: permissions?.canVote ?? false,
       },
       rsvpCounts: this.countMembers(members),
       squadId: detail.squadID ?? '',
       status: detail.status ?? EventStatus.DRAFT,
       type: detail.type ?? EventType.DRINKS,
-      votingCloses: this.dates.eventWhen(detail.votingDeadline ?? startsAt),
+      votedCount: detail.votedCount ?? 0,
+      votingCloses: this.dates.eventWhen(votingDeadline),
+      votingDeadline,
       when: this.dates.eventWhen(startsAt),
       ...(createdByName === undefined ? {} : { createdByName }),
       ...(myRsvp === undefined ? {} : { myRsvp }),
+      ...(myVote === undefined ? {} : { myVote }),
     }
   }
 
@@ -170,6 +203,19 @@ export class Events {
       this.queryClient.invalidateQueries({ queryKey: getListSquadEventsQueryKey(squadId) }),
       ...detail,
     ])
+  }
+
+  /**
+   * Puts a write's answer, the event's new detail, in the cache in place of the old, and marks the
+   * squad's event list as out of date, so the list's counts load again.
+   * @param squadId - The squad whose events changed.
+   * @param eventId - The event the answer is for.
+   * @param answer - The answer of a write that returns the event's detail, such as a suggestion.
+   */
+  async written(squadId: string, eventId: string, answer: GetEvent200): Promise<void> {
+    this.queryClient.setQueryData(getGetEventQueryKey(eventId), answer)
+
+    await this.queryClient.invalidateQueries({ queryKey: getListSquadEventsQueryKey(squadId) })
   }
 
   /**
@@ -248,6 +294,7 @@ export class Events {
   private toNomination(nomination: Nomination, meId: string | undefined): IEventNomination {
     const rating = nomination.rating ?? 0
     const nominatedByName = nomination.nominatedByName ?? undefined
+    const address = nomination.address ?? ''
 
     return {
       canRemove: nomination.canRemove ?? false,
@@ -255,6 +302,10 @@ export class Events {
       name: nomination.name ?? '',
       nominatedByMe: nomination.nominatedBy !== undefined && nomination.nominatedBy === meId,
       priceLevel: PRICE_LEVELS[nomination.priceLevel ?? 0] ?? 0,
+      votedByMe: nomination.votedByMe ?? false,
+      voteCount: nomination.voteCount ?? 0,
+      voters: (nomination.voters ?? []).map((voter) => this.squads.toPerson(voter)),
+      ...(address === '' ? {} : { address }),
       ...(nominatedByName === undefined ? {} : { nominatedByName }),
       ...(rating > 0 ? { rating } : {}),
     }

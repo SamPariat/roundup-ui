@@ -16,6 +16,8 @@ export interface IStubVenue {
 export interface IVenueState extends ISquadState {
   /** The venues on the "server". */
   venues?: IStubVenue[]
+  /** The IDs of the venues the squad has been to, most recent first, for its visit history. */
+  visited?: string[]
   /** The squads each venue is saved in, by place ID; the routes change it. */
   saved?: Record<string, string[]>
   /** How many venues a search page holds. Defaults to 20, as Google's does. */
@@ -53,6 +55,8 @@ export class VenueBackend {
     if (pathname.startsWith(`${VENUES}/`)) {
       return VenueBackend.one(state, pathname.slice(VENUES.length + 1))
     }
+
+    if (/^\/api\/v1\/squads\/[^/]+\/history$/.test(pathname)) return VenueBackend.history(state)
 
     const favorite = /^\/api\/v1\/squads\/([^/]+)\/favorites(?:\/([^/]+))?$/.exec(pathname)
 
@@ -193,6 +197,33 @@ export class VenueBackend {
     })
 
     return VenueBackend.ok({ favorites, nextCursor: null })
+  }
+
+  /**
+   * Answers the squad's visit history: the venues it has been to, each twice, in one page.
+   * @param state - The venues and the visited venue IDs.
+   * @returns The page.
+   */
+  private static history(state: IVenueState): Response {
+    const history = (state.visited ?? []).flatMap((placeId) => {
+      const venue = (state.venues ?? []).find((candidate) => candidate.id === placeId)
+
+      if (venue === undefined) return []
+
+      return [
+        {
+          address: `${venue.name} Road`,
+          avgSpendInPaise: null,
+          lastVisitedAt: '2026-10-18T10:00:00Z',
+          name: venue.name,
+          photo: null,
+          placeID: venue.id,
+          visitCount: 2,
+        },
+      ]
+    })
+
+    return VenueBackend.ok({ history, nextCursor: null })
   }
 
   /**

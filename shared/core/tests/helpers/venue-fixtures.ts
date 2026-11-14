@@ -1,10 +1,12 @@
 import type {
   Favorite,
+  GetVisitHistory200,
   ListFavorites200,
   Photo,
   SearchVenues200,
   Venue,
   VenueDetail,
+  VisitSummary,
 } from '@roundup/api'
 
 import type { ITestCore } from './wrapper'
@@ -138,6 +140,38 @@ export class VenueFixtures {
     nextCursor: null | string = null,
   ): ListFavorites200['data'] {
     return { favorites, nextCursor }
+  }
+
+  /**
+   * Builds a venue of a squad's visit history.
+   * @param id - Which venue; the name is built from it.
+   * @param overrides - Fields to change.
+   * @returns A venue the squad visited three times, last on 18 October 2026.
+   */
+  static visit(id: string, overrides: Partial<VisitSummary> = {}): VisitSummary {
+    return {
+      address: `${id} MG Road`,
+      avgSpendInPaise: 150_000,
+      lastVisitedAt: '2026-10-18T10:00:00Z',
+      name: `Venue ${id}`,
+      photo: VenueFixtures.photo(id),
+      placeID: id,
+      visitCount: 3,
+      ...overrides,
+    }
+  }
+
+  /**
+   * Builds the visit history answer for one page.
+   * @param history - The page's items.
+   * @param nextCursor - The cursor of the next page; null on the last.
+   * @returns The answer's data.
+   */
+  static history(
+    history: VisitSummary[],
+    nextCursor: null | string = null,
+  ): GetVisitHistory200['data'] {
+    return { history, nextCursor }
   }
 
   /**

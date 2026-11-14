@@ -17,7 +17,7 @@ import OnestMedium from '../../../../assets/fonts/Onest-Medium.ttf'
 import OnestRegular from '../../../../assets/fonts/Onest-Regular.ttf'
 import OnestSemiBold from '../../../../assets/fonts/Onest-SemiBold.ttf'
 import { AuthStack } from '@/components/AuthStack'
-import { OfflineNotice } from '@/components/OfflineNotice'
+import { NoticeHost } from '@/components/NoticeHost'
 import { useRouteGate } from '@/hooks/useRouteGate'
 
 void preventAutoHideAsync()
@@ -64,8 +64,9 @@ const Themed = ({ fontsReady }: IThemedProps): ReactElement => {
         </Head>
       )}
       <StatusBar style={name === 'mocha' ? 'light' : 'dark'} />
-      <AuthStack />
-      <OfflineNotice />
+      <NoticeHost>
+        <AuthStack />
+      </NoticeHost>
     </View>
   )
 }

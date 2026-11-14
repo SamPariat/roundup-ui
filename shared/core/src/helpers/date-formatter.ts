@@ -1,4 +1,4 @@
-import type { Locale } from 'date-fns'
+import type { Duration, Locale } from 'date-fns'
 
 import {
   addDays,
@@ -9,8 +9,10 @@ import {
   endOfMonth,
   endOfWeek,
   format,
+  formatDuration,
   formatISO,
   getHours,
+  intervalToDuration,
   isAfter,
   isBefore,
   isSameDay,
@@ -62,8 +64,17 @@ const HOUR = 'h'
 /** How the minutes of a time read, with a leading zero, such as "05". */
 const MINUTES = 'mm'
 
+/** Milliseconds in a minute. */
+const MS_PER_MINUTE = 60_000
+
 /** The first hour of the afternoon on a 24-hour clock. */
 const NOON = 12
+
+/** The units a countdown is worded in, largest first. */
+const LEFT_UNITS: readonly (keyof Duration)[] = ['years', 'months', 'days', 'hours', 'minutes']
+
+/** How many of the largest units a countdown shows, such as "3 days 21 hours". */
+const LEFT_UNIT_COUNT = 2
 
 /**
  * How a date field and its picker write, read and step through moments. Typed structurally, so it
@@ -364,6 +375,31 @@ export class DateFormatter {
    */
   day(iso: string): string {
     return format(this.parse(iso), DAY, this.options)
+  }
+
+  /**
+   * Words the time left until a moment as its two largest units, for "Closes in {{left}}":
+   * "3 days 21 hours", "5 hours 12 minutes", "40 minutes". A unit that is zero is left out, so
+   * 1 day and 10 minutes reads "1 day". Under a minute, and once the moment has passed, it reads
+   * as the locale's "less than a minute", which suits "Closes in less than a minute".
+   * @param now - The current time in milliseconds.
+   * @param iso - The moment counted down to, as the API sends it.
+   * @returns The wording, in the locale.
+   */
+  left(now: number, iso: string): string {
+    const end = this.parse(iso)
+
+    if (end.getTime() - now < MS_PER_MINUTE) {
+      return this.locale.formatDistance('lessThanXMinutes', 1)
+    }
+
+    const duration = intervalToDuration({ end, start: now })
+    const first = LEFT_UNITS.findIndex((unit) => (duration[unit] ?? 0) > 0)
+
+    return formatDuration(duration, {
+      format: LEFT_UNITS.slice(first, first + LEFT_UNIT_COUNT),
+      locale: this.locale,
+    })
   }
 
   /**

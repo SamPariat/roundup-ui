@@ -79,6 +79,26 @@ export interface IFavoriteRow {
   savedOn: string
 }
 
+/** One venue a squad has been to, as a row of its visit history. */
+export interface IVisitRow {
+  /** The venue's place ID. */
+  id: string
+  /** The venue's name, as of the latest visit. */
+  name: string
+  /** The street address; left out when empty. */
+  address?: string
+  /** A small photo's URL on Google's servers; left out when the venue has none. */
+  photo?: string
+  /** Who took the photo; left out when unknown. */
+  photoCredit?: IPhotoCredit
+  /** How many times the squad has been. */
+  visitCount: number
+  /** The day of the latest visit, such as "18th Oct 2026". */
+  lastVisitedOn: string
+  /** The average spend per person in paise; left out when no visit has a known spend. */
+  avgSpendInPaise?: number
+}
+
 /** One review of a venue. */
 export interface IVenueReview {
   /** Who wrote it. */

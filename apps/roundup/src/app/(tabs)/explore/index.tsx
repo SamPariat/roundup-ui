@@ -1,7 +1,7 @@
 import type { ReactElement } from 'react'
 
 import { useCallback, useMemo } from 'react'
-import { Linking, Platform, View } from 'react-native'
+import { View } from 'react-native'
 
 import type { IVenueCard, TVenueType } from '@roundup/core'
 
@@ -14,6 +14,7 @@ import { TabPage } from '@/components/TabPage'
 import { FilterChip } from '@/components/venues/FilterChip'
 import { RadiusMenu } from '@/components/venues/RadiusMenu'
 import { VenueListCard } from '@/components/venues/VenueListCard'
+import { useDeniedAction } from '@/hooks/useDeniedAction'
 import { useErrorText } from '@/hooks/useErrorText'
 import { useExploreParams } from '@/hooks/useExploreParams'
 import { usePullRefresh } from '@/hooks/usePullRefresh'
@@ -53,6 +54,7 @@ export default function ExploreScreen(): ReactElement {
 
   const { handleReload, refreshing } = usePullRefresh(refresh)
   const errorText = useErrorText(error, requestId)
+  const denied = useDeniedAction(retryLocation)
 
   const filters = useMemo(
     (): IFilter[] => [
@@ -63,10 +65,6 @@ export default function ExploreScreen(): ReactElement {
     ],
     [t],
   )
-
-  const handleOpenSettings = useCallback((): void => {
-    void Linking.openSettings()
-  }, [])
 
   const handleLoadNext = useCallback((): void => {
     if (hasMore) loadMore()
@@ -80,19 +78,12 @@ export default function ExploreScreen(): ReactElement {
   const keyOf = useCallback((venue: IVenueCard): string => venue.id, [])
 
   if (phase === 'denied') {
-    const label = Platform.select({
-      default: t('screens.explore.denied.openSettings'),
-      web: t('screens.explore.denied.tryAgain'),
-    })
-
-    const handlePress = Platform.select({ default: handleOpenSettings, web: retryLocation })
-
     return (
       <TabPage centered>
         <EmptyState
           action={
-            <Button block onPress={handlePress}>
-              {label}
+            <Button block onPress={denied.onPress}>
+              {denied.label}
             </Button>
           }
           art="search"

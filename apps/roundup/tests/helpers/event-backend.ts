@@ -37,6 +37,8 @@ export interface IStubEvent {
   hasVoted?: boolean
   /** What each member answered, by user ID. */
   answers: Record<string, string>
+  /** The place each member voted for, by user ID. */
+  votes?: Record<string, string>
   /** The places suggested. */
   nominations: IStubNomination[]
 }
@@ -53,6 +55,10 @@ export interface IEventState extends IVenueState {
   hangStart?: boolean
   /** True to make the create route hang, so its button stays busy. */
   hangCreate?: boolean
+  /** True to make the vote route hang, so the card being voted for stays busy. */
+  hangVote?: boolean
+  /** True to make the suggest route hang, so its button stays busy. */
+  hangNominate?: boolean
 }
 
 /** The signed-in person. */
@@ -150,6 +156,18 @@ export class EventBackend {
   }
 
   /**
+   * The members who voted for a place.
+   * @param votes - The place each member voted for, by user ID.
+   * @param placeId - The place whose voters are wanted.
+   * @returns The IDs of its voters.
+   */
+  private static voterIds(votes: Record<string, string>, placeId: string): string[] {
+    return Object.entries(votes)
+      .filter(([, voted]) => voted === placeId)
+      .map(([id]) => id)
+  }
+
+  /**
    * Builds a user as the API sends a member.
    * @param id - The user's ID.
    * @param name - The user's name.
@@ -226,6 +244,8 @@ export class EventBackend {
     const draft = event.status === 'DRAFT'
     const creator = event.createdBy === ME
     const members = EventBackend.members(state, event)
+    const votes = event.votes ?? {}
+    const voting = event.status === 'VOTING'
 
     return {
       ...EventBackend.base(event),
@@ -237,7 +257,9 @@ export class EventBackend {
         rsvp: event.answers[member.id] ?? null,
       })),
       myRsvp: event.answers[ME] ?? null,
+      myVote: votes[ME] ?? null,
       nominations: event.nominations.map((nomination) => ({
+        address: `${nomination.name} Road`,
         canRemove: draft && (creator || nomination.by === ME),
         name: nomination.name,
         nominatedBy: nomination.by,
@@ -245,12 +267,20 @@ export class EventBackend {
         placeID: nomination.id,
         priceLevel: 2,
         rating: 4.5,
+        voteCount: EventBackend.voterIds(votes, nomination.id).length,
+        votedByMe: votes[ME] === nomination.id,
+        voters: EventBackend.voterIds(votes, nomination.id).map((id) =>
+          EventBackend.member(id, members.find((member) => member.id === id)?.name ?? ''),
+        ),
       })),
       permissions: {
+        canNominate: draft,
         canRsvp: event.status !== 'CLOSED',
         canStartVoting: draft && creator && event.nominations.length > 0,
+        canVote: voting,
       },
-      votedCount: 0,
+      totalVotes: Object.keys(votes).length,
+      votedCount: Object.keys(votes).length,
     }
   }
 
@@ -315,6 +345,44 @@ export class EventBackend {
   }
 
   /**
+   * Records the signed-in person's vote.
+   * @param state - The events and venues.
+   * @param event - The stubbed event voted on.
+   * @param body - The request body, which names the place.
+   */
+  private static async cast(
+    state: IEventState,
+    event: IStubEvent,
+    body: Record<string, string> | undefined,
+  ): Promise<void> {
+    if (state.hangVote === true) await EventBackend.hang()
+
+    event.votes = { ...event.votes, [ME]: body?.['placeID'] ?? '' }
+  }
+
+  /**
+   * Adds a place the signed-in person suggests.
+   * @param state - The events and venues, which name the place.
+   * @param event - The stubbed event the place is suggested for.
+   * @param body - The request body, which names the place.
+   */
+  private static async suggest(
+    state: IEventState,
+    event: IStubEvent,
+    body: Record<string, string> | undefined,
+  ): Promise<void> {
+    if (state.hangNominate === true) await EventBackend.hang()
+
+    const placeId = body?.['placeID'] ?? ''
+    const venue = state.venues?.find((candidate) => candidate.id === placeId)
+
+    event.nominations = [
+      ...event.nominations,
+      { by: ME, id: placeId, name: venue?.name ?? placeId },
+    ]
+  }
+
+  /**
    * Answers a read of an event, or one of the changes to it.
    * @param state - The events and squads.
    * @param event - The stubbed event the request is about.
@@ -350,6 +418,12 @@ export class EventBackend {
       if (event.nominations.length === 0) return EventBackend.failure(HttpStatus.conflict)
 
       event.status = 'VOTING'
+    }
+
+    if (section === 'vote') await EventBackend.cast(state, event, body)
+
+    if (section === 'nominations' && method === 'POST') {
+      await EventBackend.suggest(state, event, body)
     }
 
     if (method === 'DELETE' && section?.startsWith('nominations/') === true) {

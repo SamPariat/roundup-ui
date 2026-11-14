@@ -4,7 +4,7 @@ import { View } from 'react-native'
 
 import type { ITabItem } from '@roundup/ui'
 
-import { Tabs } from '@roundup/ui'
+import { cn, Tabs } from '@roundup/ui'
 
 import type { TSquadEvents } from '@/components/events/SquadEvents'
 import type { TFavorites } from '@/components/squads/SquadFavorites'
@@ -53,11 +53,17 @@ export const WideSquad = ({
   return (
     <View className="gap-6">
       {identity}
-      <View className="max-w-160">
-        <Tabs items={tabs} onChange={onSelectTab} value={showingEvents ? 'events' : 'members'} />
-      </View>
+      {/* The tabs head the main column, and the aside stands beside the whole of it, as the
+          design lays the page out: the aside's top lines up with the tabs. */}
       <View className="flex-row items-start gap-8">
-        <View className={showingEvents ? 'min-w-0 flex-1' : 'max-w-160 min-w-0 flex-1'}>
+        <View className={cn('min-w-0 flex-1 gap-6', !showingEvents && 'max-w-160')}>
+          <View className="max-w-160">
+            <Tabs
+              items={tabs}
+              onChange={onSelectTab}
+              value={showingEvents ? 'events' : 'members'}
+            />
+          </View>
           {showingEvents ? events : members}
         </View>
         <View className="w-90 shrink-0">

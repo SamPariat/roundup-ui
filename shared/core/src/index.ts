@@ -24,8 +24,10 @@ export type {
 } from './events/types'
 export { useCreateEventViewModel } from './events/useCreateEventViewModel'
 export type { ICreateEventViewModel, TCreateEventField } from './events/useCreateEventViewModel'
-export { useEvent } from './events/useEvent'
-export type { IUseEvent } from './events/useEvent'
+export { EVENT_LIVE_SECONDS, useEvent } from './events/useEvent'
+export type { IFreshVotes, IUseEvent } from './events/useEvent'
+export { useNominateViewModel } from './events/useNominateViewModel'
+export type { INominateViewModel } from './events/useNominateViewModel'
 export { useSquadEvents } from './events/useSquadEvents'
 export type { IUseSquadEvents } from './events/useSquadEvents'
 export type { TErrorKey } from './helpers/error-key'
@@ -72,6 +74,7 @@ export type {
   IPhotoCredit,
   IVenuePhoto,
   IVenueReview,
+  IVisitRow,
   TPriceLevel,
   TVenueType,
 } from './venues/types'
