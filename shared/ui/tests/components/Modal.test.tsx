@@ -142,6 +142,19 @@ describe('Modal', () => {
       expect(ModalFixtures.maxHeight()).toBe(1334 - 16)
     })
 
+    it('lets the home indicator inset stand in for the bottom padding', async () => {
+      Platform.OS = 'ios'
+
+      await Render.withTheme(
+        <Modal title="Add member">
+          <Text>Body</Text>
+        </Modal>,
+        { insets: { bottom: 34, left: 0, right: 0, top: 59 } },
+      )
+
+      expect(ModalFixtures.paddingBottom()).toBe(34)
+    })
+
     it('drops the home indicator inset while the keyboard is up', async () => {
       Platform.OS = 'ios'
       KeyboardFixtures.capture()
