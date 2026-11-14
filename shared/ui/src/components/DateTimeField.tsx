@@ -1,12 +1,13 @@
 import type { ReactElement } from 'react'
+import type { AccessibilityValue } from 'react-native'
 
-import { useCallback, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { Pressable } from 'react-native'
 
 import { useT } from '@roundup/i18n'
 
 import type { TIconName } from '../lib/icons'
-import type { IDateTimeFormat } from './DateTimePicker'
+import type { IDateTimeFormat, IDateTimePickerProps } from './DateTimePicker'
 
 import { Button } from './Button'
 import { DateTimePicker } from './DateTimePicker'
@@ -77,21 +78,38 @@ export const DateTimeField = ({
     setOpen(false)
   }, [draft, onChange])
 
-  const optional = {
-    ...(error === undefined ? {} : { error }),
-    ...(helper === undefined ? {} : { helper }),
-  }
+  // The field's text, written once a render instead of for both the label and the value.
+  const shown = useMemo(
+    (): string | undefined => (value === undefined ? undefined : format.display(value)),
+    [format, value],
+  )
 
-  const optionalMin = min === undefined ? {} : { min }
+  const spokenValue = useMemo((): AccessibilityValue => ({ text: shown }), [shown])
 
-  const actions = [
-    <Button key="done" onPress={handleDone}>
-      {t('common.done')}
-    </Button>,
-    <Button key="cancel" onPress={handleClose} variant="ghost">
-      {t('common.cancel')}
-    </Button>,
-  ]
+  const optional = useMemo(
+    (): Pick<IDateTimeFieldProps, 'error' | 'helper'> => ({
+      ...(error === undefined ? {} : { error }),
+      ...(helper === undefined ? {} : { helper }),
+    }),
+    [error, helper],
+  )
+
+  const optionalMin = useMemo(
+    (): Pick<IDateTimePickerProps, 'min'> => (min === undefined ? {} : { min }),
+    [min],
+  )
+
+  const actions = useMemo(
+    (): ReactElement[] => [
+      <Button key="done" onPress={handleDone}>
+        {t('common.done')}
+      </Button>,
+      <Button key="cancel" onPress={handleClose} variant="ghost">
+        {t('common.cancel')}
+      </Button>,
+    ],
+    [handleClose, handleDone, t],
+  )
 
   return (
     <>
@@ -102,7 +120,7 @@ export const DateTimeField = ({
           accessibilityLabel={label}
           accessibilityRole="button"
           accessibilityState={{ disabled, expanded: open }}
-          accessibilityValue={{ text: value === undefined ? undefined : format.display(value) }}
+          accessibilityValue={spokenValue}
           aria-disabled={disabled}
           aria-expanded={open}
           className="-mx-3 min-w-0 flex-1 flex-row items-center gap-2 self-stretch rounded-xl px-3 focus:outline-2 focus:outline-offset-2 focus:outline-focus-ring"
@@ -118,9 +136,7 @@ export const DateTimeField = ({
             numberOfLines={1}
             tone={value === undefined || disabled ? 'subtle' : 'fg'}
           >
-            {value === undefined
-              ? (placeholder ?? t('dateTimeField.placeholder'))
-              : format.display(value)}
+            {shown ?? placeholder ?? t('dateTimeField.placeholder')}
           </Text>
           <Icon className="rotate-90" decorative name="chevron" size={16} tone="fg-muted" />
         </Pressable>

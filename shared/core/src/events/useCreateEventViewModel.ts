@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 
 import { createEvent, EventType } from '@roundup/api'
 
@@ -67,6 +67,9 @@ export const useCreateEventViewModel = (squadId: string): ICreateEventViewModel 
   const [startsAt, setStartsAt] = useState<Date>(() => eventsHelper.defaultStart(now()))
   const [votingCloses, setVotingCloses] = useState<Date | undefined>()
   const [invalid, setInvalid] = useState<Partial<Record<TCreateEventField, TErrorKey>>>({})
+  // Read once when the form opens, so the pickers get the same moment on every render; submit
+  // still checks the start against the clock at that time.
+  const earliest = useMemo((): Date => new Date(now()), [now])
 
   const submit = useCallback(async (): Promise<string | undefined> => {
     const trimmed = name.trim()
@@ -103,7 +106,7 @@ export const useCreateEventViewModel = (squadId: string): ICreateEventViewModel 
 
   return {
     busy,
-    earliest: new Date(now()),
+    earliest,
     error,
     invalid,
     name,

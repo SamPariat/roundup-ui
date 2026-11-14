@@ -1,7 +1,7 @@
 import type { ReactElement } from 'react'
 
 import { useRouter } from 'expo-router'
-import { useCallback } from 'react'
+import { useCallback, useMemo } from 'react'
 import { View } from 'react-native'
 
 import { EventType, useCreateEventViewModel, useDeps } from '@roundup/core'
@@ -73,7 +73,7 @@ export const CreateEventModal = ({
   const router = useRouter()
   const model = useCreateEventViewModel(squadId)
   const dateField = useDeps().helpers.dates.field
-  const { busy, earliest, error, invalid, name, requestId } = model
+  const { busy, earliest, error, invalid, name, requestId, submit } = model
   const errorText = useErrorText(error, requestId)
   // Each input shows the message of its own check; a failed request shows under the form.
   const nameText = useErrorText(invalid.name)
@@ -81,27 +81,30 @@ export const CreateEventModal = ({
   const votingText = useErrorText(invalid.votingCloses)
 
   const handleCreate = useCallback(async (): Promise<void> => {
-    const id = await model.submit()
+    const id = await submit()
 
     if (id === undefined) return
 
     onClose()
     router.push(Paths.squadEvent(id, name.trim()))
-  }, [model, name, onClose, router])
+  }, [name, onClose, router, submit])
 
-  const actions = [
-    <Button
-      key="create"
-      loading={busy}
-      loadingLabel={t('screens.events.create.submitting')}
-      onPress={handleCreate}
-    >
-      {t('screens.events.create.submit')}
-    </Button>,
-    <Button key="cancel" onPress={onClose} variant="ghost">
-      {t('common.cancel')}
-    </Button>,
-  ]
+  const actions = useMemo(
+    (): ReactElement[] => [
+      <Button
+        key="create"
+        loading={busy}
+        loadingLabel={t('screens.events.create.submitting')}
+        onPress={handleCreate}
+      >
+        {t('screens.events.create.submit')}
+      </Button>,
+      <Button key="cancel" onPress={onClose} variant="ghost">
+        {t('common.cancel')}
+      </Button>,
+    ],
+    [busy, handleCreate, onClose, t],
+  )
 
   return (
     <Modal

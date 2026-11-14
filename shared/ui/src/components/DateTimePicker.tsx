@@ -143,6 +143,20 @@ const HOUR_MINUTES = 60
 /** How many minutes between am and pm, which the switch moves by. */
 const HALF_DAY_MINUTES = 720
 
+/** A day of the grid with what does not change while its month is on show. */
+interface IDayCell {
+  /** The day. */
+  day: Date
+  /** The day's number. */
+  text: string
+  /** What a screen reader says for the day. */
+  label: string
+  /** Whether it is today. */
+  today: boolean
+  /** Whether it is before `min` and cannot be picked. */
+  disabled: boolean
+}
+
 /** Props for one day of the grid. */
 interface IDayButtonProps {
   /** The day this cell stands for. */
@@ -343,9 +357,37 @@ export const DateTimePicker = ({
   const [month, setMonth] = useState<Date>(format.startOfMonth(value))
   const today = useMemo((): Date => format.today(), [format])
   const weekdays = useMemo((): string[] => format.weekdayLabels(), [format])
-  const weeks = useMemo((): (Date | undefined)[][] => format.weeks(month), [format, month])
-  const monthLabel = format.monthLabel(month)
-  const canGoBack = min === undefined || format.isBeforeDay(min, month)
+  const monthLabel = useMemo((): string => format.monthLabel(month), [format, month])
+
+  const canGoBack = useMemo(
+    (): boolean => min === undefined || format.isBeforeDay(min, month),
+    [format, min, month],
+  )
+
+  // Each day's number, spoken label, today ring and whether it is off depend only on the month on
+  // show, so they are worked out once per month rather than on every change of the value.
+  const weeks = useMemo(
+    (): (IDayCell | undefined)[][] =>
+      format.weeks(month).map((week) =>
+        week.map((day): IDayCell | undefined => {
+          if (day === undefined) return undefined
+
+          const isToday = format.isSameDay(day, today)
+
+          return {
+            day,
+            disabled: min !== undefined && format.isBeforeDay(day, min),
+            label: isToday
+              ? t('dateTimePicker.today', { day: format.dayLabel(day) })
+              : format.dayLabel(day),
+            text: format.dayText(day),
+            today: isToday,
+          }
+        }),
+      ),
+    [format, min, month, t, today],
+  )
+
   const pm = format.isPm(value)
 
   const handlePreviousMonth = useCallback((): void => {
@@ -427,27 +469,23 @@ export const DateTimePicker = ({
         {weeks.map((week) => (
           <View
             className="flex-row py-0.5"
-            key={week.find((day) => day !== undefined)?.getTime()}
+            key={week.find((cell) => cell !== undefined)?.day.getTime()}
             role="row"
           >
-            {week.map((day, column) => (
+            {week.map((cell, column) => (
               <View
                 className="h-11 flex-1 items-center"
-                key={day?.getTime() ?? `blank-${String(column)}`}
+                key={cell?.day.getTime() ?? `blank-${String(column)}`}
               >
-                {day === undefined ? null : (
+                {cell === undefined ? null : (
                   <DayButton
-                    day={day}
-                    disabled={min !== undefined && format.isBeforeDay(day, min)}
-                    label={
-                      format.isSameDay(day, today)
-                        ? t('dateTimePicker.today', { day: format.dayLabel(day) })
-                        : format.dayLabel(day)
-                    }
+                    day={cell.day}
+                    disabled={cell.disabled}
+                    label={cell.label}
                     onPick={handlePickDay}
-                    selected={format.isSameDay(day, value)}
-                    text={format.dayText(day)}
-                    today={format.isSameDay(day, today)}
+                    selected={format.isSameDay(cell.day, value)}
+                    text={cell.text}
+                    today={cell.today}
                   />
                 )}
               </View>
